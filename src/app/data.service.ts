@@ -12,10 +12,10 @@ export class DataService {
   url = environment.ohsomeStatsServiceUrl;
 
   private summaryData: ISummaryData | any = {
-    contributors: 0,
-    edits: 0,
-    buildingEdits: 0,
-    kmOfRoads: 0
+    contributors: 3625,
+    edits: 570230,
+    buildingEdits: 1536511,
+    kmOfRoads: 11277
   }
 
   constructor(private http: HttpClient) { }

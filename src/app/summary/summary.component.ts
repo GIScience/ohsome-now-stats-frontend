@@ -7,19 +7,18 @@ import { DataService } from '../data.service';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent {
-  contributors!: number
-  edits!: number
-  buidlingEdits!: number
-  kmOfRoads!: number
+  contributors!: string
+  edits!: string
+  buidlingEdits!: string
+  kmOfRoads!: string
 
   constructor(private dataService: DataService) {
-    // ({ this.contributors, this.edits, this.buidlingEdits, this.kmOfRoads } = this.dataService.getSummary())
-    const summary = this.dataService.getSummary();
     const { contributors, edits, buildingEdits, kmOfRoads } = this.dataService.getSummary();
-    this.contributors = contributors
-    this.buidlingEdits = buildingEdits
-    this.edits = edits
-    this.kmOfRoads = kmOfRoads
-    
+
+    this.contributors = new Intl.NumberFormat('en-US').format(contributors)
+    this.buidlingEdits = new Intl.NumberFormat('en-US').format(buildingEdits)
+    this.edits = new Intl.NumberFormat('en-US').format(edits)
+    this.kmOfRoads = new Intl.NumberFormat('en-US').format(kmOfRoads)
+
   }
 }
