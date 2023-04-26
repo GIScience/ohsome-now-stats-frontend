@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 // import { Datepicker } from 'vanillajs-datepicker';
 import { DateRangePicker } from 'vanillajs-datepicker';
+import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-query',
@@ -13,6 +14,8 @@ export class QueryComponent implements OnInit{
   // if permalink values are present otherwise default values
   @Input() options = {startDate: null, endDate: null, hashtags: [], projectIds: []};
   
+  constructor(private dataService: DataService) {}
+
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
@@ -45,5 +48,11 @@ export class QueryComponent implements OnInit{
 
   getStatistics() {
     console.log('>>> QueryComponent >>> submit')
+    let params = {}
+
+    this.dataService.requestSummary(params).subscribe( res => {
+      console.log('res ', res)
+      this.dataService.setSummary(res)
+    })
   }
 }
