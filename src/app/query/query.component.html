@@ -1,0 +1,47 @@
+<div class="row gap-20">
+  <!-- #Toatl Visits ==================== -->
+  <div class='col-md-12'>
+    <div class="bgc-white p-20 bd">
+      <!-- <h6 class="c-grey-900">Query</h6> -->
+      <div class="mT-30">
+        <form>
+          <div class="row">
+            <div class="mb-3 col-md-4" id="dateRange">
+              <!-- Start date and End date -->
+              <div class="mb-3 row">
+                <div class="col-md-12">
+                  <label class="form-label" for="startDate"> Start Date: (UTC+02:00)</label>
+                  <!-- TODO: calendar -->
+                  <input type="text" class="form-control" id="startDate" name="startDate"
+                    placeholder="Start date">
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <div class="col-md-12">
+                  <label class="form-label" for="endDate"> End Date: (UTC+02:00)</label>
+                  <!-- TODO: calendar -->
+                  <input type="text" class="form-control" id="endDate" placeholder="End Date">
+                </div>
+              </div>
+            </div>
+            <div class="mb-3 col-md-4">
+              <!-- Hashtags -->
+              <label class="form-label" for="hastags"> Mapathon Hashtags</label>
+              <textarea class="form-control" id="hastags" aria-describedby="hastagsHelp" rows="5"
+                placeholder="Enter the Tasking Manager Project IDs separated by commas"></textarea>
+              <small id="hastagsHelp" class="text-muted"> Hashtags used in Changesets comments eg: #MissingMaps</small>
+            </div>
+            <div class="mb-3 col-md-4">
+              <!-- Project IDs -->
+              <label class="form-label" for="projectIds"> Tasking Manager Project IDs</label>
+              <textarea class="form-control" id="projectIds" aria-describedby="projectIdsHelp" rows="5"
+                placeholder="Enter the Tasking Manager Project IDs separated by commas"></textarea>
+              <small id="projectIdsHelp" class="text-muted"> Projects IDs</small>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-color" (click)="getStatistics()">Get Statistics</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
