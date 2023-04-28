@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { SummaryComponent } from './summary/summary.component';
 import { QueryComponent } from './query/query.component';
 import { DataService } from './data.service';
+import { PlotComponent } from './plot/plot.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SummaryComponent,
-    QueryComponent
+    QueryComponent,
+    PlotComponent
   ],
   imports: [
     BrowserModule,
