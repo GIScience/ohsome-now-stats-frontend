@@ -8,13 +8,15 @@ import { SummaryComponent } from './summary/summary.component';
 import { QueryComponent } from './query/query.component';
 import { DataService } from './data.service';
 import { PlotComponent } from './plot/plot.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SummaryComponent,
     QueryComponent,
-    PlotComponent
+    PlotComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
