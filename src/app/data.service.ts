@@ -20,12 +20,26 @@ export class DataService {
 
   constructor(private http: HttpClient) { }
   
-  requestSummary(params: {}): Observable<any> {
+  requestSummary(params: any): Observable<any> {
+
+    if(params['hashtags'])
+      return this.requestSummaryWithHashtag(params)
+    
+    else
+      return this.requestSummaryWithoutHashtag(params)
+    
     // const formData = new FormData();
     // Object.keys(param).forEach(key => formData.append(key, param[key]));
-    return this.http.post(`${this.url}/summary`, params);
+  }
+
+  requestSummaryWithHashtag(params: any) {
+    return this.http.get(`${this.url}/stats/${params['hashtags']}`);
   }
   
+  requestSummaryWithoutHashtag(params: any) {
+    return this.http.get(`${this.url}/stats_static/`, params);
+  }
+
   getSummary(): ISummaryData {
     return this.summaryData
   }

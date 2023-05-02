@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DataService } from '../data.service';
 
 @Component({
@@ -7,6 +7,9 @@ import { DataService } from '../data.service';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent {
+
+  @Input() data: any;
+
   contributors!: string
   edits!: string
   buidlingEdits!: string

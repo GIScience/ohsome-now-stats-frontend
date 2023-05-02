@@ -8,9 +8,9 @@ const routes: Routes = [
   { 
     path: '', 
     component: DashboardComponent,
-    // resolve: {
-    //   summaryData: RouteResolver
-    // }
+    resolve: {
+      summaryData: RouteResolver
+    }
   },
   { 
     path: 'dashboard', 
@@ -20,14 +20,14 @@ const routes: Routes = [
     }
   },
   { 
-    path: 'dashboard/:hastags', 
+    path: 'dashboard/:hashtags', 
     component: DashboardComponent,
-    // resolve: {
-    //   summaryData: RouteResolver
-    // }
+    resolve: {
+      summaryData: RouteResolver
+    }
   },
   { 
-    path: 'dashboard/:hastags/:start/:end/:interval', 
+    path: 'dashboard/:hashtags/:start/:end/:interval', 
     component: DashboardComponent,
     // resolve: {
     //   summaryData: RouteResolver
