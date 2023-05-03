@@ -15,6 +15,37 @@ export class DashboardComponent implements OnInit, AfterContentInit{
   isOpen = false;
   activeLink = '';
   summaryData: any = {};
+  plotData: any = [{
+    "changesets": 65009011,
+    "users": 3003842,
+    "roads": 45964973.0494135,
+    "buildings": 242,
+    "edits": 1095091515,
+    "latest": "2023-03-20T10:55:38.000Z",
+    "hashtag": "*",
+    "enddate": "2017-10-01T00:00:00.000Z",
+    "startdate": "2017-09-01T00:00:00.000Z"
+  },{
+    "changesets": 65009011,
+    "users": 3003842,
+    "roads": 45964973.0494135,
+    "buildings": 110,
+    "edits": 1095091515,
+    "latest": "2023-03-20T10:55:38.000Z",
+    "hashtag": "*",
+    "enddate": "2017-11-01T00:00:00.000Z",
+    "startdate": "2017-10-01T00:00:00.000Z"
+  },{
+    "changesets": 65009011,
+    "users": 3003842,
+    "roads": 45964973.0494135,
+    "buildings": 844294167,
+    "edits": 1095091515,
+    "latest": "2023-03-20T10:55:38.000Z",
+    "hashtag": "*",
+    "enddate": "2018-11-23T12:23:00.000Z",
+    "startdate": "2018-11-01T00:00:00.000Z"
+  }]
 
   constructor(
     private dataService: DataService,

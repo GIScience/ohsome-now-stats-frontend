@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import Plotly from 'plotly.js-dist-min';
 import { Layout } from 'plotly.js-dist-min';
@@ -10,6 +10,7 @@ import { Layout } from 'plotly.js-dist-min';
 })
 export class PlotComponent implements OnInit {
 
+  @Input() data: any;
   layout: Layout | any;
 
   ngOnInit(): void {
