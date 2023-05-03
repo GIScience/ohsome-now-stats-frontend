@@ -14,25 +14,25 @@ const routes: Routes = [
   },
   { 
     path: 'dashboard', 
-    component: DashboardComponent,
-    resolve: {
-      summaryData: RouteResolver
-    }
-  },
-  { 
-    path: 'dashboard/:hashtags', 
-    component: DashboardComponent,
-    resolve: {
-      summaryData: RouteResolver
-    }
-  },
-  { 
-    path: 'dashboard/:hashtags/:start/:end/:interval', 
-    component: DashboardComponent,
+    component: DashboardComponent
     // resolve: {
     //   summaryData: RouteResolver
     // }
   }
+  // ,{ 
+  //   path: 'dashboard/:hashtags', 
+  //   component: DashboardComponent,
+  //   resolve: {
+  //     summaryData: RouteResolver
+  //   }
+  // },
+  // { 
+  //   path: 'dashboard/:hashtags/:start/:end/:interval', 
+  //   component: DashboardComponent,
+  //   // resolve: {
+  //   //   summaryData: RouteResolver
+  //   // }
+  // }
 ];
 
 @NgModule({

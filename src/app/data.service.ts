@@ -37,7 +37,7 @@ export class DataService {
   }
   
   requestSummaryWithoutHashtag(params: any) {
-    return this.http.get(`${this.url}/stats_static/`, params);
+    return this.http.get(`${this.url}/stats_static`, params);
   }
 
   getSummary(): ISummaryData {

@@ -1,20 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterContentInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import Masonry from 'masonry-layout';
+import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit{
+export class DashboardComponent implements OnInit, AfterContentInit{
 
   title = 'ohsome-contribution-stats';
   isOpen = false;
   activeLink = '';
+  summaryData: any = {};
 
   constructor(
+    private dataService: DataService,
     private route: ActivatedRoute,
     private router: Router  ) {}
 
@@ -22,10 +25,13 @@ export class DashboardComponent implements OnInit{
     this.initMasonry()
     // this.addResizeWindowEvent()
     // const startDate = this.route.snapshot.paramMap.get('id');
-    // this.route.fragment.subscribe((fragment: string | null) => {
-    //   console.log("My hash fragment is here => ", fragment)
-    // })
-    console.log('startDate = ', this.route.snapshot.params)
+    this.route.fragment.subscribe((fragment: string | null) => {
+      const queryParams = this.getQueryParamsFromFragments()
+      this.dataService.requestSummary(queryParams).subscribe( res => {
+        console.log('>>> res = ', res)
+      })
+    })
+    
   }
 
   toggleSidebar() {
@@ -95,5 +101,14 @@ export class DashboardComponent implements OnInit{
        */
       window.dispatchEvent(EVENT);
     });
+  }
+
+  ngAfterContentInit(): void {
+
+  }
+
+  getQueryParamsFromFragments(): any {
+    const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&').map( q => [q.split('=')[0], q.split('=')[1]])
+    return Object.fromEntries(tempQueryParams)
   }
 }

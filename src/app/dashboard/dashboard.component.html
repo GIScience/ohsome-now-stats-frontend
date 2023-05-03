@@ -85,11 +85,34 @@
           <div id='mainContent'>
             <div class="row gap-20 masonry pos-r">
               <div class="masonry-sizer col-md-6"></div>
-              <div class="masonry-item  w-100">
+              <div class="masonry-item w-100">
                 <app-query></app-query>
               </div>
-              <div class="masonry-item  w-100">
-                <app-summary></app-summary>
+              <div class="masonry-item w-100">
+                <div class="row">
+                  <!-- #Toatl Visits ==================== -->
+                  <div class='col-md-12'>
+                    <div class="layers bd bgc-white p-20">
+                      <div class="layer w-100 mB-10">
+                        <h6 class="lh-1">Summarized Statistics for the request</h6>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row ">
+                    <div class='col-md-12'>
+                      <div class="layers bd bgc-white p-20">
+                        <div class="layer w-100 mB-10">
+                          <h6 class="lh-1">{{summaryData.hashtags}}</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class='col-md-12'>
+                    <app-summary [data]="summaryData"></app-summary>
+                  </div>
+                </div>
               </div>
               <div class="masonry-item col-md-12">
                 <!-- #Common graph for Summary ==================== -->
