@@ -7,27 +7,34 @@
         <form>
           <div class="row">
             <div class="mb-3 col-md-5" id="dateRange">
-              <!-- Start date and End date -->
+              <!-- Start date, End date and interval -->
               <div class="mb-3 row">
                 <div class="col-md-12">
-                  <label class="form-label" for="startDate"> Start Date: (UTC+02:00)</label>
-                  <!-- TODO: calendar -->
+                  <label class="form-label" for="startDate"> Start Date: </label>
                   <input type="text" class="form-control" id="startDate" name="startDate"
                     placeholder="Start date">
                 </div>
               </div>
               <div class="mb-3 row">
                 <div class="col-md-12">
-                  <label class="form-label" for="endDate"> End Date: (UTC+02:00)</label>
-                  <!-- TODO: calendar -->
+                  <label class="form-label" for="endDate"> End Date: </label>
                   <input type="text" class="form-control" id="endDate" placeholder="End Date">
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label class="form-label col-sm-3 col-form-label" for="intervals">Intervals: </label>
+                <div class="col-sm-9">
+                  <select name="intervals" class="form-control" [ngModel]="interval">
+                    <option *ngFor="let option of intervals" [value]="option.value">{{option.label}}</option>
+                  </select>
                 </div>
               </div>
             </div>
             <div class="mb-3 col-md-7">
               <!-- Hashtags -->
               <label class="form-label" for="hastags"> Mapathon Hashtags</label>
-              <textarea class="form-control" id="hastags" aria-describedby="hastagsHelp" rows="5"
+              <textarea class="form-control" id="hastags" [(ngModel)]="hashtags" name="hashtags" 
+                aria-describedby="hastagsHelp" rows="5"
                 placeholder="Enter the Tasking Manager Project IDs separated by commas"></textarea>
               <small id="hastagsHelp" class="text-muted"> Hashtags used in Changesets comments eg: #MissingMaps</small>
             </div>

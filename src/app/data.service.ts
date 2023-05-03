@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
 import { Observable } from 'rxjs';
-// import { map, catchError } from 'rxjs/operators;
 
 import { environment } from '../environments/environment';
 
@@ -17,6 +15,7 @@ export class DataService {
     buildingEdits: 1536511,
     kmOfRoads: 11277
   }
+  private queryParams: any = {}
 
   constructor(private http: HttpClient) { }
   
@@ -47,6 +46,14 @@ export class DataService {
   setSummary(res: any) {
     this.summaryData = res
   }
+
+  getQueryParams() {
+    return this.queryParams  
+  }
+
+  setQueryParams(qP: any) {
+    this.queryParams = qP
+  }
 }
 
 export interface ISummaryData {
@@ -54,4 +61,11 @@ export interface ISummaryData {
   edits: number
   buildingEdits: number
   kmOfRoads: number
+}
+
+export interface IQueryData {
+  start: string
+  end: string
+  hashtags: Array<string>
+  interval: string
 }
