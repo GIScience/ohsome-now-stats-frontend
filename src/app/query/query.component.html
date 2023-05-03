@@ -6,7 +6,7 @@
       <div class="mT-30">
         <form>
           <div class="row">
-            <div class="mb-3 col-md-4" id="dateRange">
+            <div class="mb-3 col-md-5" id="dateRange">
               <!-- Start date and End date -->
               <div class="mb-3 row">
                 <div class="col-md-12">
@@ -24,20 +24,20 @@
                 </div>
               </div>
             </div>
-            <div class="mb-3 col-md-4">
+            <div class="mb-3 col-md-7">
               <!-- Hashtags -->
               <label class="form-label" for="hastags"> Mapathon Hashtags</label>
               <textarea class="form-control" id="hastags" aria-describedby="hastagsHelp" rows="5"
                 placeholder="Enter the Tasking Manager Project IDs separated by commas"></textarea>
               <small id="hastagsHelp" class="text-muted"> Hashtags used in Changesets comments eg: #MissingMaps</small>
             </div>
-            <div class="mb-3 col-md-4">
-              <!-- Project IDs -->
+            <!-- Project IDs -->
+            <!-- <div class="mb-3 col-md-4">
               <label class="form-label" for="projectIds"> Tasking Manager Project IDs</label>
               <textarea class="form-control" id="projectIds" aria-describedby="projectIdsHelp" rows="5"
                 placeholder="Enter the Tasking Manager Project IDs separated by commas"></textarea>
               <small id="projectIdsHelp" class="text-muted"> Projects IDs</small>
-            </div>
+            </div> -->
           </div>
           <button class="btn btn-primary btn-color" (click)="getStatistics()">Get Statistics</button>
         </form>
