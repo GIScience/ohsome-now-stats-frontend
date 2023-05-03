@@ -2,7 +2,7 @@ import { AfterContentInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import Masonry from 'masonry-layout';
-import { DataService } from '../data.service';
+import { DataService, IQueryData } from '../data.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -46,6 +46,8 @@ export class DashboardComponent implements OnInit, AfterContentInit{
     "enddate": "2018-11-23T12:23:00.000Z",
     "startdate": "2018-11-01T00:00:00.000Z"
   }]
+  queryParams: any;
+  summaryMessage: string = '';
 
   constructor(
     private dataService: DataService,
@@ -58,12 +60,20 @@ export class DashboardComponent implements OnInit, AfterContentInit{
     // const startDate = this.route.snapshot.paramMap.get('id')
     this.route.fragment.subscribe((fragment: string | null) => {
       const queryParams = this.getQueryParamsFromFragments()
+      
+      // form a appropriate message for summary data
+      this.summaryMessage = this.formSummaryMessage(queryParams)
+
       if(queryParams == null)
         return 
 
+      // set Query Params for the QueryComponent can access it
       this.dataService.setQueryParams(queryParams)
+
+      // fire the request to API
       this.dataService.requestSummary(queryParams).subscribe( res => {
         console.log('>>> res = ', res)
+        // send response data to Summary Component
         this.summaryData = res
       })
     })
@@ -149,5 +159,30 @@ export class DashboardComponent implements OnInit, AfterContentInit{
     
     const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&').map( q => [q.split('=')[0], q.split('=')[1]])
     return Object.fromEntries(tempQueryParams)
+  }
+
+  /**
+   * Forms an appropriate message to be display above Summary data
+   * 
+   * @param queryParams 
+   * @returns message 
+   */
+  formSummaryMessage(queryParams: any): string {
+    console.log('queryParams')
+    if(!queryParams)
+      return `Summarized statistics for all contributions`
+
+    let message: string = ''
+    if(queryParams.hashtags)
+      message += `Summarized statistics of contributions with 
+        ${queryParams.hashtags.split(',').map( (h: string) => ' #'+ h)}`
+
+    if(queryParams.start)
+      message += ` from ${queryParams.start}`
+
+    if(queryParams.end)
+      message += ` till ${queryParams.end}`
+
+    return message
   }
 }
