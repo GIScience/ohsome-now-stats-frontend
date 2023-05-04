@@ -28,8 +28,7 @@ export class DataService {
   }
 
   requestSummaryWithHashtag(params: any) {
-    return this.http.get(`${this.url}/stats/${params['hashtags']}`);
-    // return this.http.get(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}`);
+    return this.http.get(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}`);
   }
   
   requestSummaryWithoutHashtag(params: any) {
