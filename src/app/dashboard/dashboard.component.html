@@ -83,12 +83,12 @@
         <!-- ### $App Screen Content ### -->
         <main class='main-content bgc-grey-100'>
           <div id='mainContent'>
-            <div class="row gap-20 masonry pos-r">
-              <div class="masonry-sizer col-md-6"></div>
-              <div class="masonry-item w-100">
+            <div class="row gap-20 pos-r">
+              <div class="col-md-6"></div>
+              <div class="w-100">
                 <app-query></app-query>
               </div>
-              <div class="masonry-item w-100">
+              <div class="w-100">
                 <!-- #Summary message ==================== -->
                 <div class="row">
                   <div class='col-md-12'>
@@ -105,13 +105,13 @@
                   </div>
                 </div>
               </div>
-              <div class="masonry-item col-md-12">
+              <div class="col-md-12">
                 <!-- #Common graph for Summary ==================== -->
                 <div class="bd bgc-white">                  
                     <app-plot [data]="plotData"></app-plot>
                 </div>
               </div>
-              <div class="masonry-item col-12">
+              <div class="col-12" *ngIf="false">
                 <!-- #Map View ==================== -->
                 <div class="bd bgc-white">
                   <div class="peers fxw-nw@lg+ ai-s">
@@ -191,19 +191,19 @@
                   </div>
                 </div>
               </div>
-              <div class="masonry-item col-md-6">
+              <div class="col-md-6">
                 <!-- #Todo ==================== -->
                 
               </div>
-              <div class="masonry-item col-md-6">
+              <div class="col-md-6">
                 <!-- #Sales Report ==================== -->
                 
               </div>
-              <div class="masonry-item col-md-6">
+              <div class="col-md-6">
                 <!-- #Weather ==================== -->
                 
               </div>
-              <div class="masonry-item col-md-6">
+              <div class="col-md-6">
                 <!-- #Chat ==================== -->
                 
               </div>
