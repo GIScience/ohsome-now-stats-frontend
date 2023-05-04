@@ -41,7 +41,7 @@ pipeline {
         sh 'npm install'
         sh 'npm run build'
         sh 'rm -rf /var/www/html/demo.contributions-stats.ohsome.org/*'
-        sh 'cp -f ./dist/* /var/www/html/demo.contributions-stats.ohsome.org/'
+        sh 'cp -r ./dist/* /var/www/html/demo.contributions-stats.ohsome.org/'
       }
     }
 
