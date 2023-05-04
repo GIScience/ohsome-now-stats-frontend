@@ -1,21 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { environment } from '../environments/environment';
 
 @Injectable()
 export class DataService {
   
-  url = environment.ohsomeStatsServiceUrl;
-
-  private summaryData: ISummaryData | any = {
-    contributors: 3625,
-    edits: 570230,
-    buildingEdits: 1536511,
-    kmOfRoads: 11277
-  }
+  url = environment.ohsomeStatsServiceUrl
   private queryParams: any = {}
+  private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
+  summaryData = this.bsSummaryData.asObservable()
 
   constructor(private http: HttpClient) { }
   
@@ -39,12 +34,13 @@ export class DataService {
     return this.http.get(`${this.url}/stats_static`, params);
   }
 
-  getSummary(): ISummaryData {
+  getSummary() {
+    // return this.bsSummaryData.getValue()
     return this.summaryData
   }
 
-  setSummary(res: any) {
-    this.summaryData = res
+  setSummary(data: ISummaryData) {
+    this.bsSummaryData.next(data)
   }
 
   getQueryParams() {

@@ -2,7 +2,7 @@ import { AfterContentInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import Masonry from 'masonry-layout';
-import { DataService, IQueryData } from '../data.service';
+import { DataService, IQueryData, ISummaryData } from '../data.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,7 +14,7 @@ export class DashboardComponent implements OnInit, AfterContentInit{
   title = 'ohsome-contribution-stats'
   isOpen = false
   activeLink = ''
-  summaryData: any = {}
+  summaryData: ISummaryData | undefined
   plotData: any = [{
     "changesets": 65009011,
     "users": 3003842,
@@ -74,7 +74,14 @@ export class DashboardComponent implements OnInit, AfterContentInit{
       this.dataService.requestSummary(queryParams).subscribe( res => {
         console.log('>>> res = ', res)
         // send response data to Summary Component
-        this.summaryData = res
+        this.summaryData = {
+          buildingEdits: res!.buildings,
+          contributors: res!.users,
+          edits: res!.changesets,
+          kmOfRoads: res!.roads
+        }
+
+        this.dataService.setSummary(this.summaryData)
       })
     })
     
