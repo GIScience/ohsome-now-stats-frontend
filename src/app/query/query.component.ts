@@ -33,7 +33,7 @@ export class QueryComponent implements OnInit{
 
   ngOnInit(): void {
     this.data = this.dataService.getQueryParams()
-    console.log('>>> QueryComponent >>> this.data = ', this.data)
+    // console.log('>>> QueryComponent >>> this.data = ', this.data)
 
     // const elem: HTMLElement | null = document.querySelector('input[name="startDate"]');
     const dateRangeEle = document.getElementById('dateRange')

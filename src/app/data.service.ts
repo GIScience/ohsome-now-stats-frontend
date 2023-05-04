@@ -15,8 +15,9 @@ export class DataService {
   constructor(private http: HttpClient) { }
   
   requestSummary(params: any): Observable<any> {
+    // console.log('>>> DataService >>> requestSummary ', params)
 
-    if(params['hashtags'])
+    if(params && params['hashtags'])
       return this.requestSummaryWithHashtag(params)
     
     else
@@ -28,10 +29,11 @@ export class DataService {
 
   requestSummaryWithHashtag(params: any) {
     return this.http.get(`${this.url}/stats/${params['hashtags']}`);
+    // return this.http.get(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}`);
   }
   
   requestSummaryWithoutHashtag(params: any) {
-    return this.http.get(`${this.url}/stats_static`, params);
+    return this.http.get(`${this.url}/stats_static`);
   }
 
   getSummary() {

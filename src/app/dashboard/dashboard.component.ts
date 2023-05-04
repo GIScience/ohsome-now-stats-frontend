@@ -64,15 +64,9 @@ export class DashboardComponent implements OnInit, AfterContentInit{
       // form a appropriate message for summary data
       this.summaryMessage = this.formSummaryMessage(queryParams)
 
-      if(queryParams == null)
-        return 
-
-      // set Query Params for the QueryComponent can access it
-      this.dataService.setQueryParams(queryParams)
-
       // fire the request to API
       this.dataService.requestSummary(queryParams).subscribe( res => {
-        console.log('>>> res = ', res)
+        // console.log('>>> res = ', res)
         // send response data to Summary Component
         this.summaryData = {
           buildingEdits: res!.buildings,
@@ -83,6 +77,13 @@ export class DashboardComponent implements OnInit, AfterContentInit{
 
         this.dataService.setSummary(this.summaryData)
       })
+
+      if(queryParams == null)
+        return 
+
+      // set Query Params for the QueryComponent can access it
+      this.dataService.setQueryParams(queryParams)
+
     })
     
   }
@@ -175,7 +176,6 @@ export class DashboardComponent implements OnInit, AfterContentInit{
    * @returns message 
    */
   formSummaryMessage(queryParams: any): string {
-    console.log('queryParams')
     if(!queryParams)
       return `Summarized statistics for all contributions`
 
