@@ -71,12 +71,15 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   constructor(
     private dataService: DataService,
     private route: ActivatedRoute,
-    private router: Router  ) {}
+    private router: Router ) {}
 
   ngOnInit() {
     // const startDate = this.route.snapshot.paramMap.get('id')
     this.route.fragment.subscribe((fragment: string | null) => {
       const queryParams = this.getQueryParamsFromFragments()
+      this.queryParams = queryParams
+
+      // console.log('>>> DashboardComponent >>> queryParams ', queryParams)
       
       // form a appropriate message for summary data
       this.summaryMessage = this.formSummaryMessage(queryParams)
@@ -94,12 +97,6 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
         this.dataService.setSummary(this.summaryData)
       })
-
-      if(queryParams == null)
-        return 
-
-      // set Query Params for the QueryComponent can access it
-      this.dataService.setQueryParams(queryParams)
 
     })
     

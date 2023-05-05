@@ -30,6 +30,7 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/flatpickr/dist/flatpickr.css",
               "src/styles.scss"
             ],
             "scripts": [

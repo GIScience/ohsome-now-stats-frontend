@@ -8,7 +8,6 @@ import { environment } from '../environments/environment';
 export class DataService {
   
   url = environment.ohsomeStatsServiceUrl
-  private queryParams: any = {}
   private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
   summaryData = this.bsSummaryData.asObservable()
 
@@ -42,14 +41,6 @@ export class DataService {
 
   setSummary(data: ISummaryData) {
     this.bsSummaryData.next(data)
-  }
-
-  getQueryParams() {
-    return this.queryParams  
-  }
-
-  setQueryParams(qP: any) {
-    this.queryParams = qP
   }
 }
 

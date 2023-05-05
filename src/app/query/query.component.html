@@ -6,9 +6,22 @@
       <div class="mT-30">
         <form>
           <div class="row">
-            <div class="mb-3 col-md-5" id="dateRange">
+            <div class="mb-3 col-md-5">
               <!-- Start date, End date and interval -->
               <div class="mb-3 row">
+                <div class="col-md-12">
+                  <label class="form-label" for="dateRange"> Date range : </label>
+                  <input type="text" class="form-control" name="dateRange" mwlFlatpickr
+                    [(ngModel)]="selectedDateRange"
+                    [altInput]="true"
+                    mode="range"
+                    [enableTime]="true"
+                    [dateFormat]="'Y-m-dTH:i'"
+                    [convertModelValue]="true"
+                  />
+                </div>
+              </div>
+              <!-- <div class="mb-3 row">
                 <div class="col-md-12">
                   <label class="form-label" for="startDate"> Start Date: </label>
                   <input type="text" class="form-control" id="startDate" name="startDate"
@@ -20,14 +33,20 @@
                   <label class="form-label" for="endDate"> End Date: </label>
                   <input type="text" class="form-control" id="endDate" placeholder="End Date">
                 </div>
-              </div>
+              </div> -->
               <div class="mb-3 row">
-                <label class="form-label col-sm-3 col-form-label" for="intervals">Intervals: </label>
+                <div class="col-md-12">
+                  <label class="form-label" for="intervals">Intervals: </label>
+                  <select name="intervals" class="form-control" [(ngModel)]="interval">
+                    <option *ngFor="let option of intervals" [value]="option.value">{{option.label}}</option>
+                  </select>
+                </div>
+                <!-- <label class="form-label col-sm-3 col-form-label" for="intervals">Intervals: </label>
                 <div class="col-sm-9">
                   <select name="intervals" class="form-control" [ngModel]="interval">
                     <option *ngFor="let option of intervals" [value]="option.value">{{option.label}}</option>
                   </select>
-                </div>
+                </div> -->
               </div>
             </div>
             <div class="mb-3 col-md-7">

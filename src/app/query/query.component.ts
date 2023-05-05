@@ -1,7 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
-// import { Datepicker } from 'vanillajs-datepicker';
-import { DateRangePicker } from 'vanillajs-datepicker';
 import { DataService, IQueryData } from '../data.service';
 
 @Component({
@@ -9,11 +8,11 @@ import { DataService, IQueryData } from '../data.service';
   templateUrl: './query.component.html',
   styleUrls: ['./query.component.scss']
 })
-export class QueryComponent implements OnInit{
+export class QueryComponent implements OnInit, OnChanges {
 
-  // if permalink values are present otherwise default values
   // @Input() data = {startDate: null, endDate: null, hashtags: [], projectIds: []};
-  private data: IQueryData | undefined
+  @Input() data: IQueryData | undefined
+
   hashtags: string = ''
   intervals: Array<{
     label: string;
@@ -27,23 +26,20 @@ export class QueryComponent implements OnInit{
     {label: 'yearly', value: 'P1Y'},
   ];
   interval: string = 'P1M'
+  selectedDateRange: any
 
   
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private router: Router ) {}
 
-  ngOnInit(): void {
-    this.data = this.dataService.getQueryParams()
-    // console.log('>>> QueryComponent >>> this.data = ', this.data)
+  ngOnInit(): void {}
 
-    // const elem: HTMLElement | null = document.querySelector('input[name="startDate"]');
-    const dateRangeEle = document.getElementById('dateRange')
-    if(dateRangeEle){
-      const rangepicker = new DateRangePicker(dateRangeEle, {
-        // ...options
-        format: 'yyyy-mm-dd'
-      }) 
-      
-      this.initFormValues(rangepicker)
+  ngOnChanges(): void {
+    // console.log('>>> QueryComponent >>> ngOnChanges >>> this.data = ', this.data)
+
+    if(this.data) {
+      this.initFormValues(this.data)      
     }
   }
 
@@ -64,33 +60,66 @@ export class QueryComponent implements OnInit{
     // this.value = timeParts.join('/')
   }
 
-  initFormValues(rangepicker: DateRangePicker) {
-    if(this.data && Object.keys(this.data).length !== 0) {
+  initFormValues(data: IQueryData) {
+    if(data && Object.keys(data).length !== 0) {
       // set Start and end dates
-      if(this.data.start && this.data.end)
-        rangepicker.setDates(new Date(this.data.start), new Date(this.data.end))
-      
-      if(this.data.start && this.data.end === '')
-        rangepicker.setDates(new Date(this.data.start), new Date())
+      if(data.start && data.end)
+        this.selectedDateRange = {
+          from: data.start,
+          to: data.end
+        }
 
-      if(this.data.start === '' && this.data.end === '')
-        rangepicker.setDates(new Date('2007-01-01'), new Date())
+      // if(data.start && data.end === '')
+      //   rangepicker.setDates(new Date(this.data.start), new Date())
+
+      // if(this.data.start === '' && this.data.end === '')
+      //   rangepicker.setDates(new Date('2007-01-01'), new Date())
 
       // set hashtags textarea
-      this.hashtags = this.data.hashtags.toString()
+      this.hashtags = data.hashtags.toString()
 
       // set interval
-      this.interval = this.data.interval
+      this.interval = data.interval
     }
   }
 
+  /**
+   * Called on Submit button click on the form
+   */
   getStatistics() {
-    console.log('>>> QueryComponent >>> submit')
-    let params = {}
+    console.log('>>> QueryComponent >>> getStatistics')
+    // get all values from form
+    const tempEnd = new Date(this.selectedDateRange.to).toISOString()
+    const tempStart = new Date(this.selectedDateRange.from).toISOString()
+    // currently we support only one hashtags
+    // TODO: in future, if multiple hastags a present then fire 
+    // request to /group-summaries endpoint and not /stats
+    const tempHashTags = this.cleanHashTags(this.hashtags)
+    console.log('formvalues = ', tempStart, tempEnd, this.interval, tempHashTags)
 
-    this.dataService.requestSummary(params).subscribe( res => {
-      console.log('res ', res)
-      this.dataService.setSummary(res)
-    })
+    // update the texfeild value
+    // this.hashtags = tempHashTags
+
+    // update the url fragment
+    this.router.navigate([], { 
+        fragment: `hashtags=${tempHashTags}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}` 
+      });
+  }
+
+  /**
+   * Cleans the hastags field values
+   * 
+   * @param hashtags 
+   * @returns string comma seperated hashtags without the symbol hashtag
+   */
+  cleanHashTags(hashtags: string): string {
+    const cleanedHashtags = hashtags
+      .trim() // Remove leading/trailing whitespace
+      .split(',') // Split by commas
+      .map(h => h.trim()) // Trim each hashtag
+      .filter(h => h !== '') // Filter out empty hashtags
+      .map(h => h.replace(/^#/, '')); // Remove '#' symbol from each hashtag if it's at the beginning
+
+    return cleanedHashtags.join(',');
   }
 }
