@@ -7,32 +7,16 @@ import { RouteResolver } from './resolvers/route.resolver';
 const routes: Routes = [
   { 
     path: '', 
+    pathMatch: 'full', 
+    redirectTo: 'dashboard'
+  },
+  { 
+    path: 'dashboard', 
     component: DashboardComponent,
     resolve: {
       summaryData: RouteResolver
     }
-  },
-  { 
-    path: 'dashboard', 
-    component: DashboardComponent
-    // resolve: {
-    //   summaryData: RouteResolver
-    // }
   }
-  // ,{ 
-  //   path: 'dashboard/:hashtags', 
-  //   component: DashboardComponent,
-  //   resolve: {
-  //     summaryData: RouteResolver
-  //   }
-  // },
-  // { 
-  //   path: 'dashboard/:hashtags/:start/:end/:interval', 
-  //   component: DashboardComponent,
-  //   // resolve: {
-  //   //   summaryData: RouteResolver
-  //   // }
-  // }
 ];
 
 @NgModule({
