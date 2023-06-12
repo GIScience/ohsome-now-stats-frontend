@@ -139,7 +139,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   }
 
   getQueryParamsFromFragments(): any {
-    if(this.route.snapshot.fragment == null)
+    if(this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 2)
       return null
     
     const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&').map( q => [q.split('=')[0], q.split('=')[1]])
