@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, AfterContentInit } from '@angular/core';
 
-import Plotly from 'plotly.js-dist-min';
-import { Layout } from 'plotly.js-dist-min';
+import Plotly from 'plotly.js-basic-dist-min';
+import { Layout } from 'plotly.js-basic-dist-min';
 
 @Component({
   selector: 'app-plot',
