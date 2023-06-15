@@ -11,6 +11,7 @@ import { QueryComponent } from './query/query.component';
 import { DataService } from './data.service';
 import { PlotComponent } from './plot/plot.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     SummaryComponent,
     QueryComponent,
     PlotComponent,
-    DashboardComponent
+    DashboardComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
