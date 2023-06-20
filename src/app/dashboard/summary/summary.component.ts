@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { DataService, ISummaryData } from '../data.service';
+import { DataService, ISummaryData } from '../../data.service';
 
 @Component({
   selector: 'app-summary',

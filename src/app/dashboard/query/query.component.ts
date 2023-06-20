@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { DataService, IQueryData } from '../data.service';
+import { DataService, IQueryData } from '../../data.service';
 
 @Component({
   selector: 'app-query',
@@ -10,7 +10,6 @@ import { DataService, IQueryData } from '../data.service';
 })
 export class QueryComponent implements OnInit, OnChanges {
 
-  // @Input() data = {startDate: null, endDate: null, hashtags: [], projectIds: []};
   @Input() data: IQueryData | undefined
 
   hashtags: string = ''
@@ -30,7 +29,6 @@ export class QueryComponent implements OnInit, OnChanges {
 
   
   constructor(
-    private dataService: DataService,
     private router: Router ) {}
 
   ngOnInit(): void {}
@@ -55,9 +53,6 @@ export class QueryComponent implements OnInit, OnChanges {
    */
   set start(val: string) {
     this._start = val
-    // const timeParts = this.value.split('/')
-    // timeParts[0] = val
-    // this.value = timeParts.join('/')
   }
 
   initFormValues(data: IQueryData) {
@@ -68,12 +63,6 @@ export class QueryComponent implements OnInit, OnChanges {
           from: data.start,
           to: data.end
         }
-
-      // if(data.start && data.end === '')
-      //   rangepicker.setDates(new Date(this.data.start), new Date())
-
-      // if(this.data.start === '' && this.data.end === '')
-      //   rangepicker.setDates(new Date('2007-01-01'), new Date())
 
       // set hashtags textarea
       this.hashtags = data.hashtags.toString()

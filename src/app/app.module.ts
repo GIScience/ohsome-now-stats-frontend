@@ -6,10 +6,10 @@ import { FlatpickrModule } from 'angularx-flatpickr';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SummaryComponent } from './summary/summary.component';
-import { QueryComponent } from './query/query.component';
+import { SummaryComponent } from './dashboard/summary/summary.component';
+import { QueryComponent } from './dashboard/query/query.component';
 import { DataService } from './data.service';
-import { PlotComponent } from './plot/plot.component';
+import { PlotComponent } from './dashboard/plot/plot.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
