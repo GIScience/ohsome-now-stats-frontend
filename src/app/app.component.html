@@ -1,1 +1,95 @@
-<router-outlet></router-outlet>
+<!-- @App Content -->
+<!-- =================================================== -->
+<div>
+  <!-- #Left Sidebar ==================== -->
+  <div class="sidebar">
+    <div class="sidebar-inner">
+      <!-- ### $Sidebar Header ### -->
+      <div class="sidebar-logo">
+        <div class="peers ai-c fxw-nw">
+          <div class="peer peer-greed">
+            <a class="sidebar-link td-n" href="https://heigit.org/" target="_blank">
+              <div class="peers ai-c fxw-nw">
+                <div class="peer">
+                  <div class="logo pt-3 px-1">
+                    <img src="assets/images/HeiGIT_Logo_compact_transparent.svg" alt="Heidelberg Institute for Geoinformation Technology">
+                  </div>
+                </div>
+                <!-- <div class="peer peer-greed">
+                  <h5 class="lh-1 mB-0 logo-text">Heidelberg Institute for Geoinformation Technology</h5>
+                </div> -->
+              </div>
+            </a>
+          </div>
+          <div class="peer">
+            <div class="mobile-toggle sidebar-toggle">
+              <a href="" class="td-n">
+                <i class="ti-arrow-circle-left"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ### $Sidebar Menu ### -->
+      <ul class="sidebar-menu scrollable pos-r">
+        <li class="nav-item mT-30 actived">
+          <a class="sidebar-link" [routerLink]="['/dashboard']">
+            <span class="icon-holder">
+              <i class="c-blue-500 ti-home"></i>
+            </span>
+            <span class="title">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class='sidebar-link' [routerLink]="['/summary']">
+            <span class="icon-holder">
+              <i class="c-brown-500 ti-stats-up"></i>
+            </span>
+            <span class="title">Summary</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- #Main ============================ -->
+  <div class="page-container">
+    <!-- ### $Topbar ### -->
+    <div class="header navbar">
+      <div class="header-container">
+        <ul class="nav-left">
+          <li>
+            <a id='sidebar-toggle' class="sidebar-toggle" (click)="toggleSidebar()">
+              <i class="ti-menu"></i>
+            </a>
+          </li>
+          <li class="search-box">
+            <a class="search-toggle no-pdd-right" href="javascript:void(0);">
+              <i class="search-icon ti-search pdd-right-10"></i>
+              <i class="search-icon-close ti-close pdd-right-10"></i>
+            </a>
+          </li>
+          <li class="search-input">
+            <input class="form-control" type="text" placeholder="Search...">
+          </li>
+        </ul>
+        <ul class="nav-right">
+          <!-- user related -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- ### $App Screen Content ### -->
+    <main class='main-content bgc-grey-100'>
+      <div id='mainContent'>
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+
+    <!-- ### $App Screen Footer ### -->
+    <footer class="bdT ta-c p-30 lh-0 fsz-sm c-grey-600">
+      <span> © 2023 Heidelberg Institute for Geoinformation Technology at <a href="https://uni-heidelberg.de/gis/">Heidelberg University</a> | HeiGIT gGmbH | <a href="https://heigit.org/imprint/" target="_blank">imprint</a>&nbsp;|&nbsp;<a href="https://heigit.org/privacy-policy" target="_blank">privacy policy</a></span>
+    </footer>
+  </div>
+</div>
