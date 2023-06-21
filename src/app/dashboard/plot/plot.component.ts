@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, AfterContentInit } from '@angular/core';
 
 import Plotly from 'plotly.js-basic-dist-min';
 import { Layout } from 'plotly.js-basic-dist-min';
+import { IPlotData } from '../../data.service';
 
 @Component({
   selector: 'app-plot',
@@ -10,16 +11,18 @@ import { Layout } from 'plotly.js-basic-dist-min';
 })
 export class PlotComponent implements AfterContentInit, OnChanges {
 
-  @Input() data: any;
+  @Input() data!: Array<IPlotData>;
   layout: Layout | any;
 
   ngAfterContentInit(): void {
     this.initChart();
-    this.refreshPlot();
+    if(this.data)
+      this.refreshPlot();
   }
 
   ngOnChanges(): void {
-    this.refreshPlot();
+    if(this.data)
+      this.refreshPlot();
   }
 
   /**

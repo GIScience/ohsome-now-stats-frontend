@@ -22,8 +22,6 @@ export class DataService {
     else
       return this.requestSummaryWithoutHashtag(params)
     
-    // const formData = new FormData();
-    // Object.keys(param).forEach(key => formData.append(key, param[key]));
   }
 
   requestSummaryWithHashtag(params: any) {
@@ -32,6 +30,10 @@ export class DataService {
   
   requestSummaryWithoutHashtag(params: any) {
     return this.http.get(`${this.url}/stats_static`);
+  }
+
+  requestPlot(params: any): Observable<IWrappedPlotData> {
+    return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}`);
   }
 
   getSummary() {
@@ -56,4 +58,20 @@ export interface IQueryData {
   end: string
   hashtags: Array<string>
   interval: string
+}
+
+export interface IWrappedPlotData {
+  result: Array<IPlotData>
+}
+
+export interface IPlotData {
+  changesets: number,
+  users: number,
+  roads: number,
+  buildings: number,
+  edits: number,
+  latest: string,
+  hashtag: string,
+  startdate: string,
+  enddate: string
 }
