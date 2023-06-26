@@ -41,6 +41,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 			legend: { orientation: 'h' },
       barmode: 'group'
 		};
+
+    Plotly.react('summaryplot', [], this.layout, {responsive: true});
 	}
 
   refreshPlot() {
@@ -128,5 +130,6 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     }];
     
     Plotly.react('summaryplot', plotData, this.layout, {responsive: true});
+    // Plotly.addTraces('summaryplot', plotData);
   }
 }
