@@ -31,7 +31,7 @@
 
 .main-content {
   padding: 85px 20px 20px;
-  min-height: calc(100vh - 61px);
+  min-height: calc(100vh - 81.68px); // since our HeiGIT footer need 2 lines on smaller screens
 
   @include to($breakpoint-md) {
     padding: 85px 5px 5px;
