@@ -2,11 +2,21 @@
   <!-- #Toatl Visits ==================== -->
   <div class='col-md-12'>
     <div class="bgc-white p-20 bd">
-      <!-- <h6 class="c-grey-900">Query</h6> -->
+      <h6 class="lh-1">Query</h6>
       <div class="mT-30">
         <form (keyup.enter)="getStatistics()">
           <div class="row">
-            <div class="mb-3 col-md-5">
+            <div class="mb-3 col-md-12">
+              <!-- Hashtags -->
+              <label class="form-label" for="hastags"> Hashtags</label>
+              <input type="text" class="form-control" id="hastags" name="hastags" 
+                  [(ngModel)]="hashtags"
+                  placeholder="Enter the Hashtags separated by commas">
+              <small id="hastagsHelp" class="text-muted"> Hashtags used in Changesets comments eg: MissingMaps</small>
+            </div>
+          </div>
+          <div class="row">
+            <div class="mb-3 col-md-12">
               <!-- Start date, End date and interval -->
               <div class="mb-3 row">
                 <div class="col-md-12">
@@ -41,29 +51,8 @@
                     <option *ngFor="let option of intervals" [value]="option.value">{{option.label}}</option>
                   </select>
                 </div>
-                <!-- <label class="form-label col-sm-3 col-form-label" for="intervals">Intervals: </label>
-                <div class="col-sm-9">
-                  <select name="intervals" class="form-control" [ngModel]="interval">
-                    <option *ngFor="let option of intervals" [value]="option.value">{{option.label}}</option>
-                  </select>
-                </div> -->
               </div>
             </div>
-            <div class="mb-3 col-md-7">
-              <!-- Hashtags -->
-              <label class="form-label" for="hastags"> Mapathon Hashtags</label>
-              <textarea class="form-control" id="hastags" [(ngModel)]="hashtags" name="hashtags" 
-                aria-describedby="hastagsHelp" rows="5"
-                placeholder="Enter the Hashtags separated by commas"></textarea>
-              <small id="hastagsHelp" class="text-muted"> Hashtags used in Changesets comments eg: #MissingMaps</small>
-            </div>
-            <!-- Project IDs -->
-            <!-- <div class="mb-3 col-md-4">
-              <label class="form-label" for="projectIds"> Tasking Manager Project IDs</label>
-              <textarea class="form-control" id="projectIds" aria-describedby="projectIdsHelp" rows="5"
-                placeholder="Enter the Tasking Manager Project IDs separated by commas"></textarea>
-              <small id="projectIdsHelp" class="text-muted"> Projects IDs</small>
-            </div> -->
           </div>
           <button class="btn btn-primary btn-color" (click)="getStatistics()">Get Statistics</button>
         </form>

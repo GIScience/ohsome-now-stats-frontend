@@ -1,7 +1,13 @@
 <div class="row gap-20 pos-r">
-  <div class="col-md-6"></div>
-  <div class="w-100">
-    <app-query [data]="queryParams"></app-query>
+  <div class="col-md-4">
+    <div class="w-100">
+      <!-- #User input ==================== -->
+      <app-query [data]="queryParams"></app-query>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <!-- #Map View ==================== -->
+    <app-map></app-map>
   </div>
   <div class="w-100">
     <!-- #Summary message ==================== -->

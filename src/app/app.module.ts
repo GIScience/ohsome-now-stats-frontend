@@ -12,6 +12,7 @@ import { DataService } from './data.service';
 import { PlotComponent } from './dashboard/plot/plot.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { MapComponent } from './dashboard/map/map.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     QueryComponent,
     PlotComponent,
     DashboardComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    MapComponent
   ],
   imports: [
     BrowserModule,

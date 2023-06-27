@@ -15,7 +15,7 @@ export class AppComponent {
   constructor() {}
 
   toggleSidebar() {
-    console.log('>>> AppComponent >>> toggleSidebar ')
+    // console.log('>>> AppComponent >>> toggleSidebar ')
     this.isOpen = !this.isOpen
     // this.triggerResizeEvent()
     const app = document.querySelector('.app')
