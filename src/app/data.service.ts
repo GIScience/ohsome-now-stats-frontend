@@ -10,6 +10,7 @@ export class DataService {
   url = environment.ohsomeStatsServiceUrl
   private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
   summaryData = this.bsSummaryData.asObservable()
+  trendingHashtagLimit = 10
 
   constructor(private http: HttpClient) { }
   
@@ -44,6 +45,21 @@ export class DataService {
   setSummary(data: ISummaryData) {
     this.bsSummaryData.next(data)
   }
+
+  getTrendingHashtags(params: any) {
+    if(params && params['start'] && params['end']) 
+      return this.requestTrendingHashtagsInTimeRange(params)
+    else 
+      return this.requestTrendingHashtags(params)
+  }
+
+  requestTrendingHashtagsInTimeRange(params: any) {
+    return this.http.get(`${this.url}/trending?startdate=${params['start']}&enddate=${params['end']}&limit=${this.trendingHashtagLimit}`);
+  }
+
+  requestTrendingHashtags(params: any) {
+    return this.http.get(`${this.url}/trending?limit=${this.trendingHashtagLimit}`);
+  }
 }
 
 export interface ISummaryData {
@@ -74,4 +90,8 @@ export interface IPlotData {
   hashtag: string,
   startdate: string,
   enddate: string
+}
+
+export interface ITrendingHashtags {
+  result: any
 }
