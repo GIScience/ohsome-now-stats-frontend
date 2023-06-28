@@ -1,0 +1,16 @@
+<div class="bd bgc-white">
+  <div class="peers fxw-nw@lg+ ai-s">
+    <div class="peer peer-greed w-70p@lg+ w-100@lg- p-20">
+      <div class="layers">
+        <div class="layer w-100 mB-10">
+          <h6 id="title_trendingHashTags" class="lh-1">Top {{trendingHashtagLimit}} Trending hashtags</h6>
+        </div>
+        <div class="layer w-100">
+          <div class="row m-10" *ngFor="let hashtag of hashtags">
+            <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50">#{{hashtag}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

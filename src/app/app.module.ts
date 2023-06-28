@@ -13,6 +13,7 @@ import { PlotComponent } from './dashboard/plot/plot.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { MapComponent } from './dashboard/map/map.component';
+import { TrendingHashtagsComponent } from './dashboard/trending-hashtags/trending-hashtags.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { MapComponent } from './dashboard/map/map.component';
     PlotComponent,
     DashboardComponent,
     PageNotFoundComponent,
-    MapComponent
+    MapComponent,
+    TrendingHashtagsComponent
   ],
   imports: [
     BrowserModule,
