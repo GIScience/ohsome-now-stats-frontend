@@ -39,7 +39,10 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 			annotations: [],
 			margin: { l: 30, r: 20, t: 20, b: 40 },
 			legend: { orientation: 'h' },
-      barmode: 'group'
+      barmode: 'group',
+      font: {
+        family: 'Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif'
+      }
 		};
 
     Plotly.react('summaryplot', [], this.layout, {responsive: true});
