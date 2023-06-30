@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { DataService, IHashtag, IQueryParam, ITrendingHashtags } from '../../data.service';
+import { DataService, IHashtag } from '../../data.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-trending-hashtags',
@@ -12,8 +13,11 @@ export class TrendingHashtagsComponent implements OnChanges {
   trendingHashtagLimit: number = 0
   numOfHashtags: number = 0
 
-  constructor(dataService: DataService) {
-    this.trendingHashtagLimit = dataService.trendingHashtagLimit
+  constructor(
+    private dataService: DataService,
+    private route: ActivatedRoute,
+    private router: Router ) {
+      this.trendingHashtagLimit = dataService.trendingHashtagLimit
   }
 
   ngOnChanges(): void {
@@ -24,4 +28,29 @@ export class TrendingHashtagsComponent implements OnChanges {
     }    
   }
   
+  /**
+   * Called on click of individual hashtag among the list. Updates the URL to trigger further action
+   * @param hashtag 
+   */
+  clickHashtag(hashtag: string) {
+    console.log('>>> clickHashtag ', hashtag)
+    const queryParams = this.getQueryParamsFromFragments()
+
+    this.router.navigate([], { 
+      fragment: `hashtags=${hashtag.substring(1)}&start=${queryParams.start}&end=${queryParams.end}&interval=${queryParams.interval}` 
+    });
+  }
+
+  /**
+   * Creates query param from enitre fragment of the URL
+   * @returns Object with all query params sepearted
+   */
+  getQueryParamsFromFragments(): any {
+    if(this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 2)
+      return null
+    
+    const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&')
+        .map( q => [q.split('=')[0], q.split('=')[1]])
+    return Object.fromEntries(tempQueryParams)
+  }
 }

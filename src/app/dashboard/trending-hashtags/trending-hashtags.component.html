@@ -7,7 +7,7 @@
         </div>
         <div class="layer w-100">
           <div class="row mT-10 mL-5" *ngFor="let ht of hashtags">
-            <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50">{{ht.hashtag}}</span>
+            <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 clickable" (click)="clickHashtag(ht.hashtag)">{{ht.hashtag}}</span>
           </div>
         </div>
       </div>

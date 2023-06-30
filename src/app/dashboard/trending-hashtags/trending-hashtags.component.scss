@@ -1,0 +1,12 @@
+.clickable {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #bbdefb;
+  }
+
+  &:active {
+    background-color: #2196f3;
+  }
+}

@@ -81,7 +81,7 @@ export class QueryComponent implements OnInit, OnChanges {
     // TODO: in future, if multiple hastags a present then fire 
     // request to /group-summaries endpoint and not /stats
     const tempHashTags = this.cleanHashTags(this.hashtags)
-    console.log('formvalues = ', tempStart, tempEnd, this.interval, tempHashTags)
+    // console.log('formvalues = ', tempStart, tempEnd, this.interval, tempHashTags)
 
     // update the texfeild value
     // this.hashtags = tempHashTags

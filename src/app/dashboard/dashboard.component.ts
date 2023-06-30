@@ -13,11 +13,11 @@ export class DashboardComponent implements OnInit {
   title = 'ohsome-contribution-stats'
   isOpen = false
   activeLink = ''
-  summaryData: ISummaryData | undefined
+  summaryData!: ISummaryData
   plotData! : Array<IPlotData>
   queryParams: any
   summaryMessage: string = ''
-  hashtagsData: Array<IHashtag> | [] | undefined
+  hashtagsData!: Array<IHashtag> | []
 
   constructor(
     private dataService: DataService,
@@ -56,8 +56,6 @@ export class DashboardComponent implements OnInit {
           }
         })
 
-      
-      // trendingHashtagParams.limit = this.dataService.trendingHashtagLimit
       // fire trending hashtag API
       this.dataService.getTrendingHashtags({
         start: timeInterval.start,
@@ -71,11 +69,16 @@ export class DashboardComponent implements OnInit {
     
   }
 
+  /**
+   * Creates query param from enitre fragment of the URL
+   * @returns Object with all query params sepearted
+   */
   getQueryParamsFromFragments(): any {
     if(this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 2)
       return null
     
-    const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&').map( q => [q.split('=')[0], q.split('=')[1]])
+    const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&')
+        .map( q => [q.split('=')[0], q.split('=')[1]])
     return Object.fromEntries(tempQueryParams)
   }
 
