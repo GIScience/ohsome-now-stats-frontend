@@ -11,6 +11,15 @@ export class DataService {
   private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
   summaryData = this.bsSummaryData.asObservable()
   trendingHashtagLimit = 10
+  timeIntervals = [
+    {label: 'hourly', value: 'PT1H'},
+    {label: 'daily', value: 'P1D'},
+    {label: 'weekly', value: 'P1W'},
+    {label: 'monthly', value: 'P1M'},
+    {label: 'quarterly', value: 'P3M'},
+    {label: 'yearly', value: 'P1Y'},
+  ]
+  deafultIntervalValue = 'P1M'
 
   constructor(private http: HttpClient) { }
   

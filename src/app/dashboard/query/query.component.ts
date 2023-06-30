@@ -16,20 +16,17 @@ export class QueryComponent implements OnInit, OnChanges {
   intervals: Array<{
     label: string;
     value: string;
-  }> = [
-    {label: 'hourly', value: 'PT1H'},
-    {label: 'daily', value: 'P1D'},
-    {label: 'weekly', value: 'P1W'},
-    {label: 'monthly', value: 'P1M'},
-    {label: 'quarterly', value: 'P3M'},
-    {label: 'yearly', value: 'P1Y'},
-  ];
-  interval: string = 'P1M'
+  }> | undefined
+  interval: string | undefined // default value as 'P1M'
   selectedDateRange: any
 
   
   constructor(
-    private router: Router ) {}
+    private dataService: DataService,
+    private router: Router ) {
+      this.intervals = dataService.timeIntervals
+      this.interval = dataService.deafultIntervalValue
+    }
 
   ngOnInit(): void {}
 
