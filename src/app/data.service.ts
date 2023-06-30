@@ -16,7 +16,6 @@ export class DataService {
   
   requestSummary(params: any): Observable<any> {
     // console.log('>>> DataService >>> requestSummary ', params)
-
     if(params && params['hashtags'])
       return this.requestSummaryWithHashtag(params)
     
@@ -47,19 +46,10 @@ export class DataService {
   }
 
   getTrendingHashtags(params: any) {
-    if(params && params['start'] && params['end']) 
-      return this.requestTrendingHashtagsInTimeRange(params)
-    else 
-      return this.requestTrendingHashtags(params)
+    // console.log('>>> getTrendingHashtags >>> ', params)
+    return this.http.get(`${this.url}/mostUsedHashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}`);
   }
 
-  requestTrendingHashtagsInTimeRange(params: any) {
-    return this.http.get(`${this.url}/trending?startdate=${params['start']}&enddate=${params['end']}&limit=${this.trendingHashtagLimit}`);
-  }
-
-  requestTrendingHashtags(params: any) {
-    return this.http.get(`${this.url}/trending?limit=${this.trendingHashtagLimit}`);
-  }
 }
 
 export interface ISummaryData {
@@ -94,4 +84,16 @@ export interface IPlotData {
 
 export interface ITrendingHashtags {
   result: any
+}
+
+export interface IQueryParam {
+  hashtags: string, 
+  start: string, // date in ISO format, ensure to keep milliseconds as 0
+  end: string, // date in ISO format, ensure to keep milliseconds as 0
+  interval: string, // eg:'P1D' default value: 'P1M'
+}
+
+export interface IHashtag {
+  hashtag: string,
+  number_of_users: number
 }

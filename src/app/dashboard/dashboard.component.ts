@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute} from '@angular/router';
 
-import { DataService, IPlotData, ISummaryData, IWrappedPlotData } from '../data.service';
+import { DataService, IHashtag, IPlotData, IQueryParam, ISummaryData, IWrappedPlotData } from '../data.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,17 +15,18 @@ export class DashboardComponent implements OnInit {
   activeLink = ''
   summaryData: ISummaryData | undefined
   plotData! : Array<IPlotData>
-  queryParams: any;
-  summaryMessage: string = '';
+  queryParams: any
+  summaryMessage: string = ''
+  hashtagsData: Array<IHashtag> | [] | undefined
 
   constructor(
     private dataService: DataService,
     private route: ActivatedRoute ) {}
 
   ngOnInit() {
-    // const startDate = this.route.snapshot.paramMap.get('id')
     this.route.fragment.subscribe((fragment: string | null) => {
       const queryParams = this.getQueryParamsFromFragments()
+      const timeInterval: any = this.initTimeIntervals(queryParams)
       this.queryParams = queryParams
 
       // console.log('>>> DashboardComponent >>> queryParams ', queryParams)
@@ -49,12 +50,23 @@ export class DashboardComponent implements OnInit {
 
       // fire timeseries API to get plot data 
       if(queryParams && queryParams['interval']) 
-      this.dataService.requestPlot(queryParams).subscribe( (res: IWrappedPlotData) => {
-        if(res) {
-          this.plotData = res.result
-        }
-      })
+        this.dataService.requestPlot(queryParams).subscribe( (res: IWrappedPlotData) => {
+          if(res) {
+            this.plotData = res.result
+          }
+        })
 
+      
+      // trendingHashtagParams.limit = this.dataService.trendingHashtagLimit
+      // fire trending hashtag API
+      this.dataService.getTrendingHashtags({
+        start: timeInterval.start,
+        end: timeInterval.end,
+        limit: this.dataService.trendingHashtagLimit
+      }).subscribe( (res: any) => {
+        // console.log('>>> getTrendingHashtags >>> res = ', res)
+        this.hashtagsData = res.result
+      })
     })
     
   }
@@ -73,7 +85,7 @@ export class DashboardComponent implements OnInit {
    * @param queryParams 
    * @returns message 
    */
-  formSummaryMessage(queryParams: any): string {
+  formSummaryMessage(queryParams: IQueryParam): string {
     if(!queryParams)
       return `Summarized statistics for all contributions`
 
@@ -89,5 +101,28 @@ export class DashboardComponent implements OnInit {
       message += ` till ${queryParams.end}`
 
     return message
+  }
+
+  initTimeIntervals(queryParams: IQueryParam) {
+
+    let startDate = new Date()
+    let endDate = new Date()
+
+    // startDate.setDate(startDate.getDate() - 365)
+    startDate.setMilliseconds(0)
+    
+    endDate.setDate(endDate.getDate() - 1)
+    endDate.setMilliseconds(0)
+
+    
+    if(queryParams && queryParams['start'] && queryParams['end']) {
+      startDate = new Date(queryParams['start'])
+      endDate = new Date(queryParams['end'])
+    }
+
+    return {
+      start: startDate.toISOString(),
+      end: endDate.toISOString()
+    }
   }
 }
