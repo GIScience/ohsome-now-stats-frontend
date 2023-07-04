@@ -104,5 +104,6 @@ export interface IQueryParam {
 
 export interface IHashtag {
   hashtag: string,
-  number_of_users: number
+  number_of_users: number,
+  tooltip: string
 }

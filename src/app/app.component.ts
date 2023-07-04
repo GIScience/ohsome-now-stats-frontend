@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
+
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit{
   title = 'Dashboard - ohsome Contribution Statistics';
   name = 'HeiGIT';
 
@@ -13,6 +15,12 @@ export class AppComponent {
   activeLink = ''
 
   constructor() {}
+
+  ngAfterViewInit(): void {
+    // enble tooltip
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover'}))
+  }
 
   toggleSidebar() {
     // console.log('>>> AppComponent >>> toggleSidebar ')

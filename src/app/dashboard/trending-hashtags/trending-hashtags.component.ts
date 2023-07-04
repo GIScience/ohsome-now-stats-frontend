@@ -1,6 +1,8 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { DataService, IHashtag } from '../../data.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as bootstrap from 'bootstrap';
+
+import { DataService, IHashtag } from '../../data.service';
 
 @Component({
   selector: 'app-trending-hashtags',
@@ -22,9 +24,20 @@ export class TrendingHashtagsComponent implements OnChanges {
 
   ngOnChanges(): void {
     if(this.hashtags){
+      // give sometime to the renderer to actually find elements
+      setTimeout( () => {
+        this.enableTooltips()
+      }, 300)
+      
       this.numOfHashtags = this.hashtags ? this.hashtags.length : this.trendingHashtagLimit
       // arange the hashtags in desc order
       this.hashtags.sort((a, b) => b.number_of_users - a.number_of_users)
+      // clip longer hashtag to fix in view
+      this.hashtags.forEach( h => {
+        h.tooltip = h.hashtag
+        if(h.hashtag.length > 20)
+          h.hashtag = h.hashtag.substring(0, 19) + "...";
+      })
     }    
   }
   
@@ -52,5 +65,15 @@ export class TrendingHashtagsComponent implements OnChanges {
     const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&')
         .map( q => [q.split('=')[0], q.split('=')[1]])
     return Object.fromEntries(tempQueryParams)
+  }
+
+  /**
+   * Boostrap need to enable tooltip on every element with its attribute
+   */
+  enableTooltips(): void {
+    // enble tooltip
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    // console.log('tooltipTriggerList =', tooltipTriggerList)
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover'}))
   }
 }
