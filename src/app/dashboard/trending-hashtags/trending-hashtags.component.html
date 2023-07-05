@@ -6,8 +6,9 @@
           <h6 id="title_trendingHashTags" class="lh-1">Top {{numOfHashtags}} Trending hashtags</h6>
         </div>
         <div class="layer w-100">
-          <div class="row mT-10 mL-5" *ngFor="let ht of hashtags">
-            <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 clickable" 
+          <div class="mT-10 mL-5" *ngFor="let ht of hashtags">
+            <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 whs-nw tov-e clickable" 
+              [style.width]="ht.percent + '%'" 
               data-bs-toggle="tooltip" [attr.data-bs-title]="ht.tooltip"
               (click)="clickHashtag(ht.tooltip)">
               {{ht.hashtag}}

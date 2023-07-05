@@ -11,7 +11,7 @@ import { DataService, IHashtag } from '../../data.service';
 })
 export class TrendingHashtagsComponent implements OnChanges {
   
-  @Input() hashtags!: Array<IHashtag> | [] | undefined
+  @Input() hashtags!: Array<IHashtag> | [] 
   trendingHashtagLimit: number = 0
   numOfHashtags: number = 0
 
@@ -34,9 +34,13 @@ export class TrendingHashtagsComponent implements OnChanges {
       this.hashtags.sort((a, b) => b.number_of_users - a.number_of_users)
       // clip longer hashtag to fix in view
       this.hashtags.forEach( h => {
-        h.tooltip = h.hashtag
+        h.tooltip = `${h.hashtag} with ${h.number_of_users} distinct users`
         if(h.hashtag.length > 20)
-          h.hashtag = h.hashtag.substring(0, 19) + "...";
+          h.hashtag = h.hashtag.substring(0, 19) + "..."
+
+        if(this.hashtags[0])
+          h.percent = h.number_of_users / this.hashtags[0].number_of_users * 100
+
       })
     }    
   }
