@@ -59,6 +59,30 @@ export class DataService {
     return this.http.get(`${this.url}/mostUsedHashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}`);
   }
 
+  /**
+   * Gives the default values for application
+   * 
+   * @returns IQueryParam
+   */
+  getDefaultValues(): IQueryParam {
+    const defaultHashtag = 'missingmaps'
+    let tempStart = new Date()
+    let tempEnd = new Date()
+
+    tempStart.setDate(tempStart.getDate() - 366)
+    tempStart.setMilliseconds(0)
+
+    tempEnd.setDate(tempEnd.getDate() - 1)
+    tempEnd.setMilliseconds(0)
+
+    return {
+      start: tempStart.toISOString(),
+      end: tempEnd.toISOString(),
+      hashtags: defaultHashtag,
+      interval: this.deafultIntervalValue
+    }
+  }
+
 }
 
 export interface ISummaryData {
@@ -105,5 +129,6 @@ export interface IQueryParam {
 export interface IHashtag {
   hashtag: string,
   number_of_users: number,
-  tooltip: string
+  tooltip: string,
+  percent: number
 }
