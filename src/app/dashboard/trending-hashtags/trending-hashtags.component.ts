@@ -32,12 +32,16 @@ export class TrendingHashtagsComponent implements OnChanges {
       this.numOfHashtags = this.hashtags ? this.hashtags.length : this.trendingHashtagLimit
       // arange the hashtags in desc order
       this.hashtags.sort((a, b) => b.number_of_users - a.number_of_users)
-      // clip longer hashtag to fix in view
       this.hashtags.forEach( h => {
+        // prepare a readable tooltip
         h.tooltip = `${h.hashtag} with ${h.number_of_users} distinct users`
+        // clip longer hashtag to fix in view
         if(h.hashtag.length > 20)
-          h.hashtag = h.hashtag.substring(0, 19) + "..."
+          h.hashtagTitle = h.hashtag.substring(0, 19) + "..."
+        else 
+          h.hashtagTitle = h.hashtag
 
+        // calc hashtag's percentage
         if(this.hashtags[0])
           h.percent = h.number_of_users / this.hashtags[0].number_of_users * 100
 
@@ -50,7 +54,7 @@ export class TrendingHashtagsComponent implements OnChanges {
    * @param hashtag 
    */
   clickHashtag(hashtag: string) {
-    console.log('>>> clickHashtag ', hashtag)
+    // console.log('>>> clickHashtag ', hashtag)
     const queryParams = this.getQueryParamsFromFragments()
 
     this.router.navigate([], { 
@@ -78,6 +82,6 @@ export class TrendingHashtagsComponent implements OnChanges {
     // enble tooltip
     const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     // console.log('tooltipTriggerList =', tooltipTriggerList)
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover'}))
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }))
   }
 }

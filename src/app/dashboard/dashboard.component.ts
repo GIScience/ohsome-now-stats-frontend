@@ -34,7 +34,6 @@ export class DashboardComponent implements OnInit {
 
     // This is used only if the URL was blanck with no params then we use the `route.data` 
     this.route.data.subscribe((data: any) => {
-      console.log('route.data.subscribe ', data, this.route.snapshot.fragment)
       if(data) {
         if(this.route.snapshot.fragment == null)
           this.router.navigate([], { 
