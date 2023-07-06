@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 
 import { environment } from '../environments/environment';
 
@@ -10,6 +10,10 @@ export class DataService {
   url = environment.ohsomeStatsServiceUrl
   private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
   summaryData = this.bsSummaryData.asObservable()
+  abortHashtagReqSub!: Subject<void> 
+  abortSummaryReqSub!: Subject<void> 
+  abortIntervalReqSub!: Subject<void> 
+  
   trendingHashtagLimit = 10
   timeIntervals = [
     {label: 'hourly', value: 'PT1H'},
@@ -21,7 +25,11 @@ export class DataService {
   ]
   deafultIntervalValue = 'P1M'
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { 
+    this.getAbortHashtagReqSubject()
+    this.getAbortSummaryReqSubject()
+    this.getAbortIntervalReqSubject()
+  }
   
   requestSummary(params: any): Observable<any> {
     // console.log('>>> DataService >>> requestSummary ', params)
@@ -34,15 +42,24 @@ export class DataService {
   }
 
   requestSummaryWithHashtag(params: any) {
-    return this.http.get(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}`);
+    return this.http.get(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}`)
+      .pipe(
+        takeUntil(this.abortSummaryReqSub)
+      )
   }
   
   requestSummaryWithoutHashtag(params: any) {
-    return this.http.get(`${this.url}/stats_static`);
+    return this.http.get(`${this.url}/stats_static`)
+      .pipe(
+        takeUntil(this.abortSummaryReqSub)
+      )
   }
 
   requestPlot(params: any): Observable<IWrappedPlotData> {
-    return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}`);
+    return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}`)
+      .pipe(
+        takeUntil(this.abortIntervalReqSub)
+      )
   }
 
   getSummary() {
@@ -54,9 +71,24 @@ export class DataService {
     this.bsSummaryData.next(data)
   }
 
+  getAbortHashtagReqSubject() {
+    this.abortHashtagReqSub = new Subject<void>();
+  }
+
+  getAbortSummaryReqSubject() {
+    this.abortSummaryReqSub = new Subject<void>();
+  }
+
+  getAbortIntervalReqSubject() {
+    this.abortIntervalReqSub = new Subject<void>();
+  }
+
   getTrendingHashtags(params: any) {
     // console.log('>>> getTrendingHashtags >>> ', params)
-    return this.http.get(`${this.url}/mostUsedHashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}`);
+    return this.http.get(`${this.url}/mostUsedHashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}`)
+    .pipe(
+      takeUntil(this.abortHashtagReqSub)
+    )
   }
 
   /**

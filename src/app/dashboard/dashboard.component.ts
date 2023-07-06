@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute} from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { DataService, IHashtag, IPlotData, IQueryParam, ISummaryData, IWrappedPlotData } from '../data.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,66 +19,118 @@ export class DashboardComponent implements OnInit {
   queryParams: any
   summaryMessage: string = ''
   hashtagsData!: Array<IHashtag> | []
+  route: any;
+  router: any;
 
   constructor(
     private dataService: DataService,
-    private route: ActivatedRoute ) {}
+    route: ActivatedRoute,
+    router: Router ) {
+      this.route = route
+      this.router = router
+    }
 
   ngOnInit() {
+
+    // This is used only if the URL was blanck with no params then we use the `route.data` 
+    this.route.data.subscribe((data: any) => {
+      console.log('route.data.subscribe ', data, this.route.snapshot.fragment)
+      if(data) {
+        if(this.route.snapshot.fragment == null)
+          this.router.navigate([], { 
+            fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}` 
+          })
+      }
+    })
+
+    // listener for any changes in the fragment part of the URL
+    // assumption is that fragments sould never be empty as is its empty the routes 
+    // should be redirected to have default vlaues
     this.route.fragment.subscribe((fragment: string | null) => {
-      const queryParams = this.getQueryParamsFromFragments()
-      const timeInterval: any = this.initTimeIntervals(queryParams)
-      this.queryParams = queryParams
 
-      // console.log('>>> DashboardComponent >>> queryParams ', queryParams)
-      
-      // form a appropriate message for summary data
-      this.summaryMessage = this.formSummaryMessage(queryParams)
+      const queryParams = this.getQueryParamsFromFragments(fragment)
+      if(queryParams !== null ){
+        const timeInterval: any = this.initTimeIntervals(queryParams)
+        this.queryParams = queryParams
 
-      // fire the request to API
-      this.dataService.requestSummary(queryParams).subscribe( res => {
-        // console.log('>>> res = ', res)
-        // send response data to Summary Component
-        this.summaryData = {
-          buildingEdits: res!.buildings,
-          contributors: res!.users,
-          edits: res!.changesets,
-          kmOfRoads: res!.roads
-        }
+        // console.log('>>> DashboardComponent >>> queryParams ', queryParams)
+        
+        // form a appropriate message for summary data
+        this.summaryMessage = this.formSummaryMessage(queryParams)
 
-        this.dataService.setSummary(this.summaryData)
-      })
-
-      // fire timeseries API to get plot data 
-      if(queryParams && queryParams['interval']) 
-        this.dataService.requestPlot(queryParams).subscribe( (res: IWrappedPlotData) => {
-          if(res) {
-            this.plotData = res.result
+        // fire the request to API
+        this.dataService.requestSummary(queryParams).subscribe( res => {
+          // console.log('>>> res = ', res)
+          // send response data to Summary Component
+          this.summaryData = {
+            buildingEdits: res!.buildings,
+            contributors: res!.users,
+            edits: res!.changesets,
+            kmOfRoads: res!.roads
           }
+
+          this.dataService.setSummary(this.summaryData)
         })
 
-      // fire trending hashtag API
-      this.dataService.getTrendingHashtags({
-        start: timeInterval.start,
-        end: timeInterval.end,
-        limit: this.dataService.trendingHashtagLimit
-      }).subscribe( (res: any) => {
-        // console.log('>>> getTrendingHashtags >>> res = ', res)
-        this.hashtagsData = res.result
-      })
+        // fire timeseries API to get plot data 
+        if(queryParams && queryParams['interval']) 
+          this.dataService.requestPlot(queryParams).subscribe( (res: IWrappedPlotData) => {
+            if(res) {
+              this.plotData = res.result
+            }
+          })
+
+        // stop trending hashtag request if already fired any
+        this.stopHashtagReq()
+        // fire trending hashtag API
+        this.dataService.getTrendingHashtags({
+          start: timeInterval.start,
+          end: timeInterval.end,
+          limit: this.dataService.trendingHashtagLimit
+        }).subscribe( (res: any) => {
+          // console.log('>>> getTrendingHashtags >>> res = ', res)
+          this.hashtagsData = res.result
+        })
+      }
     })
     
   }
 
+  stopIntervalReq() {
+    // stop all previous request, if waiting for its response
+    this.dataService.abortIntervalReqSub.next()
+    // this.dataService.abortIntervalReqSub.unsubscribe()
+    // this.dataService.getAbortIntervalReqSubject()
+    this.dataService.abortIntervalReqSub.complete()
+  }
+
+  stopSummaryReq() {
+    // stop all previous request, if waiting for its response
+    this.dataService.abortSummaryReqSub.next()
+    // this.dataService.abortSummaryReqSub.unsubscribe()
+    // this.dataService.getAbortSummaryReqSubject()
+    this.dataService.abortSummaryReqSub.complete()
+  }
+
+  stopHashtagReq() {
+    // stop all previous request, if waiting for its response
+    this.dataService.abortHashtagReqSub.next()
+    this.dataService.abortHashtagReqSub.unsubscribe()
+    this.dataService.getAbortHashtagReqSubject()
+    // this.dataService.abortHashtagReqSub.complete()
+  }
+
   /**
    * Creates query param from enitre fragment of the URL
+   * 
+   * @param String URL fragment part
    * @returns Object with all query params sepearted
    */
-  getQueryParamsFromFragments(): any {
-    if(this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 2)
+  getQueryParamsFromFragments(fragment: string | null): any {
+    if(fragment == null || fragment.length < 2)
       return null
     
-    const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&')
+    const tempQueryParams: Array<Array<string>> | any = fragment?.split('&')
         .map( q => [q.split('=')[0], q.split('=')[1]])
     return Object.fromEntries(tempQueryParams)
   }

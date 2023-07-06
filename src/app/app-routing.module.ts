@@ -12,7 +12,9 @@ const routes: Routes = [
   },
   { 
     path: 'dashboard', 
-    component: DashboardComponent
+    component: DashboardComponent,
+    pathMatch: 'full',
+    data: getDefaultValues()
   },
   // Wild Card Route for 404 request
   { 
@@ -27,3 +29,28 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+
+/**
+ * Gives the default values for application
+ * 
+ * @returns IQueryParam
+ */
+function getDefaultValues(): any {
+  const defaultHashtag = 'missingmaps'
+  const defaultInterval = 'P1M'
+  let tempStart = new Date()
+  let tempEnd = new Date()
+
+  tempStart.setDate(tempStart.getDate() - 366)
+  tempStart.setMilliseconds(0)
+
+  tempEnd.setDate(tempEnd.getDate() - 1)
+  tempEnd.setMilliseconds(0)
+
+  return {
+    start: tempStart.toISOString(),
+    end: tempEnd.toISOString(),
+    hashtags: defaultHashtag,
+    interval: defaultInterval
+  }
+}
