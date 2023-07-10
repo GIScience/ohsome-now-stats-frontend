@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -34,8 +34,13 @@ import { TrendingHashtagsComponent } from './dashboard/trending-hashtags/trendin
     FlatpickrModule.forRoot()
   ],
   providers: [
-    DataService
+    DataService,
+    { provide: APP_INITIALIZER, useFactory: metadataFactory, deps: [DataService], multi: true }
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export function metadataFactory(provider: DataService) {
+  return () => provider.requestMetadata();
+}

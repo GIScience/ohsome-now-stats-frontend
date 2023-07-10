@@ -28,7 +28,10 @@ export class QueryComponent implements OnInit, OnChanges {
       this.interval = dataService.deafultIntervalValue
     }
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    this.start = this.dataService.start
+    this.end = this.dataService.end
+  }
 
   ngOnChanges(): void {
     // console.log('>>> QueryComponent >>> ngOnChanges >>> this.data = ', this.data)
@@ -50,6 +53,20 @@ export class QueryComponent implements OnInit, OnChanges {
    */
   set start(val: string) {
     this._start = val
+  }
+
+  // end date
+  private _end = ''
+  get end(): string {
+    return this._end
+  }
+
+  /**
+   *
+   * @param val An ISO8601 UTC Date/Time String eg. 2010-03 or 2010-03-15 or 2010-03-15T14:20:00Z
+   */
+  set end(val: string) {
+    this._end = val
   }
 
   initFormValues(data: IQueryData) {

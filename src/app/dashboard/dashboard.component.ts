@@ -32,16 +32,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
 
-    // This is used only if the URL was blanck with no params then we use the `route.data` 
-    this.route.data.subscribe((data: any) => {
-      if(data) {
-        if(this.route.snapshot.fragment == null)
-          this.router.navigate([], { 
-            fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}` 
-          })
-      }
-    })
-
     // listener for any changes in the fragment part of the URL
     // assumption is that fragments sould never be empty as is its empty the routes 
     // should be redirected to have default vlaues

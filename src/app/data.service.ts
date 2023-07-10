@@ -3,17 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 
 import { environment } from '../environments/environment';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable()
 export class DataService {
   
   url = environment.ohsomeStatsServiceUrl
+  private metadata!: Observable<any>
   private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
   summaryData = this.bsSummaryData.asObservable()
   abortHashtagReqSub!: Subject<void> 
   abortSummaryReqSub!: Subject<void> 
   abortIntervalReqSub!: Subject<void> 
   
+  defaultHashtag = 'missingmaps'
   trendingHashtagLimit = 10
   timeIntervals = [
     {label: 'hourly', value: 'PT1H'},
@@ -24,11 +27,43 @@ export class DataService {
     {label: 'yearly', value: 'P1Y'},
   ]
   deafultIntervalValue = 'P1M'
+  start!: string
+  end!: string
 
-  constructor(private http: HttpClient) { 
-    this.getAbortHashtagReqSubject()
-    this.getAbortSummaryReqSubject()
-    this.getAbortIntervalReqSubject()
+  constructor(
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private router: Router) { 
+      this.getAbortHashtagReqSubject()
+      this.getAbortSummaryReqSubject()
+      this.getAbortIntervalReqSubject()
+  }
+
+  // will be called by APP_INITIALIZER provider in app.module.ts on the start of the application
+  requestMetadata() {
+    return this.http.get(`${this.url}/metadata`).subscribe( (meta: any) => {
+      // console.log('>>> DataService >>> meta = ', meta)
+      this.end = new Date(meta.result.max_timestamp).toISOString()
+
+      let tempStart = new Date(meta.result.max_timestamp)
+      tempStart.setDate(tempStart.getDate() - 365)
+
+      this.start = tempStart.toISOString()
+
+      // if URL params are empty then fill it with default values
+      if(this.route.snapshot.fragment == null)
+        this.router.navigate([], { 
+          fragment: `hashtags=${this.defaultHashtag}&start=${this.start}&end=${this.end}&interval=${this.deafultIntervalValue}` 
+        })
+    })
+    
+  }
+
+  getMetaData(): IMetaData {
+    return {
+      start: this.start,
+      end: this.end
+    }
   }
   
   requestSummary(params: any): Observable<any> {
@@ -164,4 +199,9 @@ export interface IHashtag {
   number_of_users: number,
   tooltip: string,
   percent: number
+}
+
+export interface IMetaData {
+  start: string, // date in ISO format, ensure to keep milliseconds as 0
+  end: string, // date in ISO format, ensure to keep milliseconds as 0
 }
