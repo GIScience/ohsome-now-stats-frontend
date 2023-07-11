@@ -58,7 +58,7 @@ export class TrendingHashtagsComponent implements OnChanges {
     const queryParams = this.getQueryParamsFromFragments()
 
     this.router.navigate([], { 
-      fragment: `hashtags=${hashtag.substring(1)}&start=${queryParams.start}&end=${queryParams.end}&interval=${queryParams.interval}` 
+      fragment: `hashtags=${hashtag}&start=${queryParams.start}&end=${queryParams.end}&interval=${queryParams.interval}` 
     });
   }
 
