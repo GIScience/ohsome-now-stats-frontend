@@ -1,50 +1,37 @@
 <div class="row gap-20 pos-r">
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="w-100">
       <!-- #User input ==================== -->
       <app-query [data]="queryParams"></app-query>
     </div>
+    <div class="w-100 mT-10">
+      <!-- #Treanding hashtags ==================== -->
+      <app-trending-hashtags [hashtags]="hashtagsData"></app-trending-hashtags>
+    </div>
   </div>
-  <div class="col-md-8">
-    <!-- #Map View ==================== -->
-    <app-map></app-map>
-  </div>
-  <div class="w-100">
+  <div class="col-md-9">
     <!-- #Summary message ==================== -->
     <div class="row">
       <div class='col-md-12'>
-        <!-- <div class="layers bd bgc-white p-20"> -->
-          <div class="layer w-100 mB-1 bd bgc-white p-20">
-            <h6 class="lh-1">{{summaryMessage}}</h6>
-          </div>
-        <!-- </div> -->
+        <div class="layer w-100 mB-1 bd bgc-white p-20">
+          <h6 class="lh-1">{{summaryMessage}}</h6>
+        </div>
       </div>
     </div>
     <div class="row">
       <div class='col-md-12'>
-        <!-- #Summary values ==================== -->
         <app-summary [data]="summaryData"></app-summary>
       </div>
     </div>
-  </div>
-  <div class="col-md-3">
-    <!-- #Treanding hashtags ==================== -->
-    <app-trending-hashtags [hashtags]="hashtagsData"></app-trending-hashtags>
-  </div>
-  <div class="col-md-9">
-    <!-- #Common graph for Summary ==================== -->
-    <app-plot [data]="plotData"></app-plot>
-  </div>
-  <div class="col-md-6">
-    <!-- #Sales Report ==================== -->
-    
-  </div>
-  <div class="col-md-6">
-    <!-- #Weather ==================== -->
-    
-  </div>
-  <div class="col-md-6">
-    <!-- #Chat ==================== -->
-    
+    <div class="row">
+      <div class="pY-10">
+        <!-- #Common graph for Summary ==================== -->
+        <app-plot [data]="plotData"></app-plot>
+      </div>
+    </div>
+    <div class="row">
+      <!-- #Map View ==================== -->
+      <app-map></app-map>    
+    </div>
   </div>
 </div>
