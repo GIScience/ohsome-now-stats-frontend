@@ -118,7 +118,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       y: this.data.map((e : any) => e['roads'] / maxValues.roads),
       customdata: this.data.map((e : any) => Math.round(e.roads)),
       hovertext: this.data.map((e : any) => `From ${e.startdate}<br>To ${e.enddate}`),
-      hovertemplate: `%{hovertext}<br>Road Edits: %{customdata} km`,
+      hovertemplate: `%{hovertext}<br>Edits: %{customdata} km`,
       type: 'bar',
       name: 'Road Edits',
       marker: {
