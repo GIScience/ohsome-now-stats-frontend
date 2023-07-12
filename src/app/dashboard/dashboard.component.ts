@@ -54,7 +54,7 @@ export class DashboardComponent implements OnInit {
           this.summaryData = {
             buildingEdits: res!.buildings,
             contributors: res!.users,
-            edits: res!.changesets,
+            edits: res!.edits,
             kmOfRoads: res!.roads
           }
 
