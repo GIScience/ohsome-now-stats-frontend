@@ -84,7 +84,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       y: this.data.map((e : any) => e['edits'] / maxValues.edits),
       customdata: this.data.map((e : any) => e.edits),
       hovertext: this.data.map((e : any) => `From ${e.startdate}<br>To ${e.enddate}`),
-      hovertemplate: `%{hovertext}<br>Road Edits: %{customdata} km`,
+      hovertemplate: `%{hovertext}<br>Total Edits: %{customdata} km`,
       type: 'bar',
       name: 'Total Edits',
       marker: {
@@ -118,7 +118,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       y: this.data.map((e : any) => e['roads'] / maxValues.roads),
       customdata: this.data.map((e : any) => Math.round(e.roads)),
       hovertext: this.data.map((e : any) => `From ${e.startdate}<br>To ${e.enddate}`),
-      hovertemplate: `%{hovertext}<br>Edits: %{customdata} km`,
+      hovertemplate: `%{hovertext}<br>Road Edits: %{customdata} km`,
       type: 'bar',
       name: 'Road Edits',
       marker: {
