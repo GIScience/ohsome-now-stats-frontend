@@ -55,6 +55,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       buildings: -Infinity,
       roads: -Infinity
     }
+    const currentDate = new Date()
+    
     this.data.forEach((e : any) => {
       if (e['users'] > maxValues.users) maxValues.users = e['users'];
       if (e['edits'] > maxValues.edits) maxValues.edits = e['edits'];
@@ -72,7 +74,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       name: 'Contributors',
       marker: {
         pattern: {
-          shape: this.data.map((_ : any, idx: number) => idx === this.data.length - 1 ? '/' : ''),
+          // apply stripped pattern only for current running time
+          shape: this.data.map((_ : any, idx: number) => (currentDate >= new Date(_.startdate) && currentDate <= new Date(_.enddate)) ? '/' : ''),
           size: 7,
           solidity: 0.6
         },
@@ -89,7 +92,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       name: 'Total Edits',
       marker: {
         pattern: {
-          shape: this.data.map((_ : any, idx: number) => idx === this.data.length - 1 ? '/' : ''),
+          shape: this.data.map((_ : any, idx: number) => (currentDate >= new Date(_.startdate) && currentDate <= new Date(_.enddate)) ? '/' : ''),
           size: 7,
           solidity: 0.6
         },
@@ -106,7 +109,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       name: 'Building Edits',
       marker: {
         pattern: {
-          shape: this.data.map((_ : any, idx: number) => idx === this.data.length - 1 ? '/' : ''),
+          shape: this.data.map((_ : any, idx: number) => (currentDate >= new Date(_.startdate) && currentDate <= new Date(_.enddate)) ? '/' : ''),
           size: 7,
           solidity: 0.6
         },
@@ -123,7 +126,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       name: 'Road Edits',
       marker: {
         pattern: {
-          shape: this.data.map((_ : any, idx: number) => idx === this.data.length - 1 ? '/' : ''),
+          shape: this.data.map((_ : any, idx: number) => (currentDate >= new Date(_.startdate) && currentDate <= new Date(_.enddate)) ? '/' : ''),
           size: 7,
           solidity: 0.6
         },
