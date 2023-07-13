@@ -46,6 +46,13 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 		};
 
     Plotly.react('summaryplot', [], this.layout, {responsive: true});
+
+    const plotDiv: PlotHTMLElement = document.getElementById('summaryplot') as PlotHTMLElement
+    if(plotDiv)
+      plotDiv.on('plotly_legendclick', (event: any) => {
+        const tempData: Array<any> = (event.data as Array<any>).map( (d: any, idx: number) => (idx === event.expandedIndex) ? d.visible = true : d.visible = 'legendonly')
+      })
+
 	}
 
   refreshPlot() {
@@ -81,13 +88,14 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         },
         color: '#4caf50'
       },
-      yaxis: 'y'
+      yaxis: 'y',
+      visible: true // set only contribution as visible
     }, {
       x: this.data.map((e : any) => `${e.startdate}`),
       y: this.data.map((e : any) => e['edits'] / maxValues.edits),
       customdata: this.data.map((e : any) => e.edits),
       hovertext: this.data.map((e : any) => `From ${e.startdate}<br>To ${e.enddate}`),
-      hovertemplate: `%{hovertext}<br>Total Edits: %{customdata} km`,
+      hovertemplate: `%{hovertext}<br>Total Edits: %{customdata}`,
       type: 'bar',
       name: 'Total Edits',
       marker: {
@@ -98,7 +106,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         },
         color: '#f44336'
       },
-      yaxis: 'y'
+      yaxis: 'y',
+      visible: 'legendonly' // other bars can be set visible by user click on the legend
     }, {
       x: this.data.map((e : any) => `${e.startdate}`),
       y: this.data.map((e : any) => e['buildings'] / maxValues.buildings),
@@ -115,7 +124,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         },
         color: '#9c27b0'
       },
-      yaxis: 'y'
+      yaxis: 'y',
+      visible: 'legendonly' // other bars can be set visible by user click on the legend
     }, {
       x: this.data.map((e : any) => `${e.startdate}`),
       y: this.data.map((e : any) => e['roads'] / maxValues.roads),
@@ -132,10 +142,15 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         },
         color: '#2196f3'
       },
-      yaxis: 'y'
+      yaxis: 'y',
+      visible: 'legendonly' // other bars can be set visible by user click on the legend
     }];
     
     Plotly.react('summaryplot', plotData, this.layout, {responsive: true});
     // Plotly.addTraces('summaryplot', plotData);
   }
+}
+
+interface PlotHTMLElement extends HTMLElement  {
+  on(eventName: string, handler: Function): void
 }
