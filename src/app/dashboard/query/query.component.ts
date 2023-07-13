@@ -19,7 +19,8 @@ export class QueryComponent implements OnInit, OnChanges {
   }> | undefined
   interval: string | undefined // default value as 'P1M'
   selectedDateRange: any
-
+  private _start = ''
+  private _end = ''
   
   constructor(
     private dataService: DataService,
@@ -29,8 +30,17 @@ export class QueryComponent implements OnInit, OnChanges {
     }
 
   ngOnInit() {
-    this.start = this.dataService.start
-    this.end = this.dataService.end
+
+    // listener to metaData request, 
+    // theoritically should be called only once as metaData request 
+    // is fired only at the start of application
+    // but it is called twice since first time it is due to its assignment to null
+    this.dataService.getMetaData().subscribe( metaData => {
+      if(metaData && metaData.start && metaData.end) {
+        this.start = metaData?.start
+        this.end = metaData?.end
+      }
+    })
   }
 
   ngOnChanges(): void {
@@ -42,7 +52,6 @@ export class QueryComponent implements OnInit, OnChanges {
   }
 
   // start date
-  private _start = ''
   get start(): string {
     return this._start
   }
@@ -56,7 +65,6 @@ export class QueryComponent implements OnInit, OnChanges {
   }
 
   // end date
-  private _end = ''
   get end(): string {
     return this._end
   }
@@ -69,6 +77,11 @@ export class QueryComponent implements OnInit, OnChanges {
     this._end = val
   }
 
+  /**
+   * Initializes form values which are passes from parent component
+   * 
+   * @param data 
+   */
   initFormValues(data: IQueryData) {
     if(data && Object.keys(data).length !== 0) {
       // set Start and end dates

@@ -9,7 +9,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class DataService {
   
   url = environment.ohsomeStatsServiceUrl
-  private metadata!: Observable<any>
+  private bsMetaData = new BehaviorSubject<IMetaData | null>(null)
+  private metadata = this.bsMetaData.asObservable()
   private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
   summaryData = this.bsSummaryData.asObservable()
   abortHashtagReqSub!: Subject<void> 
@@ -27,8 +28,8 @@ export class DataService {
     {label: 'yearly', value: 'P1Y'},
   ]
   deafultIntervalValue = 'P1M'
-  start!: string
-  end!: string
+  minDate!: string
+  maxDate!: string
 
   constructor(
     private http: HttpClient,
@@ -43,27 +44,29 @@ export class DataService {
   requestMetadata() {
     return this.http.get(`${this.url}/metadata`).subscribe( (meta: any) => {
       // console.log('>>> DataService >>> meta = ', meta)
-      this.end = new Date(meta.result.max_timestamp).toISOString()
+      this.maxDate = new Date(meta.result.max_timestamp).toISOString()
 
       let tempStart = new Date(meta.result.max_timestamp)
       tempStart.setDate(tempStart.getDate() - 365)
 
-      this.start = tempStart.toISOString()
+      this.minDate = new Date(meta.result.min_timestamp).toISOString()
+
+      this.bsMetaData.next({
+          start: this.minDate,
+          end: this.maxDate
+        })
 
       // if URL params are empty then fill it with default values
       if(this.route.snapshot.fragment == null)
         this.router.navigate([], { 
-          fragment: `hashtags=${this.defaultHashtag}&start=${this.start}&end=${this.end}&interval=${this.deafultIntervalValue}` 
+          fragment: `hashtags=${this.defaultHashtag}&start=${tempStart.toISOString()}&end=${this.maxDate}&interval=${this.deafultIntervalValue}` 
         })
     })
     
   }
 
-  getMetaData(): IMetaData {
-    return {
-      start: this.start,
-      end: this.end
-    }
+  getMetaData(): Observable<IMetaData | null> {
+    return this.metadata
   }
   
   requestSummary(params: any): Observable<any> {
