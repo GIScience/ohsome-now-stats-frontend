@@ -90,7 +90,7 @@ export class QueryComponent implements OnInit, OnChanges {
    * Called on Submit button click on the form
    */
   getStatistics() {
-    console.log('>>> QueryComponent >>> getStatistics')
+    // console.log('>>> QueryComponent >>> getStatistics')
     // get all values from form
     const tempEnd = new Date(this.selectedDateRange.to).toISOString()
     const tempStart = new Date(this.selectedDateRange.from).toISOString()
