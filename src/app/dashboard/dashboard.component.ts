@@ -32,6 +32,17 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
 
+    // resolve #26
+    const urlParams = this.dataService.getDefaultValues()
+    // if URL params are empty then fill it with default values
+    if(urlParams !== null)
+    this.dataService.updateURL({
+      hashtags: urlParams.hashtags,
+      interval: urlParams.interval,
+      start: urlParams.start,
+      end: urlParams.end
+    })
+
     // listener for any changes in the fragment part of the URL
     // assumption is that fragments sould never be empty as is its empty the routes 
     // should be redirected to have default vlaues

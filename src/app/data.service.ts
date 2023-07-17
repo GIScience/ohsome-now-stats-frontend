@@ -44,25 +44,20 @@ export class DataService {
   requestMetadata() {
     return this.http.get(`${this.url}/metadata`).subscribe( (meta: any) => {
       // console.log('>>> DataService >>> meta = ', meta)
-      this.maxDate = new Date(meta.result.max_timestamp).toISOString()
+      const defaultTimeRange = this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
 
       let tempStart = new Date(meta.result.max_timestamp)
       tempStart.setDate(tempStart.getDate() - 365)
 
-      this.minDate = new Date(meta.result.min_timestamp).toISOString()
-
-      this.bsMetaData.next({
-          start: this.minDate,
-          end: this.maxDate
-        })
-
       // if URL params are empty then fill it with default values
       if(this.route.snapshot.fragment == null)
-        this.router.navigate([], { 
-          fragment: `hashtags=${this.defaultHashtag}&start=${tempStart.toISOString()}&end=${this.maxDate}&interval=${this.deafultIntervalValue}` 
+        this.updateURL({
+          hashtags: this.defaultHashtag,
+          interval: this.deafultIntervalValue,
+          start: tempStart.toISOString(),
+          end: this.maxDate
         })
     })
-    
   }
 
   getMetaData(): Observable<IMetaData | null> {
@@ -134,25 +129,36 @@ export class DataService {
    * 
    * @returns IQueryParam
    */
-  getDefaultValues(): IQueryParam {
-    const defaultHashtag = 'missingmaps'
-    let tempStart = new Date()
-    let tempEnd = new Date()
+  getDefaultValues(): IQueryParam | null {
+    if(! (this.minDate && this.maxDate))
+      return null
 
-    tempStart.setDate(tempStart.getDate() - 366)
-    tempStart.setMilliseconds(0)
-
-    tempEnd.setDate(tempEnd.getDate() - 1)
-    tempEnd.setMilliseconds(0)
+    let tempStart = new Date(this.maxDate)
+    tempStart.setDate(tempStart.getDate() - 365)
 
     return {
       start: tempStart.toISOString(),
-      end: tempEnd.toISOString(),
-      hashtags: defaultHashtag,
+      end: this.maxDate,
+      hashtags: this.defaultHashtag,
       interval: this.deafultIntervalValue
     }
   }
 
+  setDefaultTime(minTimestamp: string, maxTimestamp: string) {
+    this.maxDate = new Date(maxTimestamp).toISOString()
+    this.minDate = new Date(minTimestamp).toISOString()
+
+    this.bsMetaData.next({
+        start: this.minDate,
+        end: this.maxDate
+      })
+  }
+
+  updateURL(data: IQueryParam): void{
+    this.router.navigate([], { 
+      fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}` 
+    })
+  }
 }
 
 export interface ISummaryData {
