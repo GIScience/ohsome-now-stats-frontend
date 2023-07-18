@@ -7,7 +7,7 @@ import * as bootstrap from 'bootstrap';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit{
+export class AppComponent implements AfterViewInit {
   title = 'Dashboard - ohsome Contribution Statistics';
   name = 'HeiGIT';
 

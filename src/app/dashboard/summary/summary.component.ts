@@ -1,5 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import * as bootstrap from 'bootstrap';
+
 import { DataService, ISummaryData } from '../../data.service';
+import { dashboard } from '../tooltip-data';
 
 @Component({
   selector: 'app-summary',
@@ -14,11 +17,11 @@ export class SummaryComponent implements OnInit {
   edits!: string
   buidlingEdits!: string
   kmOfRoads!: string
+  dashboardTooltips: any;
 
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    
     this.dataService.getSummary().subscribe( (data: ISummaryData | null) => {
 
       if(data === null)
@@ -36,5 +39,18 @@ export class SummaryComponent implements OnInit {
         ).format(data.kmOfRoads)
 
     });
+
+    this.dashboardTooltips = dashboard
+    this.enableTooltips()
+  }
+
+  /**
+   * Boostrap need to enable tooltip on every element with its attribute
+   */
+  enableTooltips(): void {
+    // enble tooltip
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    // console.log('tooltipTriggerList =', tooltipTriggerList)
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }))
   }
 }

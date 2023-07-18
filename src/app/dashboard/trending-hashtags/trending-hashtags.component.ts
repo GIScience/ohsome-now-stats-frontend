@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 
 import { DataService, IHashtag } from '../../data.service';
+import { dashboard } from '../tooltip-data';
 
 @Component({
   selector: 'app-trending-hashtags',
@@ -14,12 +15,14 @@ export class TrendingHashtagsComponent implements OnChanges {
   @Input() hashtags!: Array<IHashtag> | [] 
   trendingHashtagLimit: number = 0
   numOfHashtags: number = 0
+  dashboardTooltips: any
 
   constructor(
     private dataService: DataService,
     private route: ActivatedRoute,
     private router: Router ) {
       this.trendingHashtagLimit = dataService.trendingHashtagLimit
+      this.dashboardTooltips = dashboard
   }
 
   ngOnChanges(): void {
