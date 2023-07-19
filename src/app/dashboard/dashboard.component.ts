@@ -32,25 +32,34 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
 
-    // resolve #26
-    const urlParams = this.dataService.getDefaultValues()
-    // if URL params are empty then fill it with default values
-    if(urlParams !== null)
-    this.dataService.updateURL({
-      hashtags: urlParams.hashtags,
-      interval: urlParams.interval,
-      start: urlParams.start,
-      end: urlParams.end
-    })
-
     // listener for any changes in the fragment part of the URL
     // assumption is that fragments sould never be empty as is its empty the routes 
     // should be redirected to have default vlaues
     this.route.fragment.subscribe((fragment: string | null) => {
 
       const queryParams = this.getQueryParamsFromFragments(fragment)
-      if(queryParams !== null ){
-        const timeInterval: any = this.initTimeIntervals(queryParams)
+      if(queryParams !== null ) {
+        console.log('>>> DashboardComponent >>> queryParams ', queryParams, this.dataService.defaultHashtag)
+        if(queryParams['hashtags'] == null)
+          queryParams['hashtags'] = this.dataService.defaultHashtag
+
+        if(queryParams['start'] == null && queryParams['end'] == null) {
+          const defaultParams = this.dataService.getDefaultValues()
+          if(defaultParams !== null) {
+            queryParams.start = defaultParams['start']
+            queryParams.end = defaultParams['end']
+          }
+        }
+
+        if(queryParams['interval'] == null) 
+          queryParams.interval = this.dataService.deafultIntervalValue
+
+        this.dataService.updateURL(queryParams)
+
+        // if all values are present then only below code is executed
+        let timeRange: any
+        timeRange = this.initTimeIntervals(queryParams)
+
         this.queryParams = queryParams
 
         // console.log('>>> DashboardComponent >>> queryParams ', queryParams)
@@ -84,12 +93,23 @@ export class DashboardComponent implements OnInit {
         this.stopHashtagReq()
         // fire trending hashtag API
         this.dataService.getTrendingHashtags({
-          start: timeInterval.start,
-          end: timeInterval.end,
+          start: timeRange.start,
+          end: timeRange.end,
           limit: this.dataService.trendingHashtagLimit
         }).subscribe( (res: any) => {
           // console.log('>>> getTrendingHashtags >>> res = ', res)
           this.hashtagsData = res.result
+        })
+      } else {
+        // resolve #26
+        const urlParams = this.dataService.getDefaultValues()
+        // if URL params are empty then fill it with default values
+        if(urlParams !== null)
+        this.dataService.updateURL({
+          hashtags: urlParams.hashtags,
+          interval: urlParams.interval,
+          start: urlParams.start,
+          end: urlParams.end
         })
       }
     })
@@ -163,6 +183,7 @@ export class DashboardComponent implements OnInit {
 
     let startDate = new Date()
     let endDate = new Date()
+    let interval: string
 
     // startDate.setDate(startDate.getDate() - 365)
     startDate.setMilliseconds(0)
@@ -175,10 +196,24 @@ export class DashboardComponent implements OnInit {
       startDate = new Date(queryParams['start'])
       endDate = new Date(queryParams['end'])
     }
+    // if start and end date are not present in the URL fragment then use default values
+    else if(queryParams && queryParams['start'] == null && queryParams['end'] == null) {
+      const defaultParams = this.dataService.getDefaultValues()
+      if(defaultParams !== null) {
+        startDate = new Date(defaultParams['start'])
+        endDate = new Date(defaultParams['end'])
+      }
+    }
+
+    if(queryParams && queryParams['interval'] == null) 
+      interval = this.dataService.deafultIntervalValue
+    else
+      interval = queryParams['interval']
 
     return {
       start: startDate.toISOString(),
-      end: endDate.toISOString()
-    }
+      end: endDate.toISOString(),
+      interval: interval
+    } 
   }
 }
