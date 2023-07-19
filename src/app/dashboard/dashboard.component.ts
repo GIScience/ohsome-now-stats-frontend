@@ -68,24 +68,34 @@ export class DashboardComponent implements OnInit {
         this.summaryMessage = this.formSummaryMessage(queryParams)
 
         // fire the request to API
-        this.dataService.requestSummary(queryParams).subscribe( res => {
-          // console.log('>>> res = ', res)
-          // send response data to Summary Component
-          this.summaryData = {
-            buildingEdits: res!.buildings,
-            contributors: res!.users,
-            edits: res!.edits,
-            kmOfRoads: res!.roads
-          }
+        this.dataService.requestSummary(queryParams).subscribe( {
+          next: res => {
+            // console.log('>>> res = ', res)
+            // send response data to Summary Component
+            this.summaryData = {
+              buildingEdits: res!.buildings,
+              contributors: res!.users,
+              edits: res!.edits,
+              kmOfRoads: res!.roads
+            }
 
-          this.dataService.setSummary(this.summaryData)
+            this.dataService.setSummary(this.summaryData)
+          },
+          error: (err) => {
+            console.error('Error while requesting Summary data ', err)
+          }
         })
 
         // fire timeseries API to get plot data 
         if(queryParams && queryParams['interval']) 
-          this.dataService.requestPlot(queryParams).subscribe( (res: IWrappedPlotData) => {
-            if(res) {
-              this.plotData = res.result
+          this.dataService.requestPlot(queryParams).subscribe({
+            next: (res: IWrappedPlotData) => {
+              if(res) {
+                this.plotData = res.result
+              }
+            },
+            error: (err) => {
+              console.error('Error while requesting Plot data  ', err)
             }
           })
 
@@ -96,9 +106,14 @@ export class DashboardComponent implements OnInit {
           start: timeRange.start,
           end: timeRange.end,
           limit: this.dataService.trendingHashtagLimit
-        }).subscribe( (res: any) => {
-          // console.log('>>> getTrendingHashtags >>> res = ', res)
-          this.hashtagsData = res.result
+        }).subscribe({ 
+          next: (res: any) => {
+            // console.log('>>> getTrendingHashtags >>> res = ', res)
+            this.hashtagsData = res.result
+          },
+          error: (err) => {
+            console.error('Error while requesting TRending hashtags data  ', err)
+          }
         })
       } else {
         // resolve #26
