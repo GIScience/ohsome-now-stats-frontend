@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 
@@ -10,7 +10,7 @@ import { dashboard } from '../tooltip-data';
   templateUrl: './trending-hashtags.component.html',
   styleUrls: ['./trending-hashtags.component.scss']
 })
-export class TrendingHashtagsComponent implements OnChanges {
+export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
   
   @Input() hashtags!: Array<IHashtag> | [] 
   trendingHashtagLimit: number = 0
@@ -86,5 +86,9 @@ export class TrendingHashtagsComponent implements OnChanges {
     const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     // console.log('tooltipTriggerList =', tooltipTriggerList)
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }))
+  }
+
+  ngOnDestroy(): void {
+    this.hashtags = []
   }
 }

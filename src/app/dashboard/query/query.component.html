@@ -4,14 +4,15 @@
     <div class="bgc-white p-20 bd">
       <!-- <h6 class="lh-1">Query</h6> -->
       <!-- <div class="mT-30"> -->
-        <form (keyup.enter)="getStatistics()">
+        <form (keyup.enter)="getStatistics()" class="needs-validation was-validated" novalidate="">
           <div class="row">
             <div class="mb-3 col-md-12">
               <!-- Hashtags -->
               <label class="form-label" for="hastags"> Hashtags</label>
               <input type="text" class="form-control" id="hastags" name="hastags" 
                   [(ngModel)]="hashtags"
-                  placeholder="Enter the Hashtags separated by commas">
+                  placeholder="Enter the Hashtags separated by commas"
+                  required="">
               <small id="hastagsHelp" class="text-muted"> Hashtags used in Changesets comments eg: missingmaps</small>
             </div>
           </div>
@@ -22,6 +23,7 @@
                 <div class="col-md-12">
                   <label class="form-label" for="dateRange"> Date range : </label>
                   <input type="text" class="form-control" name="dateRange" mwlFlatpickr
+                    id="dateRange"
                     [(ngModel)]="selectedDateRange"
                     [altInput]="true"
                     mode="range"
@@ -30,7 +32,15 @@
                     [convertModelValue]="true"
                     [minDate]="start"
                     [maxDate]="end"
+                    required=""
                   />
+                  <!-- <div *ngIf="dateRange.invalid && (dateRange.dirty || dateRange.touched)"
+                    class="alert alert-danger">
+
+                  <div *ngIf="dateRange.errors?.['required']">
+                    Name is required.
+                  </div> 
+                </div>-->
                 </div>
               </div>
               <!-- <div class="mb-3 row">
@@ -56,7 +66,7 @@
               </div>
             </div>
           </div>
-          <button class="btn btn-primary btn-color" (click)="getStatistics()">Get Statistics</button>
+          <button class="btn btn-primary btn-color" (click)="getStatistics()" type="submit">Get Statistics</button>
         </form>
       <!-- </div> -->
     </div>

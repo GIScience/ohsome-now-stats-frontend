@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DataService, IQueryData } from '../../data.service';
+import { ToastService } from 'src/app/toast.service';
 
 @Component({
   selector: 'app-query',
@@ -24,7 +25,8 @@ export class QueryComponent implements OnInit, OnChanges {
   
   constructor(
     private dataService: DataService,
-    private router: Router ) {
+    private router: Router,
+    private toastService: ToastService ) {
       this.intervals = dataService.timeIntervals
       this.interval = dataService.deafultIntervalValue
     }
@@ -84,6 +86,9 @@ export class QueryComponent implements OnInit, OnChanges {
    */
   initFormValues(data: IQueryData) {
     if(data && Object.keys(data).length !== 0) {
+      if(!(data.start && data.end)) {
+        console.log('date range is null')
+      }
       // set Start and end dates
       if(data.start && data.end)
         this.selectedDateRange = {
@@ -103,6 +108,9 @@ export class QueryComponent implements OnInit, OnChanges {
    * Called on Submit button click on the form
    */
   getStatistics() {
+    if(!this.validateForm())
+      return
+      
     // console.log('>>> QueryComponent >>> getStatistics')
     // get all values from form
     const tempEnd = new Date(this.selectedDateRange.to).toISOString()
@@ -118,8 +126,57 @@ export class QueryComponent implements OnInit, OnChanges {
 
     // update the url fragment
     this.router.navigate([], { 
-        fragment: `hashtags=${tempHashTags}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}` 
-      });
+      fragment: `hashtags=${tempHashTags}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}` 
+    })
+  }
+
+  /**
+   * Validates the form values before its being fired to API
+   */
+  validateForm(): boolean {
+    // console.log('>>> validateForm >>> this.hashtags ', this.hashtags)
+    if(this.hashtags === ''){
+      console.error('Hashtag is empty')
+      // show the message on toast
+      this.toastService.show({
+        title: 'Hashtag is empty',
+        body: 'Please provide a Hashtag',
+        type: 'error'
+      })
+
+      const hashtagsEle = document.getElementById('hastags')
+      if(hashtagsEle){
+        hashtagsEle.focus()
+      }
+      return false
+    }
+
+    if(!(this.selectedDateRange.to && this.selectedDateRange.to)) {
+      console.error('Date range is empty')
+      // show the message on toast
+      this.toastService.show({
+        title: 'Date range is empty',
+        body: 'Please provide a valid Date range',
+        type: 'error'
+      })
+
+      // let dateRangeEle1 = document.getElementsByName('dateRange')[0]
+      let dateRangeEle = document.getElementById('dateRange')
+      // dateRangeEle?.classList.remove('ng-valid')
+      // dateRangeEle?.classList.add('ng-invalid')
+      dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
+      if(dateRangeEle) {
+        // let dateRangeEle = dateRangeEle1.previousElementSibling
+        // if(dateRangeEle) {
+        // dateRangeEle.focus()
+        // dateRangeEle.style.cssText += "border: 5px solid red"
+        // console.log('dateRangeEle = ', dateRangeEle)
+        // }
+      }
+      return false
+    }
+
+    return true
   }
 
   /**
