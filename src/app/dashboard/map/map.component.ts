@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 import { Map, View, Feature } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import { fromLonLat, transformExtent } from 'ol/proj';
 // import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
+import {ICountryStatsData, IPlotData} from '../../data.service';
 
 @Component({
   selector: 'app-map',
@@ -12,6 +13,8 @@ import Stamen from 'ol/source/Stamen';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
+
+  @Input() data!: Array<ICountryStatsData>;
 
   mapView: View | undefined
   map: Map | undefined

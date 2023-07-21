@@ -96,8 +96,8 @@ export class DataService {
       )
   }
 
-  requestMapData(params: any): Observable<IWrappedPlotData> {
-    return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}`)
+  requestCountryStats(params: any): Observable<IWrappedCountryStatsData> {
+    return this.http.get<IWrappedCountryStatsData>(`${this.url}/stats/${params['hashtags']}/country?startdate=${params['start']}&enddate=${params['end']}`)
         .pipe(
             takeUntil(this.abortIntervalReqSub)
         )
@@ -201,12 +201,12 @@ export interface IPlotData {
 /**
  * Response JSON returned by /stats/{hashtag}/country endoint
  */
-export interface IWrappedCountryData {
+export interface IWrappedCountryStatsData {
   query: {timespan:{startDate:string,endDate:string},hashtag:string}
-  result: ICountryData[]
+  result: ICountryStatsData[]
 }
 
-export interface ICountryData {
+export interface ICountryStatsData {
   users: number,
   roads: number,
   buildings: number,
