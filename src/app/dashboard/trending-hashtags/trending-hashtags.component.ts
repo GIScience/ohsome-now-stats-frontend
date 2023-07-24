@@ -1,6 +1,7 @@
-import { Component, Input, OnChanges, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
+// declare var bootstrap: any;
 
 import { DataService, IHashtag } from '../../data.service';
 import { dashboard } from '../tooltip-data';
@@ -27,10 +28,6 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(): void {
     if(this.hashtags){
-      // give sometime to the renderer to actually find elements
-      setTimeout( () => {
-        this.enableTooltips()
-      }, 300)
       
       this.numOfHashtags = this.hashtags ? this.hashtags.length : this.trendingHashtagLimit
       // arange the hashtags in desc order
@@ -49,6 +46,12 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
           h.percent = h.number_of_users / this.hashtags[0].number_of_users * 100
 
       })
+
+      // give sometime to the renderer to actually find elements
+      setTimeout( () => {
+        this.enableTooltips()
+      }, 300)
+
     }    
   }
   
@@ -86,6 +89,12 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
     const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     // console.log('tooltipTriggerList =', tooltipTriggerList)
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }))
+
+    // remove previous tooltips
+    const tooltips = Array.from(document.getElementsByClassName("tooltip"))
+    tooltips.forEach(tooltipEle => {
+      tooltipEle.remove()
+    })
   }
 
   ngOnDestroy(): void {
