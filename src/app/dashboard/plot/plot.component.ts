@@ -66,7 +66,6 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     const currentDate = new Date()
     
     this.data.forEach((e : any) => {
-      console.log(e)
       if (e['users'] > maxValues.users) maxValues.users = e['users'];
       if (e['edits'] > maxValues.edits) maxValues.edits = e['edits'];
       if (e['buildings'] > maxValues.buildings) maxValues.buildings = e['buildings'];
