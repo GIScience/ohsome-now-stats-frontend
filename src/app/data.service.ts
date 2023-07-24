@@ -27,7 +27,7 @@ export class DataService {
     {label: 'quarterly', value: 'P3M'},
     {label: 'yearly', value: 'P1Y'},
   ]
-  deafultIntervalValue = 'P1M'
+  defaultIntervalValue = 'P1M'
   minDate!: string
   maxDate!: string
 
@@ -53,7 +53,7 @@ export class DataService {
       if(this.route.snapshot.fragment == null)
         this.updateURL({
           hashtags: this.defaultHashtag,
-          interval: this.deafultIntervalValue,
+          interval: this.defaultIntervalValue,
           start: tempStart.toISOString(),
           end: this.maxDate
         })
@@ -140,7 +140,7 @@ export class DataService {
       start: tempStart.toISOString(),
       end: this.maxDate,
       hashtags: this.defaultHashtag,
-      interval: this.deafultIntervalValue
+      interval: this.defaultIntervalValue
     }
   }
 
