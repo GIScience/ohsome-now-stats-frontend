@@ -16,9 +16,10 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
   ngAfterContentInit(): void {
     this.initChart();
-    if(this.data)
+    if(this.data){
       this.refreshPlot();
-      window.dispatchEvent(new Event('resize'));
+      Plotly.Plots.resize("summaryplot")
+    }
   }
 
   ngOnChanges(): void {
