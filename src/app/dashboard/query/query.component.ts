@@ -28,7 +28,7 @@ export class QueryComponent implements OnInit, OnChanges {
     private router: Router,
     private toastService: ToastService ) {
       this.intervals = dataService.timeIntervals
-      this.interval = dataService.deafultIntervalValue
+      this.interval = dataService.defaultIntervalValue
     }
 
   ngOnInit() {

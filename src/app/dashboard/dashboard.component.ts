@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
         }
 
         if(queryParams['interval'] == null) 
-          queryParams.interval = this.dataService.deafultIntervalValue
+          queryParams.interval = this.dataService.defaultIntervalValue
 
         this.dataService.updateURL(queryParams)
 
@@ -221,7 +221,7 @@ export class DashboardComponent implements OnInit {
     }
 
     if(queryParams && queryParams['interval'] == null) 
-      interval = this.dataService.deafultIntervalValue
+      interval = this.dataService.defaultIntervalValue
     else
       interval = queryParams['interval']
 
