@@ -2,7 +2,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { FlatpickrModule } from 'angularx-flatpickr';
+import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -34,7 +34,7 @@ import { ToastService } from './toast.service';
     FormsModule,
     AppRoutingModule,
     HttpClientModule,
-    FlatpickrModule.forRoot()
+    NgxDaterangepickerMd.forRoot()
   ],
   providers: [
     DataService,
