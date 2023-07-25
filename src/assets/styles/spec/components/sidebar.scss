@@ -337,6 +337,12 @@
     @include from($breakpoint-xl) {
       width: $collapsed-size;
 
+      &:not(:hover) .sidebar-logo .logo img {
+        width: 32px;
+        height: 32px;
+        margin: 0 20px;
+        content: url("/favicon.ico");
+      }
       .sidebar-inner {
         .sidebar-logo {
           border-bottom: 1px solid transparent;
