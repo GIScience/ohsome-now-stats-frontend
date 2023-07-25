@@ -16,6 +16,16 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
   ngAfterContentInit(): void {
     this.initChart();
+
+    // ---------------------------- trying to catch bennis chart overflow ---------------------------
+    var plot_section = document.getElementById("plot-section")
+    while(window.getComputedStyle(plot_section!, null).display === "none"){
+      setTimeout(function() {
+        console.log("not there yet")
+      }, 10);
+    }
+    // ----------------------------------------------------------------------------------------------
+
     if(this.data){
       this.refreshPlot();
       Plotly.Plots.resize("summaryplot")
