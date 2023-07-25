@@ -1,5 +1,7 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import moment from 'moment';
+// import { TimePeriod } from 'ngx-daterangepicker-material/daterangepicker.component';
 
 import { DataService, IQueryData } from '../../data.service';
 import { ToastService } from 'src/app/toast.service';
@@ -19,7 +21,14 @@ export class QueryComponent implements OnInit, OnChanges {
     value: string;
   }> | undefined
   interval: string | undefined // default value as 'P1M'
-  selectedDateRange: any
+  selectedDateRange: any;
+  alwaysShowCalendars: boolean = true;
+  ranges: any
+  minDate: any
+  maxDate: any
+  // invalidDates: moment.Moment[] = [moment().add(2, 'days'), moment().add(3, 'days'), moment().add(5, 'days')];
+  // invalidDates: moment.Moment[] = [moment(this.maxDate).add(1, 'day'), moment().add(3, 'days'), moment().add(5, 'days')];
+
   private _start = ''
   private _end = ''
   
@@ -39,19 +48,34 @@ export class QueryComponent implements OnInit, OnChanges {
     // but it is called twice since first time it is due to its assignment to null
     this.dataService.getMetaData().subscribe( metaData => {
       if(metaData && metaData.start && metaData.end) {
-        this.start = metaData?.start
-        this.end = metaData?.end
+        this.minDate = metaData?.start
+        this.maxDate = metaData?.end
+
+        this.ranges = {
+          'Today': [moment().startOf('day'), moment()],
+          'Yesterday': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+          'Last 7 Days': [moment().subtract(6, 'days').startOf('day'), moment().endOf('day')],
+          'Last 30 Days': [moment().subtract(29, 'days').startOf('day'), moment().endOf('day')],
+          // 'This Month': [moment().startOf('month'), moment().endOf('month')],
+          // 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+          'Last Year':  [moment().subtract(1, 'year').startOf('day'), moment()],
+          'Entire Duration':  [moment(this.minDate), moment(this.maxDate)]
+        }
       }
     })
   }
 
   ngOnChanges(): void {
-    // console.log('>>> QueryComponent >>> ngOnChanges >>> this.data = ', this.data)
+    console.log('>>> QueryComponent >>> ngOnChanges >>> this.data = ', this.data)
 
     if(this.data) {
-      this.initFormValues(this.data)      
+      this.initFormValues(this.data)
     }
   }
+
+  // isInvalidDate = (m: moment.Moment) =>  {
+  //   return this.invalidDates.some(d => d.isSame(m, 'day') )
+  // }
 
   // start date
   get start(): string {
@@ -92,8 +116,8 @@ export class QueryComponent implements OnInit, OnChanges {
       // set Start and end dates
       if(data.start && data.end)
         this.selectedDateRange = {
-          from: data.start,
-          to: data.end
+          start: moment(data.start),
+          end: moment(data.end)
         }
 
       // set hashtags textarea
@@ -111,18 +135,15 @@ export class QueryComponent implements OnInit, OnChanges {
     if(!this.validateForm())
       return
       
-    // console.log('>>> QueryComponent >>> getStatistics')
+    console.log('>>> QueryComponent >>> getStatistics', this.selectedDateRange)
     // get all values from form
-    const tempEnd = new Date(this.selectedDateRange.to).toISOString()
-    const tempStart = new Date(this.selectedDateRange.from).toISOString()
+    const tempEnd = (this.selectedDateRange.end).toISOString()
+    const tempStart = (this.selectedDateRange.start).toISOString()
     // currently we support only one hashtags
     // TODO: in future, if multiple hastags a present then fire 
     // request to /group-summaries endpoint and not /stats
     const tempHashTags = this.cleanHashTags(this.hashtags)
     // console.log('formvalues = ', tempStart, tempEnd, this.interval, tempHashTags)
-
-    // update the texfeild value
-    // this.hashtags = tempHashTags
 
     // update the url fragment
     this.router.navigate([], { 
@@ -151,7 +172,10 @@ export class QueryComponent implements OnInit, OnChanges {
       return false
     }
 
-    if(!(this.selectedDateRange.to && this.selectedDateRange.to)) {
+    // console.log('>>> validateForm >>> this.selectedDateRange ', this.selectedDateRange)
+    let dateRangeEle = document.getElementById('dateRange')
+    // console.log('dateRangeEle ', (dateRangeEle as HTMLInputElement).value)
+    if(! (dateRangeEle as HTMLInputElement).value ) {
       console.error('Date range is empty')
       // show the message on toast
       this.toastService.show({
@@ -160,24 +184,33 @@ export class QueryComponent implements OnInit, OnChanges {
         type: 'error'
       })
 
-      // let dateRangeEle1 = document.getElementsByName('dateRange')[0]
-      let dateRangeEle = document.getElementById('dateRange')
-      // dateRangeEle?.classList.remove('ng-valid')
-      // dateRangeEle?.classList.add('ng-invalid')
       dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
-      if(dateRangeEle) {
-        // let dateRangeEle = dateRangeEle1.previousElementSibling
-        // if(dateRangeEle) {
-        // dateRangeEle.focus()
-        // dateRangeEle.style.cssText += "border: 5px solid red"
-        // console.log('dateRangeEle = ', dateRangeEle)
-        // }
-      }
+
+      return false
+    }
+
+    if(!(this.selectedDateRange.start && this.selectedDateRange.end)) {
+      console.error('Date range is empty')
+      // show the message on toast
+      this.toastService.show({
+        title: 'Date range is empty',
+        body: 'Please provide a valid Date range',
+        type: 'error'
+      })
+
+      dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
+
       return false
     }
 
     return true
   }
+
+  // datesUpdated($event: TimePeriod) {
+  //   console.log('>>> datesUpdated >>> $event ', $event)
+  //   this.selectedDateRange.start = $event.startDate
+  //   this.selectedDateRange.end = $event.endDate
+  // }
 
   /**
    * Cleans the hastags field values

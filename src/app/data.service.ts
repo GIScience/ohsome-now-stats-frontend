@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 
 import { environment } from '../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
+import moment from 'moment';
 
 @Injectable()
 export class DataService {
@@ -133,8 +134,7 @@ export class DataService {
     if(! (this.minDate && this.maxDate))
       return null
 
-    let tempStart = new Date(this.maxDate)
-    tempStart.setDate(tempStart.getDate() - 365)
+    let tempStart = moment(this.maxDate).subtract(1,'year').startOf('day')
 
     return {
       start: tempStart.toISOString(),
