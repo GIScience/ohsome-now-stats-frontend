@@ -1,7 +1,8 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
-import moment from 'moment';
-// import { TimePeriod } from 'ngx-daterangepicker-material/daterangepicker.component';
+import { Subscription } from 'rxjs';
+import dayjs from 'dayjs/esm';
+import { Dayjs } from "dayjs";
 
 import { DataService, IQueryData } from '../../data.service';
 import { ToastService } from 'src/app/toast.service';
@@ -11,10 +12,11 @@ import { ToastService } from 'src/app/toast.service';
   templateUrl: './query.component.html',
   styleUrls: ['./query.component.scss']
 })
-export class QueryComponent implements OnInit, OnChanges {
+export class QueryComponent implements OnChanges {
 
   @Input() data: IQueryData | undefined
 
+  metaSub!: Subscription
   hashtags: string = ''
   intervals: Array<{
     label: string;
@@ -24,8 +26,8 @@ export class QueryComponent implements OnInit, OnChanges {
   selectedDateRange: any;
   alwaysShowCalendars: boolean = true;
   ranges: any
-  minDate: any
-  maxDate: any
+  minDate!: Dayjs
+  maxDate!: Dayjs
   // invalidDates: moment.Moment[] = [moment().add(2, 'days'), moment().add(3, 'days'), moment().add(5, 'days')];
   // invalidDates: moment.Moment[] = [moment(this.maxDate).add(1, 'day'), moment().add(3, 'days'), moment().add(5, 'days')];
 
@@ -40,42 +42,39 @@ export class QueryComponent implements OnInit, OnChanges {
       this.interval = dataService.defaultIntervalValue
     }
 
-  ngOnInit() {
+  ngOnChanges(): void {
 
     // listener to metaData request, 
     // theoritically should be called only once as metaData request 
     // is fired only at the start of application
     // but it is called twice since first time it is due to its assignment to null
-    this.dataService.getMetaData().subscribe( metaData => {
+    if(this.metaSub)
+      this.metaSub.unsubscribe()
+    
+    this.metaSub = this.dataService.getMetaData().subscribe( metaData => {
       if(metaData && metaData.start && metaData.end) {
-        this.minDate = metaData?.start
-        this.maxDate = metaData?.end
+        this.minDate = dayjs(metaData?.start)
+        this.maxDate = dayjs(metaData?.end)
 
         this.ranges = {
-          'Today': [moment().startOf('day'), moment()],
-          'Yesterday': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')],
-          'Last 7 Days': [moment().subtract(6, 'days').startOf('day'), moment().endOf('day')],
-          'Last 30 Days': [moment().subtract(29, 'days').startOf('day'), moment().endOf('day')],
-          // 'This Month': [moment().startOf('month'), moment().endOf('month')],
-          // 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-          'Last Year':  [moment().subtract(1, 'year').startOf('day'), moment()],
-          'Entire Duration':  [moment(this.minDate), moment(this.maxDate)]
+          'Today': [dayjs().startOf('day'), dayjs()],
+          'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
+          'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
+          'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
+          'Last Year':  [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
+          'Entire Duration':  [dayjs(this.minDate), dayjs(this.maxDate)]
         }
+        // 'This Month': [moment().startOf('month'), moment().endOf('month')],
+        // 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+
       }
     })
-  }
 
-  ngOnChanges(): void {
-    console.log('>>> QueryComponent >>> ngOnChanges >>> this.data = ', this.data)
 
     if(this.data) {
       this.initFormValues(this.data)
     }
   }
-
-  // isInvalidDate = (m: moment.Moment) =>  {
-  //   return this.invalidDates.some(d => d.isSame(m, 'day') )
-  // }
 
   // start date
   get start(): string {
@@ -109,6 +108,7 @@ export class QueryComponent implements OnInit, OnChanges {
    * @param data 
    */
   initFormValues(data: IQueryData) {
+    // console.log('>>> initFormValues >>> data ', data)
     if(data && Object.keys(data).length !== 0) {
       if(!(data.start && data.end)) {
         console.log('date range is null')
@@ -116,8 +116,8 @@ export class QueryComponent implements OnInit, OnChanges {
       // set Start and end dates
       if(data.start && data.end)
         this.selectedDateRange = {
-          start: moment(data.start),
-          end: moment(data.end)
+          start: dayjs(data.start),
+          end: dayjs(data.end)
         }
 
       // set hashtags textarea
@@ -135,7 +135,7 @@ export class QueryComponent implements OnInit, OnChanges {
     if(!this.validateForm())
       return
       
-    console.log('>>> QueryComponent >>> getStatistics', this.selectedDateRange)
+    // console.log('>>> QueryComponent >>> getStatistics', this.selectedDateRange)
     // get all values from form
     const tempEnd = (this.selectedDateRange.end).toISOString()
     const tempStart = (this.selectedDateRange.start).toISOString()
@@ -175,6 +175,7 @@ export class QueryComponent implements OnInit, OnChanges {
     // console.log('>>> validateForm >>> this.selectedDateRange ', this.selectedDateRange)
     let dateRangeEle = document.getElementById('dateRange')
     // console.log('dateRangeEle ', (dateRangeEle as HTMLInputElement).value)
+    // check if text feild is empty
     if(! (dateRangeEle as HTMLInputElement).value ) {
       console.error('Date range is empty')
       // show the message on toast
@@ -184,11 +185,12 @@ export class QueryComponent implements OnInit, OnChanges {
         type: 'error'
       })
 
-      dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
+      // dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
 
       return false
     }
 
+    // check for actual values
     if(!(this.selectedDateRange.start && this.selectedDateRange.end)) {
       console.error('Date range is empty')
       // show the message on toast
@@ -198,19 +200,13 @@ export class QueryComponent implements OnInit, OnChanges {
         type: 'error'
       })
 
-      dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
+      // dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
 
       return false
     }
 
     return true
   }
-
-  // datesUpdated($event: TimePeriod) {
-  //   console.log('>>> datesUpdated >>> $event ', $event)
-  //   this.selectedDateRange.start = $event.startDate
-  //   this.selectedDateRange.end = $event.endDate
-  // }
 
   /**
    * Cleans the hastags field values
