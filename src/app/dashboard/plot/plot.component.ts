@@ -15,16 +15,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
   layout: Layout | any;
 
   ngAfterContentInit(): void {
-    var plot_section = document.getElementById("plot-section")
-    while(window.getComputedStyle(plot_section!, null).display === "none"){
-      setTimeout(function() {
-        console.log("not there yet")
-      }, 10);
-    }
-
     this.initChart();
-    // ---------------------------- trying to catch bennis chart overflow ---------------------------
-    // ----------------------------------------------------------------------------------------------
 
     if(this.data){
       this.refreshPlot();
@@ -87,7 +78,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       y: this.data.map((e : any) => e['users'] / maxValues.users),
       customdata: this.data.map((e : any) => e.users),
       hovertext: this.data.map((e : any) => `From ${e.startdate}<br>To ${e.enddate}`),
-      hovertemplate: `%{hovertext}<br>Contributors: %{customdata}`,
+      hovertemplate: `%{hovertext}<br>Contributors: %{customdata}<extra></extra>`,
       type: 'bar',
       name: 'Contributors',
       marker: {
@@ -106,7 +97,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       y: this.data.map((e : any) => e['edits'] / maxValues.edits),
       customdata: this.data.map((e : any) => e.edits),
       hovertext: this.data.map((e : any) => `From ${e.startdate}<br>To ${e.enddate}`),
-      hovertemplate: `%{hovertext}<br>Total Edits: %{customdata}`,
+      hovertemplate: `%{hovertext}<br>Total Edits: %{customdata}<extra></extra>`,
       type: 'bar',
       name: 'Total Edits',
       marker: {
@@ -124,7 +115,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       y: this.data.map((e : any) => e['buildings'] / maxValues.buildings),
       customdata: this.data.map((e : any) => e.buildings),
       hovertext: this.data.map((e : any) => `From ${e.startdate}<br>To ${e.enddate}`),
-      hovertemplate: `%{hovertext}<br>Building Edits: %{customdata}`,
+      hovertemplate: `%{hovertext}<br>Building Edits: %{customdata}<extra></extra>`,
       type: 'bar',
       name: 'Building Edits',
       marker: {
@@ -142,7 +133,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       y: this.data.map((e : any) => e['roads'] / maxValues.roads),
       customdata: this.data.map((e : any) => Math.round(e.roads)),
       hovertext: this.data.map((e : any) => `From ${e.startdate}<br>To ${e.enddate}`),
-      hovertemplate: `%{hovertext}<br>Road Edits: %{customdata} km`,
+      hovertemplate: `%{hovertext}<br>Road Edits: %{customdata} km<extra></extra> `,
       type: 'bar',
       name: 'Road Edits',
       marker: {
