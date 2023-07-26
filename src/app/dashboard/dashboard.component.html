@@ -20,18 +20,18 @@
     </div>
     <div class="row">
       <div class='col-md-12'>
-        <app-summary [data]="summaryData"></app-summary>
+        <app-summary [data]="summaryData" (changeCurrentStatsEvent)="currentStats = $event"></app-summary>
       </div>
     </div>
-    <div class="row">
-      <div class="pY-10">
-        <!-- #Common graph for Summary ==================== -->
-        <app-plot [data]="plotData"></app-plot>
-      </div>
-    </div>
+<!--    <div class="row">-->
+<!--      <div class="pY-10">-->
+<!--        &lt;!&ndash; #Common graph for Summary ==================== &ndash;&gt;-->
+<!--        <app-plot [data]="plotData"></app-plot>-->
+<!--      </div>-->
+<!--    </div>-->
     <div class="row">
       <!-- #Map View ==================== -->
-      <app-map [data]="countryStatsData"></app-map>
+      <app-map [data]="countryStatsData" [currentStats]="currentStats"></app-map>
     </div>
   </div>
 </div>

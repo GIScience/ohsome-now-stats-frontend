@@ -1,8 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 
 import { DataService, ISummaryData } from '../../data.service';
 import { dashboard } from '../tooltip-data';
+import {StatsType} from '../types';
 
 @Component({
   selector: 'app-summary',
@@ -12,6 +13,7 @@ import { dashboard } from '../tooltip-data';
 export class SummaryComponent implements OnInit {
 
   @Input() data: any;
+  @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
 
   contributors!: string
   edits!: string
@@ -27,13 +29,13 @@ export class SummaryComponent implements OnInit {
       if(data === null)
         return
 
-      // console.log('>>> SummaryComponent >>> data = ', data);  
+      // console.log('>>> SummaryComponent >>> data = ', data);
       this.contributors = new Intl.NumberFormat('en-US').format(data.contributors)
       this.buidlingEdits = new Intl.NumberFormat('en-US').format(data.buildingEdits)
       this.edits = new Intl.NumberFormat('en-US').format(data.edits)
-      this.kmOfRoads = new Intl.NumberFormat('en-US', { 
+      this.kmOfRoads = new Intl.NumberFormat('en-US', {
           style: "unit",
-          unit: "kilometer", 
+          unit: "kilometer",
           maximumFractionDigits: 0
          }
         ).format(data.kmOfRoads)
@@ -42,6 +44,10 @@ export class SummaryComponent implements OnInit {
 
     this.dashboardTooltips = dashboard
     this.enableTooltips()
+  }
+
+  changeCurrentStats(newCurrentStats: StatsType){
+    this.changeCurrentStatsEvent.emit(newCurrentStats);
   }
 
   /**

@@ -1,6 +1,6 @@
 <div class="row">
   <!-- #Contributors ==================== -->
-  <div class='col-md-3'>
+  <div class='col-md-3' (click)="changeCurrentStats('users')">
     <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm-">
       <span class="icon-holder tooltip1" data-bs-toggle="tooltip" title="{{dashboardTooltips.summary.contributions}}" data-bs-html="true">
         <i class="c-grey-800 ti-help-alt"></i>
@@ -20,7 +20,7 @@
   </div>
 
   <!-- #Total Edits==================== -->
-  <div class='col-md-3'>
+  <div class='col-md-3' (click)="changeCurrentStats('edits')">
     <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm-">
       <span class="icon-holder tooltip1" data-bs-toggle="tooltip" title="{{dashboardTooltips.summary.totalEdits}}" data-bs-html="true">
         <i class="c-grey-800 ti-help-alt"></i>
@@ -41,7 +41,7 @@
 
 
   <!-- #Building Edits ==================== -->
-  <div class='col-md-3'>
+  <div class='col-md-3' (click)="changeCurrentStats('buildings')">
     <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm-">
       <span class="icon-holder tooltip1" data-bs-toggle="tooltip" title="{{dashboardTooltips.summary.buildings}}" data-bs-html="true">
         <i class="c-grey-800 ti-help-alt"></i>
@@ -61,7 +61,7 @@
   </div>
 
   <!-- #km of Roads ==================== -->
-  <div class='col-md-3'>
+  <div class='col-md-3' (click)="changeCurrentStats('roads')">
     <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm-">
       <span class="icon-holder tooltip1" data-bs-toggle="tooltip" title="{{dashboardTooltips.summary.kmOfRoads}}" data-bs-html="true">
         <i class="c-grey-800 ti-help-alt"></i>

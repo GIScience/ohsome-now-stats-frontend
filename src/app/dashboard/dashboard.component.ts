@@ -11,6 +11,7 @@ import {
   IWrappedCountryStatsData,
   IWrappedPlotData
 } from '../data.service';
+import {StatsType} from './types';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,6 +27,8 @@ export class DashboardComponent implements OnInit {
   summaryData!: ISummaryData
   plotData! : Array<IPlotData>
   countryStatsData: ICountryStatsData[] = [];
+
+  currentStats: StatsType = 'users';
 
   queryParams: any
   summaryMessage: string = ''
