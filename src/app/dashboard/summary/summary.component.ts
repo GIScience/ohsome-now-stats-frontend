@@ -46,8 +46,16 @@ export class SummaryComponent implements OnInit {
     this.enableTooltips()
   }
 
-  changeCurrentStats(newCurrentStats: StatsType){
-    this.changeCurrentStatsEvent.emit(newCurrentStats);
+  changeSelectedSummaryComponent(e: any){
+    var newSelected = e.originalTarget.closest(".layers")
+    var siblings = [...newSelected.parentNode.parentNode.children];
+    siblings.forEach((e)=>e.children[0].classList.remove("selected"))
+    newSelected.classList.add("selected")
+  }
+
+  changeCurrentStats(e: any, newCurrentStats: StatsType){
+    this.changeSelectedSummaryComponent(e)
+    this.changeCurrentStatsEvent.emit(newCurrentStats); 
   }
 
   /**
