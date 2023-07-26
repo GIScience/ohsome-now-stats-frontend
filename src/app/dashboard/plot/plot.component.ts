@@ -12,7 +12,10 @@ import { IPlotData } from '../../data.service';
 export class PlotComponent implements AfterContentInit, OnChanges {
 
   @Input() data!: Array<IPlotData>;
+  @Input() currentStats!: string;
   layout: Layout | any;
+
+  content: any = {"users": 0, "edits": 1, "buildings": 2, "roads": 3}
 
   ngAfterContentInit(): void {
     this.initChart();
@@ -50,19 +53,11 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
     Plotly.react('summaryplot', [], this.layout, {responsive: true});
 
-    const plotDiv: PlotHTMLElement = document.getElementById('summaryplot') as PlotHTMLElement
-    if(plotDiv)
-      plotDiv.on('plotly_legendclick', (event: any) => {
-        event.layout.yaxis.title = event.data[event.expandedIndex].ytitle
-        Plotly.redraw(plotDiv)
-        const tempData: Array<any> = (event.data as Array<any>).map( (d: any, idx: number) => (idx === event.expandedIndex) ? d.visible = true : d.visible = 'legendonly');
-    })
-
 	}
 
   refreshPlot() {
     const currentDate = new Date()
-    
+
     const plotData : any = [{
       x: this.data.map((e : any) => `${e.startdate}`),
       y: this.data.map((e : any) => e['users']),
@@ -80,8 +75,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         },
         color: '#4caf50'
       },
-      visible: true, // set only contribution as visible
-      ytitle: "# of contributors"
+      ytitle: "# of contributors",
+      visible: this.currentStats === 'users' ? true : false // set true only when summary value is clicked on it
     }, {
       x: this.data.map((e : any) => `${e.startdate}`),
       y: this.data.map((e : any) => e['edits']),
@@ -99,8 +94,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         color: '#f44336'
       },
       yaxis: 'y',
-      visible: 'legendonly', // other bars can be set visible by user click on the legend
-      ytitle: "# of total edits"
+      ytitle: "# of total edits",
+      visible: this.currentStats === 'edits' ? true : false // set true only when summary value is clicked on it
     }, {
       x: this.data.map((e : any) => `${e.startdate}`),
       y: this.data.map((e : any) => e['buildings']),
@@ -118,7 +113,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         color: '#9c27b0'
       },
       yaxis: 'y',
-      visible: 'legendonly', // other bars can be set visible by user click on the legend
+      visible: this.currentStats === 'buildings' ? true : false, // set true only when summary value is clicked on it
       ytitle: "# of buildings added"
     }, {
       x: this.data.map((e : any) => `${e.startdate}`),
@@ -137,10 +132,10 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         color: '#2196f3'
       },
       yaxis: 'y',
-      visible: 'legendonly', // other bars can be set visible by user click on the legend
-      ytitle: "km of roads added"
+      ytitle: "km of roads added",
+      visible: this.currentStats === 'roads' ? true : false // set true only when summary value is clicked on it
     }];
-    
+    this.layout.yaxis.title = plotData[this.content[this.currentStats]].ytitle
     Plotly.react('summaryplot', plotData, this.layout, {responsive: true});
     // Plotly.addTraces('summaryplot', plotData);
   }
