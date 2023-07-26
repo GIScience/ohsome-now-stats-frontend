@@ -8,16 +8,16 @@ import moment from 'moment';
 
 @Injectable()
 export class DataService {
-  
+
   url = environment.ohsomeStatsServiceUrl
   private bsMetaData = new BehaviorSubject<IMetaData | null>(null)
   private metadata = this.bsMetaData.asObservable()
   private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
   summaryData = this.bsSummaryData.asObservable()
-  abortHashtagReqSub!: Subject<void> 
-  abortSummaryReqSub!: Subject<void> 
-  abortIntervalReqSub!: Subject<void> 
-  
+  abortHashtagReqSub!: Subject<void>
+  abortSummaryReqSub!: Subject<void>
+  abortIntervalReqSub!: Subject<void>
+
   defaultHashtag = 'missingmaps'
   trendingHashtagLimit = 10
   timeIntervals = [
@@ -35,7 +35,7 @@ export class DataService {
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
-    private router: Router) { 
+    private router: Router) {
       this.getAbortHashtagReqSubject()
       this.getAbortSummaryReqSubject()
       this.getAbortIntervalReqSubject()
@@ -64,15 +64,15 @@ export class DataService {
   getMetaData(): Observable<IMetaData | null> {
     return this.metadata
   }
-  
+
   requestSummary(params: any): Observable<any> {
     // console.log('>>> DataService >>> requestSummary ', params)
     if(params && params['hashtags'])
       return this.requestSummaryWithHashtag(params)
-    
+
     else
       return this.requestSummaryWithoutHashtag(params)
-    
+
   }
 
   requestSummaryWithHashtag(params: any) {
@@ -81,7 +81,7 @@ export class DataService {
         takeUntil(this.abortSummaryReqSub)
       )
   }
-  
+
   requestSummaryWithoutHashtag(params: any) {
     return this.http.get(`${this.url}/stats_static`)
       .pipe(
@@ -94,6 +94,13 @@ export class DataService {
       .pipe(
         takeUntil(this.abortIntervalReqSub)
       )
+  }
+
+  requestCountryStats(params: any): Observable<IWrappedCountryStatsData> {
+    return this.http.get<IWrappedCountryStatsData>(`${this.url}/stats/${params['hashtags']}/country?startdate=${params['start']}&enddate=${params['end']}`)
+        .pipe(
+            takeUntil(this.abortIntervalReqSub)
+        )
   }
 
   getSummary() {
@@ -127,7 +134,7 @@ export class DataService {
 
   /**
    * Gives the default values for application
-   * 
+   *
    * @returns IQueryParam
    */
   getDefaultValues(): IQueryParam | null {
@@ -155,8 +162,8 @@ export class DataService {
   }
 
   updateURL(data: IQueryParam): void{
-    this.router.navigate([], { 
-      fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}` 
+    this.router.navigate([], {
+      fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}`
     })
   }
 }
@@ -191,12 +198,29 @@ export interface IPlotData {
   enddate: string
 }
 
+/**
+ * Response JSON returned by /stats/{hashtag}/country endoint
+ */
+export interface IWrappedCountryStatsData {
+  query: {timespan:{startDate:string,endDate:string},hashtag:string}
+  result: ICountryStatsData[]
+}
+
+export interface ICountryStatsData {
+  users: number,
+  roads: number,
+  buildings: number,
+  edits: number,
+  latest: string,
+  country: string
+}
+
 export interface ITrendingHashtags {
   result: any
 }
 
 export interface IQueryParam {
-  hashtags: string, 
+  hashtags: string,
   start: string, // date in ISO format, ensure to keep milliseconds as 0
   end: string, // date in ISO format, ensure to keep milliseconds as 0
   interval: string, // eg:'P1D' default value: 'P1M'

@@ -1,8 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { DataService, IHashtag, IPlotData, IQueryParam, ISummaryData, IWrappedPlotData } from '../data.service';
-import { Observable } from 'rxjs';
+import {
+  DataService,
+  ICountryStatsData,
+  IHashtag,
+  IPlotData,
+  IQueryParam,
+  ISummaryData,
+  IWrappedCountryStatsData,
+  IWrappedPlotData
+} from '../data.service';
+import {StatsType} from './types';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,8 +23,13 @@ export class DashboardComponent implements OnInit {
   title = 'ohsome-contribution-stats'
   isOpen = false
   activeLink = ''
+
   summaryData!: ISummaryData
   plotData! : Array<IPlotData>
+  countryStatsData: ICountryStatsData[] = [];
+
+  currentStats: StatsType = 'users';
+
   queryParams: any
   summaryMessage: string = ''
   hashtagsData!: Array<IHashtag> | []
@@ -33,8 +47,8 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
 
     // listener for any changes in the fragment part of the URL
-    // assumption is that fragments sould never be empty as is its empty the routes 
-    // should be redirected to have default vlaues
+    // assumption is that fragments sould never be empty as is its empty the routes
+    // should be redirected to have default values
     this.route.fragment.subscribe((fragment: string | null) => {
 
       const queryParams = this.getQueryParamsFromFragments(fragment)
@@ -51,7 +65,7 @@ export class DashboardComponent implements OnInit {
           }
         }
 
-        if(queryParams['interval'] == null) 
+        if(queryParams['interval'] == null)
           queryParams.interval = this.dataService.defaultIntervalValue
 
         this.dataService.updateURL(queryParams)
@@ -63,7 +77,7 @@ export class DashboardComponent implements OnInit {
         this.queryParams = queryParams
 
         // console.log('>>> DashboardComponent >>> queryParams ', queryParams)
-        
+
         // form a appropriate message for summary data
         this.summaryMessage = this.formSummaryMessage(queryParams)
 
@@ -86,8 +100,8 @@ export class DashboardComponent implements OnInit {
           }
         })
 
-        // fire timeseries API to get plot data 
-        if(queryParams && queryParams['interval']) 
+        // fire timeseries API to get plot data
+        if(queryParams && queryParams['interval']) {
           this.dataService.requestPlot(queryParams).subscribe({
             next: (res: IWrappedPlotData) => {
               if(res) {
@@ -97,7 +111,13 @@ export class DashboardComponent implements OnInit {
             error: (err) => {
               console.error('Error while requesting Plot data  ', err)
             }
-          })
+          });
+        }
+
+        // fire API to get map data
+        this.dataService.requestCountryStats(queryParams)
+            .subscribe((res: IWrappedCountryStatsData) => this.countryStatsData = res.result);
+
 
         // stop trending hashtag request if already fired any
         this.stopHashtagReq()
@@ -106,7 +126,7 @@ export class DashboardComponent implements OnInit {
           start: timeRange.start,
           end: timeRange.end,
           limit: this.dataService.trendingHashtagLimit
-        }).subscribe({ 
+        }).subscribe({
           next: (res: any) => {
             // console.log('>>> getTrendingHashtags >>> res = ', res)
             this.hashtagsData = res.result
@@ -128,7 +148,7 @@ export class DashboardComponent implements OnInit {
         })
       }
     })
-    
+
   }
 
   stopIntervalReq() {
@@ -157,14 +177,14 @@ export class DashboardComponent implements OnInit {
 
   /**
    * Creates query param from enitre fragment of the URL
-   * 
+   *
    * @param String URL fragment part
    * @returns Object with all query params sepearted
    */
   getQueryParamsFromFragments(fragment: string | null): any {
     if(fragment == null || fragment.length < 2)
       return null
-    
+
     const tempQueryParams: Array<Array<string>> | any = fragment?.split('&')
         .map( q => [q.split('=')[0], q.split('=')[1]])
     return Object.fromEntries(tempQueryParams)
@@ -172,9 +192,9 @@ export class DashboardComponent implements OnInit {
 
   /**
    * Forms an appropriate message to be display above Summary data
-   * 
-   * @param queryParams 
-   * @returns message 
+   *
+   * @param queryParams
+   * @returns message
    */
   formSummaryMessage(queryParams: IQueryParam): string {
     if(!queryParams)
@@ -202,11 +222,11 @@ export class DashboardComponent implements OnInit {
 
     // startDate.setDate(startDate.getDate() - 365)
     startDate.setMilliseconds(0)
-    
+
     endDate.setDate(endDate.getDate() - 1)
     endDate.setMilliseconds(0)
 
-    
+
     if(queryParams && queryParams['start'] && queryParams['end']) {
       startDate = new Date(queryParams['start'])
       endDate = new Date(queryParams['end'])
@@ -220,7 +240,7 @@ export class DashboardComponent implements OnInit {
       }
     }
 
-    if(queryParams && queryParams['interval'] == null) 
+    if(queryParams && queryParams['interval'] == null)
       interval = this.dataService.defaultIntervalValue
     else
       interval = queryParams['interval']
@@ -229,6 +249,6 @@ export class DashboardComponent implements OnInit {
       start: startDate.toISOString(),
       end: endDate.toISOString(),
       interval: interval
-    } 
+    }
   }
 }
