@@ -18,6 +18,7 @@ import { ToastComponent } from './toast/toast.component';
 import { ToastService } from './toast.service';
 import { AboutComponent } from './about/about.component';
 import {NgOptimizedImage} from '@angular/common';
+import { HelpComponent } from './help/help.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import {NgOptimizedImage} from '@angular/common';
     MapComponent,
     TrendingHashtagsComponent,
     ToastComponent,
-    AboutComponent
+    AboutComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,

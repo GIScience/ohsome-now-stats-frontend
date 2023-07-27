@@ -4,6 +4,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {AboutComponent} from './about/about.component';
+import {HelpComponent} from './help/help.component';
 
 const routes: Routes = [
     {
@@ -20,6 +21,11 @@ const routes: Routes = [
         path: 'about',
         pathMatch: 'full',
         component: AboutComponent
+    },
+    {
+        path: 'help',
+        pathMatch: 'full',
+        component: HelpComponent
     },
     // Wild Card Route for 404 request
     {
