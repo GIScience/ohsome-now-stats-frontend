@@ -1,6 +1,6 @@
-import { AfterViewInit, Component } from '@angular/core';
-
+import { AfterViewInit, Component, HostListener } from '@angular/core';
 import * as bootstrap from 'bootstrap';
+import { ToastService } from './toast.service';
 
 @Component({
   selector: 'app-root',
@@ -8,15 +8,33 @@ import * as bootstrap from 'bootstrap';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterViewInit {
-  title = 'Dashboard - ohsome Contribution Statistics';
+  title = 'Dashboard - ohsomeNow Stats';
   name = 'HeiGIT';
-
   isOpen = false
   activeLink = ''
 
-  constructor() {}
+  constructor(private toastService: ToastService ) {}
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize() {
+    this.checkForSmallScreen()
+  }
+
+  checkForSmallScreen() {
+    if(window.innerWidth - 5 <=460) {
+      this.toastService.show({
+        title: 'Viewing on Mobile',
+        body: 'ohsomeNow Stats is suitable for tablets and computers. It\'s not yet optimized for smaller screens, we invite you to visit this website on a larger screen.',
+        type: 'warning'
+      })
+    }
+  }
 
   ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.checkForSmallScreen()
+    }, 1000);
+
     // enble tooltip
     const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover'}))
