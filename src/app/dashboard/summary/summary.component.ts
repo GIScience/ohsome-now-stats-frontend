@@ -47,7 +47,9 @@ export class SummaryComponent implements OnInit {
   }
 
   changeSelectedSummaryComponent(e: any){
-    var newSelected = e.originalTarget.closest(".layers")
+    var newSelected = e.target.closest(".layers")
+    console.log(e)
+    console.log(newSelected)
     var siblings = [...newSelected.parentNode.parentNode.children];
     siblings.forEach((e)=>e.children[0].classList.remove("selected"))
     newSelected.classList.add("selected")
