@@ -42,14 +42,6 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class='sidebar-link' [routerLink]="['/summary']">
-            <span class="icon-holder">
-              <i class="c-brown-500 ti-stats-up"></i>
-            </span>
-            <span class="title">Summary</span>
-          </a>
-        </li>
-        <li class="nav-item">
           <a class='sidebar-link' [routerLink]="['/about']">
             <span class="icon-holder">
               <i class="c-deep-orange-500 ti-info"></i>
@@ -76,7 +68,7 @@
       <div class="header-container">
         <ul class="nav-left">
           <li>
-            <a id='sidebar-toggle' class="sidebar-toggle" (click)="toggleSidebar()">
+            <a id='sidebar-toggle' class="sidebar-toggle d-n@md+" (click)="toggleSidebar()">
               <i class="ti-menu"></i>
             </a>
           </li>

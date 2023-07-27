@@ -26,91 +26,91 @@
     list-style-type: none;
   }
 
-  @include between($breakpoint-md, $breakpoint-xl) {
-    width: $collapsed-size;
+  // @include between($breakpoint-md, $breakpoint-xl) {
+  //   width: $collapsed-size;
 
-    .sidebar-inner {
-      .sidebar-logo {
-        border-bottom: 1px solid transparent;
-        padding: 0;
+  //   .sidebar-inner {
+  //     .sidebar-logo {
+  //       border-bottom: 1px solid transparent;
+  //       padding: 0;
 
-        a {
-          .logo {
-            background-position: center center;
-            width: $collapsed-size;
-          }
-        }
-      }
+  //       a {
+  //         .logo {
+  //           background-position: center center;
+  //           width: $collapsed-size;
+  //         }
+  //       }
+  //     }
 
-      .sidebar-menu {
-        overflow-x: hidden;
+  //     .sidebar-menu {
+  //       overflow-x: hidden;
 
-        > li {
-          > a {
-            .title {
-              display: none;
-            }
-          }
-        }
+  //       > li {
+  //         > a {
+  //           .title {
+  //             display: none;
+  //           }
+  //         }
+  //       }
 
-        li {
-          &.dropdown {
-            .arrow {
-              opacity: 0;
-            }
+  //       li {
+  //         &.dropdown {
+  //           .arrow {
+  //             opacity: 0;
+  //           }
 
-            &.open {
-              ul.dropdown-menu {
-                display: none !important;
-              }
-            }
-          }
-        }
-      }
-    }
+  //           &.open {
+  //             ul.dropdown-menu {
+  //               display: none !important;
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
 
-    &:not(:hover) .sidebar-logo .logo img {
-      width: 32px;
-      height: 32px;
-      margin: 0 20px;
-      content: url("/favicon.ico");
-    }
+  //   &:not(:hover) .sidebar-logo .logo img {
+  //     width: 32px;
+  //     height: 32px;
+  //     margin: 0 20px;
+  //     content: url("/favicon.ico");
+  //   }
 
-    &:hover {
-      width: $offscreen-size;
+  //   &:hover {
+  //     width: $offscreen-size;
 
-      .sidebar-inner {
-        .sidebar-logo {
-          border-bottom: 1px solid $border-color;
-          padding: 0 20px;
-        }
+  //     .sidebar-inner {
+  //       .sidebar-logo {
+  //         border-bottom: 1px solid $border-color;
+  //         padding: 0 20px;
+  //       }
 
-        .sidebar-menu {
-          > li {
-            > a {
-              .title {
-                display: inline-block;
-              }
-            }
-          }
+  //       .sidebar-menu {
+  //         > li {
+  //           > a {
+  //             .title {
+  //               display: inline-block;
+  //             }
+  //           }
+  //         }
 
-          li {
-            &.dropdown {
-              .arrow {
-                opacity: 1;
-              }
-            }
+  //         li {
+  //           &.dropdown {
+  //             .arrow {
+  //               opacity: 1;
+  //             }
+  //           }
 
-            &.open {
-              > ul.dropdown-menu {
-                display: block !important;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  //           &.open {
+  //             > ul.dropdown-menu {
+  //               display: block !important;
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   @include to($breakpoint-md) {
     left: -$offscreen-size;
@@ -334,7 +334,8 @@
 
 .is-collapsed {
   .sidebar {
-    @include from($breakpoint-xl) {
+    // @include from($breakpoint-xl) {
+    @include from($breakpoint-md) {
       width: $collapsed-size;
 
       &:not(:hover) .sidebar-logo .logo img {
@@ -412,47 +413,47 @@
       }
     }
 
-    @include between($breakpoint-md, $breakpoint-xl) {
-      width: $offscreen-size;
+    // @include between($breakpoint-md, $breakpoint-xl) {
+    //   width: $offscreen-size;
 
-      .sidebar-inner {
-        .sidebar-logo {
-          border-bottom: 1px solid $border-color;
-          padding: 0 20px;
+    //   .sidebar-inner {
+    //     .sidebar-logo {
+    //       border-bottom: 1px solid $border-color;
+    //       padding: 0 20px;
 
-          > a {
-            .logo {
-              background-position: center left;
-              width: 150px;
-            }
-          }
-        }
+    //       > a {
+    //         .logo {
+    //           background-position: center left;
+    //           width: 150px;
+    //         }
+    //       }
+    //     }
 
-        .sidebar-menu {
-          > li {
-            > a {
-              .title {
-                display: inline-block;
-              }
-            }
-          }
+    //     .sidebar-menu {
+    //       > li {
+    //         > a {
+    //           .title {
+    //             display: inline-block;
+    //           }
+    //         }
+    //       }
 
-          li {
-            &.dropdown {
-              .arrow {
-                opacity: 1;
-              }
-            }
+    //       li {
+    //         &.dropdown {
+    //           .arrow {
+    //             opacity: 1;
+    //           }
+    //         }
 
-            &.open {
-              > ul.dropdown-menu {
-                display: block !important;
-              }
-            }
-          }
-        }
-      }
-    }
+    //         &.open {
+    //           > ul.dropdown-menu {
+    //             display: block !important;
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     @include to($breakpoint-md) {
       left: 0;
