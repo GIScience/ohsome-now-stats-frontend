@@ -24,14 +24,16 @@
             </div>
         </div>
         <div class="row">
-            <!-- #Map View ==================== -->
+            <!-- #Common graph for Summary ==================== -->
             <div class="pT-10">
-                <app-map [data]="countryStatsData" [currentStats]="currentStats"></app-map>
+                <app-plot [data]="plotData" [currentStats]="currentStats"></app-plot>
             </div>
         </div>
         <div class="row">
-                <!-- #Common graph for Summary ==================== -->
-                <app-plot [data]="plotData" [currentStats]="currentStats"></app-plot>
+            <!-- #Map View ==================== -->
+            
+                <app-map [data]="countryStatsData" [currentStats]="currentStats"></app-map>
+            
         </div>
     </div>
 </div>
