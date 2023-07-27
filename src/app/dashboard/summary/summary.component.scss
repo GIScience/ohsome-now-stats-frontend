@@ -8,11 +8,12 @@
     text-align: center; 
     position: relative;
     pointer-events: auto;
+    transition: all 0.25s ease-in-out;
     :hover{
         box-shadow: 0 0px 0px white !important;
     }
     &.selected {
-        box-shadow: 0 5px 15px rgba(145, 92, 182, .4);
+        box-shadow: 0 5px 15px rgba(156, 126, 179, 0.5) !important;
     }
 }
 
@@ -25,13 +26,10 @@
 }
 
 .big_number  {
-    text-decoration: none;
-    transition: all 0.2s ease-in-out;
     pointer-events: none;
-    :hover {
-        box-shadow: 0 5px 15px rgba(145, 92, 182, .4);
+    :hover  {
+        box-shadow: 0 5px 15px rgba(156, 126, 179, 0.3);
         cursor: pointer;
     }
-
 }   
 
