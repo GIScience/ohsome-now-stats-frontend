@@ -162,7 +162,8 @@ export class QueryComponent implements OnChanges {
       this.toastService.show({
         title: 'Hashtag is empty',
         body: 'Please provide a Hashtag',
-        type: 'error'
+        type: 'error',
+        time: 3000
       })
 
       const hashtagsEle = document.getElementById('hastags')
@@ -182,7 +183,8 @@ export class QueryComponent implements OnChanges {
       this.toastService.show({
         title: 'Date range is empty',
         body: 'Please provide a valid Date range',
-        type: 'error'
+        type: 'error',
+        time: 3000
       })
 
       // dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
@@ -197,7 +199,8 @@ export class QueryComponent implements OnChanges {
       this.toastService.show({
         title: 'Date range is empty',
         body: 'Please provide a valid Date range',
-        type: 'error'
+        type: 'error',
+        time: 3000
       })
 
       // dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])

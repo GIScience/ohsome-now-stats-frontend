@@ -15,6 +15,7 @@ export class ToastComponent {
   title: string | undefined
   body: string | undefined
   type: string | undefined
+  time: number | undefined
 
   constructor(private toastService: ToastService) {}
 
@@ -27,6 +28,7 @@ export class ToastComponent {
       this.title = param.title
       this.body = param.body
       this.type = ToastTypes[param.type as keyof typeof ToastTypes]
+      this.time = param.time
 
       this.showToast()
     })
@@ -39,12 +41,20 @@ export class ToastComponent {
       toastBootstrap.show()
       this.toastVisible = true
     }
-    setTimeout(() => {
-      this.toastVisible = false
-    }, 3000) // Hide the Toast after 3 seconds (adjust as needed).
+    // set auto disappearing only if provided by the caller
+    if(this.time ){
+      setTimeout(() => {
+        this.hideToast()
+      }, this.time) 
+    }
   }
 
   hideToast() {
     this.toastVisible = false
+    const toastLiveExample = document.getElementById('liveToast')
+    if(toastLiveExample){
+      const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+      toastBootstrap.hide()
+    }
   }
 }
