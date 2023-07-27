@@ -11,13 +11,13 @@
     </div>
     <div class="col-md-9">
         <!-- #Summary message ==================== -->
-        <div class="row">
+        <!-- <div class="row">
             <div class='col-md-12'>
                 <div class="layer w-100 mB-1 bd bgc-white p-20">
                     <h6 class="lh-1">{{summaryMessage}}</h6>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="row">
             <div class='col-md-12'>
                 <app-summary [data]="summaryData" (changeCurrentStatsEvent)="currentStats = $event"></app-summary>
