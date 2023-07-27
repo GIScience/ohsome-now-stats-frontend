@@ -26,9 +26,9 @@ export class AppComponent implements AfterViewInit {
     // console.log('>>> AppComponent >>> toggleSidebar ')
     this.isOpen = !this.isOpen
     // this.triggerResizeEvent()
-    const app = document.querySelector('.app')
+    const app = document.querySelector('#sidebar-container')
     if(app){
-      if(app.classList.contains('is-collapsed')) 
+      if(app.classList.contains('is-collapsed'))
         app.classList.remove('is-collapsed')
       else
         app.classList.add('is-collapsed')
@@ -48,7 +48,7 @@ export class AppComponent implements AfterViewInit {
       openLinks.forEach((openLink) => {
         openLink.classList.remove('open')
       })
-    
+
       parentListItem.classList.add('open')
     }
 
