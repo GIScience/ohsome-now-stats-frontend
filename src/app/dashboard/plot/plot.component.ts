@@ -36,7 +36,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 	initChart() {
 		this.layout =  {
 			autosize: true,
-			height: 450,
+			height: 350,
 			grid: { rows: 1, columns: 1 },
 			shapes: [],
 			annotations: [],
