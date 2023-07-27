@@ -16,6 +16,8 @@ import { MapComponent } from './dashboard/map/map.component';
 import { TrendingHashtagsComponent } from './dashboard/trending-hashtags/trending-hashtags.component';
 import { ToastComponent } from './toast/toast.component';
 import { ToastService } from './toast.service';
+import { AboutComponent } from './about/about.component';
+import {NgOptimizedImage} from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -27,14 +29,16 @@ import { ToastService } from './toast.service';
     PageNotFoundComponent,
     MapComponent,
     TrendingHashtagsComponent,
-    ToastComponent
+    ToastComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     AppRoutingModule,
     HttpClientModule,
-    NgxDaterangepickerMd.forRoot()
+    NgxDaterangepickerMd.forRoot(),
+    NgOptimizedImage
   ],
   providers: [
     DataService,
