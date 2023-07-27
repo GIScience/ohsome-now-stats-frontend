@@ -16,7 +16,10 @@
   padding-left: $offscreen-size;
   transition: all 0.2s ease;
 
-  @include between($breakpoint-md, $breakpoint-xl) {
+  // @include between($breakpoint-md, $breakpoint-xl) {
+  //   padding-left: $collapsed-size;
+  // }
+  @include from($breakpoint-md) {
     padding-left: $collapsed-size;
   }
 
@@ -76,9 +79,9 @@
       padding-left: 0;
     }
 
-    @include between($breakpoint-md, $breakpoint-xl) {
-      padding-left: $offscreen-size;
-    }
+    // @include between($breakpoint-md, $breakpoint-xl) {
+    //   padding-left: $offscreen-size;
+    // }
   }
 
   .full-container {

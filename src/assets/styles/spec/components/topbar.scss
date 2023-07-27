@@ -201,7 +201,8 @@
     }
 
     @include between($breakpoint-md, $breakpoint-xl) {
-      width: calc(100% - #{$offscreen-size});
+      // width: calc(100% - #{$offscreen-size});
+      width: calc(100% - #{$collapsed-size});
     }
   }
 }
