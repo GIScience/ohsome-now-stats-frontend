@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {dashboard} from 'src/app/dashboard/tooltip-data'
 
 @Component({
   selector: 'app-help',
@@ -7,4 +8,5 @@ import { Component } from '@angular/core';
 })
 export class HelpComponent {
 
+    protected readonly dashboard = dashboard;
 }

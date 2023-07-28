@@ -9,6 +9,30 @@
             further assistance.
         </p>
 
+        <h2>What are hashtags?</h2>
+
+        <p>
+            Hashtags are used as a popular way to mark OSM Changesets which belong to a particular mapping event, larger
+            campaign or dedicated group of contributors.
+        </p>
+        <p>
+            Hashtags are further used by tools such as the <a href="https://tasks.hotosm.org/" target="_blank">HOT
+            Tasking Manager</a> to identify and monitor organized mapping activity. Projects in the HOT Tasking Manager
+            usually use a hashtag like
+            <span class="icquote"><span class="icquote">#hotosm</span>-project-14637</span> which contains the project
+            ID.
+        </p>
+        <p>
+            As of 2023-07-27 the most used hashtags in OSM are <span class="icquote">#missingmaps</span>,
+            <span class="icquote">#redcross</span>, <span class="icquote">#youthmappers</span>,
+            <span class="icquote">#indonesia</span> and <span class="icquote">#msf</span>.
+        </p>
+        <p class="pL-10 bdL bdc-yellow-800 bdwL-5">NOTE: For ohsomeNow Stats hashtags are case-insensitive. This means
+            that when you are filtering for <span class="icquote">#missingmaps</span> or <span class="icquote">#MissingMaps</span>
+            or <span class="icquote">#missingMaps</span> all this will be treated the same as lower case <span
+                    class="icquote">#missingmaps</span>.
+        </p>
+
         <h2>How to define your query?</h2>
 
         <ol>
@@ -39,8 +63,202 @@
             <figcaption>Query form with example parameters</figcaption>
         </figure>
 
-        <div class="pL-10 bdL bdc-yellow-800 bdwL-5">NOTE: When you click on a trending hashtag this hashtag will be
+        <p class="pL-10 bdL bdc-yellow-800 bdwL-5">NOTE: When you click on a trending hashtag this hashtag will be
             directly considered in your query. The statistics will be updated immediately.
-        </div>
+        </p>
+
+        <h2>How to read the results?</h2>
+        <h3>Overview Statistics</h3>
+        <p>
+            The overview statistics provide numbers about mapping activity for the hashtag and the time range defined in
+            your query. In this example we consider data for <span class="icquote">#missingmaps</span> for a time range
+            from <span class="icquote">202306-01</span>- - <span class="icquote">2023-06-30</span>.
+        </p>
+        <p>
+            Currently we do report on number of contributors (green), total edits (red), buildings (purple) and km of
+            roads (blue). You can click on each card to update the timeline plot and the map.
+        </p>
+        <figure>
+            <img class="img-fluid" style="max-height: 150px;" src="../../assets/images/help/summary-stats.png"
+                 alt="example screenshot of the query form with fields: hashtag, date range, intevals, and 'Get Statistics'-Button">
+            <figcaption>The four main stats</figcaption>
+        </figure>
+
+        <h3>Timeline</h3>
+        <p>
+            The timeline plot shows insights about the dynamics in mapping activity over time. The plot provides
+            information for the hashtag and the time range defined in your query and the time interval you have
+            specified. In this example we consider data for <span class="icquote">#missingmaps</span> for a time range
+            from
+            <span class="icquote">2023-06-01</span> - <span class="icquote">2023-06-30</span> and a <span
+                class="icquote">daily</span> interval.
+        </p>
+        <p>
+            In this example each bar represents data for a single day. The height of the bar corresponds to the number
+            of contributors who have mapped something in OSM using <span class="icquote">#missingmaps</span>.
+        </p>
+        <figure>
+            <img class="img-fluid" style="max-height: 400px;" src="../../assets/images/help/timeline-bar-chart.png"
+                 alt="example screenshot of the query form with fields: hashtag, date range, intervals, and 'Get Statistics'-Button">
+            <!--<figcaption>The four main stats</figcaption>-->
+        </figure>
+
+        <p class="pL-10 bdL bdc-yellow-800 bdwL-5">NOTE: When you click on one of the <strong>overview statistics
+            card</strong> the timeline plot will change and displays the results in the same color.
+        </p>
+
+        <p>
+            There can be situations for which either the number of buildings or km of roads displayed in the timeline
+            plot reveal negative numbers. This is not a bug, but the intended behavior and is related to the way how we
+            measure changes in the OSM database.
+        </p>
+        <p>
+            The example below shows a negative result for km of roads on 21 April 2023. In this example we consider data
+            for <span class="icquote">#missingmaps</span> for a time range from
+            <span class="icquote">2023-04-01</span> - <span class="icquote">2023-04-31</span> and a
+            <span class="icquote">daily</span> interval. Negative values can occur when the length of deleted roads in
+            OSM
+            surpasses the length of newly created roads. This can happen when map validators correct the work of
+            beginners by removing or correcting wrongly mapped roads.
+        </p>
+        <figure>
+            <img class="img-fluid" style="max-height: 400px;"
+                 src="../../assets/images/help/timeline-bar-chart-negative.png"
+                 alt="example screenshot of the query form with fields: hashtag, date range, intervals, and 'Get Statistics'-Button">
+            <!--<figcaption>The four main stats</figcaption>-->
+        </figure>
+
+        <p class="pL-10 bdL bdc-yellow-800 bdwL-5">NOTE: A shaded bar in timeline plot indicates that the value for this
+            entry does not cover the full interval range. For instance, this can happen when you choose a monthly
+            interval, but data is only available for the first few days of that month.
+        </p>
+
+        <h2>Map</h2>
+
+        <p>The map plot breaks down the overview statistics per country for the hashtag and the time range defined in
+            your query. The interval setting is not considered in the map. In this example we consider data for
+            <span class="icquote">#missingmaps</span> for a time range from <span class="icquote">2023-06-01</span> -
+            <span class="icquote">2023-06-30</span>.</p>
+
+        <p>The base color of the circles corresponds to the selected overview statistics card. The example map shows the
+            number of contributors (green) per country.</p>
+
+        <p>Both a) bigger circles and b) lighter color indicate a higher absolute value. In the example map Malawi
+            reached the highest value (249 contributors) followed by the Democratic Republic of the Congo (193
+            contributors).</p>
+
+        <figure>
+            <img class="img-fluid" style="max-height: 400px;"
+                 src="../../assets/images/help/map.png"
+                 alt="example screenshot of the query form with fields: hashtag, date range, intervals, and 'Get Statistics'-Button">
+            <!--<figcaption>The four main stats</figcaption>-->
+        </figure>
+
+        <p class="pL-10 bdL bdc-yellow-800 bdwL-5">NOTE: Negative results for buildings and km of road length are
+            currently not properly depicted in the map symbology.
+        </p>
+
+        <h2>Trending Hashtags</h2>
+        <p>
+            The trending hashtags leaderboard lists the 10 most used changeset comment hashtags for the time range
+            defined in your query. The first entry in the lists represents the hashtag with the highest number of
+            distinct OSM contributors.
+        </p>
+        <p>
+            In this example we consider data for a time range from <span class="icquote">2023-06-01</span> -
+            <span class="icquote">2023-06-30</span>. The hashtag <span class="icquote">#opencitieslac</span> is the most
+            popular one used by 1696 contributors followed by <span class="icquote">#missingmaps</span> with 1204
+            contributors.
+        </p>
+
+        <figure>
+            <img class="img-fluid" style="max-height: 400px;"
+                 src="../../assets/images/help/trending-hashtags.png"
+                 alt="example screenshot of the query form with fields: hashtag, date range, intervals, and 'Get Statistics'-Button">
+            <!--<figcaption>The four main stats</figcaption>-->
+        </figure>
+
+        <p class="pL-10 bdL bdc-yellow-800 bdwL-5">NOTE: When you click on a <strong>trending hashtag</strong> this
+            hashtag will be directly considered in your query. The statistics will be updated immediately.
+        </p>
+
+        <h2>How are the statistics calculated?</h2>
+        <h3><i _ngcontent-nly-c2="" class="fa-solid fa-users fsz-xl"></i> Contributors</h3>
+
+        <p>
+            {{dashboard.summary.contributions}}
+        </p>
+
+        <p>
+            In the map plot this number refers to the location of the map edits, not the location or origin of the
+            mappers themselves. Such private information and other demographic information (e.g. age, gender) of mappers
+            is not stored in the OSM database.
+        </p>
+
+        <h3><i _ngcontent-nly-c2="" class="fa-solid fa-pen-to-square fsz-xl"></i> Total Map Edits</h3>
+        <p>{{dashboard.summary.totalEdits}}</p>
+        <p>
+            Total Map Edits consider only OSM elements with the tag keys defined in the OSM Wiki as <a
+                href="https://wiki.openstreetmap.org/wiki/Map_features" target="_blank">Map Features</a>. We
+            consider edits to all OSM types (nodes, ways, relations) and the following OSM tag keys:
+        </p>
+        <ul>
+            <li>
+                aerialway, aeroway, amenity, barrier, boundary, building, craft, emergency, geological, healthcare,
+                highway, historic, landuse, leisure, man_made, military, natural, office, place, power,
+                public_transport, railway, route, shop, sport, telecom, tourism, water, waterway.
+            </li>
+        </ul>
+
+        <h3><i _ngcontent-nly-c2="" class="fa-solid fa-city fsz-xl"></i> &Delta; Buildings</h3>
+        <p>
+            {{dashboard.summary.buildings}}
+        </p>
+
+        <p>
+            Δ Buildings = Buildings<sub>created</sub> - Buildings<sub>deleted</sub>
+        </p>
+
+        <p>
+            Buildings are defined as all OSM ways or relations which hold the tag key building and one of the following
+            tag values:
+        </p>
+        <ul>
+            <li>
+                yes, house, residential, detached, detached, garage, apartments, shed, hut, industrial
+            </li>
+        </ul>
+
+        <p class="pL-10 bdL bdc-yellow-800 bdwL-5">NOTE: Negative results can occur if the number of deleted buildings
+            surpassed the number of newly created buildings for the hashtag and the time range defined in your query.
+            The number of modified buildings is not considered.
+        </p>
+
+        <h3><i _ngcontent-nly-c2="" class="fa fa-road fsz-xl"></i> &Delta; km of Roads</h3>
+
+        <p>{{dashboard.summary.kmOfRoads}}</p>
+
+        <p>
+            Δ Roads [km] = Roads<sub>created</sub> + Δ Roads<sub>modified-longer</sub> - Δ
+            Roads<sub>modified-shorter</sub> - Roads<sub>deleted</sub> [km]
+        </p>
+        <p>
+            Roads are defined as all OSM ways or relations which hold the tag key highway and one of the following tag
+            values. These are the principal tag values for the road network, link roads and special road types as
+            defined in the
+            <a href="https://wiki.openstreetmap.org/wiki/Map_features#Highway" target="_blank">OSM Wiki</a>:
+        </p>
+        <ul>
+            <li>
+                motorway, trunk, motorway_link, trunk_link, primary, primary_link, secondary, secondary_link, tertiary,
+                tertiary_link, unclassified, residential, living_street, service, pedestrian, track, bus_guideway,
+                escape, raceway, road, busway
+            </li>
+        </ul>
+        <p class="pL-10 bdL bdc-yellow-800 bdwL-5">NOTE: Negative results can occur if the length of deleted roads
+            surpassed the number of newly created roads for the hashtag and the time range defined in your query.
+            Modifications to existing roads are considered as well and can either increase or decrease the overall road
+            network length.
+        </p>
     </div>
 </div>
