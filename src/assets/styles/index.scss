@@ -4,3 +4,26 @@
 @import 'spec/index';
 @import 'vendor/index';
 
+.note {
+  @extend .p-10;
+  @extend .bd;
+  @extend .bdc-yellow-800;
+  @extend .bdwL-5;
+  width: fit-content;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  @extend .bgc-yellow-50;
+  @extend .bdrs-3;
+}
+
+.ohsome-now-as-text {
+  @supports not (content: "x" / "y") {
+    content: url("/assets/images/ohsomeNowStats_logo.svg");
+  }
+  @supports (content: "x" / "y") {
+    content: url("/assets/images/ohsomeNowStats_logo.svg") / "ohsomeNow-STATS";
+  }
+  height: 1rem;
+  display: inline;
+  margin: 0 0.2rem;
+}
