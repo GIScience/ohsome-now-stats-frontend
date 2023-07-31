@@ -1,5 +1,7 @@
 # ohsomeNow stats frontend
 
+[![LICENSE](https://img.shields.io/github/license/GIScience/ohsome-dashboard)](LICENSE)
+
 Dashboard for Statitics and other information about contribution done in OpenStreetMap using the [GIScience/ohsome-now-stats-service](https://github.com/GIScience/ohsome-now-stats-service)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.0.
