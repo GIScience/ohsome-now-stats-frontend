@@ -1,6 +1,7 @@
 # ohsomeNow stats frontend
 
-[![LICENSE](https://img.shields.io/github/license/GIScience/ohsome-dashboard)](LICENSE)
+[![LICENSE](https://img.shields.io/github/license/GIScience/ohsome-now-stats-frontend
+)](LICENSE)
 
 The **ohsomeNow stats** website offers up-to-date and global scale overview statistics on mapping activity in OpenStreetMap (OSM). 
 
