@@ -33,6 +33,7 @@ export class QueryComponent implements OnChanges {
 
   private _start = ''
   private _end = ''
+  currentTimeInUTC!: string;
   
   constructor(
     private dataService: DataService,
@@ -40,6 +41,20 @@ export class QueryComponent implements OnChanges {
     private toastService: ToastService ) {
       this.intervals = dataService.timeIntervals
       this.interval = dataService.defaultIntervalValue
+
+      setInterval( () => {
+        this.currentTimeInUTC = new Intl.DateTimeFormat('de-DE', {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            hour12: false,
+            timeZone: "UTC",
+            timeZoneName: "short"})
+          .format(new Date())
+      }, 1000)
     }
 
   ngOnChanges(): void {
