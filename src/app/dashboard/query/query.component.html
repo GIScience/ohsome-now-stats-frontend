@@ -21,7 +21,7 @@
               <!-- Start date, End date and interval -->
               <div class="mb-3 row">
                 <div class="col-md-12">
-                  <label class="form-label" for="dateRange"> Date range : </label>
+                  <label class="form-label" for="dateRange"> Date range (in UTC) </label>
                   <input type="text"
                     class="form-control"
                     ngxDaterangepickerMd
@@ -42,13 +42,12 @@
                     [timePicker24Hour]="true"
                     placeholder="Select please..."
                     required=""/>
-                    <small class="text-muted fs-i">Time in UTC.</small><br>
                     <small class="text-muted fs-i">Current time in UTC: {{currentTimeInUTC}}</small>
                 </div>
               </div>
               <div class="mb-3 row">
                 <div class="col-md-12">
-                  <label class="form-label" for="intervals">Intervals: </label>
+                  <label class="form-label" for="intervals"> Interval </label>
                   <select name="intervals" class="form-control" [(ngModel)]="interval">
                     <option *ngFor="let option of intervals" [value]="option.value">{{option.label}}</option>
                   </select>
