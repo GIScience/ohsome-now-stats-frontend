@@ -18,6 +18,13 @@ export class AppComponent implements AfterViewInit {
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
     this.checkForSmallScreen()
+    this.tryCollapseMenuOnBiggerScreens()
+  }
+
+  tryCollapseMenuOnBiggerScreens(){
+    if(window.innerWidth>=992) {
+      document.querySelector('#sidebar-container')?.classList.add("is-collapsed")
+    }
   }
 
   checkForSmallScreen() {

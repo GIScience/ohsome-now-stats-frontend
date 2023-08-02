@@ -113,7 +113,6 @@
   // }
 
   @include to($breakpoint-md) {
-    left: -$offscreen-size;
     width: calc(#{$offscreen-size} - 30px);
   }
 }
@@ -457,6 +456,7 @@
 
     @include to($breakpoint-md) {
       left: 0;
+      width: 0px;
     }
   }
 }
