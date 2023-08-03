@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  ohsomeStatsServiceUrl: 'https://demo.contributions-stats.ohsome.org/api',
+  ohsomeStatsServiceUrl: 'https://int-stats.now.ohsome.org/api',
   ohsomeApiUrl: 'https://api.ohsome.org/v1',
 };
 
