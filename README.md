@@ -18,7 +18,7 @@ This means that every change to OSM will be considered by the dashboard a few mi
 
 The core features are:
 * **Overview Statistics**: Your mapping activity statistics summarized into a single line. Currently we do report on number of contributors (green), total edits (red), buildings (purple) and km of roads (blue) for your hashtag time range.
-* **Trending Hashtags Chart**: Most frequently used mapping-hashtags in your chosen time-intervals! The first entry in the lists represents the hashtag with the highest number of distinct OSM contributors. 
+* **Trending Hashtags Chart**: Most frequently used mapping-hashtags in your chosen time-intervals! The first entry in the list represents the hashtag with the highest number of distinct OSM contributors. 
 * **Country Map**: Number of contributions and OSM edits per country - graphically nicely displayed in form of an interactive world map.
 * **Timeline Plot**: Insights about the dynamics in mapping activity over time. Define your time interval and show the effectiveness of single mapathons or long-term mapping campaigns.  
 
