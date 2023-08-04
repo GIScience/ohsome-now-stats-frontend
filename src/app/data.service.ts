@@ -126,7 +126,7 @@ export class DataService {
 
   getTrendingHashtags(params: any) {
     // console.log('>>> getTrendingHashtags >>> ', params)
-    return this.http.get(`${this.url}/mostUsedHashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}`)
+    return this.http.get(`${this.url}/most-used-hashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}`)
     .pipe(
       takeUntil(this.abortHashtagReqSub)
     )
