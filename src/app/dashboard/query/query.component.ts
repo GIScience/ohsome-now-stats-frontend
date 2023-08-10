@@ -28,6 +28,7 @@ export class QueryComponent implements OnChanges {
   ranges: any
   minDate!: Dayjs
   maxDate!: Dayjs
+  maxDateString!: string
   // invalidDates: moment.Moment[] = [moment().add(2, 'days'), moment().add(3, 'days'), moment().add(5, 'days')];
   // invalidDates: moment.Moment[] = [moment(this.maxDate).add(1, 'day'), moment().add(3, 'days'), moment().add(5, 'days')];
 
@@ -70,7 +71,17 @@ export class QueryComponent implements OnChanges {
       if(metaData && metaData.start && metaData.end) {
         this.minDate = dayjs(metaData?.start)
         this.maxDate = dayjs(metaData?.end)
-
+        this.maxDateString = new Intl.DateTimeFormat('de-DE', {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+          hour12: false,
+          timeZone: "UTC",
+          timeZoneName: "short"})
+        .format(this.maxDate.toDate())
         this.ranges = {
           'Today': [dayjs().startOf('day'), dayjs()],
           'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
@@ -149,7 +160,8 @@ export class QueryComponent implements OnChanges {
   getStatistics() {
     if(!this.validateForm())
       return
-      
+    this.dataService.requestMetadata()
+
     // console.log('>>> QueryComponent >>> getStatistics', this.selectedDateRange)
     // get all values from form
     const tempEnd = (this.selectedDateRange.end).toISOString()
