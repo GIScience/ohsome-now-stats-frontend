@@ -187,15 +187,15 @@ export interface IWrappedPlotData {
 }
 
 export interface IPlotData {
-  changesets: number,
+  changesets?: number,
   users: number,
   roads: number,
   buildings: number,
   edits: number,
-  latest: string,
-  hashtag: string,
-  startdate: string,
-  enddate: string
+  latest?: string,
+  hashtag?: string,
+  startDate: string,
+  endDate: string
 }
 
 /**
