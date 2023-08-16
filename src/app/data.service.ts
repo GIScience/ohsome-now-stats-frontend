@@ -169,10 +169,12 @@ export class DataService {
 }
 
 export interface ISummaryData {
+  changesets?: number,
   contributors: number
   edits: number
   buildingEdits: number
-  kmOfRoads: number
+  kmOfRoads: number,
+  latest?: string
 }
 
 export interface IQueryData {
