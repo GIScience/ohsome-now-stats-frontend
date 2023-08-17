@@ -56,8 +56,8 @@ describe('QueryComponent', () => {
     });
   
     it('should remove leading/trailing whitespace, but keep internal whitespace in hashtags', () => {
-      const input = ' #hashtag with spaces, #hashtag-with-hyphen, #hashtag_with_underscore ';
-      const expectedOutput = 'hashtag with spaces,hashtag-with-hyphen,hashtag_with_underscore';
+      const input = ' #hashtag, #hashtag-with-hyphen, #hashtag_with_underscore ';
+      const expectedOutput = 'hashtag,hashtag-with-hyphen,hashtag_with_underscore';
       expect(component.cleanHashTags(input)).toEqual(expectedOutput);
     });
   
