@@ -23,7 +23,7 @@ pipeline {
           echo env.TAG_NAME
         }
 
-        sh 'echo Test will be implemented later'
+        sh 'npm run test'
       }
     }
 
