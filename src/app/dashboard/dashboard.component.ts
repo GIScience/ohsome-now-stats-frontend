@@ -87,10 +87,10 @@ export class DashboardComponent implements OnInit {
             // console.log('>>> res = ', res)
             // send response data to Summary Component
             this.summaryData = {
-              buildingEdits: res!.buildings,
-              contributors: res!.users,
-              edits: res!.edits,
-              kmOfRoads: res!.roads
+              buildingEdits: res!.result.buildings,
+              contributors: res!.result.users,
+              edits: res!.result.edits,
+              kmOfRoads: res!.result.roads
             }
 
             this.dataService.setSummary(this.summaryData)

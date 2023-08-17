@@ -1,17 +1,38 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
 
+import { of } from 'rxjs'; 
 import { QueryComponent } from './query.component';
+import { DataService } from 'src/app/data.service';
+import { ToastService } from 'src/app/toast.service';
 
 describe('QueryComponent', () => {
   let component: QueryComponent;
   let fixture: ComponentFixture<QueryComponent>;
 
+  // Create a mock DataService with the necessary methods
+  const dataServiceMock = {
+    getMetaData: jasmine.createSpy('getMetaData').and.returnValue(of({ start: '2009-04-21T20:02:04Z', end: '2023-08-02T10:21:31Z' })),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ QueryComponent ]
-    })
-    .compileComponents();
+      declarations: [QueryComponent],
+      imports: [
+        RouterTestingModule, 
+        FormsModule, 
+        NgxDaterangepickerMd.forRoot()
+      ],
+      providers: [
+        { provide: DataService, useValue: dataServiceMock },
+        { provide: ToastService, useValue: {} },
+      ],
+    }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(QueryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

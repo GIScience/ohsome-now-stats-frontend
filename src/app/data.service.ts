@@ -169,10 +169,12 @@ export class DataService {
 }
 
 export interface ISummaryData {
+  changesets?: number,
   contributors: number
   edits: number
   buildingEdits: number
-  kmOfRoads: number
+  kmOfRoads: number,
+  latest?: string
 }
 
 export interface IQueryData {
@@ -187,15 +189,15 @@ export interface IWrappedPlotData {
 }
 
 export interface IPlotData {
-  changesets: number,
+  changesets?: number,
   users: number,
   roads: number,
   buildings: number,
   edits: number,
-  latest: string,
-  hashtag: string,
-  startdate: string,
-  enddate: string
+  latest?: string,
+  hashtag?: string,
+  startDate: string,
+  endDate: string
 }
 
 /**
