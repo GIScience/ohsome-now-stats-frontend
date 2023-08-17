@@ -250,8 +250,8 @@ export class QueryComponent implements OnChanges {
       .split(',') // Split by commas
       .map(h => h.trim()) // Trim each hashtag
       .filter(h => h !== '') // Filter out empty hashtags
-      .map(h => h.replace(/^#/, '')); // Remove '#' symbol from each hashtag if it's at the beginning
-
+      .map(h => h.replace(/^#/, '')) // Remove '#' symbol from each hashtag if it's at the beginning
+      .map(h => encodeURIComponent(h)); // escape everyting but A–Z a–z 0–9 - _ . ! ~ * ' ( )
     return cleanedHashtags.join(',');
   }
 }
