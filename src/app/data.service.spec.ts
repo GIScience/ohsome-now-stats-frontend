@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { DataService } from './data.service';
 import { ActivatedRoute, Route, Router } from '@angular/router';
@@ -11,6 +11,8 @@ describe('DataService', () => {
   let activatedRouteSpy : jasmine.SpyObj<ActivatedRoute>;
   let routerSpy : jasmine.SpyObj<Router>;
   let service: DataService;
+  let httpTestingController: HttpTestingController;
+
 
   const summaryResponse = {
     changesets: 248932,
@@ -591,14 +593,20 @@ describe('DataService', () => {
 
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    service = new DataService(httpClientSpy, activatedRouteSpy, routerSpy)
+    // service = new DataService(httpClientSpy, activatedRouteSpy, routerSpy)
     TestBed.configureTestingModule({ 
-      imports: [ HttpClientTestingModule ],
-      providers: [ 
-        DataService,
-        { provide: ActivatedRoute, useValue: { fragment: of('hashtags=missingmaps&interval=P1M') } },
-      ]
+        imports: [ HttpClientTestingModule ],
+        providers: [ 
+            DataService,
+            { provide: ActivatedRoute, useValue: { fragment: of('hashtags=missingmaps&interval=P1M') } },
+        ]
     });
+    service = TestBed.inject(DataService)
+    httpTestingController = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpTestingController.verify();
   });
 
   it('should be created', () => {
@@ -607,35 +615,35 @@ describe('DataService', () => {
 
   it('should fetch summary data', (done: DoneFn) => {
     const queryParams = {
-      startdate: '2022-08-16T00:52:40.000Z',
-      enddate: '2023-08-16T00:52:40.000Z',
+      start: '2022-08-16T00:52:40.000Z',
+      end: '2023-08-16T00:52:40.000Z',
       hashtags: 'missingmaps'
     };
   
-    httpClientSpy.get.and.returnValue(of(summaryResponse));
-
     service.requestSummary( queryParams ).subscribe({
       next: result => { 
-        // console.log('>>> should fetch plot data >>> ', queryParams, result)
+        console.log('>>> should fetch plot data >>> ', queryParams, result)
         expect(result).toEqual(summaryResponse); 
         done()
       },
       error: done.fail
     });  
-    expect(httpClientSpy.get.calls.count())
-      .withContext('one call')
-      .toBe(1);
+
+    const req = httpTestingController.expectOne(
+        `${service.url}/stats/${queryParams['hashtags']}?startdate=${queryParams['start']}&enddate=${queryParams['end']}`
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(summaryResponse);
   });
 
   it('should fetch plot data', (done: DoneFn) => {
     const queryParams = {
       start: "2022-08-16T00:52:40.000Z",
       end: "2023-08-16T00:52:40.000Z",
-      interval: "P1M"
+      interval: "P1M",
+      hashtags: 'missingmaps'
     };
   
-    httpClientSpy.get.and.returnValue(of(plotResponse));
-
     service.requestPlot( queryParams ).subscribe({
       next: result => { 
         expect(result).toEqual(plotResponse); 
@@ -643,20 +651,21 @@ describe('DataService', () => {
       },
       error: done.fail
     });  
-    expect(httpClientSpy.get.calls.count())
-      .withContext('one call')
-      .toBe(1);
+    
+    const req = httpTestingController.expectOne(
+        `${service.url}/stats/${queryParams['hashtags']}/interval?startdate=${queryParams['start']}&enddate=${queryParams['end']}&interval=${queryParams['interval']}`
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(plotResponse);
   });
 
   it('should fetch trending hashtags ', (done: DoneFn) => {
     const queryParams = {
-      startdate: '2022-08-16T00:52:40.000Z',
-      enddate: '2023-08-16T00:52:40.000Z',
+      start: '2022-08-16T00:52:40.000Z',
+      end: '2023-08-16T00:52:40.000Z',
       limit: 10
     };
   
-    httpClientSpy.get.and.returnValue(of(trendingHashtagsResponse));
-
     service.getTrendingHashtags( queryParams ).subscribe({
       next: result => { 
         expect(result).toEqual(trendingHashtagsResponse); 
@@ -664,19 +673,20 @@ describe('DataService', () => {
       },
       error: done.fail
     });  
-    expect(httpClientSpy.get.calls.count())
-      .withContext('one call')
-      .toBe(1);
+    
+    const req = httpTestingController.expectOne(
+        `${service.url}/most-used-hashtags?startdate=${queryParams['start']}&enddate=${queryParams['end']}&limit=${queryParams['limit']}`
+      );
+      expect(req.request.method).toBe('GET');
+      req.flush(trendingHashtagsResponse);
   });
 
   it('should fetch stats by country ', (done: DoneFn) => {
     const queryParams = {
-      startdate: '2022-08-16T00:52:40.000Z',
-      enddate: '2023-08-16T00:52:40.000Z',
+      start: '2022-08-16T00:52:40.000Z',
+      end: '2023-08-16T00:52:40.000Z',
       hashtags: 'syria'
     };
-  
-    httpClientSpy.get.and.returnValue(of(statsByCountryResponse));
 
     service.requestCountryStats( queryParams ).subscribe({
       next: result => { 
@@ -687,9 +697,12 @@ describe('DataService', () => {
       },
       error: done.fail
     });  
-    expect(httpClientSpy.get.calls.count())
-      .withContext('one call')
-      .toBe(1);
-  });
+
+    const req = httpTestingController.expectOne(
+        `${service.url}/stats/${queryParams['hashtags']}/country?startdate=${queryParams['start']}&enddate=${queryParams['end']}`
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(statsByCountryResponse);
+}); 
 
 });
