@@ -11,7 +11,7 @@ pipeline {
 
   stages {
 
-    stage ('Test') {
+    stage ('Install') {
       steps {
         script {
           echo REPO_NAME
@@ -24,13 +24,20 @@ pipeline {
         }
         nodejs(nodeJSInstallationName: 'NodeJS 18') {
           sh 'npm install'
-          sh 'npm run test'
         }
         
       }
     }
 
-    stage ('Deploy') {
+    stage ('Test') {
+      steps {
+        nodejs(nodeJSInstallationName: 'NodeJS 18') {
+          sh 'npm run test-chromium-headless'
+        }
+      }
+    }
+
+    stage ('Build and Deploy') {
       when {
         expression {
             return (env.BRANCH_NAME == 'main')
@@ -39,7 +46,6 @@ pipeline {
       steps {
         // TODO fix and replace deployment
         nodejs(nodeJSInstallationName: 'NodeJS 18') {
-          sh 'npm install'
           sh 'npm run build'
         }
         withCredentials([gitUsernamePassword(credentialsId: 'e78912d9-de2f-473c-a1b2-6a2ee82a879a')]) {
@@ -56,7 +62,7 @@ pipeline {
     }
 
 
-    stage ('Report Status Change') {
+    stage ('Report Status') {
       when {
         expression {
           return ((currentBuild.number > 1) && (currentBuild.getPreviousBuild().result == 'FAILURE'))

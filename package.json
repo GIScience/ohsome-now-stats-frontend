@@ -10,7 +10,8 @@
     "build:stats": "ng build --stats-json",
     "analyze": "webpack-bundle-analyzer dist/stats.json",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test-chromium-headless": "ng test --browsers=ChromiumHeadless --watch=false"
   },
   "private": true,
   "dependencies": {
