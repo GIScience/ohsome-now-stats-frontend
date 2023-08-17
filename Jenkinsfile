@@ -23,6 +23,7 @@ pipeline {
           echo env.TAG_NAME
         }
         nodejs(nodeJSInstallationName: 'NodeJS 18') {
+          sh 'npm install'
           sh 'npm run test'
         }
         
