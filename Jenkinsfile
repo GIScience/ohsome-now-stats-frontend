@@ -22,8 +22,10 @@ pipeline {
           echo env.BUILD_NUMBER
           echo env.TAG_NAME
         }
-
-        sh 'npm run test'
+        nodejs(nodeJSInstallationName: 'NodeJS 18') {
+          sh 'npm run test'
+        }
+        
       }
     }
 
