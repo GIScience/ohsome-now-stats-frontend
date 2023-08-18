@@ -2,6 +2,7 @@
 
 
 [![Build Status](https://jenkins.heigit.org/buildStatus/icon?job=ohsomeNow%20stats%20frontend/main)](https://jenkins.heigit.org/job/ohsomeNow%20stats%20frontend/job/main/)
+[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=GIScience_ohsome-now-stats-frontend&metric=alert_status)](https://sonarcloud.io/dashboard?id=GIScience_ohsome-now-stats-frontend)
 [![status: active](https://github.com/GIScience/badges/raw/master/status/active.svg)](https://github.com/GIScience/badges#active)
 [![LICENSE](https://img.shields.io/github/license/GIScience/ohsome-now-stats-frontend)](LICENSE)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fstats.now.ohsome.org)](https://stats.now.ohsome.org)
