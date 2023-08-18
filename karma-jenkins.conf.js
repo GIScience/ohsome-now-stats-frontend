@@ -3,6 +3,7 @@
 
 module.exports = function (config) {
   config.set({
+    singleRun: true,
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
@@ -24,16 +25,14 @@ module.exports = function (config) {
     jasmineHtmlReporter: {
       suppressAll: true // removes the duplicated traces
     },
+    colors: false,
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/ohsome-contribution-stats'),
+      dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
-      reporters: [
-        { type: 'html' },
-        { type: 'text-summary' }
-      ]
+      type: 'lcovonly'
     },
     reporters: ['progress', 'kjhtml'],
-    browsers: ['Chrome'],
-    restartOnFileChange: true
+    browsers: ['ChromiumHeadless'],
+    restartOnFileChange: false
   });
 };
