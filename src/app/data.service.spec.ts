@@ -3,25 +3,26 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { DataService } from './data.service';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('DataService', () => {
   let httpClientSpy: jasmine.SpyObj<HttpClient>;
-  let activatedRouteSpy : jasmine.SpyObj<ActivatedRoute>;
-  let routerSpy : jasmine.SpyObj<Router>;
+//   let activatedRouteSpy : jasmine.SpyObj<ActivatedRoute>;
+//   let routerSpy : jasmine.SpyObj<Router>;
   let service: DataService;
   let httpTestingController: HttpTestingController;
 
 
-  const summaryResponse = {
-    changesets: 248932,
-    users: 12529,
-    roads: 34908.842,
-    buildings: 3555884,
-    edits: 6041567,
-    latest: "2023-08-15T23:45:06Z"
-  }
+  const summaryResponse = { 
+    result: {
+        changesets: 248932,
+        users: 12529,
+        roads: 34908.842,
+        buildings: 3555884,
+        edits: 6041567,
+        latest: "2023-08-15T23:45:06Z"
+    }}
   const plotResponse = { 
     result: [
       {
@@ -593,7 +594,6 @@ describe('DataService', () => {
 
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    // service = new DataService(httpClientSpy, activatedRouteSpy, routerSpy)
     TestBed.configureTestingModule({ 
         imports: [ HttpClientTestingModule ],
         providers: [ 
@@ -621,9 +621,9 @@ describe('DataService', () => {
     };
   
     service.requestSummary( queryParams ).subscribe({
-      next: result => { 
-        console.log('>>> should fetch plot data >>> ', queryParams, result)
-        expect(result).toEqual(summaryResponse); 
+      next: res => { 
+        console.log('>>> should fetch plot data >>> ', queryParams, res)
+        expect(res).toEqual(summaryResponse); 
         done()
       },
       error: done.fail
