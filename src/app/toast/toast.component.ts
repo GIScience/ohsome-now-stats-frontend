@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as bootstrap from 'bootstrap';
 
 import { IToastUI, ToastService } from '../toast.service';
@@ -9,8 +9,8 @@ import { ToastTypes } from './toasttypes.modal';
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.scss']
 })
-export class ToastComponent {
-  toastVisible: boolean = false
+export class ToastComponent implements OnInit {
+  toastVisible = false
   // toastTypes: typeof ToastTypes = ToastTypes
   title: string | undefined
   body: string | undefined

@@ -17,14 +17,14 @@ export class QueryComponent implements OnChanges {
   @Input() data: IQueryData | undefined
 
   metaSub!: Subscription
-  hashtags: string = ''
+  hashtags = ''
   intervals: Array<{
     label: string;
     value: string;
   }> | undefined
   interval: string | undefined // default value as 'P1M'
-  selectedDateRange: any;
-  alwaysShowCalendars: boolean = true;
+  selectedDateRange: { end: any; start: any; } | undefined;
+  alwaysShowCalendars = true;
   ranges: any
   minDate!: Dayjs
   maxDate!: Dayjs
@@ -164,6 +164,8 @@ export class QueryComponent implements OnChanges {
 
     // console.log('>>> QueryComponent >>> getStatistics', this.selectedDateRange)
     // get all values from form
+    if(! this.selectedDateRange)
+      return
     const tempEnd = (this.selectedDateRange.end).toISOString()
     const tempStart = (this.selectedDateRange.start).toISOString()
     // currently we support only one hashtags
@@ -201,7 +203,7 @@ export class QueryComponent implements OnChanges {
     }
 
     // console.log('>>> validateForm >>> this.selectedDateRange ', this.selectedDateRange)
-    let dateRangeEle = document.getElementById('dateRange')
+    const dateRangeEle = document.getElementById('dateRange')
     // console.log('dateRangeEle ', (dateRangeEle as HTMLInputElement).value)
     // check if text feild is empty
     if(! (dateRangeEle as HTMLInputElement).value ) {
@@ -220,6 +222,8 @@ export class QueryComponent implements OnChanges {
     }
 
     // check for actual values
+    if(! this.selectedDateRange)
+      return false
     if(!(this.selectedDateRange.start && this.selectedDateRange.end)) {
       console.error('Date range is empty')
       // show the message on toast

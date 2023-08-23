@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 
-import { DataService } from '../../data.service';
+import { ISummaryData } from '../../data.service';
 import { dashboard } from '../tooltip-data';
 import { StatsType } from '../types';
 
@@ -12,7 +12,7 @@ import { StatsType } from '../types';
 })
 export class SummaryComponent implements OnChanges {
 
-  @Input() data: any;
+  @Input() data: ISummaryData | undefined;
   @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
 
   contributors!: string
@@ -31,21 +31,21 @@ export class SummaryComponent implements OnChanges {
         return
 
       // console.log('>>> SummaryComponent >>> data = ', this.data);
-      this.contributors = new Intl.NumberFormat('en-US').format(this.data.contributors)
-      this.buidlingEdits = new Intl.NumberFormat('en-US').format(this.data.buildingEdits)
+      this.contributors = new Intl.NumberFormat('en-US').format(this.data.users)
+      this.buidlingEdits = new Intl.NumberFormat('en-US').format(this.data.buildings)
       this.edits = new Intl.NumberFormat('en-US').format(this.data.edits)
       this.kmOfRoads = new Intl.NumberFormat('en-US', {
           style: "unit",
           unit: "kilometer",
           maximumFractionDigits: 0
          }
-        ).format(this.data.kmOfRoads)
+        ).format(this.data.roads)
 
   }
 
   changeSelectedSummaryComponent(e: any){
-    var newSelected = e.target.closest(".layers")
-    var siblings = [...newSelected.parentNode.parentNode.children];
+    const newSelected = e.target.closest(".layers")
+    const siblings = [...newSelected.parentNode.parentNode.children];
     siblings.forEach((e)=>e.children[0].classList.remove("selected"))
     newSelected.classList.add("selected")
   }
@@ -60,8 +60,8 @@ export class SummaryComponent implements OnChanges {
    */
   enableTooltips(): void {
     // enble tooltip
-    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     // console.log('tooltipTriggerList =', tooltipTriggerList)
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }))
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }))
   }
 }

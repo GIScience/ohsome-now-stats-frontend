@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 // declare var bootstrap: any;
@@ -14,8 +14,8 @@ import { dashboard } from '../tooltip-data';
 export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
   
   @Input() hashtags!: Array<IHashtag> | [] 
-  trendingHashtagLimit: number = 0
-  numOfHashtags: number = 0
+  trendingHashtagLimit = 0
+  numOfHashtags = 0
   dashboardTooltips: any
 
   constructor(
@@ -63,6 +63,7 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
     // console.log('>>> clickHashtag ', hashtag)
     const queryParams = this.getQueryParamsFromFragments()
 
+    if(queryParams)
     this.router.navigate([], { 
       fragment: `hashtags=${hashtag}&start=${queryParams.start}&end=${queryParams.end}&interval=${queryParams.interval}` 
     });
@@ -86,9 +87,8 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
    */
   enableTooltips(): void {
     // enble tooltip
-    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    // console.log('tooltipTriggerList =', tooltipTriggerList)
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }))
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }))
 
     // remove previous tooltips
     const tooltips = Array.from(document.getElementsByClassName("tooltip"))

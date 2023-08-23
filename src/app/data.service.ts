@@ -45,9 +45,9 @@ export class DataService {
   requestMetadata() {
     return this.http.get(`${this.url}/metadata`).subscribe( (meta: any) => {
       // console.log('>>> DataService >>> meta = ', meta)
-      const defaultTimeRange = this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
+      this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
 
-      let tempStart = new Date(meta.result.max_timestamp)
+      const tempStart = new Date(meta.result.max_timestamp)
       tempStart.setDate(tempStart.getDate() - 365)
 
       // if URL params are empty then fill it with default values
@@ -65,25 +65,25 @@ export class DataService {
     return this.metadata
   }
 
-  requestSummary(params: any): Observable<any> {
+  requestSummary(params: any): Observable<IWrappedSummaryData> {
     // console.log('>>> DataService >>> requestSummary ', params)
     if(params && params['hashtags'])
       return this.requestSummaryWithHashtag(params)
 
     else
-      return this.requestSummaryWithoutHashtag(params)
+      return this.requestSummaryWithoutHashtag()
 
   }
 
   requestSummaryWithHashtag(params: any) {
-    return this.http.get(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}`)
+    return this.http.get<IWrappedSummaryData>(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}`)
       .pipe(
         takeUntil(this.abortSummaryReqSub)
       )
   }
 
-  requestSummaryWithoutHashtag(params: any) {
-    return this.http.get(`${this.url}/stats_static`)
+  requestSummaryWithoutHashtag() {
+    return this.http.get<IWrappedSummaryData>(`${this.url}/stats_static`)
       .pipe(
         takeUntil(this.abortSummaryReqSub)
       )
@@ -141,7 +141,7 @@ export class DataService {
     if(! (this.minDate && this.maxDate))
       return null
 
-    let tempStart = moment(this.maxDate).subtract(1,'year').startOf('day')
+    const tempStart = moment(this.maxDate).subtract(1,'year').startOf('day')
 
     return {
       start: tempStart.toISOString(),
@@ -168,12 +168,23 @@ export class DataService {
   }
 }
 
+export interface IWrappedSummaryData {
+  result: ISummaryData
+}
+// export interface ISummaryData {
+//   changesets?: number,
+//   contributors: number
+//   edits: number
+//   buildingEdits: number
+//   kmOfRoads: number,
+//   latest?: string
+// }
 export interface ISummaryData {
   changesets?: number,
-  contributors: number
+  users: number
   edits: number
-  buildingEdits: number
-  kmOfRoads: number,
+  buildings: number
+  roads: number,
   latest?: string
 }
 

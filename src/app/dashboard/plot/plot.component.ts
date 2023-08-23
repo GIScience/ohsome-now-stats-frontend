@@ -34,7 +34,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
    * Draws the blank plotly chart. Traces will be added dynamically
    */
 	initChart() {
-		this.layout =  {
+		this.layout = {
 			autosize: true,
 			height: 350,
 			grid: { rows: 1, columns: 1 },
@@ -59,17 +59,17 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     const currentDate = new Date()
 
     const plotData : any = [{
-      x: this.data.map((e : any) => `${e.startDate}`),
-      y: this.data.map((e : any) => e['users']),
-      customdata: this.data.map((e : any) => e.users),
-      hovertext: this.data.map((e : any) => `From ${e.startDate}<br>To ${e.endDate}`),
+      x: this.data.map((e : IPlotData) => `${e.startDate}`),
+      y: this.data.map((e : IPlotData) => e['users']),
+      customdata: this.data.map((e : IPlotData) => e.users),
+      hovertext: this.data.map((e : IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
       hovertemplate: `%{hovertext}<br>Contributors: %{customdata}<extra></extra>`,
       type: 'bar',
       name: 'Contributors',
       marker: {
         pattern: {
           // apply stripped pattern only for current running time
-          shape: this.data.map((_ : any, idx: number) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
+          shape: this.data.map((_ : IPlotData) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
           size: 7,
           solidity: 0.6
         },
@@ -78,16 +78,16 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       ytitle: "# of contributors",
       visible: this.currentStats === 'users' ? true : false // set true only when summary value is clicked on it
     }, {
-      x: this.data.map((e : any) => `${e.startDate}`),
-      y: this.data.map((e : any) => e['edits']),
-      customdata: this.data.map((e : any) => e.edits),
-      hovertext: this.data.map((e : any) => `From ${e.startDate}<br>To ${e.endDate}`),
+      x: this.data.map((e : IPlotData) => `${e.startDate}`),
+      y: this.data.map((e : IPlotData) => e['edits']),
+      customdata: this.data.map((e : IPlotData) => e.edits),
+      hovertext: this.data.map((e : IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
       hovertemplate: `%{hovertext}<br>Total Edits: %{customdata}<extra></extra>`,
       type: 'bar',
       name: 'Total Edits',
       marker: {
         pattern: {
-          shape: this.data.map((_ : any, idx: number) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
+          shape: this.data.map((_ : IPlotData) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
           size: 7,
           solidity: 0.6
         },
@@ -97,16 +97,16 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       ytitle: "# of total edits",
       visible: this.currentStats === 'edits' ? true : false // set true only when summary value is clicked on it
     }, {
-      x: this.data.map((e : any) => `${e.startDate}`),
-      y: this.data.map((e : any) => e['buildings']),
-      customdata: this.data.map((e : any) => e.buildings),
-      hovertext: this.data.map((e : any) => `From ${e.startDate}<br>To ${e.endDate}`),
+      x: this.data.map((e : IPlotData) => `${e.startDate}`),
+      y: this.data.map((e : IPlotData) => e['buildings']),
+      customdata: this.data.map((e : IPlotData) => e.buildings),
+      hovertext: this.data.map((e : IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
       hovertemplate: `%{hovertext}<br>Buildings Added: %{customdata}<extra></extra>`,
       type: 'bar',
       name: 'Buildings Added',
       marker: {
         pattern: {
-          shape: this.data.map((_ : any, idx: number) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
+          shape: this.data.map((_ : IPlotData) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
           size: 7,
           solidity: 0.6
         },
@@ -116,16 +116,16 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       visible: this.currentStats === 'buildings' ? true : false, // set true only when summary value is clicked on it
       ytitle: "# of buildings added"
     }, {
-      x: this.data.map((e : any) => `${e.startDate}`),
-      y: this.data.map((e : any) => e['roads']),
-      customdata: this.data.map((e : any) => Math.round(e.roads)),
-      hovertext: this.data.map((e : any) => `From ${e.startDate}<br>To ${e.endDate}`),
+      x: this.data.map((e : IPlotData) => `${e.startDate}`),
+      y: this.data.map((e : IPlotData) => e['roads']),
+      customdata: this.data.map((e : IPlotData) => Math.round(e.roads)),
+      hovertext: this.data.map((e : IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
       hovertemplate: `%{hovertext}<br>Road Edits: %{customdata} km<extra></extra> `,
       type: 'bar',
       name: 'Road Edits',
       marker: {
         pattern: {
-          shape: this.data.map((_ : any, idx: number) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
+          shape: this.data.map((_ : IPlotData) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
           size: 7,
           solidity: 0.6
         },
@@ -137,10 +137,5 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     }];
     this.layout.yaxis.title = plotData[this.content[this.currentStats]].ytitle
     Plotly.react('summaryplot', plotData, this.layout, {responsive: true});
-    // Plotly.addTraces('summaryplot', plotData);
   }
-}
-
-interface PlotHTMLElement extends HTMLElement  {
-  on(eventName: string, handler: Function): void
 }

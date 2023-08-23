@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
   currentStats: StatsType = 'users';
 
   queryParams: any
-  summaryMessage: string = ''
+  summaryMessage = ''
   hashtagsData!: Array<IHashtag> | []
   route: any;
   router: any;
@@ -71,8 +71,7 @@ export class DashboardComponent implements OnInit {
         this.dataService.updateURL(queryParams)
 
         // if all values are present then only below code is executed
-        let timeRange: any
-        timeRange = this.initTimeIntervals(queryParams)
+        const timeRange = this.initTimeIntervals(queryParams)
 
         this.queryParams = queryParams
 
@@ -87,10 +86,10 @@ export class DashboardComponent implements OnInit {
             // console.log('>>> res = ', res)
             // send response data to Summary Component
             this.summaryData = {
-              buildingEdits: res!.result.buildings,
-              contributors: res!.result.users,
-              edits: res!.result.edits,
-              kmOfRoads: res!.result.roads
+              buildings: res.result.buildings,
+              users: res.result.users,
+              edits: res.result.edits,
+              roads: res.result.roads
             }
 
             this.dataService.setSummary(this.summaryData)
@@ -185,7 +184,7 @@ export class DashboardComponent implements OnInit {
     if(fragment == null || fragment.length < 2)
       return null
 
-    const tempQueryParams: Array<Array<string>> | any = fragment?.split('&')
+    const tempQueryParams: Array<Array<string>> = fragment?.split('&')
         .map( q => [q.split('=')[0], q.split('=')[1]])
     return Object.fromEntries(tempQueryParams)
   }
@@ -200,7 +199,7 @@ export class DashboardComponent implements OnInit {
     if(!queryParams)
       return `Summarized statistics for all contributions`
 
-    let message: string = ''
+    let message = ''
     if(queryParams.hashtags)
       message += `Summarized statistics of contributions with 
         ${queryParams.hashtags.split(',').map( (h: string) => ' #'+ h)}`

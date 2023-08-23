@@ -19,9 +19,8 @@ describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let dataService: jasmine.SpyObj<DataService>;
-  // let dataService: DataService;
 
-  const summaryResponse = {
+  /* const summaryResponse = {
     changesets: 248932,
     contributors: 12529,
     kmOfRoads: 34908.842,
@@ -238,7 +237,7 @@ describe('DashboardComponent', () => {
     end: "2023-08-16T00:52:40.000Z",
     interval: "P1M",
     hashtags: "missingmaps"
-  }
+  } */
 
   beforeEach(async() => {
     const dataServiceSpy = jasmine.createSpyObj('DataService', ['getDefaultValues', 'requestSummary', 'requestCountryStats', 'getTrendingHashtags']);
@@ -257,7 +256,6 @@ describe('DashboardComponent', () => {
        ],
       providers: [
         { provide: DataService, useValue: dataServiceSpy },
-        // DataService,
         { provide: ActivatedRoute, useValue: { fragment: of('hashtags=missingmaps&interval=P1M') } },
       ]
     })
@@ -267,7 +265,6 @@ describe('DashboardComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DashboardComponent);
     dataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
-    // dataService = TestBed.inject(DataService);
     component = TestBed.createComponent(DashboardComponent).componentInstance;    
   });
 
