@@ -59,7 +59,7 @@ pipeline {
       }
     }
 
-    stage ('Build and Deploy') {
+    stage ('Build and Deploy INT') {
       when {
         expression {
             return (env.BRANCH_NAME == 'main')
@@ -68,7 +68,7 @@ pipeline {
       steps {
         // TODO fix and replace deployment
         nodejs(nodeJSInstallationName: 'NodeJS 18') {
-          sh 'npm run build'
+          sh 'npm run build:int'
         }
         withCredentials([gitUsernamePassword(credentialsId: 'e78912d9-de2f-473c-a1b2-6a2ee82a879a')]) {
           sh 'git config --global user.email "nobody@example.org"'  // TODO remove
@@ -78,6 +78,30 @@ pipeline {
           sh 'rm -r /tmp/tmp-stats-frontend-git/*'
           sh 'cp -r dist/* /tmp/tmp-stats-frontend-git/'
           sh "cd /tmp/tmp-stats-frontend-git/ && git add . && git commit -m 'deploy ${LATEST_COMMIT_ID}' --allow-empty && git push"
+        }
+        echo 'Please redeploy the deployment git manually (for now)!'  // TODO replace
+      }
+    }
+
+    stage ('Build and Deploy PROD') {
+      when {
+        expression {
+            return (env.BRANCH_NAME == 'main' && env.TAG_NAME)
+        }
+      }
+      steps {
+        // TODO fix and replace deployment
+        nodejs(nodeJSInstallationName: 'NodeJS 18') {
+          sh 'npm run build:prod'
+        }
+        withCredentials([gitUsernamePassword(credentialsId: 'e78912d9-de2f-473c-a1b2-6a2ee82a879a')]) {
+          sh 'git config --global user.email "nobody@example.org"'  // TODO remove
+          sh 'git config --global user.name "Jenkins"'  // TODO remove
+          sh 'rm -rf /tmp/tmp-stats-frontend-git'
+          sh 'git clone https://gitlab.gistools.geog.uni-heidelberg.de/giscience/big-data/ohsome/ohsome-now/deployments/stats-frontend.git /tmp/tmp-stats-frontend-git'
+          sh 'rm -r /tmp/tmp-stats-frontend-git/*'
+          sh 'cp -r dist/* /tmp/tmp-stats-frontend-git/'
+          sh "cd /tmp/tmp-stats-frontend-git/ && git add . && git tag ${env.TAG_NAME} && git commit -m 'deploy ${LATEST_COMMIT_ID}' --allow-empty && git push --tags"
         }
         echo 'Please redeploy the deployment git manually (for now)!'  // TODO replace
       }
