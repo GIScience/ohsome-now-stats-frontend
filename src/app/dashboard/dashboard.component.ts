@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
     this.route.fragment.subscribe((fragment: string | null) => {
 
       const queryParams = this.getQueryParamsFromFragments(fragment)
-      if(queryParams !== null ) {
+      if(queryParams !== null && this.queryParamsComplete(queryParams)) {
         console.log('>>> DashboardComponent >>> queryParams ', queryParams, this.dataService.defaultHashtag)
         if(queryParams['hashtags'] == null)
           queryParams['hashtags'] = this.dataService.defaultHashtag
@@ -138,16 +138,20 @@ export class DashboardComponent implements OnInit {
         // resolve #26
         const urlParams = this.dataService.getDefaultValues()
         // if URL params are empty then fill it with default values
-        if(urlParams !== null)
-        this.dataService.updateURL({
-          hashtags: urlParams.hashtags,
-          interval: urlParams.interval,
-          start: urlParams.start,
-          end: urlParams.end
-        })
+        if(urlParams !== null){
+          this.dataService.updateURL({
+            hashtags: urlParams.hashtags,
+            interval: urlParams.interval,
+            start: urlParams.start,
+            end: urlParams.end
+          })
+        }
       }
     })
 
+  }
+  queryParamsComplete(params: any):boolean{
+      return ["start", "end", "interval", "hashtags"].sort().join() === Object.keys(params).sort().join()  
   }
 
   stopIntervalReq() {

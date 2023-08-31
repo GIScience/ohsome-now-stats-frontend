@@ -46,19 +46,33 @@ export class DataService {
     return this.http.get(`${this.url}/metadata`).subscribe( (meta: any) => {
       // console.log('>>> DataService >>> meta = ', meta)
       this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
-
       const tempStart = new Date(meta.result.max_timestamp)
       tempStart.setDate(tempStart.getDate() - 365)
-
       // if URL params are empty then fill it with default values
-      if(this.route.snapshot.fragment == null)
-        this.updateURL({
-          hashtags: this.defaultHashtag,
-          interval: this.defaultIntervalValue,
-          start: tempStart.toISOString(),
-          end: this.maxDate
-        })
+      var queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment)
+
+      this.updateURL({
+        hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : this.defaultHashtag,
+        interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
+        start: queryParams && queryParams.start ? queryParams.start : tempStart.toISOString(),
+        end: queryParams && queryParams.end ? queryParams.end : this.maxDate
+      })
     })
+  }
+
+  /**
+   * Creates query param from enitre fragment of the URL
+   *
+   * @param String URL fragment part
+   * @returns Object with all query params sepearted
+   */
+  getQueryParamsFromFragments(fragment: string | null): any {
+    if(fragment == null || fragment.length < 2)
+      return null
+
+    const tempQueryParams: Array<Array<string>> = fragment?.split('&')
+        .map( q => [q.split('=')[0], q.split('=')[1]])
+    return Object.fromEntries(tempQueryParams)
   }
 
   getMetaData(): Observable<IMetaData | null> {
@@ -66,24 +80,7 @@ export class DataService {
   }
 
   requestSummary(params: any): Observable<IWrappedSummaryData> {
-    // console.log('>>> DataService >>> requestSummary ', params)
-    if(params && params['hashtags'])
-      return this.requestSummaryWithHashtag(params)
-
-    else
-      return this.requestSummaryWithoutHashtag()
-
-  }
-
-  requestSummaryWithHashtag(params: any) {
     return this.http.get<IWrappedSummaryData>(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}`)
-      .pipe(
-        takeUntil(this.abortSummaryReqSub)
-      )
-  }
-
-  requestSummaryWithoutHashtag() {
-    return this.http.get<IWrappedSummaryData>(`${this.url}/stats_static`)
       .pipe(
         takeUntil(this.abortSummaryReqSub)
       )
