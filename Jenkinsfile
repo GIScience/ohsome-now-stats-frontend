@@ -101,7 +101,7 @@ pipeline {
           sh 'git clone https://gitlab.gistools.geog.uni-heidelberg.de/giscience/big-data/ohsome/ohsome-now/deployments/stats-frontend.git /tmp/tmp-stats-frontend-git'
           sh 'rm -r /tmp/tmp-stats-frontend-git/*'
           sh 'cp -r dist/* /tmp/tmp-stats-frontend-git/'
-          sh "cd /tmp/tmp-stats-frontend-git/ && git add . && git tag ${env.TAG_NAME} && git commit -m 'deploy ${LATEST_COMMIT_ID}' --allow-empty && git push && git push --tags"
+          sh "cd /tmp/tmp-stats-frontend-git/ && git add . && git commit -m 'deploy ${LATEST_COMMIT_ID}' --allow-empty && git tag ${env.TAG_NAME} && git push && git push --tags"
         }
         echo 'Please redeploy the deployment git manually (for now)!'  // TODO replace
       }
