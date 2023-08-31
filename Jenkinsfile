@@ -62,7 +62,7 @@ pipeline {
     stage ('Build and Deploy INT') {
       when {
         expression {
-            return (env.BRANCH_NAME == 'main')
+            return (env.BRANCH_NAME == 'main' && env.TAG_NAME == null )
         }
       }
       steps {
