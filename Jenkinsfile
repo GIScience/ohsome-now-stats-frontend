@@ -86,7 +86,7 @@ pipeline {
     stage ('Build and Deploy PROD') {
       when {
         expression {
-            return (env.BRANCH_NAME == 'main' && env.TAG_NAME)
+            return (env.BRANCH_NAME != 'main' && env.TAG_NAME)
         }
       }
       steps {
