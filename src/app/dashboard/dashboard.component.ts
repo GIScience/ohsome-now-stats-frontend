@@ -138,12 +138,13 @@ export class DashboardComponent implements OnInit {
         // resolve #26
         const urlParams = this.dataService.getDefaultValues()
         // if URL params are empty then fill it with default values
+
         if(urlParams !== null){
           this.dataService.updateURL({
-            hashtags: urlParams.hashtags,
-            interval: urlParams.interval,
-            start: urlParams.start,
-            end: urlParams.end
+            hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : urlParams.hashtags,
+            interval: queryParams && queryParams.interval ? queryParams.interval : urlParams.interval,
+            start: queryParams && queryParams.start ? queryParams.start : urlParams.start,
+            end: queryParams && queryParams.end ? queryParams.end :  urlParams.end
           })
         }
       }
@@ -187,7 +188,6 @@ export class DashboardComponent implements OnInit {
   getQueryParamsFromFragments(fragment: string | null): any {
     if(fragment == null || fragment.length < 2)
       return null
-
     const tempQueryParams: Array<Array<string>> = fragment?.split('&')
         .map( q => [q.split('=')[0], q.split('=')[1]])
     return Object.fromEntries(tempQueryParams)
