@@ -171,7 +171,6 @@ export class QueryComponent implements OnChanges {
       return
     this.dataService.requestMetadata()
 
-    console.log('>>> QueryComponent >>> getStatistics', this.selectedDateRange)
     // get all values from form
     if(! this.selectedDateRange)
       return
@@ -274,7 +273,7 @@ export class QueryComponent implements OnChanges {
     { name: 'USA', value: 'USA' },
     { name: 'Australia', value: 'AUS' },
     { name: 'Canada', value: 'CAN' },
-    { name: 'South Africa', value: 'SA' },
+    { name: 'South Africa', value: 'ZAF' },
      ]
 
 

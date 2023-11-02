@@ -84,7 +84,6 @@ export class DashboardComponent implements OnInit {
         this.summaryMessage = this.formSummaryMessage(queryParams)
 
         // fire the request to API
-        console.log('>>> DashboardComponent >>> queryParams ', queryParams)
         this.dataService.requestSummary(queryParams).subscribe( {
           next: res => {
             // console.log('>>> res = ', res)
@@ -191,12 +190,10 @@ export class DashboardComponent implements OnInit {
    * @returns Object with all query params sepearted
    */
   getQueryParamsFromFragments(fragment: string | null): any {
-    console.log('>>> getQueryParamsFromFragments >>> fragment = ', fragment)
     if(fragment == null || fragment.length < 2)
       return null
     const tempQueryParams: Array<Array<string>> = fragment?.split('&')
         .map( q => [q.split('=')[0], q.split('=')[1]])
-    console.log('>>> getQueryParamsFromFragments >>> tempQueryParams = ', tempQueryParams)
     return Object.fromEntries(tempQueryParams)
   }
 
