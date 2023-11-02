@@ -256,7 +256,7 @@ describe('DashboardComponent', () => {
        ],
       providers: [
         { provide: DataService, useValue: dataServiceSpy },
-        { provide: ActivatedRoute, useValue: { fragment: of('hashtags=missingmaps&interval=P1M') } },
+        { provide: ActivatedRoute, useValue: { fragment: of('hashtags=missingmaps&interval=P1M&countries=DE,UGA') } },
       ]
     })
     .compileComponents();
@@ -277,6 +277,19 @@ describe('DashboardComponent', () => {
     const expectedParams = {
       start: '2020-01-01T00:00:00.000Z',
       end: '2020-12-31T00:00:00.000Z'
+    };
+
+    const params = component.getQueryParamsFromFragments(fragment);
+
+    expect(params).toEqual(expectedParams);
+  });
+
+  it('should get query params from URL fragment', () => {
+    const fragment = 'start=2020-01-01T00:00:00.000Z&end=2020-12-31T00:00:00.000Z&countries=DE,UGA';
+    const expectedParams = {
+      start: '2020-01-01T00:00:00.000Z',
+      end: '2020-12-31T00:00:00.000Z',
+      countries: "DE,UGA"
     };
 
     const params = component.getQueryParamsFromFragments(fragment);
