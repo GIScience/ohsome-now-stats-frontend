@@ -68,6 +68,9 @@ export class DashboardComponent implements OnInit {
         if(queryParams['interval'] == null)
           queryParams.interval = this.dataService.defaultIntervalValue
 
+        if (queryParams['countries'] == null)
+          queryParams.countries = ''
+
         this.dataService.updateURL(queryParams)
 
         // if all values are present then only below code is executed
@@ -81,6 +84,7 @@ export class DashboardComponent implements OnInit {
         this.summaryMessage = this.formSummaryMessage(queryParams)
 
         // fire the request to API
+        console.log('>>> DashboardComponent >>> queryParams ', queryParams)
         this.dataService.requestSummary(queryParams).subscribe( {
           next: res => {
             // console.log('>>> res = ', res)
@@ -144,7 +148,8 @@ export class DashboardComponent implements OnInit {
             hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : urlParams.hashtags,
             interval: queryParams && queryParams.interval ? queryParams.interval : urlParams.interval,
             start: queryParams && queryParams.start ? queryParams.start : urlParams.start,
-            end: queryParams && queryParams.end ? queryParams.end :  urlParams.end
+            end: queryParams && queryParams.end ? queryParams.end :  urlParams.end,
+            countries: queryParams && queryParams.countries ? queryParams.countries : urlParams.countries
           })
         }
       }
@@ -152,7 +157,7 @@ export class DashboardComponent implements OnInit {
 
   }
   queryParamsComplete(params: any):boolean{
-      return ["start", "end", "interval", "hashtags"].sort().join() === Object.keys(params).sort().join()  
+      return ["start", "end", "interval", "hashtags", "countries"].sort().join() === Object.keys(params).sort().join()
   }
 
   stopIntervalReq() {
@@ -186,10 +191,12 @@ export class DashboardComponent implements OnInit {
    * @returns Object with all query params sepearted
    */
   getQueryParamsFromFragments(fragment: string | null): any {
+    console.log('>>> getQueryParamsFromFragments >>> fragment = ', fragment)
     if(fragment == null || fragment.length < 2)
       return null
     const tempQueryParams: Array<Array<string>> = fragment?.split('&')
         .map( q => [q.split('=')[0], q.split('=')[1]])
+    console.log('>>> getQueryParamsFromFragments >>> tempQueryParams = ', tempQueryParams)
     return Object.fromEntries(tempQueryParams)
   }
 

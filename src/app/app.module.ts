@@ -19,6 +19,7 @@ import { ToastService } from './toast.service';
 import { AboutComponent } from './about/about.component';
 import {NgOptimizedImage} from '@angular/common';
 import { HelpComponent } from './help/help.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { HelpComponent } from './help/help.component';
     AppRoutingModule,
     HttpClientModule,
     NgxDaterangepickerMd.forRoot(),
-    NgOptimizedImage
+    NgOptimizedImage,
+    NgSelectModule
   ],
   providers: [
     DataService,

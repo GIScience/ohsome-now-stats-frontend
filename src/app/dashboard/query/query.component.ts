@@ -23,6 +23,10 @@ export class QueryComponent implements OnChanges {
     value: string;
   }> | undefined
   interval: string | undefined // default value as 'P1M'
+  countryMap: Array<{
+    name: string;
+    value: string;
+    }> | undefined
   selectedDateRange: { end: any; start: any; } | undefined;
   alwaysShowCalendars = true;
   ranges: any
@@ -35,7 +39,9 @@ export class QueryComponent implements OnChanges {
   private _start = ''
   private _end = ''
   currentTimeInUTC!: string;
-  
+
+  countries: string[] = [];
+
   constructor(
     private dataService: DataService,
     private router: Router,
@@ -151,6 +157,9 @@ export class QueryComponent implements OnChanges {
 
       // set interval
       this.interval = data.interval
+
+      //set countries
+      this.countries = data.countries
     }
   }
 
@@ -162,7 +171,7 @@ export class QueryComponent implements OnChanges {
       return
     this.dataService.requestMetadata()
 
-    // console.log('>>> QueryComponent >>> getStatistics', this.selectedDateRange)
+    console.log('>>> QueryComponent >>> getStatistics', this.selectedDateRange)
     // get all values from form
     if(! this.selectedDateRange)
       return
@@ -176,7 +185,7 @@ export class QueryComponent implements OnChanges {
 
     // update the url fragment
     this.router.navigate([], { 
-      fragment: `hashtags=${tempHashTags}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}` 
+      fragment: `hashtags=${tempHashTags}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}&countries=${this.countries}`,
     })
   }
 
@@ -258,4 +267,15 @@ export class QueryComponent implements OnChanges {
       .map(h => encodeURIComponent(h)); // escape everyting but A–Z a–z 0–9 - _ . ! ~ * ' ( )
     return cleanedHashtags.join(',');
   }
+
+  selectedCountries: string[] = [];
+ allCountries = [
+    { name: 'India', value: 'IND' },
+    { name: 'USA', value: 'USA' },
+    { name: 'Australia', value: 'AUS' },
+    { name: 'Canada', value: 'CAN' },
+    { name: 'South Africa', value: 'SA' },
+     ]
+
+
 }
