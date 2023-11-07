@@ -55,7 +55,8 @@ export class DataService {
         hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : this.defaultHashtag,
         interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
         start: queryParams && queryParams.start ? queryParams.start : tempStart.toISOString(),
-        end: queryParams && queryParams.end ? queryParams.end : this.maxDate
+        end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
+        countries: queryParams && queryParams.countries ? queryParams.countries : ''
       })
     })
   }
@@ -80,14 +81,14 @@ export class DataService {
   }
 
   requestSummary(params: any): Observable<IWrappedSummaryData> {
-    return this.http.get<IWrappedSummaryData>(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}`)
+    return this.http.get<IWrappedSummaryData>(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
       .pipe(
         takeUntil(this.abortSummaryReqSub)
       )
   }
 
   requestPlot(params: any): Observable<IWrappedPlotData> {
-    return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}`)
+    return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}&countries=${params['countries']}`)
       .pipe(
         takeUntil(this.abortIntervalReqSub)
       )
@@ -144,7 +145,8 @@ export class DataService {
       start: tempStart.toISOString(),
       end: this.maxDate,
       hashtags: this.defaultHashtag,
-      interval: this.defaultIntervalValue
+      interval: this.defaultIntervalValue,
+      countries: ''
     }
   }
 
@@ -160,7 +162,7 @@ export class DataService {
 
   updateURL(data: IQueryParam): void{
     this.router.navigate([], {
-      fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}`
+      fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}`
     })
   }
 }
@@ -190,6 +192,7 @@ export interface IQueryData {
   end: string
   hashtags: Array<string>
   interval: string
+  countries: string
 }
 
 export interface IWrappedPlotData {
@@ -230,6 +233,7 @@ export interface ITrendingHashtags {
 }
 
 export interface IQueryParam {
+  countries: string,
   hashtags: string,
   start: string, // date in ISO format, ensure to keep milliseconds as 0
   end: string, // date in ISO format, ensure to keep milliseconds as 0

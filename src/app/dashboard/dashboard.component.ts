@@ -68,6 +68,9 @@ export class DashboardComponent implements OnInit {
         if(queryParams['interval'] == null)
           queryParams.interval = this.dataService.defaultIntervalValue
 
+        if (queryParams['countries'] == null)
+          queryParams.countries = ''
+
         this.dataService.updateURL(queryParams)
 
         // if all values are present then only below code is executed
@@ -144,7 +147,8 @@ export class DashboardComponent implements OnInit {
             hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : urlParams.hashtags,
             interval: queryParams && queryParams.interval ? queryParams.interval : urlParams.interval,
             start: queryParams && queryParams.start ? queryParams.start : urlParams.start,
-            end: queryParams && queryParams.end ? queryParams.end :  urlParams.end
+            end: queryParams && queryParams.end ? queryParams.end :  urlParams.end,
+            countries: queryParams && queryParams.countries ? queryParams.countries : urlParams.countries
           })
         }
       }
@@ -152,7 +156,7 @@ export class DashboardComponent implements OnInit {
 
   }
   queryParamsComplete(params: any):boolean{
-      return ["start", "end", "interval", "hashtags"].sort().join() === Object.keys(params).sort().join()  
+      return ["start", "end", "interval", "hashtags", "countries"].sort().join() === Object.keys(params).sort().join()
   }
 
   stopIntervalReq() {

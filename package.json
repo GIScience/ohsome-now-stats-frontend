@@ -1,6 +1,6 @@
 {
   "name": "ohsome-now-stats",
-  "version": "0.3.5",
+  "version": "0.3.8",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

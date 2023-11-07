@@ -617,7 +617,8 @@ describe('DataService', () => {
     const queryParams = {
       start: '2022-08-16T00:52:40.000Z',
       end: '2023-08-16T00:52:40.000Z',
-      hashtags: 'missingmaps'
+      hashtags: 'missingmaps',
+      countries: ''
     };
   
     service.requestSummary( queryParams ).subscribe({
@@ -630,7 +631,7 @@ describe('DataService', () => {
     });  
 
     const req = httpTestingController.expectOne(
-        `${service.url}/stats/${queryParams['hashtags']}?startdate=${queryParams['start']}&enddate=${queryParams['end']}`
+        `${service.url}/stats/${queryParams['hashtags']}?startdate=${queryParams['start']}&enddate=${queryParams['end']}&countries=`
     );
     expect(req.request.method).toBe('GET');
     req.flush(summaryResponse);
