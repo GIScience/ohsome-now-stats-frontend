@@ -19,6 +19,8 @@ import { ToastService } from './toast.service';
 import { AboutComponent } from './about/about.component';
 import {NgOptimizedImage} from '@angular/common';
 import { HelpComponent } from './help/help.component';
+import { SelectDropDownModule } from 'ngx-select-dropdown'
+
 
 @NgModule({
   declarations: [
@@ -32,7 +34,7 @@ import { HelpComponent } from './help/help.component';
     TrendingHashtagsComponent,
     ToastComponent,
     AboutComponent,
-    HelpComponent
+    HelpComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,7 +42,8 @@ import { HelpComponent } from './help/help.component';
     AppRoutingModule,
     HttpClientModule,
     NgxDaterangepickerMd.forRoot(),
-    NgOptimizedImage
+    NgOptimizedImage,
+    SelectDropDownModule
   ],
   providers: [
     DataService,

@@ -88,7 +88,7 @@ export class DataService {
   }
 
   requestPlot(params: any): Observable<IWrappedPlotData> {
-    return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}`)
+    return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}&countries=${params['countries']}`)
       .pipe(
         takeUntil(this.abortIntervalReqSub)
       )
@@ -192,7 +192,7 @@ export interface IQueryData {
   end: string
   hashtags: Array<string>
   interval: string
-  countries: Array<string>
+  countries: string
 }
 
 export interface IWrappedPlotData {

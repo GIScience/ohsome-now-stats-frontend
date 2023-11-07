@@ -3,9 +3,11 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { Dayjs } from "dayjs";
+import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 
 import { DataService, IQueryData } from '../../data.service';
 import { ToastService } from 'src/app/toast.service';
+import { NgxDropdownConfig } from 'ngx-select-dropdown';
 
 @Component({
   selector: 'app-query',
@@ -33,14 +35,15 @@ export class QueryComponent implements OnChanges {
   minDate!: Dayjs
   maxDate!: Dayjs
   maxDateString!: string
-  // invalidDates: moment.Moment[] = [moment().add(2, 'days'), moment().add(3, 'days'), moment().add(5, 'days')];
-  // invalidDates: moment.Moment[] = [moment(this.maxDate).add(1, 'day'), moment().add(3, 'days'), moment().add(5, 'days')];
 
   private _start = ''
   private _end = ''
   currentTimeInUTC!: string;
 
-  countries: string[] = [];
+  countries: string[] = [];  // only codes for url and get request
+  dropdownOptions = dropdownOptions;  // all possible countries with name and code
+  selectedCountries : countryDataClass[] = []  // selected countries with name and code
+
 
   constructor(
     private dataService: DataService,
@@ -96,9 +99,6 @@ export class QueryComponent implements OnChanges {
           'Last Year':  [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
           'Entire Duration':  [dayjs(this.minDate), dayjs(this.maxDate)]
         }
-        // 'This Month': [moment().startOf('month'), moment().endOf('month')],
-        // 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-
       }
     })
 
@@ -159,7 +159,11 @@ export class QueryComponent implements OnChanges {
       this.interval = data.interval
 
       //set countries
-      this.countries = data.countries
+      this.countries = data.countries.split(",")
+      this.selectedCountries = this.dropdownOptions.filter((option: countryDataClass)=>{
+          return this.countries.includes(option.value)
+      }
+      )
     }
   }
 
@@ -167,21 +171,30 @@ export class QueryComponent implements OnChanges {
    * Called on Submit button click on the form
    */
   getStatistics() {
+
     if(!this.validateForm())
       return
+
     this.dataService.requestMetadata()
 
     // get all values from form
     if(! this.selectedDateRange)
       return
+
     const tempEnd = (this.selectedDateRange.end).toISOString()
     const tempStart = (this.selectedDateRange.start).toISOString()
-    // currently we support only one hashtags
-    // TODO: in future, if multiple hastags a present then fire 
-    // request to /group-summaries endpoint and not /stats
-    const tempHashTags = this.cleanHashTags(this.hashtags)
-    // console.log('formvalues = ', tempStart, tempEnd, this.interval, tempHashTags)
 
+    const tempHashTags = this.cleanHashTags(this.hashtags)
+
+    if (this.selectedCountries.length === this.dropdownOptions.length){
+      this.countries = [""]
+    }
+    else {
+      this.countries = this.selectedCountries.map(e=>e.value)
+    }
+
+
+    console.log(this.selectedCountries)
     // update the url fragment
     this.router.navigate([], { 
       fragment: `hashtags=${tempHashTags}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}&countries=${this.countries}`,
@@ -192,7 +205,6 @@ export class QueryComponent implements OnChanges {
    * Validates the form values before its being fired to API
    */
   validateForm(): boolean {
-    // console.log('>>> validateForm >>> this.hashtags ', this.hashtags)
     if(this.hashtags === ''){
       console.error('Hashtag is empty')
       // show the message on toast
@@ -203,16 +215,15 @@ export class QueryComponent implements OnChanges {
         time: 3000
       })
 
-      const hashtagsEle = document.getElementById('hastags')
+      const hashtagsEle = document.getElementById('hashtags')
       if(hashtagsEle){
         hashtagsEle.focus()
       }
       return false
     }
 
-    // console.log('>>> validateForm >>> this.selectedDateRange ', this.selectedDateRange)
     const dateRangeEle = document.getElementById('dateRange')
-    // console.log('dateRangeEle ', (dateRangeEle as HTMLInputElement).value)
+
     // check if text feild is empty
     if(! (dateRangeEle as HTMLInputElement).value ) {
       console.error('Date range is empty')
@@ -223,8 +234,6 @@ export class QueryComponent implements OnChanges {
         type: 'error',
         time: 3000
       })
-
-      // dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
 
       return false
     }
@@ -242,8 +251,6 @@ export class QueryComponent implements OnChanges {
         time: 3000
       })
 
-      // dateRangeEle?.classList.add(...['was-validated','form-control:invalid','form-control.is-invalid'])
-
       return false
     }
 
@@ -251,7 +258,7 @@ export class QueryComponent implements OnChanges {
   }
 
   /**
-   * Cleans the hastags field values
+   * Cleans the hashtags field values
    * 
    * @param hashtags 
    * @returns string comma seperated hashtags without the symbol hashtag
@@ -267,14 +274,32 @@ export class QueryComponent implements OnChanges {
     return cleanedHashtags.join(',');
   }
 
-  selectedCountries: string[] = [];
- allCountries = [
-    { name: 'India', value: 'IND' },
-    { name: 'USA', value: 'USA' },
-    { name: 'Australia', value: 'AUS' },
-    { name: 'Canada', value: 'CAN' },
-    { name: 'South Africa', value: 'ZAF' },
-     ]
+    configCountry: NgxDropdownConfig =  {
+      displayKey: 'name',
+      search: true,
+      height: '20rem',
+      placeholder: 'Optionally filter by Country',
+      limitTo: 0,
+      moreText: 'item',
+      noResultsFound: 'No results found',
+      searchPlaceholder: 'Search',
+      searchOnKey: 'name',
+      customComparator:customComparator,
+      clearOnSelection: true,
+      inputDirection: "up",
+      enableSelectAll: true
+    };
+}
 
+function customComparator(a:any,b:any){
+    return a.name.localeCompare(b.name)
+  }
 
+class countryDataClass {
+    name: string;
+    value: string;
+    constructor(name:string, value:string){
+        this.name = name;
+        this.value = value;
+    }
 }
