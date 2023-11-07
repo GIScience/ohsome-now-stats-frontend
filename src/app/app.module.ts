@@ -19,7 +19,7 @@ import { ToastService } from './toast.service';
 import { AboutComponent } from './about/about.component';
 import {NgOptimizedImage} from '@angular/common';
 import { HelpComponent } from './help/help.component';
-import { SelectDropDownModule } from 'ngx-select-dropdown'
+import { SelectDropDownModule } from 'ngx-select-dropdown';
 
 
 @NgModule({

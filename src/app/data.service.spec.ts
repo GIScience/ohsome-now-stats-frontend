@@ -642,7 +642,8 @@ describe('DataService', () => {
       start: "2022-08-16T00:52:40.000Z",
       end: "2023-08-16T00:52:40.000Z",
       interval: "P1M",
-      hashtags: 'missingmaps'
+      hashtags: 'missingmaps',
+      countries: ''
     };
   
     service.requestPlot( queryParams ).subscribe({
@@ -654,7 +655,7 @@ describe('DataService', () => {
     });  
     
     const req = httpTestingController.expectOne(
-        `${service.url}/stats/${queryParams['hashtags']}/interval?startdate=${queryParams['start']}&enddate=${queryParams['end']}&interval=${queryParams['interval']}`
+        `${service.url}/stats/${queryParams['hashtags']}/interval?startdate=${queryParams['start']}&enddate=${queryParams['end']}&interval=${queryParams['interval']}&countries=`
     );
     expect(req.request.method).toBe('GET');
     req.flush(plotResponse);

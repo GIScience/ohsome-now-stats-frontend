@@ -13,6 +13,7 @@ import { PageNotFoundComponent } from '../page-not-found/page-not-found.componen
 import { MapComponent } from './map/map.component';
 import { TrendingHashtagsComponent } from './trending-hashtags/trending-hashtags.component';
 import { ToastComponent } from '../toast/toast.component';
+import { SelectDropDownModule } from 'ngx-select-dropdown';
 
 describe('DashboardComponent', () => {
 
@@ -243,7 +244,7 @@ describe('DashboardComponent', () => {
     const dataServiceSpy = jasmine.createSpyObj('DataService', ['getDefaultValues', 'requestSummary', 'requestCountryStats', 'getTrendingHashtags']);
 
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
+      imports: [ RouterTestingModule, HttpClientTestingModule, SelectDropDownModule],
       declarations: [ 
         SummaryComponent,
         QueryComponent,
@@ -252,7 +253,7 @@ describe('DashboardComponent', () => {
         PageNotFoundComponent,
         MapComponent,
         TrendingHashtagsComponent,
-        ToastComponent,
+        ToastComponent
        ],
       providers: [
         { provide: DataService, useValue: dataServiceSpy },

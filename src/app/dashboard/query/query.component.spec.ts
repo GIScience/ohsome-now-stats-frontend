@@ -7,6 +7,7 @@ import { of } from 'rxjs';
 import { QueryComponent } from './query.component';
 import { DataService } from 'src/app/data.service';
 import { ToastService } from 'src/app/toast.service';
+import { SelectDropDownModule } from 'ngx-select-dropdown'
 
 describe('QueryComponent', () => {
   let component: QueryComponent;
@@ -23,7 +24,8 @@ describe('QueryComponent', () => {
       imports: [
         RouterTestingModule, 
         FormsModule, 
-        NgxDaterangepickerMd.forRoot()
+        NgxDaterangepickerMd.forRoot(),
+        SelectDropDownModule
       ],
       providers: [
         { provide: DataService, useValue: dataServiceMock },
