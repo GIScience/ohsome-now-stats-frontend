@@ -14,6 +14,7 @@ pipeline {
 
     stage ('Install') {
       steps {
+        setup_basic_env()
         script {
           echo REPO_NAME
           echo LATEST_AUTHOR
@@ -27,6 +28,11 @@ pipeline {
           sh 'npm install'
         }
       }
+      post {
+          failure {
+            rocket_basicsend("*${env.REPO_NAME}*-build nr. ${env.BUILD_NUMBER} *failed* install on Branch - ${env.BRANCH_NAME}  (<${env.BUILD_URL}|Open Build in Jenkins>). Latest commit from  ${env.LATEST_AUTHOR}. Review the code!")
+          }
+      }
     }
 
     stage ('Test') {
@@ -35,7 +41,13 @@ pipeline {
           sh 'ng test --karma-config karma-jenkins.conf.js --code-coverage'
         }
       }
+      post {
+          failure {
+            rocket_testfail()
+          }
+      }
     }
+
 
     stage ('Reports and Statistics') {
       steps {
@@ -57,7 +69,13 @@ pipeline {
           }
         }
       }
+      post {
+          failure {
+            rocket_reportfail()
+          }
+      }
     }
+
 
     stage ('Build and Deploy INT') {
       when {
@@ -81,7 +99,13 @@ pipeline {
         }
         echo 'Please redeploy the deployment git manually (for now)!'  // TODO replace
       }
+      post {
+          failure {
+            rocket_basicsend("*${env.REPO_NAME}*-build nr. ${env.BUILD_NUMBER} *failed* build and deploy INT stage on Branch - ${env.BRANCH_NAME}  (<${env.BUILD_URL}|Open Build in Jenkins>). Latest commit from  ${env.LATEST_AUTHOR}. Review the code!")
+          }
+      }
     }
+
 
     stage ('Build and Deploy PROD') {
       when {
@@ -105,24 +129,19 @@ pipeline {
         }
         echo 'Please redeploy the deployment git manually (for now)!'  // TODO replace
       }
-    }
-
-
-    stage ('Report Status') {
-      when {
-        expression {
-          return ((currentBuild.number > 1) && (currentBuild.getPreviousBuild().result == 'FAILURE'))
-        }
-      }
-      steps {
-        rocketSend channel: 'jenkinsohsome', emoji: ':sunglasses:', message: "We had some problems, but we are BACK TO NORMAL! Nice debugging: *${REPO_NAME}*-build-nr. ${env.BUILD_NUMBER} *succeeded* on Branch - ${env.BRANCH_NAME}  (<${env.BUILD_URL}|Open Build in Jenkins>). Latest commit from  ${LATEST_AUTHOR}." , rawMessage: true
-      }
       post {
-        failure {
-          rocketSend channel: 'jenkinsohsome', emoji: ':disappointed:', message: "Reporting of *${REPO_NAME}*-build nr. ${env.BUILD_NUMBER} *failed* on Branch - ${env.BRANCH_NAME}  (<${env.BUILD_URL}|Open Build in Jenkins>). Latest commit from  ${LATEST_AUTHOR}." , rawMessage: true
-        }
+          failure {
+            rocket_basicsend("*${env.REPO_NAME}*-build nr. ${env.BUILD_NUMBER} *failed* build and deploy PROD stage on Branch - ${env.BRANCH_NAME}  (<${env.BUILD_URL}|Open Build in Jenkins>). Latest commit from  ${env.LATEST_AUTHOR}. Review the code!")
+          }
       }
     }
-  }
 
+    stage('Wrapping up') {
+      steps {
+        encourage()
+        status_change()
+      }
+    }
+
+  }
 }
