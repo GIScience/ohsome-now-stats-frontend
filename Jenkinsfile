@@ -13,8 +13,10 @@ pipeline {
   stages {
 
     stage("test set version") {
-      VERSION = sh(returnStdout: true, script: "jq -r '.version' package.json").trim()
-      echo VERSION
+      steps {
+        VERSION = sh(returnStdout: true, script: "jq -r '.version' package.json").trim()
+        echo VERSION
+      }
     }
 
     // stage ('Install') {
