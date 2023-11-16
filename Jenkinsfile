@@ -14,7 +14,6 @@ pipeline {
 
     stage ('Install') {
       steps {
-        setup_basic_env()
         script {
           echo REPO_NAME
           echo LATEST_AUTHOR
