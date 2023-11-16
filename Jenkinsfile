@@ -15,7 +15,7 @@ pipeline {
     stage("test set version") {
       steps { 
         script {
-        VERSION = sh(returnStdout: true, script: "jq -r '.version' package.json").trim()
+        VERSION = sh(returnStdout: true, script: 'grep -Po "\\"version\\": \\"\\K([^\\"]+)" package.json').trim()
         echo VERSION
         }
       }
