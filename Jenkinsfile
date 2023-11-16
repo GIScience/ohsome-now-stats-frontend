@@ -13,9 +13,11 @@ pipeline {
   stages {
 
     stage("test set version") {
-      steps {
+      steps { 
+        script {
         VERSION = sh(returnStdout: true, script: "jq -r '.version' package.json").trim()
         echo VERSION
+        }
       }
     }
 
