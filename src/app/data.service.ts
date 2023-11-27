@@ -15,6 +15,7 @@ export class DataService {
   private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
   summaryData = this.bsSummaryData.asObservable()
   abortHashtagReqSub!: Subject<void>
+  abortTopicReqSub!: Subject<void>
   abortSummaryReqSub!: Subject<void>
   abortIntervalReqSub!: Subject<void>
 
@@ -38,6 +39,7 @@ export class DataService {
     private router: Router) {
       this.getAbortHashtagReqSubject()
       this.getAbortSummaryReqSubject()
+      this.getAbortTopicReqSubject()
       this.getAbortIntervalReqSubject()
   }
 
@@ -56,7 +58,8 @@ export class DataService {
         interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
         start: queryParams && queryParams.start ? queryParams.start : tempStart.toISOString(),
         end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
-        countries: queryParams && queryParams.countries ? queryParams.countries : ''
+        countries: queryParams && queryParams.countries ? queryParams.countries : '',
+        topics: queryParams && queryParams.topics ? queryParams.topics : ''
       })
     })
   }
@@ -84,6 +87,13 @@ export class DataService {
     return this.http.get<IWrappedSummaryData>(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
       .pipe(
         takeUntil(this.abortSummaryReqSub)
+      )
+  }
+
+  requestTopic(params: any): Observable<IWrappedTopicData> {
+    return this.http.get<IWrappedTopicData>(`${this.url}/topic/${params['topics']}?hashtag=${params['hashtags']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
+      .pipe(
+        takeUntil(this.abortTopicReqSub)
       )
   }
 
@@ -122,6 +132,10 @@ export class DataService {
     this.abortIntervalReqSub = new Subject<void>();
   }
 
+  getAbortTopicReqSubject() {
+    this.abortTopicReqSub = new Subject<void>();
+  }
+
   getTrendingHashtags(params: any) {
     // console.log('>>> getTrendingHashtags >>> ', params)
     return this.http.get(`${this.url}/most-used-hashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}`)
@@ -146,7 +160,8 @@ export class DataService {
       end: this.maxDate,
       hashtags: this.defaultHashtag,
       interval: this.defaultIntervalValue,
-      countries: ''
+      countries: '',
+      topics: ''
     }
   }
 
@@ -162,22 +177,26 @@ export class DataService {
 
   updateURL(data: IQueryParam): void{
     this.router.navigate([], {
-      fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}`
+      fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
     })
   }
+}
+
+
+
+export interface IWrappedTopicData {
+  result: ITopicData
+}
+
+export interface ITopicData {
+  topic: string,
+  value: number
 }
 
 export interface IWrappedSummaryData {
   result: ISummaryData
 }
-// export interface ISummaryData {
-//   changesets?: number,
-//   contributors: number
-//   edits: number
-//   buildingEdits: number
-//   kmOfRoads: number,
-//   latest?: string
-// }
+
 export interface ISummaryData {
   changesets?: number,
   users: number
@@ -187,12 +206,15 @@ export interface ISummaryData {
   latest?: string
 }
 
+
+
 export interface IQueryData {
   start: string
   end: string
   hashtags: Array<string>
   interval: string
   countries: string
+  topics: string
 }
 
 export interface IWrappedPlotData {
@@ -225,7 +247,8 @@ export interface ICountryStatsData {
   buildings: number,
   edits: number,
   latest: string,
-  country: string
+  country: string,
+  place?: number
 }
 
 export interface ITrendingHashtags {
@@ -238,6 +261,7 @@ export interface IQueryParam {
   start: string, // date in ISO format, ensure to keep milliseconds as 0
   end: string, // date in ISO format, ensure to keep milliseconds as 0
   interval: string, // eg:'P1D' default value: 'P1M'
+  topics: string
 }
 
 export interface IHashtag {

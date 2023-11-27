@@ -1,0 +1,26 @@
+.tooltip1 {
+    position:absolute; 
+    top: 5px; 
+    right: 8px;
+}
+
+.layers {
+    text-align: center; 
+    position: relative;
+    pointer-events: auto;
+    transition: all 0.25s ease-in-out;
+    :hover{
+        box-shadow: 0 0px 0px white !important;
+    }
+    &.selected {
+        box-shadow: 0 0 20px rgba(158, 158, 158, 0.5) !important;
+    }
+}
+
+.big_number  {
+    pointer-events: none;
+    :hover  {
+        box-shadow: 0 0 20px rgba(158, 158, 158, 0.3);
+        cursor: pointer;
+    }
+}   

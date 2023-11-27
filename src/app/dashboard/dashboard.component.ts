@@ -7,6 +7,7 @@ import {
   IHashtag,
   IPlotData,
   IQueryParam,
+  ITopicData,
   ISummaryData,
   IWrappedCountryStatsData,
   IWrappedPlotData
@@ -25,8 +26,11 @@ export class DashboardComponent implements OnInit {
   activeLink = ''
 
   summaryData!: ISummaryData
+  topicData!: ITopicData
   plotData! : Array<IPlotData>
   countryStatsData: ICountryStatsData[] = [];
+  
+  selectedTopics: String = "";
 
   currentStats: StatsType = 'users';
 
@@ -71,6 +75,9 @@ export class DashboardComponent implements OnInit {
         if (queryParams['countries'] == null)
           queryParams.countries = ''
 
+        if (queryParams['topics'] == null)
+          queryParams.topics = ''
+
         this.dataService.updateURL(queryParams)
 
         // if all values are present then only below code is executed
@@ -83,6 +90,7 @@ export class DashboardComponent implements OnInit {
         // form a appropriate message for summary data
         this.summaryMessage = this.formSummaryMessage(queryParams)
 
+      
         // fire the request to API
         this.dataService.requestSummary(queryParams).subscribe( {
           next: res => {
@@ -101,6 +109,24 @@ export class DashboardComponent implements OnInit {
             console.error('Error while requesting Summary data ', err)
           }
         })
+        this.selectedTopics = queryParams["topics"]
+        // fire the requests to API
+        if(queryParams && queryParams['topics']) {
+          
+          this.dataService.requestTopic(queryParams).subscribe({
+            next: res => {
+              // send response data to Summary Component
+              this.topicData = {
+                topic: res.result.topic,
+                value: res.result.value
+              }
+            },
+            error: (err) => {
+              console.error('Error while requesting Topic data ', err)
+            }
+          })
+        }
+        
 
         // fire timeseries API to get plot data
         if(queryParams && queryParams['interval']) {
@@ -141,14 +167,14 @@ export class DashboardComponent implements OnInit {
         // resolve #26
         const urlParams = this.dataService.getDefaultValues()
         // if URL params are empty then fill it with default values
-
         if(urlParams !== null){
           this.dataService.updateURL({
             hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : urlParams.hashtags,
             interval: queryParams && queryParams.interval ? queryParams.interval : urlParams.interval,
             start: queryParams && queryParams.start ? queryParams.start : urlParams.start,
             end: queryParams && queryParams.end ? queryParams.end :  urlParams.end,
-            countries: queryParams && queryParams.countries ? queryParams.countries : urlParams.countries
+            countries: queryParams && queryParams.countries ? queryParams.countries : urlParams.countries,
+            topics: queryParams && queryParams.topics ? queryParams.topics : urlParams.topics,
           })
         }
       }
@@ -156,7 +182,7 @@ export class DashboardComponent implements OnInit {
 
   }
   queryParamsComplete(params: any):boolean{
-      return ["start", "end", "interval", "hashtags", "countries"].sort().join() === Object.keys(params).sort().join()
+      return ["start", "end", "interval", "hashtags", "countries", "topics"].sort().join() === Object.keys(params).sort().join()
   }
 
   stopIntervalReq() {

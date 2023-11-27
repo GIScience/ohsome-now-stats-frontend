@@ -1,2 +1,2 @@
-export type StatsType = 'users' | 'edits' | 'buildings' | 'roads';
+export type StatsType = 'users' | 'edits' | 'buildings' | 'roads' | 'place';
 

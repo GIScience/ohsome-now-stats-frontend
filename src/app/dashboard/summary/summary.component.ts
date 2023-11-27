@@ -1,9 +1,12 @@
-import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, ViewContainerRef, EnvironmentInjector, createComponent, ApplicationRef} from '@angular/core';
 import * as bootstrap from 'bootstrap';
-
-import { ISummaryData } from '../../data.service';
+import {UnaryFunction, fromEvent} from "rxjs"
+import { ISummaryData, ITopicData } from '../../data.service';
 import { dashboard } from '../tooltip-data';
 import { StatsType } from '../types';
+import { BigNumberComponent } from './big-number/big-number.component';
+import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
+
 
 @Component({
   selector: 'app-summary',
@@ -11,9 +14,12 @@ import { StatsType } from '../types';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnChanges {
-
   @Input() data: ISummaryData | undefined;
+  @Input() topicData: ITopicData | undefined;
+  @Input() selectedTopics: String | undefined;
   @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
+  
+  topicComponentReferences: any = {}
 
   contributors!: string
   edits!: string
@@ -21,10 +27,11 @@ export class SummaryComponent implements OnChanges {
   kmOfRoads!: string
   dashboardTooltips: any;
 
-  constructor() { 
+  constructor(private injector: EnvironmentInjector, private appRef: ApplicationRef) { 
     this.dashboardTooltips = dashboard
     this.enableTooltips()
   }
+
 
   ngOnChanges(): void {
       if(! this.data)
@@ -40,13 +47,51 @@ export class SummaryComponent implements OnChanges {
           maximumFractionDigits: 0
          }
         ).format(this.data.roads)
+      
+    
+      if (this.selectedTopics!=""&&this.topicData){
+        if (!this.topicComponentReferences["place"]){
+          this.addBigNumber("place", topicDefinitions["place"], this.topicData.value)
+        }
+        
+      }
+      else {
+        if (this.topicComponentReferences["place"]){
+          this.topicComponentReferences["place"].destroy()
+          delete this.topicComponentReferences["place"]
+        }
+      }
+  }
+
+  addBigNumber(topic: string, topic_definition: any, value: number){
+    let targetDiv = document.getElementById("big-number_container")
+    let newChild = targetDiv!.appendChild(document.createElement("div"))
+    const componentRef = createComponent(
+      BigNumberComponent, {
+        hostElement: newChild!!,
+        environmentInjector: this.injector,
+        
+      }
+    )
+    this.appRef.attachView(componentRef.hostView);
+    componentRef.setInput("color", topic_definition["color"])
+    componentRef.setInput("icon", topic_definition["icon"])
+    componentRef.setInput("name", topic_definition["name"])
+    componentRef.setInput("tooltip", topic_definition["tooltip"])
+    componentRef.setInput("value", value)
+    componentRef.location.nativeElement.classList.add("col-md-3")
+    componentRef.location.nativeElement.style = "flex: 1 1 200px;" // for some reason scss is not applied to dynamically created component
+
+    fromEvent(componentRef.location.nativeElement, 'click')
+      .subscribe((event: any) => this.changeSelectedSummaryComponent(event));
+    this.topicComponentReferences[topic] = componentRef
 
   }
 
   changeSelectedSummaryComponent(e: any){
     const newSelected = e.target.closest(".layers")
-    const siblings = [...newSelected.parentNode.parentNode.children];
-    siblings.forEach((e)=>e.children[0].classList.remove("selected"))
+    const siblings = [...newSelected.parentNode.parentNode.parentNode.children];
+    siblings.forEach((e)=>e.children[0].children[0].classList.remove("selected"))
     newSelected.classList.add("selected")
   }
 

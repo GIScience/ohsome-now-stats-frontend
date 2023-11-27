@@ -54,10 +54,16 @@
                   </select>
                 </div>
               </div>
-              <div class="row">
+              <div class="mb-3 row">
                 <label class="form-label" for="countries">Country Filter</label>
                 <ngx-select-dropdown [options]="dropdownOptions" name="countries" [config]="configCountry"
                 [(ngModel)]="selectedCountries" [multiple]="true" class="customDropdown"></ngx-select-dropdown>
+              </div>            
+
+              <div class="row">
+                <label class="form-label" for="topics">Topic Selection</label>
+                <ngx-select-dropdown [options]="topicOptions" name="topics" [config]="configTopics"
+                [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"></ngx-select-dropdown>
               </div>
 
             </div>

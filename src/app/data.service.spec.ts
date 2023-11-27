@@ -5,6 +5,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { DataService } from './data.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { BigNumberComponent } from './dashboard/summary/big-number/big-number.component';
 
 describe('DataService', () => {
   let httpClientSpy: jasmine.SpyObj<HttpClient>;
@@ -596,6 +597,7 @@ describe('DataService', () => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
     TestBed.configureTestingModule({ 
         imports: [ HttpClientTestingModule ],
+        declarations: [BigNumberComponent],
         providers: [ 
             DataService,
             { provide: ActivatedRoute, useValue: { fragment: of('hashtags=missingmaps&interval=P1M') } },

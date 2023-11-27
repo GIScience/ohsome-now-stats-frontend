@@ -1,0 +1,8 @@
+{
+    "place": {
+        "name": "Places",
+        "color": "orange",
+        "tooltip": "The number of places like villages or cities.",
+        "icon": "fa-map-location-dot"
+    }
+}

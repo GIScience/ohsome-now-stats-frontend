@@ -7,6 +7,7 @@ import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SummaryComponent } from './dashboard/summary/summary.component';
+import { BigNumberComponent } from './dashboard/summary/big-number/big-number.component';
 import { QueryComponent } from './dashboard/query/query.component';
 import { DataService } from './data.service';
 import { PlotComponent } from './dashboard/plot/plot.component';
@@ -35,6 +36,7 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
     ToastComponent,
     AboutComponent,
     HelpComponent,
+    BigNumberComponent
   ],
   imports: [
     BrowserModule,

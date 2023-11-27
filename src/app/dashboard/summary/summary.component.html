@@ -1,82 +1,11 @@
-<div class="row">
+
+<div class="row" id="big-number_container">
   <!-- #Contributors ==================== -->
-  <div class='col-md-3 big_number' (click)="changeCurrentStats($event, 'users')">
-    <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm- selected">
-      <span class="icon-holder tooltip1" data-bs-toggle="tooltip" title="{{dashboardTooltips.summary.contributions}}" data-bs-html="true">
-        <i class="c-grey-800 ti-help-alt"></i>
-      </span>
-      <div class="layer w-100 mB-10">
-        <span class="icon-holder">
-          <i class="fa-solid fa-users fsz-xl"></i>
-        </span>
-      </div>
-      <div class="layer w-100">
-        <span class="d-ib lh-0 va-m fw-600 fsz-lg bdrs-10em pX-15 pY-15 bgc-green-50 c-green-500 whs-nw tov-e">{{contributors}}</span>
-      </div>
-      <div class="layer w-100">
-        <p class="lh-1 mb-0 mt-2">Contributors</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- #Total Edits==================== -->
-  <div class='col-md-3 big_number' (click)="changeCurrentStats($event, 'edits')">
-    <div class="layers bgc-white bd  p-20@md+ p-10@sm p-20@sm-">
-      <span class="icon-holder tooltip1" data-bs-toggle="tooltip" title="{{dashboardTooltips.summary.totalEdits}}" data-bs-html="true">
-        <i class="c-grey-800 ti-help-alt"></i>
-      </span>
-      <div class="layer w-100 mB-10">
-        <span class="icon-holder">
-          <i class="fa-solid fa-pen-to-square fsz-xl"></i>
-        </span>
-      </div>
-      <div class="layer w-100">
-        <span class="d-ib lh-0 va-m fw-600 fsz-lg bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500 whs-nw tov-e">{{edits}}</span>
-      </div>
-      <div class="layer w-100">
-        <p class="lh-1 mb-0 mt-2">Total Edits</p>
-      </div>
-    </div>
-  </div>
-
-
+  <app-big-number class="col-md-3" name="Contributors" icon="fa-users" value="{{contributors}}" tooltip="{{dashboardTooltips.summary.contributions}}" color="green" (click)="changeCurrentStats($event, 'users')" [startSelected]="true"></app-big-number>
+  <!-- #Total Edits ==================== -->
+  <app-big-number class="col-md-3" name="Total Edits" icon="fa-pen-to-square" value="{{edits}}" tooltip="{{dashboardTooltips.summary.edits}}" color="red" (click)="changeCurrentStats($event, 'edits')"></app-big-number>
   <!-- #Building Edits ==================== -->
-  <div class='col-md-3 big_number' (click)="changeCurrentStats($event, 'buildings')">
-    <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm-">
-      <span class="icon-holder tooltip1" data-bs-toggle="tooltip" title="{{dashboardTooltips.summary.buildings}}" data-bs-html="true">
-        <i class="c-grey-800 ti-help-alt"></i>
-      </span>
-      <div class="layer w-100 mB-10">
-        <span class="icon-holder">
-          <i class="fa-solid fa-city fsz-xl"></i>
-        </span>
-      </div>
-      <div class="layer w-100">
-        <span class="d-ib lh-0 va-m fw-600 fsz-lg bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500 whs-nw">{{buidlingEdits}}</span>
-      </div>
-      <div class="layer w-100">
-        <p class="lh-1 mb-0 mt-2">Δ Buildings</p>
-      </div>
-    </div>
-  </div>
-
+  <app-big-number class="col-md-3" name="Δ Buildings" icon="fa-city" value="{{buidlingEdits}}" tooltip="{{dashboardTooltips.summary.buildings}}" color="purple" (click)="changeCurrentStats($event, 'buildings')"></app-big-number>
   <!-- #km of Roads ==================== -->
-  <div class='col-md-3 big_number' (click)="changeCurrentStats($event, 'roads')">
-    <div class="layers bgc-white bd p-20@md+ p-10@sm p-20@sm-">
-      <span class="icon-holder tooltip1" data-bs-toggle="tooltip" title="{{dashboardTooltips.summary.kmOfRoads}}" data-bs-html="true">
-        <i class="c-grey-800 ti-help-alt"></i>
-      </span>
-      <div class="layer w-100 mB-10">
-        <span class="icon-holder">
-          <i class="fa fa-road fsz-xl"></i>
-        </span>
-      </div>
-      <div class="layer w-100">
-        <span class="d-ib lh-0 va-m fw-600 fsz-lg bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500 whs-nw tov-e">{{kmOfRoads}}</span>
-      </div>
-      <div class="layer w-100">
-        <p class="lh-1 mb-0 mt-2">Δ km of Roads</p>
-      </div>
-    </div>
-  </div>
+  <app-big-number class="col-md-3" name="Δ km of Roads" icon="fa-road" value="{{kmOfRoads}}" tooltip="{{dashboardTooltips.summary.kmOfRoads}}" color="blue" (click)="changeCurrentStats($event, 'roads')"></app-big-number>
 </div>

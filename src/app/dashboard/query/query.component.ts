@@ -43,6 +43,10 @@ export class QueryComponent implements OnChanges {
   countries: string[] = [];  // only codes for url and get request
   dropdownOptions = dropdownOptions;  // all possible countries with name and code
   selectedCountries : countryDataClass[] = []  // selected countries with name and code
+  
+  topics: string[] = [];  // only codes for url and get request
+  topicOptions = [{"name": "Places", "value": "place"}];  // all possible countries with name and code
+  selectedTopics : topicDataClass[] = []  // selected countries with name and code
 
 
   constructor(
@@ -140,7 +144,7 @@ export class QueryComponent implements OnChanges {
    * @param data 
    */
   initFormValues(data: IQueryData) {
-    // console.log('>>> initFormValues >>> data ', data)
+    console.log('>>> initFormValues >>> data ', data)
     if(data && Object.keys(data).length !== 0) {
       if(!(data.start && data.end)) {
         console.log('date range is null')
@@ -162,8 +166,11 @@ export class QueryComponent implements OnChanges {
       this.countries = data.countries.split(",")
       this.selectedCountries = this.dropdownOptions.filter((option: countryDataClass)=>{
           return this.countries.includes(option.value)
-      }
-      )
+      })
+      this.topics = data.topics.split(",")
+      this.selectedTopics = this.topicOptions.filter((option: topicDataClass)=>{
+          return this.topics.includes(option.value)
+      })
     }
   }
 
@@ -193,11 +200,11 @@ export class QueryComponent implements OnChanges {
       this.countries = this.selectedCountries.map(e=>e.value)
     }
 
+    this.topics = this.selectedTopics.map(e=>e.value)
 
-    console.log(this.selectedCountries)
     // update the url fragment
     this.router.navigate([], { 
-      fragment: `hashtags=${tempHashTags}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}&countries=${this.countries}`,
+      fragment: `hashtags=${tempHashTags}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}&countries=${this.countries}&topics=${this.topics}`,
     })
   }
 
@@ -289,17 +296,42 @@ export class QueryComponent implements OnChanges {
       inputDirection: "up",
       enableSelectAll: true
     };
-}
+
+    configTopics: NgxDropdownConfig =  {
+      displayKey: 'name',
+      search: true,
+      height: '20rem',
+      placeholder: 'Optionally add some Topics',
+      limitTo: 0,
+      moreText: 'item',
+      noResultsFound: 'No results found',
+      searchPlaceholder: 'Search',
+      searchOnKey: 'name',
+      customComparator:customComparator,
+      clearOnSelection: true,
+      inputDirection: "up",
+      enableSelectAll: true
+    };
+
+  }
 
 function customComparator(a:any,b:any){
     return a.name.localeCompare(b.name)
   }
 
-class countryDataClass {
+  class countryDataClass {
     name: string;
     value: string;
     constructor(name:string, value:string){
         this.name = name;
         this.value = value;
     }
+}
+class topicDataClass {
+  name: string;
+  value: string;
+  constructor(name:string, value:string){
+      this.name = name;
+      this.value = value;
+  }
 }

@@ -7,6 +7,7 @@ import { QueryComponent } from './dashboard/query/query.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TrendingHashtagsComponent } from './dashboard/trending-hashtags/trending-hashtags.component';
 import { DataService } from './data.service';
+import { BigNumberComponent } from './dashboard/summary/big-number/big-number.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -20,7 +21,8 @@ describe('AppComponent', () => {
         QueryComponent,
         DashboardComponent,
         TrendingHashtagsComponent,
-        ToastComponent
+        ToastComponent,
+        BigNumberComponent
       ],
       providers: [
         DataService

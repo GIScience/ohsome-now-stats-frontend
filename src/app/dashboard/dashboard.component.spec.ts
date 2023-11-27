@@ -14,6 +14,7 @@ import { MapComponent } from './map/map.component';
 import { TrendingHashtagsComponent } from './trending-hashtags/trending-hashtags.component';
 import { ToastComponent } from '../toast/toast.component';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
+import { BigNumberComponent } from './summary/big-number/big-number.component';
 
 describe('DashboardComponent', () => {
 
@@ -253,7 +254,8 @@ describe('DashboardComponent', () => {
         PageNotFoundComponent,
         MapComponent,
         TrendingHashtagsComponent,
-        ToastComponent
+        ToastComponent,
+        BigNumberComponent
        ],
       providers: [
         { provide: DataService, useValue: dataServiceSpy },

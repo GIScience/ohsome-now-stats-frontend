@@ -20,7 +20,7 @@
         </div> -->
         <div class="row">
             <div class='col-md-12'>
-                <app-summary [data]="summaryData" (changeCurrentStatsEvent)="currentStats = $event"></app-summary>
+                <app-summary class=row [data]="summaryData" [topicData]="topicData" [selectedTopics]="selectedTopics" (changeCurrentStatsEvent)="currentStats = $event"></app-summary>
             </div>
         </div>
         <div class="row">
@@ -32,7 +32,7 @@
         <div class="row">
             <!-- #Map View ==================== -->
             
-                <app-map [data]="countryStatsData" [currentStats]="currentStats" [selectedCountries]="queryParams.countries"></app-map>
+                <app-map [data]="countryStatsData" [currentStats]="currentStats" [selectedCountries]="queryParams?.countries"></app-map>
             
         </div>
     </div>
