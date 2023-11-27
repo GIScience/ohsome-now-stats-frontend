@@ -53,6 +53,9 @@ export class SummaryComponent implements OnChanges {
         if (!this.topicComponentReferences["place"]){
           this.addBigNumber("place", topicDefinitions["place"], this.topicData.value)
         }
+        else {
+          this.adjustBigNumberValue("place", this.topicData.value)
+        }
         
       }
       else {
@@ -85,7 +88,10 @@ export class SummaryComponent implements OnChanges {
     fromEvent(componentRef.location.nativeElement, 'click')
       .subscribe((event: any) => this.changeSelectedSummaryComponent(event));
     this.topicComponentReferences[topic] = componentRef
+  }
 
+  adjustBigNumberValue(topic: string, value: number){
+    this.topicComponentReferences[topic].setInput("value", value)
   }
 
   changeSelectedSummaryComponent(e: any){
