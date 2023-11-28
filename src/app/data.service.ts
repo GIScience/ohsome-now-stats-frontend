@@ -102,6 +102,12 @@ export class DataService {
       .pipe(
         takeUntil(this.abortTopicReqSub)
       )
+  }  
+  requestTopicCountryStats(params: any): Observable<IWrappedTopicCountryData> {
+    return this.http.get<IWrappedTopicCountryData>(`${this.url}/topic/${params['topics']}/country?hashtag=${params['hashtags']}&startdate=${params['start']}&enddate=${params['end']}`)
+        .pipe(
+            takeUntil(this.abortIntervalReqSub)
+        )
   }
 
   requestPlot(params: any): Observable<IWrappedPlotData> {
@@ -250,6 +256,17 @@ export interface ITopicPlotData {
   topic: string,
   startDate: string,
   endDate: string
+}
+
+export interface IWrappedTopicCountryData {
+  query: {timespan:{startDate:string,endDate:string},hashtag:string}
+  result: ITopicCountryData[]
+}
+
+export interface ITopicCountryData {
+  topic: string,
+  country: string,
+  value: number
 }
 
 /**

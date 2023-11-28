@@ -11,7 +11,9 @@ import {
   ITopicPlotData,
   ISummaryData,
   IWrappedCountryStatsData,
-  IWrappedPlotData
+  IWrappedPlotData,
+  IWrappedTopicCountryData,
+  ITopicCountryData
 } from '../data.service';
 import {StatsType} from './types';
 
@@ -26,15 +28,16 @@ export class DashboardComponent implements OnInit {
   isOpen = false
   activeLink = ''
 
-  summaryData!: ISummaryData
   topicData!: ITopicData  
   topicPlotData! : Array<ITopicPlotData>
-
+  topicCountryData: ITopicCountryData[] = []
+  
+  summaryData!: ISummaryData
   plotData! : Array<IPlotData>
   countryStatsData: ICountryStatsData[] = [];
   
   selectedTopics: String = "";
-
+  
   currentStats: StatsType = 'users';
 
   queryParams: any
@@ -161,7 +164,14 @@ export class DashboardComponent implements OnInit {
             }
           })
 
+          this.dataService.requestTopicCountryStats(queryParams)
+          .subscribe((res: IWrappedTopicCountryData) => {
+            this.topicCountryData = res.result
+          });
+  
         }
+
+
         
         // stop trending hashtag request if already fired any
         this.stopHashtagReq()

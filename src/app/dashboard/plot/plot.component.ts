@@ -18,8 +18,6 @@ export class PlotComponent implements AfterContentInit, OnChanges {
   @Input() selectedTopics: String | undefined;
   layout: Layout | any;
 
-  content: any = {"users": 0, "edits": 1, "buildings": 2, "roads": 3}
-
   ngAfterContentInit(): void {
     this.initChart();
 
@@ -57,9 +55,6 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 	}
 
   refreshPlot() {
-    // todo: this will be different with multiple topics
-
-
     const currentDate = new Date()
     const topic_definitions = topicDefinitions as any
     const _data = this.data as any
