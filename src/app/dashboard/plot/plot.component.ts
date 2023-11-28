@@ -2,7 +2,8 @@ import { Component, Input, OnChanges, AfterContentInit } from '@angular/core';
 
 import Plotly from 'plotly.js-basic-dist-min';
 import { Layout } from 'plotly.js-basic-dist-min';
-import { IPlotData } from '../../data.service';
+import { IPlotData, ITopicPlotData } from '../../data.service';
+import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 
 @Component({
   selector: 'app-plot',
@@ -13,6 +14,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
   @Input() data!: Array<IPlotData>;
   @Input() currentStats!: string;
+  @Input() topicPlotData!: Array<ITopicPlotData>;
   layout: Layout | any;
 
   content: any = {"users": 0, "edits": 1, "buildings": 2, "roads": 3}
@@ -46,9 +48,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
       font: {
         family: 'Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif'
       },
-      yaxis: {
-        title: "# of contributors"
-      }
+
 		};
 
     Plotly.react('summaryplot', [], this.layout, {responsive: true});
@@ -56,16 +56,31 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 	}
 
   refreshPlot() {
-    const currentDate = new Date()
+    // todo: this will be different with multiple topics
 
+
+    const currentDate = new Date()
+    const topic_definitions = topicDefinitions as any
+    const _data = this.data as any
+    if (this.topicPlotData){
+      if (this.topicPlotData.length != this.data.length){
+        return // topic response usually arrives faster, but only want to update once both requests came through
+      }
+      let wrappedTopicPlotData: any = [this.topicPlotData]
+      wrappedTopicPlotData.forEach((topic: Array<ITopicPlotData>)=>{
+        for(let i=0; i<topic.length; i++){
+          _data[i][topic[i].topic] = topic[i].value
+        }
+      })
+    }
     const plotData : any = [{
-      x: this.data.map((e : IPlotData) => `${e.startDate}`),
-      y: this.data.map((e : IPlotData) => e['users']),
-      customdata: this.data.map((e : IPlotData) => e.users),
+      x: _data.map((e : IPlotData) => `${e.startDate}`),
+      y: _data.map((e: any) => e[this.currentStats]),
+      customdata: _data.map((e: any) => e[this.currentStats]),
       hovertext: this.data.map((e : IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
-      hovertemplate: `%{hovertext}<br>Contributors: %{customdata}<extra></extra>`,
+      hovertemplate: `%{hovertext}<br>${topic_definitions[this.currentStats]["name"]}: %{customdata}<extra></extra>`,
       type: 'bar',
-      name: 'Contributors',
+      name: `${topic_definitions[this.currentStats]["name"]}`,
       marker: {
         pattern: {
           // apply stripped pattern only for current running time
@@ -73,69 +88,10 @@ export class PlotComponent implements AfterContentInit, OnChanges {
           size: 7,
           solidity: 0.6
         },
-        color: '#4caf50'
+        color: `${topic_definitions[this.currentStats]["color-hex"]}`
       },
-      ytitle: "# of contributors",
-      visible: this.currentStats === 'users' ? true : false // set true only when summary value is clicked on it
-    }, {
-      x: this.data.map((e : IPlotData) => `${e.startDate}`),
-      y: this.data.map((e : IPlotData) => e['edits']),
-      customdata: this.data.map((e : IPlotData) => e.edits),
-      hovertext: this.data.map((e : IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
-      hovertemplate: `%{hovertext}<br>Total Edits: %{customdata}<extra></extra>`,
-      type: 'bar',
-      name: 'Total Edits',
-      marker: {
-        pattern: {
-          shape: this.data.map((_ : IPlotData) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
-          size: 7,
-          solidity: 0.6
-        },
-        color: '#f44336'
-      },
-      yaxis: 'y',
-      ytitle: "# of total edits",
-      visible: this.currentStats === 'edits' ? true : false // set true only when summary value is clicked on it
-    }, {
-      x: this.data.map((e : IPlotData) => `${e.startDate}`),
-      y: this.data.map((e : IPlotData) => e['buildings']),
-      customdata: this.data.map((e : IPlotData) => e.buildings),
-      hovertext: this.data.map((e : IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
-      hovertemplate: `%{hovertext}<br>Buildings Added: %{customdata}<extra></extra>`,
-      type: 'bar',
-      name: 'Buildings Added',
-      marker: {
-        pattern: {
-          shape: this.data.map((_ : IPlotData) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
-          size: 7,
-          solidity: 0.6
-        },
-        color: '#9c27b0'
-      },
-      yaxis: 'y',
-      visible: this.currentStats === 'buildings' ? true : false, // set true only when summary value is clicked on it
-      ytitle: "# of buildings added"
-    }, {
-      x: this.data.map((e : IPlotData) => `${e.startDate}`),
-      y: this.data.map((e : IPlotData) => e['roads']),
-      customdata: this.data.map((e : IPlotData) => Math.round(e.roads)),
-      hovertext: this.data.map((e : IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
-      hovertemplate: `%{hovertext}<br>Road Edits: %{customdata} km<extra></extra> `,
-      type: 'bar',
-      name: 'Road Edits',
-      marker: {
-        pattern: {
-          shape: this.data.map((_ : IPlotData) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
-          size: 7,
-          solidity: 0.6
-        },
-        color: '#2196f3'
-      },
-      yaxis: 'y',
-      ytitle: "km of roads added",
-      visible: this.currentStats === 'roads' ? true : false // set true only when summary value is clicked on it
     }];
-    this.layout.yaxis.title = plotData[this.content[this.currentStats]].ytitle
+    this.layout.yaxis.title = `${topic_definitions[this.currentStats]["y-title"]}`
     Plotly.react('summaryplot', plotData, this.layout, {responsive: true});
   }
 }

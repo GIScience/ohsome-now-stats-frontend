@@ -1,7 +1,7 @@
 
 <div class="row" id="big-number_container">
   <!-- #Contributors ==================== -->
-  <app-big-number class="col-md-3" name="Contributors" icon="fa-users" value="{{contributors}}" tooltip="{{dashboardTooltips.summary.contributions}}" color="green" (click)="changeCurrentStats($event, 'users')" [startSelected]="true"></app-big-number>
+  <app-big-number id="users" class="col-md-3" name="Contributors" icon="fa-users" value="{{contributors}}" tooltip="{{dashboardTooltips.summary.contributions}}" color="green" (click)="changeCurrentStats($event, 'users')" [startSelected]="true"></app-big-number>
   <!-- #Total Edits ==================== -->
   <app-big-number class="col-md-3" name="Total Edits" icon="fa-pen-to-square" value="{{edits}}" tooltip="{{dashboardTooltips.summary.edits}}" color="red" (click)="changeCurrentStats($event, 'edits')"></app-big-number>
   <!-- #Building Edits ==================== -->

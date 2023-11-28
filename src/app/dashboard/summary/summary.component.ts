@@ -27,6 +27,8 @@ export class SummaryComponent implements OnChanges {
   kmOfRoads!: string
   dashboardTooltips: any;
 
+  currentlySelected: string = 'users';
+
   constructor(private injector: EnvironmentInjector, private appRef: ApplicationRef) { 
     this.dashboardTooltips = dashboard
     this.enableTooltips()
@@ -34,6 +36,10 @@ export class SummaryComponent implements OnChanges {
 
 
   ngOnChanges(): void {
+      if (!["users","roads","edits","buildings"].includes(this.currentlySelected) && !this.selectedTopics!.split(",").includes(this.currentlySelected)){
+        document.getElementById("users")?.click()
+      }
+
       if(! this.data)
         return
 
@@ -48,7 +54,8 @@ export class SummaryComponent implements OnChanges {
          }
         ).format(this.data.roads)
       
-    
+      //if 
+      
       if (this.selectedTopics!=""&&this.topicData){
         if (!this.topicComponentReferences["place"]){
           this.addBigNumber("place", topicDefinitions["place"], this.topicData.value)
@@ -86,7 +93,7 @@ export class SummaryComponent implements OnChanges {
     componentRef.location.nativeElement.style = "flex: 1 1 200px;" // for some reason scss is not applied to dynamically created component
 
     fromEvent(componentRef.location.nativeElement, 'click')
-      .subscribe((event: any) => this.changeSelectedSummaryComponent(event));
+      .subscribe((event: any) => this.changeCurrentStats(event, topic as StatsType));
     this.topicComponentReferences[topic] = componentRef
   }
 
@@ -95,13 +102,15 @@ export class SummaryComponent implements OnChanges {
   }
 
   changeSelectedSummaryComponent(e: any){
-    const newSelected = e.target.closest(".layers")
-    const siblings = [...newSelected.parentNode.parentNode.parentNode.children];
+    // if nodeName is APP-BIG-NUMBER our actual target is a child - thus not findable with .closest
+    const newSelected = e.target.nodeName != "APP-BIG-NUMBER" ? e.target.closest(".big_number") : e.target.children[0].closest(".big_number")
+    const siblings = [...newSelected.parentNode.parentNode.children];
     siblings.forEach((e)=>e.children[0].children[0].classList.remove("selected"))
-    newSelected.classList.add("selected")
+    newSelected.children[0].classList.add("selected")
   }
 
   changeCurrentStats(e: any, newCurrentStats: StatsType){
+    this.currentlySelected = newCurrentStats as string
     this.changeSelectedSummaryComponent(e)
     this.changeCurrentStatsEvent.emit(newCurrentStats); 
   }

@@ -97,6 +97,13 @@ export class DataService {
       )
   }
 
+  requestTopicInterval(params: any): Observable<IWrappedTopicPlotData> {
+    return this.http.get<IWrappedTopicPlotData>(`${this.url}/topic/${params['topics']}/interval?hashtag=${params['hashtags']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}&interval=${params['interval']}`)
+      .pipe(
+        takeUntil(this.abortTopicReqSub)
+      )
+  }
+
   requestPlot(params: any): Observable<IWrappedPlotData> {
     return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}&countries=${params['countries']}`)
       .pipe(
@@ -229,6 +236,18 @@ export interface IPlotData {
   edits: number,
   latest?: string,
   hashtag?: string,
+  startDate: string,
+  endDate: string
+}
+
+
+export interface IWrappedTopicPlotData {
+  result: Array<ITopicPlotData>
+}
+
+export interface ITopicPlotData {
+  value: number,
+  topic: string,
   startDate: string,
   endDate: string
 }

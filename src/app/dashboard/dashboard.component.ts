@@ -8,6 +8,7 @@ import {
   IPlotData,
   IQueryParam,
   ITopicData,
+  ITopicPlotData,
   ISummaryData,
   IWrappedCountryStatsData,
   IWrappedPlotData
@@ -26,7 +27,9 @@ export class DashboardComponent implements OnInit {
   activeLink = ''
 
   summaryData!: ISummaryData
-  topicData!: ITopicData
+  topicData!: ITopicData  
+  topicPlotData! : Array<ITopicPlotData>
+
   plotData! : Array<IPlotData>
   countryStatsData: ICountryStatsData[] = [];
   
@@ -109,23 +112,6 @@ export class DashboardComponent implements OnInit {
             console.error('Error while requesting Summary data ', err)
           }
         })
-        this.selectedTopics = queryParams["topics"]
-        // fire the requests to API
-        if(queryParams && queryParams['topics']) {
-          
-          this.dataService.requestTopic(queryParams).subscribe({
-            next: res => {
-              // send response data to Summary Component
-              this.topicData = {
-                topic: res.result.topic,
-                value: res.result.value
-              }
-            },
-            error: (err) => {
-              console.error('Error while requesting Topic data ', err)
-            }
-          })
-        }
         
 
         // fire timeseries API to get plot data
@@ -147,6 +133,36 @@ export class DashboardComponent implements OnInit {
             .subscribe((res: IWrappedCountryStatsData) => this.countryStatsData = res.result);
 
 
+        this.selectedTopics = queryParams["topics"]
+        // fire the requests to API
+        if(queryParams && queryParams['topics']) {
+          
+          this.dataService.requestTopic(queryParams).subscribe({
+            next: res => {
+              // send response data to Summary Component
+              this.topicData = {
+                topic: res.result.topic,
+                value: res.result.value
+              }
+            },
+            error: (err) => {
+              console.error('Error while requesting Topic data ', err)
+            }
+          })
+
+          this.dataService.requestTopicInterval(queryParams).subscribe({
+            next: res => {
+              if (res){
+                this.topicPlotData = res.result
+              }
+            },
+            error: (err) => {
+              console.error('Error while requesting Topic data ', err)
+            }
+          })
+
+        }
+        
         // stop trending hashtag request if already fired any
         this.stopHashtagReq()
         // fire trending hashtag API

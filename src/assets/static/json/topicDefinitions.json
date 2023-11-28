@@ -1,8 +1,30 @@
 {
+    "users": {
+        "name": "Contributors",
+        "color-hex": "#4caf50",
+        "y-title": "# of contributors"
+    },
+    "edits": {
+        "name": "Total Edits",
+        "color-hex": "#f44336",
+        "y-title": "# of total edits"
+    },
+    "buildings": {
+        "name": "Δ Buildings",
+        "color-hex": "#9c27b0",
+        "y-title": "# of Δ buildings"
+    },
+    "roads": {
+        "name": "Δ km of Roads",
+        "color-hex": "#2196f3",
+        "y-title": "# of Δ km of roads"
+    },
     "place": {
-        "name": "Places",
+        "name": "Δ Places",
         "color": "orange",
+        "color-hex": "#ff9800",
         "tooltip": "The number of places like villages or cities.",
-        "icon": "fa-map-location-dot"
+        "icon": "fa-map-location-dot",
+        "y-title": "# of Δ places"
     }
 }
