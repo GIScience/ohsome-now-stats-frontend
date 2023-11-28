@@ -15,6 +15,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
   @Input() data!: Array<IPlotData>;
   @Input() currentStats!: string;
   @Input() topicPlotData!: Array<ITopicPlotData>;
+  @Input() selectedTopics: String | undefined;
   layout: Layout | any;
 
   content: any = {"users": 0, "edits": 1, "buildings": 2, "roads": 3}
@@ -62,7 +63,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     const currentDate = new Date()
     const topic_definitions = topicDefinitions as any
     const _data = this.data as any
-    if (this.topicPlotData){
+    if (this.selectedTopics && this.topicPlotData){
       if (this.topicPlotData.length != this.data.length){
         return // topic response usually arrives faster, but only want to update once both requests came through
       }
