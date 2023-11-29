@@ -111,14 +111,13 @@ export class MapComponent implements OnChanges {
                 : selectedCountryStatsArrays[this.currentStats]![0]
 
             cmin = notSelectedCountryStatsArrays[this.currentStats]!.at(-1)! < selectedCountryStatsArrays[this.currentStats]!.at(-1)!
-                ? notSelectedCountryStatsArrays[this.currentStats]![0]
-                : selectedCountryStatsArrays[this.currentStats]![0]
+                ? notSelectedCountryStatsArrays[this.currentStats]!.at(-1)!
+                : selectedCountryStatsArrays[this.currentStats]!.at(-1)!
         }
         else {
             cmax = selectedCountryStatsArrays[this.currentStats]![0]
             cmin = selectedCountryStatsArrays[this.currentStats]!.at(-1)!
         }
-
 
         if (this.data && this.currentStats) {
             this.initPlotlyMap({
@@ -129,6 +128,7 @@ export class MapComponent implements OnChanges {
                 cmax: cmax
             });
         }
+
     }
 
 
