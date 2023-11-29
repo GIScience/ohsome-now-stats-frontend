@@ -7,7 +7,25 @@
   height: 50px;
   width: 50px;
   background-size: 100% 100% !important;
-  margin: 0 5px;
+  margin: 5px 5px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 1px solid #d1d2d3;
+  box-shadow: 1px 1px 1px rgb(78, 78, 78);
+}
+
+.hub-icon-wrapper{
+  :hover {
+    filter: brightness(90%);
+    transition:  0.3s;
+  }
+  :active {
+    filter: brightness(80%);
+    transition:  0.3s;
+  }
+  width: auto;
+  --bs-gutter-x: 0;
 }
 
 .inline-p{
@@ -17,4 +35,10 @@
   :hover {
     color: #383a3b !important;
   }
+}
+
+.custom-row{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
