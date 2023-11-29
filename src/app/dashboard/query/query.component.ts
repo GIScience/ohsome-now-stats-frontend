@@ -281,39 +281,53 @@ export class QueryComponent implements OnChanges {
     return cleanedHashtags.join(',');
   }
 
-    configCountry: NgxDropdownConfig =  {
-      displayKey: 'name',
-      search: true,
-      height: '20rem',
-      placeholder: 'Optionally filter by Country',
-      limitTo: 0,
-      moreText: 'item',
-      noResultsFound: 'No results found',
-      searchPlaceholder: 'Search',
-      searchOnKey: 'name',
-      customComparator:customComparator,
-      clearOnSelection: true,
-      inputDirection: "up",
-      enableSelectAll: true
-    };
-
-    configTopics: NgxDropdownConfig =  {
-      displayKey: 'name',
-      search: true,
-      height: '20rem',
-      placeholder: 'Optionally add some Topics',
-      limitTo: 0,
-      moreText: 'item',
-      noResultsFound: 'No results found',
-      searchPlaceholder: 'Search',
-      searchOnKey: 'name',
-      customComparator:customComparator,
-      clearOnSelection: true,
-      inputDirection: "up",
-      enableSelectAll: true
-    };
-
+  hubs: any = {
+    "asia-pacific": "AFG,BGD,BTN,BRN,KHM,TLS,FSM,FJI,IND,IDN,KIR,LAO,MYS,MMR,NPL,PAK,PNG,PHL,SLB,LKA,TON,UZB,VUT,VNM,YEM",
+    "la-carribean": "ATG,BLZ,BOL,BRA,CHL,CRI,DMA,DOM,ECU,SLV,GTM,GUY,HTI,HND,JAM,MEX,NIC,PAN,PER,TTO,URY,VEN",
+    "wna": "DZA,BEN,BFA,CMR,CPV,CAF,TCD,CIV,GNQ,GHA,GIN,GNB,LBR,MLI,MRT,MAR,NER,NGA,STP,SEN,SLE,GMB,TGO",
+    "esa": "AGO,BDI,COM,COD,DJI,EGY,SWZ,ETH,KEN,LSO,MDG,MWI,MUS,MOZ,NAM,RWA,SOM,SSD,SDN,TZA,UGA,ZMB,ZWE"
   }
+
+  changeHub(hubName: string){
+    this.selectedCountries = this.dropdownOptions.filter((option: countryDataClass)=>{
+      return this.hubs[hubName].includes(option.value)
+    })
+  }
+
+
+  configCountry: NgxDropdownConfig =  {
+    displayKey: 'name',
+    search: true,
+    height: '20rem',
+    placeholder: 'Optionally filter by Country',
+    limitTo: 0,
+    moreText: 'item',
+    noResultsFound: 'No results found',
+    searchPlaceholder: 'Search',
+    searchOnKey: 'name',
+    customComparator:customComparator,
+    clearOnSelection: true,
+    inputDirection: "up",
+    enableSelectAll: true
+  };
+
+  configTopics: NgxDropdownConfig =  {
+    displayKey: 'name',
+    search: true,
+    height: '20rem',
+    placeholder: 'Optionally add some Topics',
+    limitTo: 0,
+    moreText: 'item',
+    noResultsFound: 'No results found',
+    searchPlaceholder: 'Search',
+    searchOnKey: 'name',
+    customComparator:customComparator,
+    clearOnSelection: true,
+    inputDirection: "up",
+    enableSelectAll: true
+  };
+
+}
 
 function customComparator(a:any,b:any){
     return a.name.localeCompare(b.name)

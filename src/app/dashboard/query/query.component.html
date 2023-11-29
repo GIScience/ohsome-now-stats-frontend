@@ -58,7 +58,20 @@
                 <label class="form-label" for="countries">Country Filter</label>
                 <ngx-select-dropdown [options]="dropdownOptions" name="countries" [config]="configCountry"
                 [(ngModel)]="selectedCountries" [multiple]="true" class="customDropdown"></ngx-select-dropdown>
-              </div>            
+              </div>
+              <div class="row" style="align-items: center; margin-bottom: 1rem;">
+                <p class="inline-p"><a class="inline-p" target="_blank" href="https://www.hotosm.org/hubs/">HOT-Priotity-Regions:</a></p>
+                <div class="row" style="width: auto;">
+                  <div style="width: auto;  padding: 0;">
+                    <button title="Asia-Pacific" (click)="changeHub('asia-pacific')" class="hub-icon" style="background: url(../../../assets/images/hubs/asia-pacific.png) no-repeat scroll 0 0 transparent"></button>
+                    <button title="Latin America & the Carribean" (click)="changeHub('la-carribean')" class="hub-icon" style="background: url(../../../assets/images/hubs/la-carribean.png)"></button>
+                  </div>
+                  <div style="width: auto;  padding: 0;">
+                    <button title="Eastern & Southern Africa" (click)="changeHub('wna')" class="hub-icon" style="background: url(../../../assets/images/hubs/nwa.png)"></button>
+                    <button title="West & Northern Africa" (click)="changeHub('esa')" class="hub-icon" style="background: url(../../../assets/images/hubs/sea.png)"></button> 
+                  </div>
+                </div> 
+              </div>
 
               <div class="row">
                 <label class="form-label" for="topics">Topic Selection</label>

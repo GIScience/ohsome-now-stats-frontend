@@ -2,3 +2,19 @@
   font-family: "Roboto, -apple-system, system-ui, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif";
   letter-spacing: "0.5px"
 }
+
+.hub-icon {
+  height: 50px;
+  width: 50px;
+  background-size: 100% 100% !important;
+  margin: 0 5px;
+}
+
+.inline-p{
+  width: auto;
+  margin: 0;
+  color: #72777a !important;
+  :hover {
+    color: #383a3b !important;
+  }
+}
