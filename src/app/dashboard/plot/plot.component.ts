@@ -58,7 +58,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     const currentDate = new Date()
     const topic_definitions = topicDefinitions as any
     const _data = this.data as any
-    if (this.selectedTopics && this.topicPlotData[this.currentStats]){
+    if (this.selectedTopics && this.topicPlotData && this.topicPlotData[this.currentStats]){
       if (this.topicPlotData[this.currentStats].length != this.data.length){
         return // topic response usually arrives faster, but only want to update once both requests came through
       }

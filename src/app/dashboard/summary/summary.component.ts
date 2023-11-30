@@ -55,29 +55,30 @@ export class SummaryComponent implements OnChanges {
           maximumFractionDigits: 0
          }
         ).format(this.data.roads)
-      
-        if (this.selectedTopics!=""&&this.topicData){
+
         // destroy old
-        for (const topic in this.selectedTopics?.split(',')){
-          if (!Object.keys(this.topicComponentReferences).includes(topic) && this.topicComponentReferences[topic]){
+        for (let topic of Object.keys(this.topicComponentReferences)){
+          if (!this.selectedTopics!.split(',').includes(topic)){
             this.topicComponentReferences[topic].destroy()
             delete this.topicComponentReferences[topic]
           }
         }
 
-        // build or update
-        for (let topic of this.selectedTopics!.split(',')){
-          if (this.topicData[topic]){
-            if (Object.keys(this.topicComponentReferences).includes(topic)){
+        if (this.selectedTopics!=""&&this.topicData){
 
-              this.adjustBigNumberValue(topic, this.topicData[topic].value)
+          // build or update
+          for (let topic of this.selectedTopics!.split(',')){
+            if (this.topicData[topic]){
+              if (Object.keys(this.topicComponentReferences).includes(topic)){
+
+                this.adjustBigNumberValue(topic, this.topicData[topic].value)
+              }
+              else {
+                this.addBigNumber(topic, topic_definitions[topic], this.topicData[topic].value)
+              }  
             }
-            else {
-              this.addBigNumber(topic, topic_definitions[topic], this.topicData[topic].value)
-            }  
           }
         }
-      }
   }
 
   addBigNumber(topic: string, topic_definition: any, value: number){
