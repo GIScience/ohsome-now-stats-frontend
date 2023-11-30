@@ -198,7 +198,7 @@ export class DataService {
 
 
 export interface IWrappedTopicData {
-  result: ITopicData
+  result: Map<String, ITopicData>
 }
 
 export interface ITopicData {
@@ -248,7 +248,7 @@ export interface IPlotData {
 
 
 export interface IWrappedTopicPlotData {
-  result: Array<ITopicPlotData>
+  result: Map<String, Array<ITopicPlotData>>
 }
 
 export interface ITopicPlotData {
@@ -260,7 +260,7 @@ export interface ITopicPlotData {
 
 export interface IWrappedTopicCountryData {
   query: {timespan:{startDate:string,endDate:string},hashtag:string}
-  result: ITopicCountryData[]
+  result: Map<String, ITopicCountryData[]>
 }
 
 export interface ITopicCountryData {
@@ -284,7 +284,8 @@ export interface ICountryStatsData {
   edits: number,
   latest: string,
   country: string,
-  place?: number
+  place?: number,
+  healthcare?: number
 }
 
 export interface ITrendingHashtags {

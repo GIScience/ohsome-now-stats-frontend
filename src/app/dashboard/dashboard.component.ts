@@ -28,9 +28,9 @@ export class DashboardComponent implements OnInit {
   isOpen = false
   activeLink = ''
 
-  topicData!: ITopicData  
-  topicPlotData! : Array<ITopicPlotData>
-  topicCountryData: ITopicCountryData[] = []
+  topicData!: Map<String, ITopicData>  
+  topicPlotData! : Map<String, Array<ITopicPlotData>>
+  topicCountryData!: Map<String, Array<ITopicCountryData>>
   
   summaryData!: ISummaryData
   plotData! : Array<IPlotData>
@@ -63,7 +63,7 @@ export class DashboardComponent implements OnInit {
 
       const queryParams = this.getQueryParamsFromFragments(fragment)
       if(queryParams !== null && this.queryParamsComplete(queryParams)) {
-        console.log('>>> DashboardComponent >>> queryParams ', queryParams, this.dataService.defaultHashtag)
+        // console.log('>>> DashboardComponent >>> queryParams ', queryParams, this.dataService.defaultHashtag)
         if(queryParams['hashtags'] == null)
           queryParams['hashtags'] = this.dataService.defaultHashtag
 
@@ -143,10 +143,7 @@ export class DashboardComponent implements OnInit {
           this.dataService.requestTopic(queryParams).subscribe({
             next: res => {
               // send response data to Summary Component
-              this.topicData = {
-                topic: res.result.topic,
-                value: res.result.value
-              }
+              this.topicData = res.result
             },
             error: (err) => {
               console.error('Error while requesting Topic data ', err)

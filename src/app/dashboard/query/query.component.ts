@@ -45,7 +45,7 @@ export class QueryComponent implements OnChanges {
   selectedCountries : countryDataClass[] = []  // selected countries with name and code
   
   topics: string[] = [];  // only codes for url and get request
-  topicOptions = [{"name": "Places", "value": "place"}];  // all possible countries with name and code
+  topicOptions = [{"name": "Places", "value": "place"}, {"name": "Healthcare Facilities", "value": "healthcare"}];  // all possible countries with name and code
   selectedTopics : topicDataClass[] = []  // selected countries with name and code
 
 
@@ -144,7 +144,7 @@ export class QueryComponent implements OnChanges {
    * @param data 
    */
   initFormValues(data: IQueryData) {
-    console.log('>>> initFormValues >>> data ', data)
+    // console.log('>>> initFormValues >>> data ', data)
     if(data && Object.keys(data).length !== 0) {
       if(!(data.start && data.end)) {
         console.log('date range is null')

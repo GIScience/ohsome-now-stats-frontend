@@ -15,7 +15,7 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 })
 export class SummaryComponent implements OnChanges {
   @Input() data: ISummaryData | undefined;
-  @Input() topicData: ITopicData | undefined;
+  @Input() topicData: any | undefined; // todo: get back type safety
   @Input() selectedTopics: String | undefined;
   @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
   
@@ -36,6 +36,8 @@ export class SummaryComponent implements OnChanges {
 
 
   ngOnChanges(): void {
+      const topic_definitions = topicDefinitions as any // todo: get back type safety
+
       if (!["users","roads","edits","buildings"].includes(this.currentlySelected) && !this.selectedTopics!.split(",").includes(this.currentlySelected)){
         document.getElementById("users")?.click()
       }
@@ -54,21 +56,26 @@ export class SummaryComponent implements OnChanges {
          }
         ).format(this.data.roads)
       
-      //if 
-      
-      if (this.selectedTopics!=""&&this.topicData){
-        if (!this.topicComponentReferences["place"]){
-          this.addBigNumber("place", topicDefinitions["place"], this.topicData.value)
+        if (this.selectedTopics!=""&&this.topicData){
+        // destroy old
+        for (const topic in this.selectedTopics?.split(',')){
+          if (!Object.keys(this.topicComponentReferences).includes(topic) && this.topicComponentReferences[topic]){
+            this.topicComponentReferences[topic].destroy()
+            delete this.topicComponentReferences[topic]
+          }
         }
-        else {
-          this.adjustBigNumberValue("place", this.topicData.value)
-        }
-        
-      }
-      else {
-        if (this.topicComponentReferences["place"]){
-          this.topicComponentReferences["place"].destroy()
-          delete this.topicComponentReferences["place"]
+
+        // build or update
+        for (let topic of this.selectedTopics!.split(',')){
+          if (this.topicData[topic]){
+            if (Object.keys(this.topicComponentReferences).includes(topic)){
+
+              this.adjustBigNumberValue(topic, this.topicData[topic].value)
+            }
+            else {
+              this.addBigNumber(topic, topic_definitions[topic], this.topicData[topic].value)
+            }  
+          }
         }
       }
   }

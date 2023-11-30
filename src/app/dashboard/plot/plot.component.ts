@@ -14,7 +14,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
   @Input() data!: Array<IPlotData>;
   @Input() currentStats!: string;
-  @Input() topicPlotData!: Array<ITopicPlotData>;
+  @Input() topicPlotData!: any;         // todo: there is no type safety here anymore. Lets try to fix that?
   @Input() selectedTopics: String | undefined;
   layout: Layout | any;
 
@@ -58,16 +58,14 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     const currentDate = new Date()
     const topic_definitions = topicDefinitions as any
     const _data = this.data as any
-    if (this.selectedTopics && this.topicPlotData){
-      if (this.topicPlotData.length != this.data.length){
+    if (this.selectedTopics && this.topicPlotData[this.currentStats]){
+      if (this.topicPlotData[this.currentStats].length != this.data.length){
         return // topic response usually arrives faster, but only want to update once both requests came through
       }
-      let wrappedTopicPlotData: any = [this.topicPlotData]
-      wrappedTopicPlotData.forEach((topic: Array<ITopicPlotData>)=>{
-        for(let i=0; i<topic.length; i++){
-          _data[i][topic[i].topic] = topic[i].value
-        }
-      })
+
+      for(let i=0; i<this.topicPlotData[this.currentStats].length; i++){
+        _data[i][this.currentStats] = this.topicPlotData[this.currentStats][i].value
+      }
     }
     const plotData : any = [{
       x: _data.map((e : IPlotData) => `${e.startDate}`),
