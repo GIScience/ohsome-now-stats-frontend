@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import dayjs from 'dayjs/esm';
 import { Dayjs } from "dayjs";
 import dropdownOptions from "../../../assets/static/json/countryCodes.json"
+import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 
 import { DataService, IQueryData } from '../../data.service';
 import { ToastService } from 'src/app/toast.service';
@@ -45,7 +46,7 @@ export class QueryComponent implements OnChanges {
   selectedCountries : countryDataClass[] = []  // selected countries with name and code
   
   topics: string[] = [];  // only codes for url and get request
-  topicOptions = [{"name": "Places", "value": "place"}, {"name": "Healthcare Facilities", "value": "healthcare"}];  // all possible countries with name and code
+  topicOptions: any[] = []
   selectedTopics : topicDataClass[] = []  // selected countries with name and code
 
 
@@ -53,6 +54,9 @@ export class QueryComponent implements OnChanges {
     private dataService: DataService,
     private router: Router,
     private toastService: ToastService ) {
+
+      this.buildTopicOptions()
+
       this.intervals = dataService.timeIntervals
       this.interval = dataService.defaultIntervalValue
 
@@ -136,6 +140,25 @@ export class QueryComponent implements OnChanges {
    */
   set end(val: string) {
     this._end = val
+  }
+
+    /**
+   * Build selectable topics based on the topicDefinition.json
+   * 
+   */
+  buildTopicOptions(){
+    for (let [key, value] of Object.entries(topicDefinitions)) {
+      let value_ = value as any  // todo: type-security??
+      if (["roads", "buildings", "edits", "users"].includes(key)){
+        continue
+      }
+      
+      this.topicOptions.push({
+        "name": value_["dropdown_name"],
+        "value": key
+      })
+    }
+
   }
 
   /**

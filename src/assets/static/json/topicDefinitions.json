@@ -21,6 +21,7 @@
     },
     "place": {
         "name": "Δ Places",
+        "dropdown_name": "Places",
         "color": "orange",
         "color-hex": "#ff9800",
         "tooltip": "The number of places like villages or cities.",
@@ -29,6 +30,7 @@
     },
     "healthcare": {
         "name": "Δ Healthcare Facilities",
+        "dropdown_name": "Healthcare Facilities",
         "color": "brown",
         "color-hex": "#795548",
         "tooltip": "The number of healthcare facilities.",
