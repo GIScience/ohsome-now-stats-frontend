@@ -56,7 +56,7 @@ export class SummaryComponent implements OnChanges {
          }
         ).format(this.data.roads)
 
-        // destroy old
+        // destroy now unused topics
         for (let topic of Object.keys(this.topicComponentReferences)){
           if (!this.selectedTopics!.split(',').includes(topic)){
             this.topicComponentReferences[topic].destroy()
@@ -66,7 +66,7 @@ export class SummaryComponent implements OnChanges {
 
         if (this.selectedTopics!=""&&this.topicData){
 
-          // build or update
+          // build or update used topics
           for (let topic of this.selectedTopics!.split(',')){
             if (this.topicData[topic]){
               if (Object.keys(this.topicComponentReferences).includes(topic)){
