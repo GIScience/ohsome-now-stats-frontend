@@ -251,6 +251,7 @@ export class MapComponent implements OnChanges {
         const config: Partial<Config> = {
             responsive: true,
             displayModeBar: false,
+            topojsonURL: "./assets/static/",
         };
 
         Plotly.newPlot('d3-map', plotData, layout, config);
