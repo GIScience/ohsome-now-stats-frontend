@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, AfterContentInit } from '@angular/core';
 
 import Plotly from 'plotly.js-basic-dist-min';
 import { Layout } from 'plotly.js-basic-dist-min';
-import { IPlotData, ITopicPlotData } from '../../data.service';
+import { IPlotData } from '../../data.service';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 
 @Component({
@@ -15,7 +15,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
   @Input() data!: Array<IPlotData>;
   @Input() currentStats!: string;
   @Input() topicPlotData!: any;         // todo: there is no type safety here anymore. Lets try to fix that?
-  @Input() selectedTopics: String | undefined;
+  @Input() selectedTopics: string | undefined;
   layout: Layout | any;
 
   ngAfterContentInit(): void {

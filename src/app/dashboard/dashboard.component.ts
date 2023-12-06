@@ -28,15 +28,15 @@ export class DashboardComponent implements OnInit {
   isOpen = false
   activeLink = ''
 
-  topicData!: Map<String, ITopicData>  
-  topicPlotData! : Map<String, Array<ITopicPlotData>>
-  topicCountryData!: Map<String, Array<ITopicCountryData>>
+  topicData!: Map<string, ITopicData>
+  topicPlotData! : Map<string, Array<ITopicPlotData>>
+  topicCountryData!: Map<string, Array<ITopicCountryData>>
   
   summaryData!: ISummaryData
   plotData! : Array<IPlotData>
   countryStatsData: ICountryStatsData[] = [];
   
-  selectedTopics: String = "";
+  selectedTopics: string = "";
   
   currentStats: StatsType = 'users';
 
@@ -235,7 +235,7 @@ export class DashboardComponent implements OnInit {
   /**
    * Creates query param from enitre fragment of the URL
    *
-   * @param String URL fragment part
+   * @param fragment URL fragment part
    * @returns Object with all query params sepearted
    */
   getQueryParamsFromFragments(fragment: string | null): any {

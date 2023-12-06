@@ -1,7 +1,7 @@
-import {Component, EventEmitter, Input, OnChanges, Output, ViewContainerRef, EnvironmentInjector, createComponent, ApplicationRef} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, EnvironmentInjector, createComponent, ApplicationRef} from '@angular/core';
 import * as bootstrap from 'bootstrap';
-import {UnaryFunction, fromEvent} from "rxjs"
-import { ISummaryData, ITopicData } from '../../data.service';
+import { fromEvent } from "rxjs";
+import { ISummaryData } from '../../data.service';
 import { dashboard } from '../tooltip-data';
 import { StatsType } from '../types';
 import { BigNumberComponent } from './big-number/big-number.component';
@@ -16,7 +16,7 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 export class SummaryComponent implements OnChanges {
   @Input() data: ISummaryData | undefined;
   @Input() topicData: any | undefined; // todo: get back type safety
-  @Input() selectedTopics: String | undefined;
+  @Input() selectedTopics: string | undefined;
   @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
   
   topicComponentReferences: any = {}
@@ -53,8 +53,7 @@ export class SummaryComponent implements OnChanges {
           style: "unit",
           unit: "kilometer",
           maximumFractionDigits: 0
-         }
-        ).format(this.data.roads)
+         }).format(this.data.roads)
 
         // destroy now unused topics
         for (let topic of Object.keys(this.topicComponentReferences)){

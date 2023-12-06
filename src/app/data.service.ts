@@ -67,7 +67,7 @@ export class DataService {
   /**
    * Creates query param from enitre fragment of the URL
    *
-   * @param String URL fragment part
+   * @param fragment URL fragment part
    * @returns Object with all query params sepearted
    */
   getQueryParamsFromFragments(fragment: string | null): any {
@@ -198,7 +198,7 @@ export class DataService {
 
 
 export interface IWrappedTopicData {
-  result: Map<String, ITopicData>
+  result: Map<string, ITopicData>
 }
 
 export interface ITopicData {
@@ -248,7 +248,7 @@ export interface IPlotData {
 
 
 export interface IWrappedTopicPlotData {
-  result: Map<String, Array<ITopicPlotData>>
+  result: Map<string, Array<ITopicPlotData>>
 }
 
 export interface ITopicPlotData {
@@ -260,7 +260,7 @@ export interface ITopicPlotData {
 
 export interface IWrappedTopicCountryData {
   query: {timespan:{startDate:string,endDate:string},hashtag:string}
-  result: Map<String, ITopicCountryData[]>
+  result: Map<string, ITopicCountryData[]>
 }
 
 export interface ITopicCountryData {
