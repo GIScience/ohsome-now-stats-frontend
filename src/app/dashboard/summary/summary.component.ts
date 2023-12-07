@@ -16,7 +16,7 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 export class SummaryComponent implements OnChanges {
   @Input() data: ISummaryData | undefined;
   @Input() topicData: any | undefined; // todo: get back type safety
-  @Input() selectedTopics: String | undefined;
+  @Input() selectedTopics: string | undefined;
   @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
   
   topicComponentReferences: any = {}
@@ -27,7 +27,7 @@ export class SummaryComponent implements OnChanges {
   kmOfRoads!: string
   dashboardTooltips: any;
 
-  currentlySelected: string = 'users';
+  currentlySelected = 'users';
 
   constructor(private injector: EnvironmentInjector, private appRef: ApplicationRef) { 
     this.dashboardTooltips = dashboard
@@ -57,7 +57,7 @@ export class SummaryComponent implements OnChanges {
         ).format(this.data.roads)
 
         // destroy now unused topics
-        for (let topic of Object.keys(this.topicComponentReferences)){
+        for (const topic of Object.keys(this.topicComponentReferences)){
           if (!this.selectedTopics!.split(',').includes(topic)){
             this.topicComponentReferences[topic].destroy()
             delete this.topicComponentReferences[topic]
@@ -67,7 +67,7 @@ export class SummaryComponent implements OnChanges {
         if (this.selectedTopics!=""&&this.topicData){
 
           // build or update used topics
-          for (let topic of this.selectedTopics!.split(',')){
+          for (const topic of this.selectedTopics!.split(',')){
             if (this.topicData[topic]){
               if (Object.keys(this.topicComponentReferences).includes(topic)){
 
@@ -82,11 +82,11 @@ export class SummaryComponent implements OnChanges {
   }
 
   addBigNumber(topic: string, topic_definition: any, value: number){
-    let targetDiv = document.getElementById("big-number_container")
-    let newChild = targetDiv!.appendChild(document.createElement("div"))
+    const targetDiv = document.getElementById("big-number_container")
+    const newChild = targetDiv?.appendChild(document.createElement("div"))
     const componentRef = createComponent(
       BigNumberComponent, {
-        hostElement: newChild!!,
+        hostElement: newChild!,
         environmentInjector: this.injector,
         
       }

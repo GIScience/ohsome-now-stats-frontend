@@ -28,30 +28,25 @@ export class DashboardComponent implements OnInit {
   isOpen = false
   activeLink = ''
 
-  topicData!: Map<String, ITopicData>  
-  topicPlotData! : Map<String, Array<ITopicPlotData>>
-  topicCountryData!: Map<String, Array<ITopicCountryData>>
+  topicData!: Map<string, ITopicData>
+  topicPlotData! : Map<string, Array<ITopicPlotData>>
+  topicCountryData!: Map<string, Array<ITopicCountryData>>
   
   summaryData!: ISummaryData
   plotData! : Array<IPlotData>
   countryStatsData: ICountryStatsData[] = [];
   
-  selectedTopics: String = "";
+  selectedTopics = "";
   
   currentStats: StatsType = 'users';
 
   queryParams: any
   summaryMessage = ''
   hashtagsData!: Array<IHashtag> | []
-  route: any;
-  router: any;
-
   constructor(
     private dataService: DataService,
-    route: ActivatedRoute,
-    router: Router ) {
-      this.route = route
-      this.router = router
+    private route: ActivatedRoute,
+    private router: Router ) {
     }
 
   ngOnInit() {

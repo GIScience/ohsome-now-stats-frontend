@@ -51,7 +51,7 @@ export class DataService {
       const tempStart = new Date(meta.result.max_timestamp)
       tempStart.setDate(tempStart.getDate() - 365)
       // if URL params are empty then fill it with default values
-      var queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment)
+      const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment);
 
       this.updateURL({
         hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : this.defaultHashtag,
@@ -198,7 +198,7 @@ export class DataService {
 
 
 export interface IWrappedTopicData {
-  result: Map<String, ITopicData>
+  result: Map<string, ITopicData>
 }
 
 export interface ITopicData {
@@ -248,7 +248,7 @@ export interface IPlotData {
 
 
 export interface IWrappedTopicPlotData {
-  result: Map<String, Array<ITopicPlotData>>
+  result: Map<string, Array<ITopicPlotData>>
 }
 
 export interface ITopicPlotData {
@@ -260,7 +260,7 @@ export interface ITopicPlotData {
 
 export interface IWrappedTopicCountryData {
   query: {timespan:{startDate:string,endDate:string},hashtag:string}
-  result: Map<String, ITopicCountryData[]>
+  result: Map<string, ITopicCountryData[]>
 }
 
 export interface ITopicCountryData {
