@@ -30,8 +30,8 @@ export class DashboardComponent implements OnInit {
     activeLink = ''
 
     topicData!: TopicResponse
-    topicPlotData!: Map<string, Array<ITopicPlotData>>
-    topicCountryData!: Map<string, Array<ITopicCountryData>>
+    topicPlotData!: Record<StatsType, ITopicPlotData[]>
+    topicCountryData!: Record<StatsType, Array<ITopicCountryData>>
 
     summaryData!: ISummaryData
     plotData!: Array<IPlotData>

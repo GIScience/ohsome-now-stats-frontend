@@ -271,7 +271,7 @@ export interface IPlotData {
 
 
 export interface IWrappedTopicPlotData {
-    result: Map<string, Array<ITopicPlotData>>
+    result: Record<string, Array<ITopicPlotData>>
 }
 
 export interface ITopicPlotData {
@@ -283,7 +283,7 @@ export interface ITopicPlotData {
 
 export interface IWrappedTopicCountryData {
     query: { timespan: { startDate: string, endDate: string }, hashtag: string }
-    result: Map<string, ITopicCountryData[]>
+    result: Record<StatsType, ITopicCountryData[]>
 }
 
 export interface ITopicCountryData {

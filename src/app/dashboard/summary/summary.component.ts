@@ -74,11 +74,9 @@ export class SummaryComponent implements OnChanges {
         }
 
         if (this.selectedTopics && this.topicData) {
-            console.log('this.selectedTopics = ', this.selectedTopics, this.topicData)
 
             // build or update used topics
             for (const topic of this.selectedTopics.split(',')) {
-                console.log('topic = ', topic)
                 const topicName = topic as TopicName
                 if (this.topicData[topicName]) {
                     if (Object.keys(this.topicComponentReferences).includes(topic)) {

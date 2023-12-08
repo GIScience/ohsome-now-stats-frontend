@@ -8,11 +8,12 @@ import {
     ViewChild,
 } from '@angular/core';
 
-import { Map, View } from 'ol';
-import { ICountryStatsData, IWrappedCountryStatsData } from '../../data.service';
-import Plotly, { Data } from 'plotly.js-geo-dist';
-import { Config } from 'plotly.js-basic-dist-min';
-import { StatsType } from '../types';
+// import {Map, View} from 'ol';
+import {ICountryStatsData, ITopicCountryData} from '../../data.service';
+import Plotly from 'plotly.js-geo-dist';
+import {Config} from 'plotly.js-basic-dist-min';
+import {StatsType} from '../types';
+import {constructorParametersDownlevelTransform} from "@angular/compiler-cli";
 
 export interface ICountryStatsDataAsArrays {
     country: string[],
@@ -36,7 +37,7 @@ const Blues = ["#f0f6fd", "#f0f6fd", "#f0f6fd", "#f0f6fd", "#f0f6fd", "#f0f6fd",
     .reverse().map((value, index) => [index / 255, value]);
 const Oranges = ["#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff0e2", "#fff0e1", "#ffefe0", "#ffefdf", "#ffeede", "#ffeedd", "#feeddc", "#feeddb", "#feecda", "#feecd9", "#feebd8", "#feebd7", "#feead6", "#feead5", "#fee9d4", "#fee9d3", "#fee8d2", "#fee8d1", "#fee7d0", "#fee6cf", "#fee6ce", "#fee5cc", "#fee5cb", "#fee4ca", "#fee4c9", "#fee3c8", "#fee2c7", "#fee2c5", "#fee1c4", "#fee1c3", "#fee0c2", "#fedfc0", "#fedfbf", "#fedebe", "#feddbd", "#feddbb", "#fedcba", "#fedbb9", "#fedab7", "#fddab6", "#fdd9b4", "#fdd8b3", "#fdd8b2", "#fdd7b0", "#fdd6af", "#fdd5ad", "#fdd4ac", "#fdd4aa", "#fdd3a9", "#fdd2a7", "#fdd1a6", "#fdd0a4", "#fdd0a3", "#fdcfa1", "#fdcea0", "#fdcd9e", "#fdcc9d", "#fdcb9b", "#fdca99", "#fdc998", "#fdc896", "#fdc795", "#fdc693", "#fdc591", "#fdc490", "#fdc38e", "#fdc28d", "#fdc18b", "#fdc089", "#fdbf88", "#fdbe86", "#fdbd84", "#fdbc83", "#fdbb81", "#fdba7f", "#fdb97e", "#fdb87c", "#fdb77a", "#fdb679", "#fdb577", "#fdb475", "#fdb374", "#fdb272", "#fdb171", "#fdb06f", "#fdaf6d", "#fdae6c", "#fdad6a", "#fdac69", "#fdab67", "#fdaa65", "#fda964", "#fda762", "#fda661", "#fda55f", "#fda45e", "#fda35c", "#fda25b", "#fda159", "#fda058", "#fd9f56", "#fd9e55", "#fd9d53", "#fd9c52", "#fd9b50", "#fd9a4f", "#fc994d", "#fc984c", "#fc974a", "#fc9649", "#fc9548", "#fc9346", "#fc9245", "#fc9143", "#fc9042", "#fb8f40", "#fb8e3f", "#fb8d3e", "#fb8c3c", "#fb8b3b", "#fa8a3a", "#fa8938", "#fa8837", "#fa8736", "#fa8534", "#f98433", "#f98332", "#f98230", "#f8812f", "#f8802e", "#f87f2c", "#f77e2b", "#f77d2a", "#f77b29", "#f67a27", "#f67926", "#f57825", "#f57724", "#f57623", "#f47522", "#f47420", "#f3731f", "#f3721e", "#f2701d", "#f26f1c", "#f16e1b", "#f16d1a", "#f06c19", "#f06b18", "#ef6a17", "#ef6916", "#ee6815", "#ed6714", "#ed6614", "#ec6513", "#ec6312", "#eb6211", "#ea6110", "#ea6010", "#e95f0f", "#e85e0e", "#e85d0e", "#e75c0d", "#e65b0c", "#e55a0c", "#e4590b", "#e4580b", "#e3570a", "#e25609", "#e15509", "#e05408", "#df5308", "#de5208", "#dd5207", "#dc5107", "#db5006", "#da4f06", "#d94e06", "#d84d05", "#d74c05", "#d64c05", "#d54b04", "#d44a04", "#d24904", "#d14804", "#d04804", "#cf4703", "#cd4603", "#cc4503", "#cb4503", "#c94403", "#c84303", "#c74303", "#c54203", "#c44103", "#c24102", "#c14002", "#bf3f02", "#be3f02", "#bd3e02", "#bb3e02", "#ba3d02", "#b83d02", "#b73c02", "#b53b02", "#b43b02", "#b23a03", "#b13a03", "#af3903", "#ae3903", "#ac3803", "#ab3803", "#aa3703", "#a83703", "#a73603", "#a53603", "#a43503", "#a33503", "#a13403", "#a03403", "#9f3303", "#9d3303", "#9c3203", "#9b3203", "#993103", "#983103", "#973003", "#953003", "#942f03", "#932f03", "#922e04", "#902e04", "#8f2d04", "#8e2d04", "#8d2c04", "#8b2c04", "#8a2b04", "#892b04", "#882a04", "#862a04", "#852904", "#842904", "#832804", "#812804", "#802704", "#7f2704"]
     .reverse().map((value, index) => [index / 255, value]);
-const Browns = ["#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd7","#fffcd6","#fffcd4","#fffbd3","#fffbd2","#fffbd0","#fffacf","#ffface","#fffacc","#fff9cb","#fff9ca","#fff9c9","#fff8c7","#fff8c6","#fff8c5","#fff7c3","#fff7c2","#fff7c1","#fff6bf","#fff6be","#fff5bd","#fff5bc","#fff4ba","#fff4b9","#fff4b8","#fff3b6","#fff3b5","#fff2b4","#fff2b2","#fff1b1","#fff1af","#fff0ae","#ffefad","#ffefab","#ffeeaa","#ffeea9","#ffeda7","#feeca6","#feeca4","#feeba3","#feeaa1","#feeaa0","#fee99e","#fee89d","#fee89b","#fee79a","#fee698","#fee697","#fee595","#fee493","#fee392","#fee390","#fee28e","#fee18d","#fee08b","#fedf89","#fedf87","#fede86","#fedd84","#fedc82","#fedb80","#feda7e","#fed97d","#fed87b","#fed779","#fed777","#fed675","#fed573","#fed471","#fed370","#fed26e","#fed16c","#fed06a","#fecf68","#fece66","#fecd64","#fecc63","#fecb61","#fec95f","#fec85d","#fec75b","#fec65a","#fec558","#fec456","#fec355","#fec253","#fec051","#febf50","#febe4e","#febd4d","#febc4b","#feba4a","#feb948","#feb847","#feb746","#feb544","#feb443","#feb341","#feb240","#feb03f","#feaf3e","#feae3c","#feac3b","#fdab3a","#fdaa39","#fda938","#fda737","#fda635","#fda534","#fda333","#fca232","#fca131","#fc9f30","#fc9e2f","#fc9d2e","#fb9b2d","#fb9a2c","#fb992b","#fb972a","#fa962a","#fa9529","#fa9328","#f99227","#f99126","#f89025","#f88e25","#f88d24","#f78c23","#f78a22","#f68921","#f68821","#f58620","#f5851f","#f4841f","#f3831e","#f3811d","#f2801c","#f27f1c","#f17e1b","#f07c1a","#f07b1a","#ef7a19","#ee7918","#ee7718","#ed7617","#ec7517","#eb7416","#eb7215","#ea7115","#e97014","#e86f14","#e86e13","#e76c12","#e66b12","#e56a11","#e46911","#e36810","#e2670f","#e1650f","#e1640e","#e0630e","#df620d","#de610d","#dd600c","#dc5f0c","#db5e0b","#da5d0b","#d95b0a","#d75a0a","#d65909","#d55809","#d45708","#d35608","#d25508","#d15407","#cf5307","#ce5207","#cd5106","#cc5006","#ca4f06","#c94e05","#c84d05","#c74c05","#c54b05","#c44b05","#c24a04","#c14904","#c04804","#be4704","#bd4604","#bb4504","#ba4504","#b84404","#b74304","#b54203","#b44103","#b24103","#b14003","#af3f03","#ae3e03","#ac3e03","#ab3d03","#a93c03","#a83b04","#a63b04","#a43a04","#a33904","#a13904","#a03804","#9e3704","#9c3704","#9b3604","#993604","#983504","#963404","#943404","#933304","#913304","#903204","#8e3104","#8c3104","#8b3005","#893005","#882f05","#862f05","#842e05","#832e05","#812d05","#802d05","#7e2c05","#7c2c05","#7b2b05","#792b05","#782a05","#762a05","#742905","#732905","#712806","#702806","#6e2706","#6c2706","#6b2606","#692606","#682506","#662506"]
+const Browns = ["#fffcd8", "#fffcd8", "#fffcd8", "#fffcd8", "#fffcd8", "#fffcd8", "#fffcd8", "#fffcd8", "#fffcd8", "#fffcd8", "#fffcd8", "#fffcd7", "#fffcd6", "#fffcd4", "#fffbd3", "#fffbd2", "#fffbd0", "#fffacf", "#ffface", "#fffacc", "#fff9cb", "#fff9ca", "#fff9c9", "#fff8c7", "#fff8c6", "#fff8c5", "#fff7c3", "#fff7c2", "#fff7c1", "#fff6bf", "#fff6be", "#fff5bd", "#fff5bc", "#fff4ba", "#fff4b9", "#fff4b8", "#fff3b6", "#fff3b5", "#fff2b4", "#fff2b2", "#fff1b1", "#fff1af", "#fff0ae", "#ffefad", "#ffefab", "#ffeeaa", "#ffeea9", "#ffeda7", "#feeca6", "#feeca4", "#feeba3", "#feeaa1", "#feeaa0", "#fee99e", "#fee89d", "#fee89b", "#fee79a", "#fee698", "#fee697", "#fee595", "#fee493", "#fee392", "#fee390", "#fee28e", "#fee18d", "#fee08b", "#fedf89", "#fedf87", "#fede86", "#fedd84", "#fedc82", "#fedb80", "#feda7e", "#fed97d", "#fed87b", "#fed779", "#fed777", "#fed675", "#fed573", "#fed471", "#fed370", "#fed26e", "#fed16c", "#fed06a", "#fecf68", "#fece66", "#fecd64", "#fecc63", "#fecb61", "#fec95f", "#fec85d", "#fec75b", "#fec65a", "#fec558", "#fec456", "#fec355", "#fec253", "#fec051", "#febf50", "#febe4e", "#febd4d", "#febc4b", "#feba4a", "#feb948", "#feb847", "#feb746", "#feb544", "#feb443", "#feb341", "#feb240", "#feb03f", "#feaf3e", "#feae3c", "#feac3b", "#fdab3a", "#fdaa39", "#fda938", "#fda737", "#fda635", "#fda534", "#fda333", "#fca232", "#fca131", "#fc9f30", "#fc9e2f", "#fc9d2e", "#fb9b2d", "#fb9a2c", "#fb992b", "#fb972a", "#fa962a", "#fa9529", "#fa9328", "#f99227", "#f99126", "#f89025", "#f88e25", "#f88d24", "#f78c23", "#f78a22", "#f68921", "#f68821", "#f58620", "#f5851f", "#f4841f", "#f3831e", "#f3811d", "#f2801c", "#f27f1c", "#f17e1b", "#f07c1a", "#f07b1a", "#ef7a19", "#ee7918", "#ee7718", "#ed7617", "#ec7517", "#eb7416", "#eb7215", "#ea7115", "#e97014", "#e86f14", "#e86e13", "#e76c12", "#e66b12", "#e56a11", "#e46911", "#e36810", "#e2670f", "#e1650f", "#e1640e", "#e0630e", "#df620d", "#de610d", "#dd600c", "#dc5f0c", "#db5e0b", "#da5d0b", "#d95b0a", "#d75a0a", "#d65909", "#d55809", "#d45708", "#d35608", "#d25508", "#d15407", "#cf5307", "#ce5207", "#cd5106", "#cc5006", "#ca4f06", "#c94e05", "#c84d05", "#c74c05", "#c54b05", "#c44b05", "#c24a04", "#c14904", "#c04804", "#be4704", "#bd4604", "#bb4504", "#ba4504", "#b84404", "#b74304", "#b54203", "#b44103", "#b24103", "#b14003", "#af3f03", "#ae3e03", "#ac3e03", "#ab3d03", "#a93c03", "#a83b04", "#a63b04", "#a43a04", "#a33904", "#a13904", "#a03804", "#9e3704", "#9c3704", "#9b3604", "#993604", "#983504", "#963404", "#943404", "#933304", "#913304", "#903204", "#8e3104", "#8c3104", "#8b3005", "#893005", "#882f05", "#862f05", "#842e05", "#832e05", "#812d05", "#802d05", "#7e2c05", "#7c2c05", "#7b2b05", "#792b05", "#782a05", "#762a05", "#742905", "#732905", "#712806", "#702806", "#6e2706", "#6c2706", "#6b2606", "#692606", "#682506", "#662506"]
     .reverse().map((value, index) => [index / 255, value]);
 
 @Component({
@@ -49,14 +50,11 @@ const Browns = ["#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd8","#fffcd8","#ff
 export class MapComponent implements OnChanges {
     @Input() data!: Array<ICountryStatsData>;
     @Input() currentStats!: StatsType;
-    @Input() selectedCountries!: String;
-    @Input() selectedTopics: String | undefined;
-    @Input() topicCountryData: any | undefined; // todo: there is no type safety here anymore. Lets try to fix that?
+    @Input() selectedCountries!: string;
+    @Input() selectedTopics: string | undefined;
+    @Input() topicCountryData!: Record<StatsType, ITopicCountryData[]>;
 
     @ViewChild('d3Map') d3MapElement: ElementRef | undefined;
-
-    mapView: View | undefined
-    map: Map | undefined
 
     ngOnChanges(changes: SimpleChanges): void {
         // todo: there is no type safety here anymore. Lets try to fix that?
@@ -65,39 +63,37 @@ export class MapComponent implements OnChanges {
             if (this.topicCountryData[this.currentStats]) {
                 data = this.topicCountryData[this.currentStats].map(
                     (country: any) => {
-                        let temp: any = {}
+                        const temp: any = {}
                         temp[this.currentStats] = country.value
                         temp["country"] = country.country
                         return temp
                     }
                 )
-            }
-            else {
+                console.log('data ', data)
+            } else {
                 return
             }
-        }
-        else {
+        } else {
             data = this.data as any
         }
 
-        let notSelectedCountryData: ICountryStatsData[] = [];
-        let selectedCountryData = data.filter((dataPoint: any) => {
+        const notSelectedCountryData: ICountryStatsData[] = [];
+        const selectedCountryData = data.filter((dataPoint: any) => {
             if (this.selectedCountries.includes(dataPoint["country"])) {
                 return true
-            }
-            else {
+            } else {
                 notSelectedCountryData.push(dataPoint)
                 return false
             }
         })
 
-        let selectedCountryStatsArrays = this.selectedCountries != "" ?
+        const selectedCountryStatsArrays = this.selectedCountries != "" ?
             this.getSortedStatsFromData(selectedCountryData, this.currentStats)
             : this.getSortedStatsFromData(data, this.currentStats)
-        let notSelectedCountryStatsArrays = this.selectedCountries != "" ?
+        const notSelectedCountryStatsArrays = this.selectedCountries != "" ?
             this.getSortedStatsFromData(notSelectedCountryData, this.currentStats)
             : this.getSortedStatsFromData([], this.currentStats)
-    
+
 
         let cmin;
         let cmax;
@@ -109,8 +105,7 @@ export class MapComponent implements OnChanges {
             cmin = notSelectedCountryStatsArrays[this.currentStats]!.at(-1)! < selectedCountryStatsArrays[this.currentStats]!.at(-1)!
                 ? notSelectedCountryStatsArrays[this.currentStats]!.at(-1)!
                 : selectedCountryStatsArrays[this.currentStats]!.at(-1)!
-        }
-        else {
+        } else {
             cmax = selectedCountryStatsArrays[this.currentStats]![0]
             cmin = selectedCountryStatsArrays[this.currentStats]!.at(-1)!
         }
@@ -140,7 +135,7 @@ export class MapComponent implements OnChanges {
             })
     }
 
-    initPlotlyMap({ selectedCountryStatsArrays, notSelectedCountryStatsArrays, stats, cmin, cmax }: {
+    initPlotlyMap({selectedCountryStatsArrays, notSelectedCountryStatsArrays, stats, cmin, cmax}: {
         selectedCountryStatsArrays: Partial<ICountryStatsDataAsArrays>;
         notSelectedCountryStatsArrays: Partial<ICountryStatsDataAsArrays>;
         stats: StatsType,
@@ -217,8 +212,8 @@ export class MapComponent implements OnChanges {
                 showlegend: false
             }];
 
-        let corner = window.innerWidth > 600 ? 1 : 0;
-        let anchor = window.innerWidth > 600 ? "right" : "left";
+        const corner = window.innerWidth > 600 ? 1 : 0;
+        const anchor = window.innerWidth > 600 ? "right" : "left";
 
         const layout = {
             margin: {
