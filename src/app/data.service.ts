@@ -198,7 +198,7 @@ export class DataService {
 }
 
 
-export type TopicName = 'place' | 'healthcare'
+export type TopicName = 'place' | 'healthcare' | 'amenity'
 
 interface TopicValues {
     hashtag: string
@@ -308,7 +308,8 @@ export interface ICountryStatsData {
     latest: string,
     country: string,
     place?: number,
-    healthcare?: number
+    healthcare?: number,
+    amenity?: number
 }
 
 export interface ITrendingHashtags {

@@ -9,7 +9,7 @@ import {
     ApplicationRef
 } from '@angular/core';
 import * as bootstrap from 'bootstrap';
-import {fromEvent} from "rxjs"
+import {fromEvent} from "rxjs";
 import {ISummaryData, TopicDefinition, TopicDefinitionValue, TopicName, TopicResponse} from '../../data.service';
 import {dashboard} from '../tooltip-data';
 import {StatsType} from '../types';

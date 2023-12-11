@@ -10,7 +10,7 @@ import {
 
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';
-import {ICountryStatsData, ITopicCountryData} from '../../data.service';
+import {ICountryStatsData} from '../../data.service';
 import {StatsType} from '../types';
 
 export interface ICountryStatsDataAsArrays {
@@ -20,6 +20,7 @@ export interface ICountryStatsDataAsArrays {
     buildings: number[],
     place: number[],
     healthcare: number[],
+    amenity: number[],
     edits: number[],
     latest: string[]
 }
@@ -52,7 +53,7 @@ export class MapComponent implements OnChanges {
     @Input() currentStats!: StatsType;
     @Input() selectedCountries!: string;
     @Input() selectedTopics: string | undefined;
-    @Input() topicCountryData!: Record<StatsType, ITopicCountryData[]>;
+    @Input() topicCountryData!: any | undefined;
 
     @ViewChild('d3Map') d3MapElement: ElementRef | undefined;
 
@@ -69,7 +70,6 @@ export class MapComponent implements OnChanges {
                         return temp
                     }
                 )
-                console.log('data ', data)
             } else {
                 return
             }
