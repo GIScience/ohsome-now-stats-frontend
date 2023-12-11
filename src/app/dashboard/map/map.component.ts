@@ -8,12 +8,10 @@ import {
     ViewChild,
 } from '@angular/core';
 
-// import {Map, View} from 'ol';
-import {ICountryStatsData, ITopicCountryData} from '../../data.service';
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';
+import {ICountryStatsData, ITopicCountryData} from '../../data.service';
 import {StatsType} from '../types';
-import {constructorParametersDownlevelTransform} from "@angular/compiler-cli";
 
 export interface ICountryStatsDataAsArrays {
     country: string[],
@@ -151,13 +149,13 @@ export class MapComponent implements OnChanges {
             place: Oranges,
             healthcare: Browns
         }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const plotData: Data[] = [
 
             {
                 type: 'scattergeo',
                 mode: 'markers',
-                // @ts-ignore
                 geo: 'geo',
                 locationmode: 'ISO-3',
                 hoverinfo: 'location+text',
@@ -167,9 +165,7 @@ export class MapComponent implements OnChanges {
                 marker: {
                     size: notSelectedCountryStatsArrays[stats],
                     color: "#cccccc",
-                    // @ts-ignore
                     cmin: cmin,
-                    // @ts-ignore
                     cmax: cmax,
                     sizemode: 'area',
                     sizemin: 2,
@@ -185,7 +181,6 @@ export class MapComponent implements OnChanges {
             {
                 type: 'scattergeo',
                 mode: 'markers',
-                // @ts-ignore
                 geo: 'geo',
                 locationmode: 'ISO-3',
                 hoverinfo: 'location+text',
@@ -195,9 +190,7 @@ export class MapComponent implements OnChanges {
                 marker: {
                     size: selectedCountryStatsArrays[stats],
                     color: selectedCountryStatsArrays[stats],
-                    // @ts-ignore
                     cmin: cmin,
-                    // @ts-ignore
                     cmax: cmax,
                     sizemode: 'area',
                     sizemin: 2,
