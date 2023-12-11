@@ -229,19 +229,19 @@ export class DashboardComponent implements OnInit {
         // this.dataService.abortHashtagReqSub.complete()
     }
 
-    /**
-     * Creates query param from enitre fragment of the URL
-     *
-     * @param String URL fragment part
-     * @returns Object with all query params sepearted
-     */
-    getQueryParamsFromFragments(fragment: string | null): any {
-        if (fragment == null || fragment.length < 2)
-            return null
-        const tempQueryParams: Array<Array<string>> = fragment?.split('&')
-            .map(q => [q.split('=')[0], q.split('=')[1]])
-        return Object.fromEntries(tempQueryParams)
-    }
+  /**
+   * Creates query param from enitre fragment of the URL
+   *
+   * @param fragment URL fragment part
+   * @returns Object with all query params sepearted
+   */
+  getQueryParamsFromFragments(fragment: string | null): any {
+    if(fragment == null || fragment.length < 2)
+      return null
+    const tempQueryParams: Array<Array<string>> = fragment?.split('&')
+        .map( q => [q.split('=')[0], q.split('=')[1]])
+    return Object.fromEntries(tempQueryParams)
+  }
 
     /**
      * Forms an appropriate message to be display above Summary data

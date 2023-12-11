@@ -19,7 +19,7 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
   dashboardTooltips: any
 
   constructor(
-    private dataService: DataService,
+    dataService: DataService,
     private route: ActivatedRoute,
     private router: Router ) {
       this.trendingHashtagLimit = dataService.trendingHashtagLimit
@@ -30,7 +30,7 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
     if(this.hashtags){
       
       this.numOfHashtags = this.hashtags ? this.hashtags.length : this.trendingHashtagLimit
-      // arange the hashtags in desc order
+      // arrange the hashtags in desc order
       this.hashtags.sort((a, b) => b.number_of_users - a.number_of_users)
       this.hashtags.forEach( h => {
         // prepare a readable tooltip

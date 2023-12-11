@@ -26,7 +26,8 @@
         "dropdown_name": "Places",
         "color": "orange",
         "tooltip": "The number of places like villages or cities.",
-        "icon": "fa-map-location-dot"
+        "icon": "fa-city",
+        "y-title": "# of Δ places"
     },
     "healthcare": {
         "name": "Δ Healthcare Facilities",
@@ -35,6 +36,16 @@
         "dropdown_name": "Healthcare Facilities",
         "color": "brown",
         "tooltip": "The number of healthcare facilities.",
-        "icon": "fa-stethoscope"
+        "icon": "fa-stethoscope",
+        "y-title": "# of Δ healthcare facilities"
+    },
+    "amenity": {
+        "name": "Δ Amenities",
+        "dropdown_name": "Amenities",
+        "color": "cyan",
+        "color-hex": "#00bcd4",
+        "tooltip": "The number of amenities.",
+        "icon": "fa-map-location-dot",
+        "y-title": "# of Δ amenities"
     }
 }

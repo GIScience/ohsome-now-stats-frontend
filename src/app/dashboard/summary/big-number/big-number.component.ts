@@ -6,10 +6,10 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./big-number.component.scss']
 })
 export class BigNumberComponent {
-  @Input() name: String | undefined;
-  @Input() value: String | undefined;
-  @Input() tooltip: String | undefined;
-  @Input() icon: String | undefined;
-  @Input() color: String | undefined;
+  @Input() name: string | undefined;
+  @Input() value: string | undefined;
+  @Input() tooltip: string | undefined;
+  @Input() icon: string | undefined;
+  @Input() color: string | undefined;
   @Input() startSelected: boolean | undefined;
 }
