@@ -5,7 +5,7 @@
   <!-- #Total Edits ==================== -->
   <app-big-number class="col-md-3" name="Total Edits" icon="fa-pen-to-square" value="{{edits}}" tooltip="{{dashboardTooltips.summary.edits}}" color="red" (click)="changeCurrentStats($event, 'edits')"></app-big-number>
   <!-- #Building Edits ==================== -->
-  <app-big-number class="col-md-3" name="Δ Buildings" icon="fa-city" value="{{buidlingEdits}}" tooltip="{{dashboardTooltips.summary.buildings}}" color="purple" (click)="changeCurrentStats($event, 'buildings')"></app-big-number>
+  <app-big-number class="col-md-3" name="Δ Buildings" icon="fa-building" value="{{buidlingEdits}}" tooltip="{{dashboardTooltips.summary.buildings}}" color="purple" (click)="changeCurrentStats($event, 'buildings')"></app-big-number>
   <!-- #km of Roads ==================== -->
   <app-big-number class="col-md-3" name="Δ km of Roads" icon="fa-road" value="{{kmOfRoads}}" tooltip="{{dashboardTooltips.summary.kmOfRoads}}" color="blue" (click)="changeCurrentStats($event, 'roads')"></app-big-number>
 </div>
