@@ -26,8 +26,7 @@
         "dropdown_name": "Places",
         "color": "orange",
         "tooltip": "The number of places like villages or cities.",
-        "icon": "fa-city",
-        "y-title": "# of Δ places"
+        "icon": "fa-city"
     },
     "healthcare": {
         "name": "Δ Healthcare Facilities",
@@ -35,17 +34,25 @@
         "y-title": "# of Δ healthcare facilities",
         "dropdown_name": "Healthcare Facilities",
         "color": "brown",
-        "tooltip": "The number of healthcare facilities.",
-        "icon": "fa-stethoscope",
-        "y-title": "# of Δ healthcare facilities"
+        "tooltip": "The number of healthcare facilities like hospitals or doctor offices.",
+        "icon": "fa-stethoscope"
     },
     "amenity": {
         "name": "Δ Amenities",
+        "color-hex": "#00bcd4",
+        "y-title": "# of Δ amenities",
         "dropdown_name": "Amenities",
         "color": "cyan",
-        "color-hex": "#00bcd4",
         "tooltip": "The number of amenities.",
-        "icon": "fa-map-location-dot",
-        "y-title": "# of Δ amenities"
+        "icon": "fa-map-location-dot"
+    },
+    "waterway": {
+        "name": "Δ km of Waterways",
+        "color-hex": "#e91e63",
+        "y-title": "# of Δ km waterways",
+        "dropdown_name": "Waterways",
+        "color": "pink",
+        "tooltip": "The change of kilometers of waterways.",
+        "icon": "fa-water"
     }
 }

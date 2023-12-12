@@ -1,7 +1,4 @@
 .col-md-3 {
-    flex: 1 1 200px;
-}
-
-@media screen and ( max-width: 1170px ) {
-    .col-md-3 { flex-basis: 50%; }                    /* forces two items to a line */
+    flex: 1 1 25%;
+    min-width: 250px;
 }

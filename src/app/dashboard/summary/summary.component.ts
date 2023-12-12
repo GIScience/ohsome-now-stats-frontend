@@ -1,12 +1,12 @@
 import {
+    ApplicationRef,
     Component,
+    createComponent,
+    EnvironmentInjector,
     EventEmitter,
     Input,
     OnChanges,
-    Output,
-    EnvironmentInjector,
-    createComponent,
-    ApplicationRef
+    Output
 } from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {fromEvent} from "rxjs";
@@ -55,15 +55,10 @@ export class SummaryComponent implements OnChanges {
             return
 
         // console.log('>>> SummaryComponent >>> data = ', this.data);
-        this.contributors = new Intl.NumberFormat('en-US').format(this.data.users)
-        this.buidlingEdits = new Intl.NumberFormat('en-US').format(this.data.buildings)
-        this.edits = new Intl.NumberFormat('en-US').format(this.data.edits)
-        this.kmOfRoads = new Intl.NumberFormat('en-US', {
-                style: "unit",
-                unit: "kilometer",
-                maximumFractionDigits: 0
-            }
-        ).format(this.data.roads)
+        this.contributors = this.formatNumbertoNumberformatString(this.data.users)
+        this.buidlingEdits = this.formatNumbertoNumberformatString(this.data.buildings)
+        this.edits = this.formatNumbertoNumberformatString(this.data.edits)
+        this.kmOfRoads = this.formatNumbertoNumberformatString(this.data.roads)
 
         // destroy now unused topics
         for (const topic of Object.keys(this.topicComponentReferences)) {
@@ -100,14 +95,15 @@ export class SummaryComponent implements OnChanges {
 
             }
         )
+
         this.appRef.attachView(componentRef.hostView);
         componentRef.setInput("color", topic_definition["color"])
         componentRef.setInput("icon", topic_definition["icon"])
         componentRef.setInput("name", topic_definition["name"])
         componentRef.setInput("tooltip", topic_definition["tooltip"])
-        componentRef.setInput("value", value)
+        componentRef.setInput("value", this.formatNumbertoNumberformatString(value))
         componentRef.location.nativeElement.classList.add("col-md-3")
-        componentRef.location.nativeElement.style = "flex: 1 1 200px;" // for some reason scss is not applied to dynamically created component
+        componentRef.location.nativeElement.style = "flex: 1 1 25%; min-width: 250px;" // for some reason scss is not applied to dynamically created component
 
         fromEvent(componentRef.location.nativeElement, 'click')
             .subscribe((event: any) => this.changeCurrentStats(event, topic as StatsType));
@@ -115,7 +111,14 @@ export class SummaryComponent implements OnChanges {
     }
 
     adjustBigNumberValue(topic: string, value: number) {
-        this.topicComponentReferences[topic].setInput("value", value)
+        this.topicComponentReferences[topic].setInput("value", this.formatNumbertoNumberformatString(value))
+    }
+
+    formatNumbertoNumberformatString(value: number) : string {
+        return new Intl.NumberFormat('en-US', {
+                maximumFractionDigits: 0
+            }
+        ).format(value)
     }
 
     changeSelectedSummaryComponent(e: any) {
