@@ -119,6 +119,20 @@ export class DashboardComponent implements OnInit {
                     this.dataService.requestPlot(queryParams).subscribe({
                         next: (res: IWrappedPlotData) => {
                             if (res) {
+                                // this.plotData = res.result
+                                // add 'hashtag' and 'country' ISO codes to plotData #82
+                                res.result.map((r: any) => {
+                                    r['hashtag'] = queryParams['hashtags']
+                                    r['countries'] = queryParams['countries']
+                                })
+
+                                // add Topics to PlotData to make them a part of CSV
+                                if (queryParams['topics']) {
+                                    res.result.map((r: any) => {
+                                        r['topics'] = queryParams['topics']
+                                    })
+                                }
+
                                 this.plotData = res.result
                             }
                         },

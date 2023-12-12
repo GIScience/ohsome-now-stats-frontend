@@ -1,10 +1,15 @@
-<div class="bd bgc-white" [hidden]="!data">                  
-  <div class="layers">
-  <!-- <div class="layer w-100 pX-20 pT-20">
-    <h6 class="lh-1">Chart based on interval</h6>
-  </div> -->
-  <div class="layer w-100 p-20">
-    <div id="summaryplot" style="height: 350px;"></div>
-  </div>
-  </div>
+<div class="bd bgc-white pos-r" [hidden]="!data">
+    <div class="layers">
+        <div class="peers layer w-100 pX-20 pT-20">
+            <!--<h6 class="peer lh-1">Chart based on interval</h6>-->
+            <button type="button" class="btn btn-sm btn-outline-dark w-2r p-0 h-2r pos-a l-10 t-10 z-9" data-bs-toggle="tooltip" [attr.data-bs-title]="'Download data as CSV'" (click)="downloadCsv()">
+            <span class="icon-holder">
+                  <i class="ti-download"></i>
+                </span>
+            </button>
+        </div>
+        <div class="layer w-100 pX-20 pB-20">
+            <div id="summaryplot" style="height: 350px;"></div>
+        </div>
+    </div>
 </div>
