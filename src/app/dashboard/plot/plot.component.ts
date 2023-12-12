@@ -2,7 +2,8 @@ import {Component, Input, OnChanges, AfterContentInit} from '@angular/core';
 
 import Plotly from 'plotly.js-basic-dist-min';
 import {Layout} from 'plotly.js-basic-dist-min';
-import {IPlotData, ITopicPlotData, TopicDefinition, TopicName} from '../../data.service';
+import {mkConfig, generateCsv, download} from "export-to-csv";
+import {IPlotData, ITopicPlotData, TopicDefinition} from '../../data.service';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {StatsType} from "../types";
 
@@ -18,6 +19,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     @Input() topicPlotData!: Record<StatsType, ITopicPlotData[]>;
     @Input() selectedTopics: string | undefined;
     layout: Layout | any;
+    csvConfig = mkConfig({useKeysAsHeaders: true});
 
     ngAfterContentInit(): void {
         this.initChart();
@@ -88,5 +90,13 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         }];
         this.layout.yaxis.title = `${topic_definitions[this.currentStats]["y-title"]}`
         Plotly.react('summaryplot', plotData, this.layout, {responsive: true});
+    }
+
+    downloadCsv() {
+        // Converts your Array<Object> to a CsvOutput string based on the configs
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const csv = generateCsv(this.csvConfig)(this.data);
+        download(this.csvConfig)(csv)
     }
 }
