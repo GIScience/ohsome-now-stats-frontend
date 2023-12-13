@@ -204,7 +204,7 @@ export class DashboardComponent implements OnInit {
                     this.dataService.updateURL({
                         hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : urlParams.hashtags,
                         interval: queryParams && queryParams.interval ? queryParams.interval : urlParams.interval,
-                        start: queryParams && queryParams.start ? queryParams.start : urlParams.start,
+                        start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtags ? "2009-04-21T22:02:04Z" : urlParams.start,
                         end: queryParams && queryParams.end ? queryParams.end : urlParams.end,
                         countries: queryParams && queryParams.countries ? queryParams.countries : urlParams.countries,
                         topics: queryParams && queryParams.topics ? queryParams.topics : urlParams.topics,
@@ -212,7 +212,6 @@ export class DashboardComponent implements OnInit {
                 }
             }
         })
-
     }
 
     queryParamsComplete(params: any): boolean {

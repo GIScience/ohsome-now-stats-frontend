@@ -57,7 +57,7 @@ export class DataService {
             this.updateURL({
                 hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : this.defaultHashtag,
                 interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
-                start: queryParams && queryParams.start ? queryParams.start : tempStart.toISOString(),
+                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtags ? meta.result.min_timestamp : tempStart.toISOString(),
                 end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
                 countries: queryParams && queryParams.countries ? queryParams.countries : '',
                 topics: queryParams && queryParams.topics ? queryParams.topics : ''
