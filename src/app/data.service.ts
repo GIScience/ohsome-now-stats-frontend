@@ -65,15 +65,15 @@ export class DataService {
         })
     }
 
-  /**
-   * Creates query param from enitre fragment of the URL
-   *
-   * @param fragment URL fragment part
-   * @returns Object with all query params sepearted
-   */
-  getQueryParamsFromFragments(fragment: string | null): any {
-    if(fragment == null || fragment.length < 2)
-      return null
+    /**
+     * Creates query param from enitre fragment of the URL
+     *
+     * @param fragment URL fragment part
+     * @returns Object with all query params sepearted
+     */
+    getQueryParamsFromFragments(fragment: string | null): any {
+        if (fragment == null || fragment.length < 2)
+            return null
 
         const tempQueryParams: Array<Array<string>> = fragment?.split('&')
             .map(q => [q.split('=')[0], q.split('=')[1]])
@@ -305,13 +305,27 @@ export interface ICountryStatsData {
     roads: number,
     buildings: number,
     edits: number,
-    latest: string,
-    country: string,
     place?: number,
     healthcare?: number,
     amenity?: number,
-    waterway?: number
+    waterway?: number,
+    latest: string,
+    country: string,
 }
+
+export const customPropertyOrder: string[] = [
+    "changesets",
+    "users",
+    "roads",
+    "buildings",
+    "edits",
+    "healthcare",
+    "amenity",
+    "waterway",
+    "latest",
+    "country",
+    "hashtag",
+];
 
 export interface ITrendingHashtags {
     result: any

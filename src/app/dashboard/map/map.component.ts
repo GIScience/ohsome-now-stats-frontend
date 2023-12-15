@@ -11,7 +11,7 @@ import {
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';
 import {download, generateCsv, mkConfig} from "export-to-csv";
-import {ICountryStatsData} from '../../data.service';
+import {customPropertyOrder, ICountryStatsData} from '../../data.service';
 import {StatsType} from '../types';
 
 export interface ICountryStatsDataAsArrays {
@@ -38,11 +38,11 @@ const Blues = ["#f0f6fd", "#f0f6fd", "#f0f6fd", "#f0f6fd", "#f0f6fd", "#f0f6fd",
     .reverse().map((value, index) => [index / 255, value]);
 const Oranges = ["#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff1e3", "#fff0e2", "#fff0e1", "#ffefe0", "#ffefdf", "#ffeede", "#ffeedd", "#feeddc", "#feeddb", "#feecda", "#feecd9", "#feebd8", "#feebd7", "#feead6", "#feead5", "#fee9d4", "#fee9d3", "#fee8d2", "#fee8d1", "#fee7d0", "#fee6cf", "#fee6ce", "#fee5cc", "#fee5cb", "#fee4ca", "#fee4c9", "#fee3c8", "#fee2c7", "#fee2c5", "#fee1c4", "#fee1c3", "#fee0c2", "#fedfc0", "#fedfbf", "#fedebe", "#feddbd", "#feddbb", "#fedcba", "#fedbb9", "#fedab7", "#fddab6", "#fdd9b4", "#fdd8b3", "#fdd8b2", "#fdd7b0", "#fdd6af", "#fdd5ad", "#fdd4ac", "#fdd4aa", "#fdd3a9", "#fdd2a7", "#fdd1a6", "#fdd0a4", "#fdd0a3", "#fdcfa1", "#fdcea0", "#fdcd9e", "#fdcc9d", "#fdcb9b", "#fdca99", "#fdc998", "#fdc896", "#fdc795", "#fdc693", "#fdc591", "#fdc490", "#fdc38e", "#fdc28d", "#fdc18b", "#fdc089", "#fdbf88", "#fdbe86", "#fdbd84", "#fdbc83", "#fdbb81", "#fdba7f", "#fdb97e", "#fdb87c", "#fdb77a", "#fdb679", "#fdb577", "#fdb475", "#fdb374", "#fdb272", "#fdb171", "#fdb06f", "#fdaf6d", "#fdae6c", "#fdad6a", "#fdac69", "#fdab67", "#fdaa65", "#fda964", "#fda762", "#fda661", "#fda55f", "#fda45e", "#fda35c", "#fda25b", "#fda159", "#fda058", "#fd9f56", "#fd9e55", "#fd9d53", "#fd9c52", "#fd9b50", "#fd9a4f", "#fc994d", "#fc984c", "#fc974a", "#fc9649", "#fc9548", "#fc9346", "#fc9245", "#fc9143", "#fc9042", "#fb8f40", "#fb8e3f", "#fb8d3e", "#fb8c3c", "#fb8b3b", "#fa8a3a", "#fa8938", "#fa8837", "#fa8736", "#fa8534", "#f98433", "#f98332", "#f98230", "#f8812f", "#f8802e", "#f87f2c", "#f77e2b", "#f77d2a", "#f77b29", "#f67a27", "#f67926", "#f57825", "#f57724", "#f57623", "#f47522", "#f47420", "#f3731f", "#f3721e", "#f2701d", "#f26f1c", "#f16e1b", "#f16d1a", "#f06c19", "#f06b18", "#ef6a17", "#ef6916", "#ee6815", "#ed6714", "#ed6614", "#ec6513", "#ec6312", "#eb6211", "#ea6110", "#ea6010", "#e95f0f", "#e85e0e", "#e85d0e", "#e75c0d", "#e65b0c", "#e55a0c", "#e4590b", "#e4580b", "#e3570a", "#e25609", "#e15509", "#e05408", "#df5308", "#de5208", "#dd5207", "#dc5107", "#db5006", "#da4f06", "#d94e06", "#d84d05", "#d74c05", "#d64c05", "#d54b04", "#d44a04", "#d24904", "#d14804", "#d04804", "#cf4703", "#cd4603", "#cc4503", "#cb4503", "#c94403", "#c84303", "#c74303", "#c54203", "#c44103", "#c24102", "#c14002", "#bf3f02", "#be3f02", "#bd3e02", "#bb3e02", "#ba3d02", "#b83d02", "#b73c02", "#b53b02", "#b43b02", "#b23a03", "#b13a03", "#af3903", "#ae3903", "#ac3803", "#ab3803", "#aa3703", "#a83703", "#a73603", "#a53603", "#a43503", "#a33503", "#a13403", "#a03403", "#9f3303", "#9d3303", "#9c3203", "#9b3203", "#993103", "#983103", "#973003", "#953003", "#942f03", "#932f03", "#922e04", "#902e04", "#8f2d04", "#8e2d04", "#8d2c04", "#8b2c04", "#8a2b04", "#892b04", "#882a04", "#862a04", "#852904", "#842904", "#832804", "#812804", "#802704", "#7f2704"]
     .reverse().map((value, index) => [index / 255, value]);
-const Browns = ['#bfa9a1','#bba59d','#b7a198','#b39c94','#af9890','#ac948c','#a89087','#a48c83','#a0887f','#9c847b','#997f77','#957b73','#91776f','#8d736b','#8a6f67','#866c63','#82685f','#7e645b','#7b6057','#775c53','#73584f','#70544c','#6c5148','#694d44','#654941','#61453d','#5e4239','#5a3e36','#573b32','#53372f','#50332b','#4c3028','#492c24','#452921','#42261e','#3e221b','#3b1f17','#381c14','#341811','#31150c']
+const Browns = ['#bfa9a1', '#bba59d', '#b7a198', '#b39c94', '#af9890', '#ac948c', '#a89087', '#a48c83', '#a0887f', '#9c847b', '#997f77', '#957b73', '#91776f', '#8d736b', '#8a6f67', '#866c63', '#82685f', '#7e645b', '#7b6057', '#775c53', '#73584f', '#70544c', '#6c5148', '#694d44', '#654941', '#61453d', '#5e4239', '#5a3e36', '#573b32', '#53372f', '#50332b', '#4c3028', '#492c24', '#452921', '#42261e', '#3e221b', '#3b1f17', '#381c14', '#341811', '#31150c']
     .reverse().map((value, index) => [index / 39, value]);
-const Cyans = ["#e8fcff","#e2f7fb","#ddf3f6","#d7eef2","#d2eaee","#cce5ea","#c7e1e5","#c1dce1","#bcd8dd","#b6d4d9","#b1cfd5","#abcbd0","#a6c6cc","#a0c2c8","#9bbec4","#5eb4c1","#5ab0bd","#57acb9","#53a7b5","#50a3b1","#4d9fad","#499baa","#4697a6","#4294a2","#3f909e","#3b8c9a","#388896","#358492","#31808e","#2d7c8a","#2a7887","#267583","#22717f","#1e6d7b","#1a6977","#166674","#116270","#0c5e6c","#065b69","#005765"]
+const Cyans = ["#e8fcff", "#e2f7fb", "#ddf3f6", "#d7eef2", "#d2eaee", "#cce5ea", "#c7e1e5", "#c1dce1", "#bcd8dd", "#b6d4d9", "#b1cfd5", "#abcbd0", "#a6c6cc", "#a0c2c8", "#9bbec4", "#5eb4c1", "#5ab0bd", "#57acb9", "#53a7b5", "#50a3b1", "#4d9fad", "#499baa", "#4697a6", "#4294a2", "#3f909e", "#3b8c9a", "#388896", "#358492", "#31808e", "#2d7c8a", "#2a7887", "#267583", "#22717f", "#1e6d7b", "#1a6977", "#166674", "#116270", "#0c5e6c", "#065b69", "#005765"]
     .reverse().map((value, index) => [index / 39, value]);
-const Pinks = ['#fed6e4','#fbd1df','#f7ccda','#f4c6d6','#f1c1d1','#eebccc','#eab7c7','#e7b2c2','#e4adbe','#e1a8b9','#dda2b4','#da9daf','#d798aa','#d393a5','#d08ea1','#cd899c','#c98497','#c67f92','#c37a8d','#bf7588','#bc7084','#b96b7f','#b5667a','#b26275','#ae5d71','#ab586c','#a75367','#a44e62','#a0495e','#9d4459','#993f54','#963950','#92344b','#8e2f47','#8b2942','#87243e','#831e39','#801735','#7c0f30','#78052c']
+const Pinks = ['#fed6e4', '#fbd1df', '#f7ccda', '#f4c6d6', '#f1c1d1', '#eebccc', '#eab7c7', '#e7b2c2', '#e4adbe', '#e1a8b9', '#dda2b4', '#da9daf', '#d798aa', '#d393a5', '#d08ea1', '#cd899c', '#c98497', '#c67f92', '#c37a8d', '#bf7588', '#bc7084', '#b96b7f', '#b5667a', '#b26275', '#ae5d71', '#ab586c', '#a75367', '#a44e62', '#a0495e', '#9d4459', '#993f54', '#963950', '#92344b', '#8e2f47', '#8b2942', '#87243e', '#831e39', '#801735', '#7c0f30', '#78052c']
     .reverse().map((value, index) => [index / 39, value]);
 
 @Component({
@@ -239,20 +239,36 @@ export class MapComponent implements OnChanges {
     downloadCsv() {
         // Converts your Array<Object> to a CsvOutput string based on the configs
         let selectedCountryCSV: Array<ICountryStatsData> = [];
-        if(this.selectedCountries === '') {
+        if (this.selectedCountries === '') {
             // if no country is selected than add all countries to CSV
             selectedCountryCSV = this.data
         } else {
             // filter only selected countries
-            selectedCountryCSV = this.data.filter((dataPoint) => this.selectedCountries.includes(dataPoint["country"]) )
+            selectedCountryCSV = this.data.filter((dataPoint) => this.selectedCountries.includes(dataPoint["country"]))
         }
 
-        if(selectedCountryCSV.length > 0) {
+        if (selectedCountryCSV.length > 0) {
+            selectedCountryCSV = this.sortArrayByCustomOrder(selectedCountryCSV)
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             const csv = generateCsv(this.csvConfig)(selectedCountryCSV);
             download(this.csvConfig)(csv)
         }
         // console.log('selectedCountryCSV ', selectedCountryCSV)
+    }
+
+    sortArrayByCustomOrder(arr: Array<ICountryStatsData>): Array<ICountryStatsData> {
+
+        return arr.map((obj) => {
+            const sortedObj: ICountryStatsData = {} as ICountryStatsData;
+            customPropertyOrder.forEach((property) => {
+                if (property in obj) {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    sortedObj[property] = obj[property];
+                }
+            });
+            return sortedObj;
+        });
     }
 }
