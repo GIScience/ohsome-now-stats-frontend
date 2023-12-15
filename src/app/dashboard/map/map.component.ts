@@ -10,6 +10,7 @@ import {
 
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';
+import {download, generateCsv, mkConfig} from "export-to-csv";
 import {ICountryStatsData} from '../../data.service';
 import {StatsType} from '../types';
 
@@ -56,30 +57,13 @@ export class MapComponent implements OnChanges {
     @Input() currentStats!: StatsType;
     @Input() selectedCountries!: string;
     @Input() selectedTopics: string | undefined;
-    @Input() topicCountryData!: any | undefined;
 
     @ViewChild('d3Map') d3MapElement: ElementRef | undefined;
 
-    ngOnChanges(changes: SimpleChanges): void {
-        // todo: there is no type safety here anymore. Lets try to fix that?
-        let data: any = []
-        if (!["roads", "buildings", "edits", "users"].includes(this.currentStats) && this.topicCountryData) {
-            if (this.topicCountryData[this.currentStats]) {
-                data = this.topicCountryData[this.currentStats].map(
-                    (country: any) => {
-                        const temp: any = {}
-                        temp[this.currentStats] = country.value
-                        temp["country"] = country.country
-                        return temp
-                    }
-                )
-            } else {
-                return
-            }
-        } else {
-            data = this.data as any
-        }
+    csvConfig = mkConfig({useKeysAsHeaders: true});
 
+    ngOnChanges(changes: SimpleChanges): void {
+        const data: Array<ICountryStatsData> = this.data
         const notSelectedCountryData: ICountryStatsData[] = [];
         const selectedCountryData = data.filter((dataPoint: any) => {
             if (this.selectedCountries.includes(dataPoint["country"])) {
@@ -252,4 +236,23 @@ export class MapComponent implements OnChanges {
         Plotly.newPlot('d3-map', plotData, layout, config);
     }
 
+    downloadCsv() {
+        // Converts your Array<Object> to a CsvOutput string based on the configs
+        let selectedCountryCSV: Array<ICountryStatsData> = [];
+        if(this.selectedCountries === '') {
+            // if no country is selected than add all countries to CSV
+            selectedCountryCSV = this.data
+        } else {
+            // filter only selected countries
+            selectedCountryCSV = this.data.filter((dataPoint) => this.selectedCountries.includes(dataPoint["country"]) )
+        }
+
+        if(selectedCountryCSV.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const csv = generateCsv(this.csvConfig)(selectedCountryCSV);
+            download(this.csvConfig)(csv)
+        }
+        // console.log('selectedCountryCSV ', selectedCountryCSV)
+    }
 }

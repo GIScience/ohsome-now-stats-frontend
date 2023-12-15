@@ -1,14 +1,17 @@
 
-<div class="bd bgc-white">
+<div class="bd bgc-white pos-r">
   <div class="peers fxw-nw@lg+ ai-s">
     <div class="peer peer-greed w-70p@lg+ w-100@lg- p-20">
       <div class="layers">
-        <!-- <div class="layer w-100 mB-10">
-          <h6 class="lh-1">Map View</h6>
-        </div> -->
-
+        <div class="layer w-100 mB-10">
+            <!-- <h6 class="lh-1">Map View</h6>-->
+              <button type="button" class="btn btn-sm btn-outline-dark w-2r p-0 h-2r pos-a l-10 t-10 z-9" data-bs-toggle="tooltip" [attr.data-bs-title]="'Download data as CSV'" (click)="downloadCsv()">
+                <span class="icon-holder">
+                      <i class="ti-download"></i>
+                </span>
+            </button>
+        </div>
         <div class="w-100" style="aspect-ratio: 2/1;position: relative;">
-<!--          <div id="ol-map"></div>-->
             <div #d3Map style="width: 100%; height: 100%;"  id="d3-map"></div>
         </div>
       </div>

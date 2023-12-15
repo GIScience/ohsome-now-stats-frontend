@@ -26,21 +26,15 @@ import {StatsType} from './types';
 export class DashboardComponent implements OnInit {
 
     title = 'ohsome-contribution-stats'
-    isOpen = false
-    activeLink = ''
 
     topicData!: TopicResponse
     topicPlotData!: Record<StatsType, ITopicPlotData[]>
-    topicCountryData!: Record<StatsType, Array<ITopicCountryData>>
 
     summaryData!: ISummaryData
     plotData!: Array<IPlotData>
-    countryStatsData: ICountryStatsData[] = [];
-
+    countryWithTopic: ICountryStatsData[] = [];
     selectedTopics: TopicName | "" = "";
-
     currentStats: StatsType = 'users';
-
     queryParams: any
     summaryMessage = ''
     hashtagsData!: Array<IHashtag> | []
@@ -119,7 +113,6 @@ export class DashboardComponent implements OnInit {
                     this.dataService.requestPlot(queryParams).subscribe({
                         next: (res: IWrappedPlotData) => {
                             if (res) {
-                                // this.plotData = res.result
                                 // add 'hashtag' and 'country' ISO codes to plotData #82
                                 res.result.map((r: any) => {
                                     r['hashtag'] = queryParams['hashtags']
@@ -144,7 +137,24 @@ export class DashboardComponent implements OnInit {
 
                 // fire API to get map data
                 this.dataService.requestCountryStats(queryParams)
-                    .subscribe((res: IWrappedCountryStatsData) => this.countryStatsData = res.result);
+                    .subscribe((res: IWrappedCountryStatsData) => {
+                        // add 'hashtag'
+                        res.result.map((r: any) => {
+                            r['hashtag'] = queryParams['hashtags']
+                        })
+
+                        const tempCountryResponse = res.result
+                        if (queryParams && queryParams['topics']) {
+                            this.dataService.requestTopicCountryStats(queryParams)
+                                .subscribe((res: IWrappedTopicCountryData) => {
+                                    // add each Topic to Map data to make them a part of CSV
+                                    this.countryWithTopic = this.addTopicDataToCountries(res.result, tempCountryResponse)
+                                });
+                        } else {
+                            // if non Topic is selected only countryData is sent to MapComponent
+                            this.countryWithTopic = tempCountryResponse
+                        }
+                    });
 
 
                 this.selectedTopics = queryParams["topics"]
@@ -172,10 +182,6 @@ export class DashboardComponent implements OnInit {
                         }
                     })
 
-                    this.dataService.requestTopicCountryStats(queryParams)
-                        .subscribe((res: IWrappedTopicCountryData) => {
-                            this.topicCountryData = res.result
-                        });
 
                 }
 
@@ -317,5 +323,30 @@ export class DashboardComponent implements OnInit {
             end: endDate.toISOString(),
             interval: interval
         }
+    }
+
+    addTopicDataToCountries(res: Record<StatsType, ITopicCountryData[]>, countryData: ICountryStatsData[]) {
+        // console.log('>>> addTopicDataToCountries ', res, countryData)
+
+        const mergedData: any[]= [];
+
+        countryData.forEach(country => {
+            const countryCode = country.country;
+            const countryEntry: any = {
+                ...country,
+            };
+
+            Object.keys(res).forEach(topic => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const matchingData = res[topic].find(data => data.country === countryCode);
+                countryEntry[topic] = matchingData ? matchingData.value : 0;
+            });
+
+            mergedData.push(countryEntry);
+        });
+
+        // console.log('mergedData = ', mergedData)
+        return mergedData;
     }
 }
