@@ -16,7 +16,6 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
     @Input() data!: Array<IPlotData>;
     @Input() currentStats!: StatsType;
-    @Input() topicPlotData!: Record<StatsType, ITopicPlotData[]>;
     @Input() selectedTopics: string | undefined;
     layout: Layout | any;
     csvConfig = mkConfig({useKeysAsHeaders: true});
@@ -61,15 +60,6 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         const currentDate = new Date()
         const topic_definitions: TopicDefinition = topicDefinitions
         const _data = this.data as any
-        if (this.selectedTopics && this.topicPlotData && this.topicPlotData[this.currentStats]) {
-            if (this.topicPlotData[this.currentStats].length != this.data.length) {
-                return // topic response usually arrives faster, but only want to update once both requests came through
-            }
-
-            for (let i = 0; i < this.topicPlotData[this.currentStats].length; i++) {
-                _data[i][this.currentStats] = this.topicPlotData[this.currentStats][i].value
-            }
-        }
         const plotData: any = [{
             x: _data.map((e: IPlotData) => `${e.startDate}`),
             y: _data.map((e: any) => e[this.currentStats]),

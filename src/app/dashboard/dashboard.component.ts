@@ -28,8 +28,6 @@ export class DashboardComponent implements OnInit {
     title = 'ohsome-contribution-stats'
 
     topicData!: TopicResponse
-    topicPlotData!: Record<StatsType, ITopicPlotData[]>
-
     summaryData!: ISummaryData
     plotData!: Array<IPlotData>
     countryWithTopic: ICountryStatsData[] = [];
@@ -119,14 +117,25 @@ export class DashboardComponent implements OnInit {
                                     r['countries'] = queryParams['countries']
                                 })
 
+                                const tempPlotResponse = res.result
                                 // add Topics to PlotData to make them a part of CSV
                                 if (queryParams['topics']) {
-                                    res.result.map((r: any) => {
-                                        r['topics'] = queryParams['topics']
+                                    this.dataService.requestTopicInterval(queryParams).subscribe({
+                                        next: res => {
+                                            if (res) {
+                                                // add each Topic data to Plot data to make them a part of CSV
+                                                this.plotData = this.addTopicDataToPlot(res.result, tempPlotResponse)
+                                            }
+                                        },
+                                        error: (err) => {
+                                            console.error('Error while requesting Topic data ', err)
+                                        }
                                     })
+                                } else {
+                                    // if non Topic is selected only countryData is sent to MapComponent
+                                    this.plotData = tempPlotResponse
                                 }
 
-                                this.plotData = res.result
                             }
                         },
                         error: (err) => {
@@ -171,16 +180,7 @@ export class DashboardComponent implements OnInit {
                         }
                     })
 
-                    this.dataService.requestTopicInterval(queryParams).subscribe({
-                        next: res => {
-                            if (res) {
-                                this.topicPlotData = res.result
-                            }
-                        },
-                        error: (err) => {
-                            console.error('Error while requesting Topic data ', err)
-                        }
-                    })
+
 
 
                 }
@@ -344,6 +344,32 @@ export class DashboardComponent implements OnInit {
             });
 
             mergedData.push(countryEntry);
+        });
+
+        // console.log('mergedData = ', mergedData)
+        return mergedData;
+    }
+
+    private addTopicDataToPlot(res: Record<string, Array<ITopicPlotData>>, plotData: Array<IPlotData>) {
+        const mergedData: any[]= [];
+
+        plotData.forEach(p => {
+            const startDate = p.startDate;
+            const endDate = p.endDate;
+            const plotEntry: any = {
+                ...p,
+            };
+
+            Object.keys(res).forEach(topic => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const matchingData = res[topic].find(data => {
+                    return (data.startDate === startDate && data.endDate === endDate)
+                });
+                plotEntry[topic] = matchingData ? matchingData.value : 0;
+            });
+
+            mergedData.push(plotEntry);
         });
 
         // console.log('mergedData = ', mergedData)
