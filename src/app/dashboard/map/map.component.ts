@@ -261,7 +261,7 @@ export class MapComponent implements OnChanges {
 
         return arr.map((obj) => {
             const sortedObj: ICountryStatsData = {} as ICountryStatsData;
-            customPropertyOrder.forEach((property) => {
+            propertyOrderForCSV.forEach((property) => {
                 if (property in obj) {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
