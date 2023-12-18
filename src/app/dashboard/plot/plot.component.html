@@ -1,4 +1,6 @@
-<div class="bd bgc-white pos-r" [hidden]="!data">
+<div class="bd bgc-white pos-r" [hidden]="!data" #overlayContainer>
+    <overlay [isLoading]="isPlotsLoading"  [containerElement]="overlayContainer"></overlay>
+
     <div class="layers">
         <div class="peers layer w-100 pX-20 pT-20">
             <!--<h6 class="peer lh-1">Chart based on interval</h6>-->

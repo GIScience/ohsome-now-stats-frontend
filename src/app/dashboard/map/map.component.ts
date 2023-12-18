@@ -61,6 +61,7 @@ export class MapComponent implements OnChanges {
     @ViewChild('d3Map') d3MapElement: ElementRef | undefined;
 
     csvConfig = mkConfig({useKeysAsHeaders: true});
+    @Input() isCountriesLoading!: boolean;
 
     ngOnChanges(changes: SimpleChanges): void {
         const data: Array<ICountryStatsData> = this.data

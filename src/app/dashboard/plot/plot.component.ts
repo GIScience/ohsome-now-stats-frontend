@@ -19,6 +19,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     @Input() selectedTopics: string | undefined;
     layout: Layout | any;
     csvConfig = mkConfig({useKeysAsHeaders: true});
+    @Input() isPlotsLoading!: boolean;
 
     ngAfterContentInit(): void {
         this.initChart();

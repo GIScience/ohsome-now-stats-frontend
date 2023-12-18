@@ -21,6 +21,7 @@ import { AboutComponent } from './about/about.component';
 import {NgOptimizedImage} from '@angular/common';
 import { HelpComponent } from './help/help.component';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
+import {Overlay} from "./overlay.component";
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
     ToastComponent,
     AboutComponent,
     HelpComponent,
-    BigNumberComponent
+    BigNumberComponent,
+    Overlay
   ],
   imports: [
     BrowserModule,

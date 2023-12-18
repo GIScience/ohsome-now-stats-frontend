@@ -36,6 +36,10 @@ export class DashboardComponent implements OnInit {
     queryParams: any
     summaryMessage = ''
     hashtagsData!: Array<IHashtag> | []
+    isSummaryLoading: boolean = false;
+    isPlotsLoading: boolean = false;
+    isCountriesLoading: boolean = false;
+    isHashtagsLoading: boolean = false;
 
     constructor(
         private dataService: DataService,
@@ -49,7 +53,10 @@ export class DashboardComponent implements OnInit {
         // assumption is that fragments sould never be empty as is its empty the routes
         // should be redirected to have default values
         this.route.fragment.subscribe((fragment: string | null) => {
-
+            this.isSummaryLoading = true;
+            this.isHashtagsLoading = true;
+            this.isPlotsLoading = true;
+            this.isCountriesLoading = true;
             const queryParams = this.getQueryParamsFromFragments(fragment)
             if (queryParams !== null && this.queryParamsComplete(queryParams)) {
                 // console.log('>>> DashboardComponent >>> queryParams ', queryParams, this.dataService.defaultHashtag)
@@ -97,6 +104,7 @@ export class DashboardComponent implements OnInit {
                             edits: res.result.edits,
                             roads: res.result.roads
                         }
+                        this.isSummaryLoading = false;
 
                         this.dataService.setSummary(this.summaryData)
                     },
@@ -135,7 +143,7 @@ export class DashboardComponent implements OnInit {
                                     // if non Topic is selected only countryData is sent to MapComponent
                                     this.plotData = tempPlotResponse
                                 }
-
+                                this.isPlotsLoading = false;
                             }
                         },
                         error: (err) => {
@@ -163,6 +171,7 @@ export class DashboardComponent implements OnInit {
                             // if non Topic is selected only countryData is sent to MapComponent
                             this.countryWithTopic = tempCountryResponse
                         }
+                        this.isCountriesLoading = false;
                     });
 
 
@@ -193,6 +202,7 @@ export class DashboardComponent implements OnInit {
                 }).subscribe({
                     next: (res: any) => {
                         // console.log('>>> getTrendingHashtags >>> res = ', res)
+                        this.isHashtagsLoading = false;
                         this.hashtagsData = res.result
                     },
                     error: (err) => {

@@ -14,9 +14,11 @@ import { dashboard } from '../tooltip-data';
 export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
   
   @Input() hashtags!: Array<IHashtag> | [] 
+  @Input() isHashtagsLoading: boolean = false;
   trendingHashtagLimit = 0
   numOfHashtags = 0
   dashboardTooltips: any
+
 
   constructor(
     dataService: DataService,

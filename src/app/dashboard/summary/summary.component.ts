@@ -26,6 +26,8 @@ export class SummaryComponent implements OnChanges {
     @Input() data: ISummaryData | undefined;
     @Input() topicData: TopicResponse | undefined;
     @Input() selectedTopics!: TopicName | "";
+    @Input() isSummaryLoading: boolean | undefined;
+
     @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
 
     topicComponentReferences: any = {}
