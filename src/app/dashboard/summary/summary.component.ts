@@ -1,7 +1,6 @@
 import {
     ApplicationRef,
     Component,
-    createComponent,
     EnvironmentInjector,
     EventEmitter,
     Input,
@@ -9,13 +8,15 @@ import {
     Output
 } from '@angular/core';
 import * as bootstrap from 'bootstrap';
-import {fromEvent} from "rxjs";
-import {ISummaryData, TopicDefinition, TopicDefinitionValue, TopicName, TopicResponse} from '../../data.service';
-import {dashboard} from '../tooltip-data';
+import {
+    ISummaryData, propertyOrderForCSV,
+    TopicDefinitionValue,
+    TopicName,
+    TopicResponse
+} from '../../data.service';
 import {StatsType} from '../types';
-import {BigNumberComponent} from './big-number/big-number.component';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-
+import {mkConfig, generateCsv, download} from "export-to-csv";
 
 @Component({
     selector: 'app-summary',
@@ -28,93 +29,79 @@ export class SummaryComponent implements OnChanges {
     @Input() selectedTopics!: TopicName | "";
     @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
 
-    topicComponentReferences: any = {}
-
-    contributors!: string
-    edits!: string
-    buidlingEdits!: string
-    kmOfRoads!: string
-    dashboardTooltips
-
     currentlySelected = 'users';
+    csvConfig = mkConfig({useKeysAsHeaders: true, filename: 'summary'});
+    bignumberData: Array<TopicDefinitionValue> = []
 
     constructor(private injector: EnvironmentInjector, private appRef: ApplicationRef) {
-        this.dashboardTooltips = dashboard
         this.enableTooltips()
     }
 
-
     ngOnChanges(): void {
-        const topic_definitions: TopicDefinition = topicDefinitions
-
-        if (!["users", "roads", "edits", "buildings"].includes(this.currentlySelected) && !this.selectedTopics!.split(",").includes(this.currentlySelected)) {
+        if (!["users", "roads", "edits", "buildings"].includes(this.currentlySelected)) {
             document.getElementById("users")?.click()
         }
 
         if (!this.data)
             return
 
-        // console.log('>>> SummaryComponent >>> data = ', this.data);
-        this.contributors = this.formatNumbertoNumberformatString(this.data.users)
-        this.buidlingEdits = this.formatNumbertoNumberformatString(this.data.buildings)
-        this.edits = this.formatNumbertoNumberformatString(this.data.edits)
-        this.kmOfRoads = this.formatNumbertoNumberformatString(this.data.roads)
+        this.bignumberData = []
+        for (const summaryEntry of Object.entries(this.data)) {
+            if (['latest', 'hashtag', 'changesets'].includes(summaryEntry[0]))
+                continue;
 
-        // destroy now unused topics
-        for (const topic of Object.keys(this.topicComponentReferences)) {
-            if (!this.selectedTopics!.split(',').includes(topic)) {
-                this.topicComponentReferences[topic].destroy()
-                delete this.topicComponentReferences[topic]
-            }
+            // merge the 'value' with other static data from topicDefinitions
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const id = topicDefinitions[summaryEntry[0]].id
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            // const getKeyValue = <U extends keyof T, T extends object>(key: U) => (obj: T) => obj[key];
+            // const color = getKeyValue<keyof TopicDefinition, TopicDefinition>((summaryEntry[0] as StatsType))(topicDefinitions)
+            const color = topicDefinitions[summaryEntry[0]].color
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const tooltip = topicDefinitions[summaryEntry[0]].tooltip
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const icon = topicDefinitions[summaryEntry[0]].icon
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const hex = topicDefinitions[summaryEntry[0]]['color-hex']
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const yTitle = topicDefinitions[summaryEntry[0]]['y-title']
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const name = topicDefinitions[summaryEntry[0]].name
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            this.bignumberData.push({
+                id: id,
+                name: name,
+                value: this.formatNumbertoNumberformatString(summaryEntry[1]),
+                color: color,
+                tooltip: tooltip,
+                icon: icon,
+                "color-hex": hex,
+                "y-title": yTitle,
+            })
         }
 
-        if (this.selectedTopics && this.topicData) {
-
-            // build or update used topics
-            for (const topic of this.selectedTopics.split(',')) {
-                const topicName = topic as TopicName
-                if (this.topicData[topicName]) {
-                    if (Object.keys(this.topicComponentReferences).includes(topic)) {
-
-                        this.adjustBigNumberValue(topic, this.topicData[topicName].value)
-                    } else {
-                        this.addBigNumber(topic, topic_definitions[topicName], this.topicData[topicName].value)
-                    }
-                }
+        // always have "Contributors" as the first object in the array
+        this.bignumberData = this.bignumberData.sort((a, b) => {
+            if (a.name === "Contributors") {
+                return -1;
+            } else if (b.name === "Contributors") {
+                return 1;
+            } else {
+                return 0;
             }
-        }
+        });
+
     }
 
-    addBigNumber(topic: string, topic_definition: TopicDefinitionValue, value: number) {
-        const targetDiv = document.getElementById("big-number_container")
-        const newChild = targetDiv?.appendChild(document.createElement("div"))
-        const componentRef = createComponent(
-            BigNumberComponent, {
-                hostElement: newChild!,
-                environmentInjector: this.injector,
-
-            }
-        )
-
-        this.appRef.attachView(componentRef.hostView);
-        componentRef.setInput("color", topic_definition["color"])
-        componentRef.setInput("icon", topic_definition["icon"])
-        componentRef.setInput("name", topic_definition["name"])
-        componentRef.setInput("tooltip", topic_definition["tooltip"])
-        componentRef.setInput("value", this.formatNumbertoNumberformatString(value))
-        componentRef.location.nativeElement.classList.add("col-md-3")
-        componentRef.location.nativeElement.style = "flex: 1 1 25%; min-width: 250px;" // for some reason scss is not applied to dynamically created component
-
-        fromEvent(componentRef.location.nativeElement, 'click')
-            .subscribe((event: any) => this.changeCurrentStats(event, topic as StatsType));
-        this.topicComponentReferences[topic] = componentRef
-    }
-
-    adjustBigNumberValue(topic: string, value: number) {
-        this.topicComponentReferences[topic].setInput("value", this.formatNumbertoNumberformatString(value))
-    }
-
-    formatNumbertoNumberformatString(value: number) : string {
+    formatNumbertoNumberformatString(value: number): string {
         return new Intl.NumberFormat('en-US', {
                 maximumFractionDigits: 0
             }
@@ -129,10 +116,10 @@ export class SummaryComponent implements OnChanges {
         newSelected.children[0].classList.add("selected")
     }
 
-    changeCurrentStats(e: any, newCurrentStats: StatsType) {
-        this.currentlySelected = newCurrentStats as string
+    changeCurrentStats(e: any, newCurrentStats: string) {
+        this.currentlySelected = newCurrentStats
         this.changeSelectedSummaryComponent(e)
-        this.changeCurrentStatsEvent.emit(newCurrentStats);
+        this.changeCurrentStatsEvent.emit(newCurrentStats as StatsType);
     }
 
     /**
@@ -144,4 +131,32 @@ export class SummaryComponent implements OnChanges {
         // console.log('tooltipTriggerList =', tooltipTriggerList)
         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
     }
+
+    sortArrayByCustomOrder(arr: Array<ISummaryData>): Array<ISummaryData> {
+
+        return arr.map((obj) => {
+            const sortedObj: ISummaryData = {} as ISummaryData;
+            propertyOrderForCSV.forEach((property) => {
+                if (property in obj) {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    sortedObj[property] = obj[property];
+                }
+            });
+            return sortedObj;
+        });
+    }
+
+    downloadCsv() {
+        // Converts your Array<Object> to a CsvOutput string based on the configs
+        if (this.data && [this.data].length > 0) {
+            let tempData = []
+            tempData = this.sortArrayByCustomOrder([this.data])
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const csv = generateCsv(this.csvConfig)(tempData);
+            download(this.csvConfig)(csv)
+        }
+    }
+
 }
