@@ -10,5 +10,5 @@
     <app-big-number *ngFor="let data of bignumberData" id="{{data.id}}"
             class="col-md-3" name="{{data.name}}" icon="{{data.icon}}" value="{{data.value}}"
             tooltip="{{data.tooltip}}" color="{{data.color}}"
-            (click)="changeCurrentStats($event, data.id)" [startSelected]="data.name==='Contributors'"></app-big-number>
+            (click)="changeCurrentStats($event, data.id)" [startSelected]="data.id===currentlySelected"></app-big-number>
 </div>

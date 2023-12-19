@@ -11,8 +11,6 @@ import * as bootstrap from 'bootstrap';
 import {
     ISummaryData, propertyOrderForCSV,
     TopicDefinitionValue,
-    TopicName,
-    TopicResponse
 } from '../../data.service';
 import {StatsType} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
@@ -24,9 +22,7 @@ import {mkConfig, generateCsv, download} from "export-to-csv";
     styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnChanges {
-    @Input() data: ISummaryData | undefined;
-    @Input() topicData: TopicResponse | undefined;
-    @Input() selectedTopics!: TopicName | "";
+    @Input() data!: ISummaryData;
     @Input() isSummaryLoading!: boolean;
 
     @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
@@ -40,7 +36,7 @@ export class SummaryComponent implements OnChanges {
     }
 
     ngOnChanges(): void {
-        if (!["users", "roads", "edits", "buildings"].includes(this.currentlySelected)) {
+        if (!Object.keys(this.data).includes(this.currentlySelected)) {
             document.getElementById("users")?.click()
         }
 
