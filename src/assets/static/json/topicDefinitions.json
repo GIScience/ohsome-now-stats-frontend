@@ -7,6 +7,9 @@
     "dropdown_name": "Contributors",
     "color": "green",
     "tooltip": "The number of distinct users that edited OSM data for the hashtag and the time range defined in your query.",
+    "additional-help": "In the map plot this number refers to the location of the map edits, not the location or origin of the mappers themselves. Such private information and other demographic information (e.g. age, gender) of mappers is not stored in the OSM database.",
+    "query-parameter": "",
+    "formula": "",
     "icon": "fa-users"
   },
   "edits": {
@@ -17,6 +20,9 @@
     "dropdown_name": "Total Edits",
     "color": "red",
     "tooltip": "The number of all OSM edits to \"primary map features\" for the hashtag and the time range defined in your query.",
+    "additional-help": "Total Map Edits consider only OSM elements with the tag keys defined in the <a href=\"https://wiki.openstreetmap.org/wiki/Map_features\" target=\"_blank\">OSM Wiki</a> as Map Features. We consider edits to all OSM types (nodes, ways, relations) and the following OSM tag keys:",
+    "query-parameter": "aerialway=* or aeroway=* or amenity=* or barrier=* or boundary=* or building=* or craft=* or emergency=* or geological=* or healthcare=* or highway=* or historic=* or landuse=* or leisure=* or man_made=* or military=* or natural=* or office=* or place=* or power=* or public_transport=* or railway=* or route=* or shop=* or sport=* or telecom=* or tourism=* or water=* or waterway=*",
+    "formula": "",
     "icon": "fa-pen-to-square"
   },
   "buildings": {
@@ -27,6 +33,9 @@
     "dropdown_name": "Buildings",
     "color": "purple",
     "tooltip": "The absolute increase or decrease in the amount of buildings in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
+    "additional-help": "Buildings are defined as all OSM ways or relations which hold the tag key building and one of the following tag values:",
+    "query-parameter": "building in (yes, house, residential, detached, detached, garage, apartments, shed, hut, industrial)",
+    "formula": "Δ Buildings = Buildings<sub>created</sub> - Buildings<sub>deleted</sub>",
     "icon": "fa-building"
   },
   "roads": {
@@ -37,6 +46,9 @@
     "dropdown_name": "Roads",
     "color": "blue",
     "tooltip": "The absolute increase or decrease in the road network length in kilometers in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
+    "additional-help": "Roads are defined as all OSM ways or relations which hold the tag key highway and one of the following tag values. These are the principal tag values for the road network, link roads and special road types as defined in the OSM Wiki.",
+    "query-parameter": "highway in (motorway, trunk, motorway_link, trunk_link, primary, primary_link, secondary, secondary_link, tertiary, tertiary_link, unclassified, residential, living_street, service, pedestrian, track, bus_guideway, escape, raceway, road, busway)",
+    "formula": "Δ Roads [km] = Roads<sub>created</sub> + Δ Roads<sub>modified-longer</sub> - Δ Roads<sub>modified-shorter</sub> - Roads<sub>deleted</sub>",
     "icon": "fa-road"
   },
   "place": {
@@ -46,7 +58,10 @@
     "y-title": "# of Δ places",
     "dropdown_name": "Places",
     "color": "orange",
-    "tooltip": "The number of places like villages or cities.",
+    "tooltip": "The absolute increase or decrease in the amount of places, randing from villages to states, in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
+    "additional-help": "According to the OSM Wiki places include populated settlements and regions of various sizes:",
+    "query-parameter": "place in (country, state, region, province, district, county, municipality, city, borough, suburb, quarter, neighbourhood, town, village, hamlet, isolated_dwelling)",
+    "formula": "Δ Places = Places<sub>created</sub> - Places<sub>deleted</sub>",
     "icon": "fa-city"
   },
   "healthcare": {
@@ -56,7 +71,10 @@
     "y-title": "# of Δ healthcare facilities",
     "dropdown_name": "Healthcare Facilities",
     "color": "brown",
-    "tooltip": "The number of healthcare facilities like hospitals or doctor offices.",
+    "tooltip": "The absolute increase or decrease in the amount of healthcare facilities in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
+    "additional-help": "The filter definition is based on the HOT Export Tool for HDX configuration which considers all major healthcare services:",
+    "query-parameter": "healthcare=* or amenity in (doctors, dentist, clinic, hospital, pharmacy)",
+    "formula": "Δ Healthcare Facilities = Healthcare Facilities<sub>created</sub> - Healthcare Facilities<sub>deleted</sub>",
     "icon": "fa-stethoscope"
   },
   "amenity": {
@@ -66,7 +84,10 @@
     "y-title": "# of Δ amenities",
     "dropdown_name": "Amenities",
     "color": "cyan",
-    "tooltip": "The number of amenities.",
+    "tooltip": "The absolute increase or decrease in the amount of amenities in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
+    "additional-help": "According to the OSM Wiki amenity is the top-level tag describing useful and important facilities for visitors and residents, such as toilets, telephones, banks, pharmacies, prisons and schools:",
+    "query-parameter": "amenity=*",
+    "formula": "Δ Amenities = Amenities<sub>created</sub> - Amenities<sub>deleted</sub>",
     "icon": "fa-map-location-dot"
   },
   "waterway": {
@@ -76,7 +97,10 @@
     "y-title": "# of Δ km waterways",
     "dropdown_name": "Waterways",
     "color": "pink",
-    "tooltip": "The change of kilometers of waterways.",
+    "tooltip": "The absolute increase or decrease in linear water features length in kilometers in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
+    "additional-help": "Here we only consider the main waterway types as defined in the OSM Wiki:",
+    "query-parameter": "waterway in (river, canal, stream, brook, drain, ditch)",
+    "formula": "Δ Waterways [km] = Waterways<sub>created</sub> + Δ Waterways<sub>modified-longer</sub> - Δ Waterways<sub>modified-shorter</sub> - Waterways<sub>deleted</sub>",
     "icon": "fa-water"
   }
 }

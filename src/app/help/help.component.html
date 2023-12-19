@@ -183,82 +183,21 @@
         </p>
 
         <h2>How are the statistics calculated?</h2>
-        <h3><i _ngcontent-nly-c2="" class="fa-solid fa-users fsz-xl"></i> Contributors</h3>
 
-        <p>
-            {{dashboard.summary.contributions}}
+        <p class="note">NOTE: Negative results can occur for all Δ topics if the number of deleted objects
+            surpassed the number of newly created objects for the hashtag and the time range defined in your query.
+            The number of modified objects is not considered.
         </p>
 
-        <p>
-            In the map plot this number refers to the location of the map edits, not the location or origin of the
-            mappers themselves. Such private information and other demographic information (e.g. age, gender) of mappers
-            is not stored in the OSM database.
-        </p>
-
-        <h3><i _ngcontent-nly-c2="" class="fa-solid fa-pen-to-square fsz-xl"></i> Total Map Edits</h3>
-        <p>{{dashboard.summary.edits}}</p>
-        <p>
-            Total Map Edits consider only OSM elements with the tag keys defined in the OSM Wiki as <a
-                href="https://wiki.openstreetmap.org/wiki/Map_features" target="_blank">Map Features</a>. We
-            consider edits to all OSM types (nodes, ways, relations) and the following OSM tag keys:
-        </p>
-        <ul>
-            <li>
-                aerialway, aeroway, amenity, barrier, boundary, building, craft, emergency, geological, healthcare,
-                highway, historic, landuse, leisure, man_made, military, natural, office, place, power,
-                public_transport, railway, route, shop, sport, telecom, tourism, water, waterway.
-            </li>
-        </ul>
-
-        <h3><i _ngcontent-nly-c2="" class="fa-solid fa-city fsz-xl"></i> &Delta; Buildings</h3>
-        <p>
-            {{dashboard.summary.buildings}}
-        </p>
-
-        <p>
-            Δ Buildings = Buildings<sub>created</sub> - Buildings<sub>deleted</sub>
-        </p>
-
-        <p>
-            Buildings are defined as all OSM ways or relations which hold the tag key building and one of the following
-            tag values:
-        </p>
-        <ul>
-            <li>
-                yes, house, residential, detached, detached, garage, apartments, shed, hut, industrial
-            </li>
-        </ul>
-
-        <p class="note">NOTE: Negative results can occur if the number of deleted buildings
-            surpassed the number of newly created buildings for the hashtag and the time range defined in your query.
-            The number of modified buildings is not considered.
-        </p>
-
-        <h3><i _ngcontent-nly-c2="" class="fa fa-road fsz-xl"></i> &Delta; km of Roads</h3>
-
-        <p>{{dashboard.summary.kmOfRoads}}</p>
-
-        <p>
-            Δ Roads [km] = Roads<sub>created</sub> + Δ Roads<sub>modified-longer</sub> - Δ
-            Roads<sub>modified-shorter</sub> - Roads<sub>deleted</sub> [km]
-        </p>
-        <p>
-            Roads are defined as all OSM ways or relations which hold the tag key highway and one of the following tag
-            values. These are the principal tag values for the road network, link roads and special road types as
-            defined in the
-            <a href="https://wiki.openstreetmap.org/wiki/Map_features#Highway" target="_blank">OSM Wiki</a>:
-        </p>
-        <ul>
-            <li>
-                motorway, trunk, motorway_link, trunk_link, primary, primary_link, secondary, secondary_link, tertiary,
-                tertiary_link, unclassified, residential, living_street, service, pedestrian, track, bus_guideway,
-                escape, raceway, road, busway
-            </li>
-        </ul>
-        <p class="note">NOTE: Negative results can occur if the length of deleted roads
-            surpassed the number of newly created roads for the hashtag and the time range defined in your query.
-            Modifications to existing roads are considered as well and can either increase or decrease the overall road
-            network length.
-        </p>
+        <div *ngFor="let topic of topicDefinitions | keyvalue: returnZero">
+            <h3><i _ngcontent-nly-c2="" class="fa-solid {{topic.value['icon']}} fsz-xl"></i>  {{topic.value["name"]}}</h3>
+            <p>
+                {{topic.value["tooltip"]}}
+            </p>
+            <h4 *ngIf="topic.value['formula']" [innerHTML]="topic.value['formula']" class="query-parameter"></h4>
+            <p [innerHTML]="topic.value['additional-help']">
+            </p>
+            <div *ngIf="topic.value['query-parameter']" class="icquote query-parameter">{{topic.value["query-parameter"]}}</div>
+        </div>
     </div>
 </div>
