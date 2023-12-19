@@ -3,7 +3,7 @@ import {Component, Input, OnChanges, AfterContentInit} from '@angular/core';
 import Plotly from 'plotly.js-basic-dist-min';
 import {Layout} from 'plotly.js-basic-dist-min';
 import {mkConfig, generateCsv, download} from "export-to-csv";
-import {IPlotData, ITopicPlotData, TopicDefinition} from '../../data.service';
+import {IPlotData, TopicDefinition} from '../../data.service';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {StatsType} from "../types";
 
@@ -18,7 +18,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     @Input() currentStats!: StatsType;
     @Input() selectedTopics: string | undefined;
     layout: Layout | any;
-    csvConfig = mkConfig({useKeysAsHeaders: true});
+    csvConfig = mkConfig({useKeysAsHeaders: true, filename: 'time_interval'});
     @Input() isPlotsLoading!: boolean;
 
     ngAfterContentInit(): void {

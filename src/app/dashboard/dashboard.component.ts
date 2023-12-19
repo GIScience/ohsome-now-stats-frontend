@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 
 import {
     DataService,
@@ -14,7 +14,7 @@ import {
     IWrappedTopicCountryData,
     ITopicCountryData,
     TopicResponse,
-    TopicName
+    TopicName, TopicValues
 } from '../data.service';
 import {StatsType} from './types';
 
@@ -24,8 +24,6 @@ import {StatsType} from './types';
     styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-
-    title = 'ohsome-contribution-stats'
 
     topicData!: TopicResponse
     summaryData!: ISummaryData
@@ -43,8 +41,7 @@ export class DashboardComponent implements OnInit {
 
     constructor(
         private dataService: DataService,
-        private route: ActivatedRoute,
-        private router: Router) {
+        private route: ActivatedRoute) {
     }
 
     ngOnInit() {
@@ -92,17 +89,54 @@ export class DashboardComponent implements OnInit {
                 // form a appropriate message for summary data
                 this.summaryMessage = this.formSummaryMessage(queryParams)
 
-
                 // fire the request to API
                 this.dataService.requestSummary(queryParams).subscribe({
                     next: res => {
                         // console.log('>>> res = ', res)
-                        // send response data to Summary Component
-                        this.summaryData = {
-                            buildings: res.result.buildings,
-                            users: res.result.users,
-                            edits: res.result.edits,
-                            roads: res.result.roads
+                        const tempSummaryData = res.result
+                        // fire the requests to API
+                        if (queryParams && queryParams['topics']) {
+
+                            this.dataService.requestTopic(queryParams).subscribe({
+                                next: res => {
+                                    // send response data to Summary Component
+                                    const input: { [key: string]: TopicValues } = res.result
+                                    const topicValue: { [key: string]: number } = {};
+
+                                    // Iterate over the keys and extract the 'value'
+                                    for (const key in input) {
+                                        if (Object.prototype.hasOwnProperty.call(input, key)) {
+                                            topicValue[key] = input[key].value;
+                                        }
+                                    }
+
+                                    // send response data to Summary Component
+                                    this.summaryData = {
+                                        changesets: tempSummaryData.changesets,
+                                        buildings: tempSummaryData.buildings,
+                                        users: tempSummaryData.users,
+                                        edits: tempSummaryData.edits,
+                                        roads: tempSummaryData.roads,
+                                        latest: tempSummaryData.latest,
+                                        ...topicValue,
+                                        hashtag: queryParams['hashtags']
+                                    }
+                                },
+                                error: (err) => {
+                                    console.error('Error while requesting Topic data ', err)
+                                }
+                            })
+                        } else {
+                            // send response data to Summary Component
+                            this.summaryData = {
+                                changesets: tempSummaryData.changesets,
+                                buildings: tempSummaryData.buildings,
+                                users: tempSummaryData.users,
+                                edits: tempSummaryData.edits,
+                                roads: tempSummaryData.roads,
+                                latest: tempSummaryData.latest,
+                                hashtag: queryParams['hashtags']
+                            }
                         }
                         this.isSummaryLoading = false;
 
@@ -112,7 +146,6 @@ export class DashboardComponent implements OnInit {
                         console.error('Error while requesting Summary data ', err)
                     }
                 })
-
 
                 // fire timeseries API to get plot data
                 if (queryParams && queryParams['interval']) {
@@ -174,22 +207,7 @@ export class DashboardComponent implements OnInit {
                         this.isCountriesLoading = false;
                     });
 
-
                 this.selectedTopics = queryParams["topics"]
-                // fire the requests to API
-                if (queryParams && queryParams['topics']) {
-
-                    this.dataService.requestTopic(queryParams).subscribe({
-                        next: res => {
-                            // send response data to Summary Component
-                            this.topicData = res.result
-                        },
-                        error: (err) => {
-                            console.error('Error while requesting Topic data ', err)
-                        }
-                    })
-
-                }
 
 
                 // stop trending hashtag request if already fired any

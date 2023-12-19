@@ -11,7 +11,7 @@ import {
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';
 import {download, generateCsv, mkConfig} from "export-to-csv";
-import {customPropertyOrder, ICountryStatsData} from '../../data.service';
+import {propertyOrderForCSV, ICountryStatsData} from '../../data.service';
 import {StatsType} from '../types';
 
 export interface ICountryStatsDataAsArrays {
@@ -60,7 +60,7 @@ export class MapComponent implements OnChanges {
 
     @ViewChild('d3Map') d3MapElement: ElementRef | undefined;
 
-    csvConfig = mkConfig({useKeysAsHeaders: true});
+    csvConfig = mkConfig({useKeysAsHeaders: true, filename: 'data_per_country'});
     @Input() isCountriesLoading!: boolean;
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -262,7 +262,7 @@ export class MapComponent implements OnChanges {
 
         return arr.map((obj) => {
             const sortedObj: ICountryStatsData = {} as ICountryStatsData;
-            customPropertyOrder.forEach((property) => {
+            propertyOrderForCSV.forEach((property) => {
                 if (property in obj) {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore

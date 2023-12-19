@@ -200,7 +200,7 @@ export class DataService {
 
 export type TopicName = 'place' | 'healthcare' | 'amenity' | 'waterway'
 
-interface TopicValues {
+export interface TopicValues {
     hashtag: string
     topic: string
     value: number
@@ -214,13 +214,15 @@ export interface IWrappedTopicData {
 }
 
 export interface TopicDefinitionValue {
-    name: string
-    "color-hex": string
+    id: string,
+    name: string,
+    "color-hex": string,
     "y-title": string,
     dropdown_name?: string,
     color?: string,
     tooltip?: string,
-    icon?: string
+    icon?: string,
+    value?: string
 }
 
 export type TopicDefinition = Record<StatsType, TopicDefinitionValue>
@@ -240,9 +242,9 @@ export interface ISummaryData {
     edits: number
     buildings: number
     roads: number,
-    latest?: string
+    latest?: string,
+    hashtag?: string,
 }
-
 
 export interface IQueryData {
     start: string
@@ -313,7 +315,7 @@ export interface ICountryStatsData {
     country: string,
 }
 
-export const customPropertyOrder: string[] = [
+export const propertyOrderForCSV: string[] = [
     "changesets",
     "users",
     "roads",
