@@ -4,7 +4,7 @@
     "name": "Contributors",
     "color-hex": "#4caf50",
     "y-title": "# of contributors",
-    "dropdown_name": "Places",
+    "dropdown_name": "Contributors",
     "color": "green",
     "tooltip": "The number of distinct users that edited OSM data for the hashtag and the time range defined in your query.",
     "icon": "fa-users"
@@ -14,6 +14,7 @@
     "name": "Total Edits",
     "color-hex": "#f44336",
     "y-title": "# of total edits",
+    "dropdown_name": "Total Edits",
     "color": "red",
     "tooltip": "The number of all OSM edits to \"primary map features\" for the hashtag and the time range defined in your query.",
     "icon": "fa-pen-to-square"
@@ -23,6 +24,7 @@
     "name": "Δ Buildings",
     "color-hex": "#9c27b0",
     "y-title": "# of Δ buildings",
+    "dropdown_name": "Buildings",
     "color": "purple",
     "tooltip": "The absolute increase or decrease in the amount of buildings in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
     "icon": "fa-building"
@@ -32,6 +34,7 @@
     "name": "Δ km of Roads",
     "color-hex": "#2196f3",
     "y-title": "# of Δ km of roads",
+    "dropdown_name": "Roads",
     "color": "blue",
     "tooltip": "The absolute increase or decrease in the road network length in kilometers in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
     "icon": "fa-road"
