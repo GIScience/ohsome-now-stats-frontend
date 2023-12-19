@@ -375,21 +375,28 @@ export class DashboardComponent implements OnInit {
     private addTopicDataToPlot(res: Record<string, Array<ITopicPlotData>>, plotData: Array<IPlotData>) {
         const mergedData: any[] = [];
 
-        plotData.forEach(p => {
+        // Create a map for faster topic lookup
+        const topicMap: Record<string, ITopicPlotData[]> = {};
+        Object.keys(res).forEach((topic) => {
+            topicMap[topic] = res[topic];
+        });
+
+        plotData.forEach((p) => {
             const startDate = p.startDate;
             const endDate = p.endDate;
             const plotEntry: any = {
                 ...p,
             };
 
-            Object.keys(res).forEach(topic => {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                const matchingData = res[topic].find(data => {
-                    return (data.startDate === startDate && data.endDate === endDate)
-                });
-                plotEntry[topic] = matchingData ? matchingData.value : 0;
-            });
+            // Iterate over topics directly instead of using Object.keys
+            for (const topic in topicMap) {
+                if (Object.prototype.hasOwnProperty.call(topicMap, topic)) {
+                    const matchingData = topicMap[topic].find(
+                        (data) => data.startDate === startDate && data.endDate === endDate
+                    );
+                    plotEntry[topic] = matchingData ? matchingData.value : 0;
+                }
+            }
 
             mergedData.push(plotEntry);
         });
@@ -397,4 +404,5 @@ export class DashboardComponent implements OnInit {
         // console.log('mergedData = ', mergedData)
         return mergedData;
     }
+
 }
