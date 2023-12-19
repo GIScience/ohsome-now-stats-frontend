@@ -8,13 +8,11 @@ import {
     Output
 } from '@angular/core';
 import * as bootstrap from 'bootstrap';
-import {
-    ISummaryData, propertyOrderForCSV,
-    TopicDefinitionValue,
-} from '../../data.service';
-import {StatsType} from '../types';
-import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {mkConfig, generateCsv, download} from "export-to-csv";
+
+import {propertyOrderForCSV} from '../../data.service';
+import {StatsType, ISummaryData, TopicDefinitionValue} from '../types';
+import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 
 @Component({
     selector: 'app-summary',
@@ -36,12 +34,12 @@ export class SummaryComponent implements OnChanges {
     }
 
     ngOnChanges(): void {
+        if (!this.data)
+            return
+
         if (!Object.keys(this.data).includes(this.currentlySelected)) {
             document.getElementById("users")?.click()
         }
-
-        if (!this.data)
-            return
 
         this.bignumberData = []
         for (const summaryEntry of Object.entries(this.data)) {

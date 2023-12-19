@@ -11,8 +11,8 @@ import {
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';
 import {download, generateCsv, mkConfig} from "export-to-csv";
-import {propertyOrderForCSV, ICountryStatsData} from '../../data.service';
-import {StatsType} from '../types';
+import {propertyOrderForCSV} from '../../data.service';
+import {StatsType, ICountryStatsData} from '../types';
 
 export interface ICountryStatsDataAsArrays {
     country: string[],

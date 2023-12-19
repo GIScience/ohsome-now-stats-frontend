@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-
+import {DataService} from '../data.service';
 import {
-    DataService,
-    ICountryStatsData,
+    StatsType, ICountryStatsData,
     IHashtag,
     IPlotData,
     IQueryParam,
@@ -13,10 +12,9 @@ import {
     IWrappedPlotData,
     IWrappedTopicCountryData,
     ITopicCountryData,
-    TopicResponse,
-    TopicName, TopicValues
-} from '../data.service';
-import {StatsType} from './types';
+    TopicName,
+    TopicValues
+} from './types';
 
 @Component({
     selector: 'app-dashboard',
@@ -25,7 +23,6 @@ import {StatsType} from './types';
 })
 export class DashboardComponent implements OnInit {
 
-    topicData!: TopicResponse
     summaryData!: ISummaryData
     plotData!: Array<IPlotData>
     countryWithTopic: ICountryStatsData[] = [];
@@ -34,10 +31,10 @@ export class DashboardComponent implements OnInit {
     queryParams: any
     summaryMessage = ''
     hashtagsData!: Array<IHashtag> | []
-    isSummaryLoading: boolean = false;
-    isPlotsLoading: boolean = false;
-    isCountriesLoading: boolean = false;
-    isHashtagsLoading: boolean = false;
+    isSummaryLoading = false;
+    isPlotsLoading = false;
+    isCountriesLoading = false;
+    isHashtagsLoading = false;
 
     constructor(
         private dataService: DataService,
