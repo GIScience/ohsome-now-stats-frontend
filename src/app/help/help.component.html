@@ -41,25 +41,25 @@
             </li>
             <li>
                 Pick a pre-defined or custom <strong>time range</strong>. In the example we have selected the
-                <span class="icquote">last 30 days</span>. All timestamps displayed on the website are in UTC.
+                <span class="icquote">last year</span>. All timestamps displayed on the website are in UTC.
             </li>
             <li>
                 Pick a <strong>time interval</strong> to define the temporal granularity of the statistics. In the
                 example
                 we
-                have selected a <span class="icquote">daily</span> interval.
+                have selected a <span class="icquote">monthly</span> interval.
             </li>
             <li>
-                Finally, click the <strong>Get Statistics</strong> button. Your query is now processed by our server.
-                The
-                results will be displayed shortly after in the dashboard. For some hashtags and very long time ranges it
+                Once these base parameters are set, click the <strong>Get Statistics</strong> button.
+                Your query is now processed by our server. The results will be displayed shortly after in the dashboard.
+                For some hashtags and very long time ranges it
                 might take up to 5 seconds until results are displayed.
             </li>
         </ol>
 
         <figure>
-            <img style="max-height: 400px;" src="../../assets/images/help/query-form.png"
-                 alt="example screenshot of the query form with fields: hashtag, date range, intevals, and 'Get Statistics'-Button">
+            <img style="max-height: 400px;" src="../../assets/images/help/base-query-form.png"
+                 alt="example screenshot of the query form with basic fields: hashtag, date range and intevals">
             <figcaption>Query form with example parameters</figcaption>
         </figure>
 
@@ -67,16 +67,46 @@
             NOTE: You can also use * as a wildcard in the hashtag filter. For example you can use hotosm-project-* to filter for mapping organized through HOT's Tasking Manager. Wildcards are only considered at the end and act like a startsWith expression.
         </p>
 
+        <h2>How to refine your query?</h2>
+        <p>In addition to the query parameters mentioned above you can refine your query by specifying:</p>
+
+        <ol>
+            <li>a list of <strong>countries</strong></li>
+            <li>a list of <strong>topics</strong></li>
+        </ol>
+        <figure>
+            <img style="max-height: 400px;" src="../../assets/images/help/refine-query-form.png"
+                 alt="example screenshot of the query form refining fields: country selection and topic selection">
+            <figcaption>Query form with example refining parameters</figcaption>
+        </figure>
+
+        <ol>
+            <li>
+                Select one or more <strong>countries</strong> in the drop down menu.
+                You can use this filter to make sure that the summary statistics and timeline statistics correspond
+                only to your countries of interest.
+                You can use the buttons below the drop down menu to select a <strong>pre-defined</strong> list of countries,
+                which refers to the countries covered by <a target="_blank" href="https://www.hotosm.org/hubs/">HOT's regional hubs</a>.
+            </li>
+            <li>
+                If you are interested in more detailed statistics beyond building and road mapping you can select one
+                or more additional <strong>topics</strong> in the drop down menu.
+                Each <strong>topic</strong> represents a specific subset of OSM mapping activity.
+                Check below for a detailed description of each <strong>topic</strong>.
+        </ol>
+
+
         <h2>How to read the results?</h2>
         <h3>Overview Statistics</h3>
         <p>
             The overview statistics provide numbers about mapping activity for the hashtag and the time range defined in
             your query. In this example we consider data for <span class="icquote">#missingmaps</span> for a time range
-            from <span class="icquote">202306-01</span> - <span class="icquote">2023-06-30</span>.
+            from <span class="icquote">2023-06-01</span> - <span class="icquote">2023-06-30</span>.
         </p>
         <p>
-            Currently we do report on number of contributors (green), total edits (red), buildings (purple) and km of
-            roads (blue). You can click on each card to update the timeline plot and the map.
+            Currently we always report on number of contributors (green), total edits (red), buildings (purple) and km of
+            roads (blue). You can click on each card to update the timeline plot and the map. If any topics were chosen,
+            they also get their own interactive card in this section.
         </p>
         <figure>
             <img class="img-fluid" style="max-height: 150px;" src="../../assets/images/help/summary-stats.png"
@@ -145,7 +175,7 @@
 
         <p>Both a) bigger circles and b) lighter color indicate a higher absolute value. In the example map Malawi
             reached the highest value (249 contributors) followed by the Democratic Republic of the Congo (193
-            contributors).</p>
+            contributors). If countries were selected in the country filter, all other countries appear as gray in this plot.</p>
 
         <figure>
             <img class="img-fluid" style="max-height: 400px;"
