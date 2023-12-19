@@ -38,14 +38,11 @@
   flex-wrap: wrap;
 }
 
-#topics-selection {
-  z-index: 900;
-}
-
-.customDropdown {
-  z-index: 901;
-}
 
 .md-drppicker {
   font-family: Roboto, -apple-system, system-ui, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif;
+}
+
+:host ::ng-deep .ngx-dropdown-list-container {
+  z-index: 910 !important;
 }
