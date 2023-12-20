@@ -347,6 +347,15 @@ export class QueryComponent implements OnChanges {
         enableSelectAll: true
     };
 
+    allowedInterval(value: string) {
+        if (!this.selectedDateRange)
+            return true
+        if (this.selectedDateRange.start && this.selectedDateRange.end) {
+            const diff = (this.selectedDateRange.end).diff(this.selectedDateRange.start, 'day')
+            return (diff >= 365 && value === 'PT1H');
+        }
+        return false
+    }
 }
 
 function customComparator(a: any, b: any) {

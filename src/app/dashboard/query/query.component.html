@@ -50,7 +50,7 @@
                 <div class="col-md-12">
                   <label class="form-label" for="intervals"> Interval </label>
                   <select name="intervals" class="form-control" id="intervals" [(ngModel)]="interval">
-                    <option *ngFor="let option of intervals" [value]="option.value">{{option.label}}</option>
+                    <option *ngFor="let option of intervals" [value]="option.value" [disabled]="allowedInterval(option.value)">{{option.label}}</option>
                   </select>
                 </div>
               </div>
