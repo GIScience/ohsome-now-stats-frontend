@@ -3,12 +3,13 @@ import {Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 import dayjs from 'dayjs/esm';
 import {Dayjs} from "dayjs";
+import {NgxDropdownConfig} from 'ngx-select-dropdown';
+
 import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-
-import {DataService, IQueryData, TopicDefinition} from '../../data.service';
+import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {NgxDropdownConfig} from 'ngx-select-dropdown';
+import {IQueryData} from "../types";
 
 @Component({
     selector: 'app-query',
@@ -26,12 +27,7 @@ export class QueryComponent implements OnChanges {
         value: string;
     }> | undefined
     interval: string | undefined // default value as 'P1M'
-    countryMap: Array<{
-        name: string;
-        value: string;
-    }> | undefined
     selectedDateRange: { end: any; start: any; } | undefined;
-    alwaysShowCalendars = true;
     ranges: any
     minDate!: Dayjs
     maxDate!: Dayjs
@@ -149,7 +145,7 @@ export class QueryComponent implements OnChanges {
      *
      */
     buildTopicOptions() {
-        for (const [key, value] of Object.entries(topicDefinitions as TopicDefinition)) {
+        for (const [key, value] of Object.entries(topicDefinitions)) {
             const value_ = value
             if (["roads", "buildings", "edits", "users"].includes(key)) {
                 continue
@@ -351,6 +347,15 @@ export class QueryComponent implements OnChanges {
         enableSelectAll: true
     };
 
+    allowedInterval(value: string) {
+        if (!this.selectedDateRange)
+            return true
+        if (this.selectedDateRange.start && this.selectedDateRange.end) {
+            const diff = (this.selectedDateRange.end).diff(this.selectedDateRange.start, 'day')
+            return (diff > 366 && value === 'PT1H');
+        }
+        return false
+    }
 }
 
 function customComparator(a: any, b: any) {

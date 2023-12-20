@@ -6,33 +6,25 @@
         </div>
         <div class="w-100 mT-10">
             <!-- #Treanding hashtags ==================== -->
-            <app-trending-hashtags [hashtags]="hashtagsData"></app-trending-hashtags>
+            <app-trending-hashtags [hashtags]="hashtagsData" [isHashtagsLoading]="isHashtagsLoading"></app-trending-hashtags>
         </div>
     </div>
     <div class="col-md-9">
-        <!-- #Summary message ==================== -->
-        <!-- <div class="row">
-            <div class='col-md-12'>
-                <div class="layer w-100 mB-1 bd bgc-white p-20">
-                    <h6 class="lh-1">{{summaryMessage}}</h6>
-                </div>
-            </div>
-        </div> -->
         <div class="row">
             <div class='col-md-12'>
-                <app-summary class=row [data]="summaryData" [topicData]="topicData" [selectedTopics]="selectedTopics" (changeCurrentStatsEvent)="currentStats = $event"></app-summary>
+                <app-summary class=row [data]="summaryData" [isSummaryLoading]="isSummaryLoading" (changeCurrentStatsEvent)="currentStats = $event"></app-summary>
             </div>
         </div>
         <div class="row">
             <!-- #Common graph for Summary ==================== -->
             <div class="pT-10">
-                <app-plot [data]="plotData" [currentStats]="currentStats" [selectedTopics]="selectedTopics" [topicPlotData]="topicPlotData"></app-plot>
+                <app-plot [data]="plotData" [currentStats]="currentStats" [selectedTopics]="selectedTopics" [isPlotsLoading]="isPlotsLoading"></app-plot>
             </div>
         </div>
         <div class="row">
             <!-- #Map View ==================== -->
             
-                <app-map [data]="countryStatsData" [currentStats]="currentStats" [selectedCountries]="queryParams?.countries" [selectedTopics]="selectedTopics" [topicCountryData]="topicCountryData"></app-map>
+                <app-map [data]="countryWithTopic" [currentStats]="currentStats" [selectedCountries]="queryParams?.countries" [selectedTopics]="selectedTopics" [isCountriesLoading]="isCountriesLoading" ></app-map>
             
         </div>
     </div>

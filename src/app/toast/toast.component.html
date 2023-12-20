@@ -1,5 +1,5 @@
 <!-- by default displayed on top-left of the screen, as define by 'top-0 end-0' -->
-<div class="toast-container position-fixed top-0 end-0 p-3" [class.hide]="!toastVisible">
+<div class="toast-container position-fixed top-0 end-0 p-3 z-5" [class.hide]="!toastVisible">
   <div id="liveToast" class="toast" data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header" [ngClass]="'text-bg-'+type">
       <!-- <img src="..." class="rounded me-2" alt="..."> -->

@@ -3,9 +3,9 @@ import {Component, Input, OnChanges, AfterContentInit} from '@angular/core';
 import Plotly from 'plotly.js-basic-dist-min';
 import {Layout} from 'plotly.js-basic-dist-min';
 import {mkConfig, generateCsv, download} from "export-to-csv";
-import {IPlotData, ITopicPlotData, TopicDefinition} from '../../data.service';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-import {StatsType} from "../types";
+import {StatsType, IPlotData} from "../types";
+import {mark} from "@angular/compiler-cli/src/ngtsc/perf/src/clock";
 
 @Component({
     selector: 'app-plot',
@@ -16,10 +16,10 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
     @Input() data!: Array<IPlotData>;
     @Input() currentStats!: StatsType;
-    @Input() topicPlotData!: Record<StatsType, ITopicPlotData[]>;
     @Input() selectedTopics: string | undefined;
+    @Input() isPlotsLoading!: boolean;
     layout: Layout | any;
-    csvConfig = mkConfig({useKeysAsHeaders: true});
+    csvConfig = mkConfig({useKeysAsHeaders: true, filename: 'time_interval'});
 
     ngAfterContentInit(): void {
         this.initChart();
@@ -59,37 +59,27 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
     refreshPlot() {
         const currentDate = new Date()
-        const topic_definitions: TopicDefinition = topicDefinitions
-        const _data = this.data as any
-        if (this.selectedTopics && this.topicPlotData && this.topicPlotData[this.currentStats]) {
-            if (this.topicPlotData[this.currentStats].length != this.data.length) {
-                return // topic response usually arrives faster, but only want to update once both requests came through
-            }
 
-            for (let i = 0; i < this.topicPlotData[this.currentStats].length; i++) {
-                _data[i][this.currentStats] = this.topicPlotData[this.currentStats][i].value
-            }
-        }
-        const plotData: any = [{
-            x: _data.map((e: IPlotData) => `${e.startDate}`),
-            y: _data.map((e: any) => e[this.currentStats]),
-            customdata: _data.map((e: any) => e[this.currentStats]),
+        const plotData = [{
+            x: this.data.map((e: IPlotData) => `${e.startDate}`),
+            y: this.data.map((e: any) => e[this.currentStats]),
+            customdata: this.data.map((e: any) => e[this.currentStats]),
             hovertext: this.data.map((e: IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
-            hovertemplate: `%{hovertext}<br>${topic_definitions[this.currentStats]["name"]}: %{customdata}<extra></extra>`,
+            hovertemplate: `%{hovertext}<br>${topicDefinitions[this.currentStats]["name"]}: %{customdata}<extra></extra>`,
             type: 'bar',
-            name: `${topic_definitions[this.currentStats]["name"]}`,
+            name: `${topicDefinitions[this.currentStats]["name"]}`,
             marker: {
                 pattern: {
-                    // apply stripped pattern only for current running time
+                    // apply striped pattern only for current running time
                     shape: this.data.map((_: IPlotData) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
                     size: 7,
                     solidity: 0.6
                 },
-                color: `${topic_definitions[this.currentStats]["color-hex"]}`
+                color: `${topicDefinitions[this.currentStats]["color-hex"]}`
             },
         }];
-        this.layout.yaxis.title = `${topic_definitions[this.currentStats]["y-title"]}`
-        Plotly.react('summaryplot', plotData, this.layout, {responsive: true});
+        this.layout.yaxis.title = `${topicDefinitions[this.currentStats]["y-title"]}`
+        Plotly.react('summaryplot', plotData as any, this.layout, {responsive: true});
     }
 
     downloadCsv() {

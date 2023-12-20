@@ -5,7 +5,26 @@ import {BehaviorSubject, Observable, Subject, takeUntil} from 'rxjs';
 import {environment} from '../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 import moment from 'moment';
-import {StatsType} from "./dashboard/types";
+import {
+    IMetaData, IQueryParam,
+    ISummaryData, IWrappedCountryStatsData, IWrappedPlotData,
+    IWrappedSummaryData, IWrappedTopicCountryData,
+    IWrappedTopicData,
+    IWrappedTopicPlotData
+} from "./dashboard/types";
+
+export const propertyOrderForCSV: string[] = [
+    "changesets",
+    "users",
+    "roads",
+    "buildings",
+    "edits",
+    "healthcare",
+    "waterway",
+    "latest",
+    "country",
+    "hashtag",
+];
 
 @Injectable()
 export class DataService {
@@ -65,15 +84,15 @@ export class DataService {
         })
     }
 
-  /**
-   * Creates query param from enitre fragment of the URL
-   *
-   * @param fragment URL fragment part
-   * @returns Object with all query params sepearted
-   */
-  getQueryParamsFromFragments(fragment: string | null): any {
-    if(fragment == null || fragment.length < 2)
-      return null
+    /**
+     * Creates query param from enitre fragment of the URL
+     *
+     * @param fragment URL fragment part
+     * @returns Object with all query params sepearted
+     */
+    getQueryParamsFromFragments(fragment: string | null): any {
+        if (fragment == null || fragment.length < 2)
+            return null
 
         const tempQueryParams: Array<Array<string>> = fragment?.split('&')
             .map(q => [q.split('=')[0], q.split('=')[1]])
@@ -195,146 +214,4 @@ export class DataService {
             fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
         })
     }
-}
-
-
-export type TopicName = 'place' | 'healthcare' | 'amenity' | 'waterway'
-
-interface TopicValues {
-    hashtag: string
-    topic: string
-    value: number
-}
-
-export type TopicResponse = Record<TopicName, TopicValues>
-
-export interface IWrappedTopicData {
-    // result: Map<string, ITopicData>
-    result: TopicResponse
-}
-
-export interface TopicDefinitionValue {
-    name: string
-    "color-hex": string
-    "y-title": string,
-    dropdown_name?: string,
-    color?: string,
-    tooltip?: string,
-    icon?: string
-}
-
-export type TopicDefinition = Record<StatsType, TopicDefinitionValue>
-
-export interface ITopicData {
-    topic: string,
-    value: number
-}
-
-export interface IWrappedSummaryData {
-    result: ISummaryData
-}
-
-export interface ISummaryData {
-    changesets?: number,
-    users: number
-    edits: number
-    buildings: number
-    roads: number,
-    latest?: string
-}
-
-
-export interface IQueryData {
-    start: string
-    end: string
-    hashtags: Array<string>
-    interval: string
-    countries: string
-    topics: string
-}
-
-export interface IWrappedPlotData {
-    result: Array<IPlotData>
-}
-
-export interface IPlotData {
-    changesets?: number,
-    users: number,
-    roads: number,
-    buildings: number,
-    edits: number,
-    latest?: string,
-    hashtag?: string,
-    startDate: string,
-    endDate: string
-}
-
-
-export interface IWrappedTopicPlotData {
-    result: Record<string, Array<ITopicPlotData>>
-}
-
-export interface ITopicPlotData {
-    value: number,
-    topic: string,
-    startDate: string,
-    endDate: string
-}
-
-export interface IWrappedTopicCountryData {
-    query: { timespan: { startDate: string, endDate: string }, hashtag: string }
-    result: Record<StatsType, ITopicCountryData[]>
-}
-
-export interface ITopicCountryData {
-    topic: string,
-    country: string,
-    value: number
-}
-
-/**
- * Response JSON returned by /stats/{hashtag}/country endoint
- */
-export interface IWrappedCountryStatsData {
-    query: { timespan: { startDate: string, endDate: string }, hashtag: string }
-    result: ICountryStatsData[]
-}
-
-export interface ICountryStatsData {
-    users: number,
-    roads: number,
-    buildings: number,
-    edits: number,
-    latest: string,
-    country: string,
-    place?: number,
-    healthcare?: number,
-    amenity?: number,
-    waterway?: number
-}
-
-export interface ITrendingHashtags {
-    result: any
-}
-
-export interface IQueryParam {
-    countries: string,
-    hashtags: string,
-    start: string, // date in ISO format, ensure to keep milliseconds as 0
-    end: string, // date in ISO format, ensure to keep milliseconds as 0
-    interval: string, // eg:'P1D' default value: 'P1M'
-    topics: string
-}
-
-export interface IHashtag {
-    hashtagTitle: string,
-    hashtag: string,
-    number_of_users: number,
-    tooltip: string,
-    percent: number
-}
-
-export interface IMetaData {
-    start: string, // date in ISO format, ensure to keep milliseconds as 0
-    end: string, // date in ISO format, ensure to keep milliseconds as 0
 }

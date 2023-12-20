@@ -49,14 +49,14 @@
               <div class="mb-3 row">
                 <div class="col-md-12">
                   <label class="form-label" for="intervals"> Interval </label>
-                  <select name="intervals" class="form-control" [(ngModel)]="interval">
-                    <option *ngFor="let option of intervals" [value]="option.value">{{option.label}}</option>
+                  <select name="intervals" class="form-control" id="intervals" [(ngModel)]="interval">
+                    <option *ngFor="let option of intervals" [value]="option.value" [disabled]="allowedInterval(option.value)">{{option.label}}</option>
                   </select>
                 </div>
               </div>
               <div class="mb-3 row">
                 <label class="form-label" for="countries">Country Filter</label>
-                <ngx-select-dropdown [options]="dropdownOptions" name="countries" [config]="configCountry"
+                <ngx-select-dropdown [options]="dropdownOptions" id="countries" name="countries" [config]="configCountry"
                 [(ngModel)]="selectedCountries" [multiple]="true" class="customDropdown"></ngx-select-dropdown>
               </div>
               <div class="row" style="align-items: center; margin-bottom: 1rem;">
@@ -74,9 +74,9 @@
               </div>
 
               <div class="row">
-                <label class="form-label" for="topics">Topic Selection</label>
+                <label class="form-label" for="topics-selection">Topic Selection</label>
                 <ngx-select-dropdown [options]="topicOptions" name="topics" [config]="configTopics"
-                [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"></ngx-select-dropdown>
+                [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown" id="topics-selection"></ngx-select-dropdown>
               </div>
 
             </div>

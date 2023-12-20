@@ -1,11 +1,14 @@
+<div class="row pos-r" id="big-number_container" #overlayContainer>
+    <overlay [isLoading]="isSummaryLoading"  [containerElement]="overlayContainer"></overlay>
+    <button type="button" class="btn btn-sm btn-outline-dark w-2r p-0 h-2r pos-a l-35 t-10 z-500" data-bs-toggle="tooltip"
+            data-bs-placement="bottom" [attr.data-bs-title]="'Download CSV data used here'" (click)="downloadCsv()">
+            <span class="icon-holder">
+                <i class="ti-download"></i>
+            </span>
+    </button>
 
-<div class="row" id="big-number_container">
-  <!-- #Contributors ==================== -->
-  <app-big-number id="users" class="col-md-3" name="Contributors" icon="fa-users" value="{{contributors}}" tooltip="{{dashboardTooltips.summary.contributions}}" color="green" (click)="changeCurrentStats($event, 'users')" [startSelected]="true"></app-big-number>
-  <!-- #Total Edits ==================== -->
-  <app-big-number class="col-md-3" name="Total Edits" icon="fa-pen-to-square" value="{{edits}}" tooltip="{{dashboardTooltips.summary.edits}}" color="red" (click)="changeCurrentStats($event, 'edits')"></app-big-number>
-  <!-- #Building Edits ==================== -->
-  <app-big-number class="col-md-3" name="Δ Buildings" icon="fa-building" value="{{buidlingEdits}}" tooltip="{{dashboardTooltips.summary.buildings}}" color="purple" (click)="changeCurrentStats($event, 'buildings')"></app-big-number>
-  <!-- #km of Roads ==================== -->
-  <app-big-number class="col-md-3" name="Δ km of Roads" icon="fa-road" value="{{kmOfRoads}}" tooltip="{{dashboardTooltips.summary.kmOfRoads}}" color="blue" (click)="changeCurrentStats($event, 'roads')"></app-big-number>
+    <app-big-number *ngFor="let data of bignumberData" id="{{data.id}}"
+            class="col-md-3" name="{{data.name}}" icon="{{data.icon}}" value="{{data.value}}"
+            tooltip="{{data.tooltip}}" color="{{data.color}}"
+            (click)="changeCurrentStats($event, data.id)" [startSelected]="data.id===currentlySelected"></app-big-number>
 </div>
