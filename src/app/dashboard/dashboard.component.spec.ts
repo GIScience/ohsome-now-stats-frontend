@@ -15,6 +15,7 @@ import { TrendingHashtagsComponent } from './trending-hashtags/trending-hashtags
 import { ToastComponent } from '../toast/toast.component';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import { BigNumberComponent } from './summary/big-number/big-number.component';
+import {Overlay} from "../overlay.component";
 
 describe('DashboardComponent', () => {
 
@@ -255,7 +256,8 @@ describe('DashboardComponent', () => {
         MapComponent,
         TrendingHashtagsComponent,
         ToastComponent,
-        BigNumberComponent
+        BigNumberComponent,
+        Overlay
        ],
       providers: [
         { provide: DataService, useValue: dataServiceSpy },

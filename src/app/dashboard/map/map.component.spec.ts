@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MapComponent } from './map.component';
+import {Overlay} from "../../overlay.component";
 
 describe('MapComponent', () => {
   let component: MapComponent;
@@ -8,7 +9,7 @@ describe('MapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MapComponent ]
+      declarations: [ MapComponent, Overlay ]
     })
     .compileComponents();
 

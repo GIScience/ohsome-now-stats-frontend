@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SummaryComponent } from './summary.component';
 import { BigNumberComponent } from './big-number/big-number.component';
+import {Overlay} from "../../overlay.component";
 
 describe('SummaryComponent', () => {
   let component: SummaryComponent;
@@ -9,7 +10,7 @@ describe('SummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SummaryComponent, BigNumberComponent ]
+      declarations: [ SummaryComponent, BigNumberComponent, Overlay ]
     })
     .compileComponents();
 

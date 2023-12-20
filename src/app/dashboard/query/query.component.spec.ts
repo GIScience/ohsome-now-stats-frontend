@@ -8,6 +8,7 @@ import { QueryComponent } from './query.component';
 import { DataService } from 'src/app/data.service';
 import { ToastService } from 'src/app/toast.service';
 import { SelectDropDownModule } from 'ngx-select-dropdown'
+import {Overlay} from "../../overlay.component";
 
 describe('QueryComponent', () => {
   let component: QueryComponent;

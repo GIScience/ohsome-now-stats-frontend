@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TrendingHashtagsComponent } from './trending-hashtags.component';
 import { DataService } from '../../data.service';
 import { dashboard } from '../tooltip-data';
+import {Overlay} from "../../overlay.component";
 
 describe('TrendingHashtagsComponent', () => {
   let component: TrendingHashtagsComponent;
@@ -14,7 +15,7 @@ describe('TrendingHashtagsComponent', () => {
     const dataServiceSpy = jasmine.createSpyObj('DataService', ['getTrendingHashtags']);
 
     await TestBed.configureTestingModule({
-      declarations: [TrendingHashtagsComponent],
+      declarations: [TrendingHashtagsComponent, Overlay],
       providers: [
         { provide: DataService, useValue: dataServiceSpy },
         { provide: ActivatedRoute, useValue: routeStub },
