@@ -5,6 +5,7 @@ import {Layout} from 'plotly.js-basic-dist-min';
 import {mkConfig, generateCsv, download} from "export-to-csv";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {StatsType, IPlotData} from "../types";
+import {mark} from "@angular/compiler-cli/src/ngtsc/perf/src/clock";
 
 @Component({
     selector: 'app-plot',
@@ -58,11 +59,11 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
     refreshPlot() {
         const currentDate = new Date()
-        const _data = this.data
+
         const plotData = [{
-            x: _data.map((e: IPlotData) => `${e.startDate}`),
-            y: _data.map((e: any) => e[this.currentStats]),
-            customdata: _data.map((e: any) => e[this.currentStats]),
+            x: this.data.map((e: IPlotData) => `${e.startDate}`),
+            y: this.data.map((e: any) => e[this.currentStats]),
+            customdata: this.data.map((e: any) => e[this.currentStats]),
             hovertext: this.data.map((e: IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
             hovertemplate: `%{hovertext}<br>${topicDefinitions[this.currentStats]["name"]}: %{customdata}<extra></extra>`,
             type: 'bar',
