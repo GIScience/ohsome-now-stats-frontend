@@ -352,7 +352,7 @@ export class QueryComponent implements OnChanges {
             return true
         if (this.selectedDateRange.start && this.selectedDateRange.end) {
             const diff = (this.selectedDateRange.end).diff(this.selectedDateRange.start, 'day')
-            return (diff >= 365 && value === 'PT1H');
+            return (diff > 365 && value === 'PT1H');
         }
         return false
     }
