@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
+import dayjs from "dayjs/esm";
 import {DataService} from '../data.service';
 import {
     StatsType, ICountryStatsData,
@@ -15,6 +16,7 @@ import {
     TopicName,
     TopicValues
 } from './types';
+import {ToastService} from "../toast.service";
 
 @Component({
     selector: 'app-dashboard',
@@ -38,7 +40,8 @@ export class DashboardComponent implements OnInit {
 
     constructor(
         private dataService: DataService,
-        private route: ActivatedRoute) {
+        private route: ActivatedRoute,
+        private toastService: ToastService) {
     }
 
     ngOnInit() {
@@ -56,6 +59,8 @@ export class DashboardComponent implements OnInit {
                 // console.log('>>> DashboardComponent >>> queryParams ', queryParams, this.dataService.defaultHashtag)
                 if (queryParams['hashtags'] == null)
                     queryParams['hashtags'] = this.dataService.defaultHashtag
+                // difference of time between start and end dates in days
+                let diff = 0
 
                 if (queryParams['start'] == null && queryParams['end'] == null) {
                     const defaultParams = this.dataService.getDefaultValues()
@@ -65,8 +70,26 @@ export class DashboardComponent implements OnInit {
                     }
                 }
 
-                if (queryParams['interval'] == null)
-                    queryParams.interval = this.dataService.defaultIntervalValue
+                const startDate = dayjs(queryParams.start)
+                const endDate = dayjs(queryParams.end)
+                diff = endDate.diff(startDate, 'day')
+
+                if (queryParams['interval'] == null) {
+                    queryParams.interval = this.dataService.defaultIntervalValue.toUpperCase()
+                }
+
+                console.log(queryParams.interval, diff)
+                if (diff > 366 && queryParams.interval === 'PT1H') {
+                    console.warn('Unsupported interval for the given time range')
+                    // show the message on toast
+                    this.toastService.show({
+                        title: 'Unsupported interval',
+                        body: 'Unsupported interval for the given time range, hence changed it to \'Daily\'',
+                        type: 'warning',
+                        time: 6000
+                    })
+                    queryParams.interval = 'P1D'
+                }
 
                 if (queryParams['countries'] == null)
                     queryParams.countries = ''
