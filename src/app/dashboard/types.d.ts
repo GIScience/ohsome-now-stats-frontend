@@ -1,6 +1,6 @@
-export type StatsType = 'users' | 'edits' | 'buildings' | 'roads' | 'place' | 'healthcare' | 'amenity' | 'waterway';
+export type StatsType = 'users' | 'edits' | 'buildings' | 'roads' | 'amenity' | 'commercial' | 'education' | 'financial' | 'healthcare' | 'lulc' | 'place' | 'poi' | 'social_facility' | 'wash' | 'waterway';
 
-export type TopicName = 'place' | 'healthcare' | 'amenity' | 'waterway'
+export type TopicName = 'amenity' | 'commercial' | 'education' | 'financial' | 'healthcare' | 'lulc' | 'place' | 'poi' | 'social_facility' | 'wash' | 'waterway'
 
 export interface TopicValues {
     hashtag: string
@@ -106,12 +106,19 @@ export interface ICountryStatsData {
     roads: number,
     buildings: number,
     edits: number,
-    place?: number,
-    healthcare?: number,
-    amenity?: number,
-    waterway?: number,
+    'amenity': number,
+    'commercial': number,
+    'education': number,
+    'financial': number,
+    'healthcare': number,
+    'lulc': number,
+    'place': number,
+    'poi': number,
+    'social_facility': number,
+    'wash': number,
+    'waterway': number,
     latest: string,
-    country: string,
+    country: string
 }
 
 export interface IQueryParam {
