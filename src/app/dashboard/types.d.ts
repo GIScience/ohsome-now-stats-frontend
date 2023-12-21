@@ -19,9 +19,9 @@ export interface TopicDefinitionValue {
     id: string,
     name: string,
     "color-hex": string,
+    "color-light": string,
     "y-title": string,
     dropdown_name?: string,
-    color?: string,
     tooltip?: string,
     icon?: string,
     value?: string

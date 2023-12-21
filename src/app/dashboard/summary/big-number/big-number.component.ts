@@ -11,5 +11,6 @@ export class BigNumberComponent {
   @Input() tooltip: string | undefined;
   @Input() icon: string | undefined;
   @Input() color: string | undefined;
+  @Input() colorLight: string | undefined;
   @Input() startSelected: boolean | undefined;
 }

@@ -52,11 +52,6 @@ export class SummaryComponent implements OnChanges {
             const id = topicDefinitions[summaryEntry[0]].id
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            // const getKeyValue = <U extends keyof T, T extends object>(key: U) => (obj: T) => obj[key];
-            // const color = getKeyValue<keyof TopicDefinition, TopicDefinition>((summaryEntry[0] as StatsType))(topicDefinitions)
-            const color = topicDefinitions[summaryEntry[0]].color
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             const tooltip = topicDefinitions[summaryEntry[0]].tooltip
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
@@ -64,6 +59,9 @@ export class SummaryComponent implements OnChanges {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             const hex = topicDefinitions[summaryEntry[0]]['color-hex']
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const light = topicDefinitions[summaryEntry[0]]['color-light']
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             const yTitle = topicDefinitions[summaryEntry[0]]['y-title']
@@ -76,10 +74,10 @@ export class SummaryComponent implements OnChanges {
                 id: id,
                 name: name,
                 value: this.formatNumbertoNumberformatString(summaryEntry[1]),
-                color: color,
                 tooltip: tooltip,
                 icon: icon,
                 "color-hex": hex,
+                "color-light": light,
                 "y-title": yTitle,
             })
         }

@@ -5,7 +5,6 @@ import {Layout} from 'plotly.js-basic-dist-min';
 import {mkConfig, generateCsv, download} from "export-to-csv";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {StatsType, IPlotData} from "../types";
-import {mark} from "@angular/compiler-cli/src/ngtsc/perf/src/clock";
 
 @Component({
     selector: 'app-plot',

@@ -9,7 +9,7 @@
       </span>
     </div>
     <div class="layer w-100">
-      <span class="d-ib lh-0 va-m fw-600 fsz-lg bdrs-10em pX-15 pY-15 bgc-{{color}}-50 c-{{color}}-500 whs-nw tov-e">{{value}}</span>
+        <span class="d-ib lh-0 va-m fw-600 fsz-lg bdrs-10em pX-15 pY-15 bgc-{{color}}-50 c-{{color}}-500 whs-nw tov-e" [ngStyle]="{'color': color, 'background-color':colorLight}">{{value}}</span>
     </div>
     <div class="layer w-100">
       <p class="lh-1 mb-0 mt-2">{{name}}</p>
