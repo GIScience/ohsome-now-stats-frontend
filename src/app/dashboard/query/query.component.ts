@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 import dayjs from 'dayjs/esm';
@@ -11,17 +11,20 @@ import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
 import {IQueryData} from "../types";
 
+let allHashtagOptions: string[] = []
+
 @Component({
     selector: 'app-query',
     templateUrl: './query.component.html',
     styleUrls: ['./query.component.scss']
 })
-export class QueryComponent implements OnChanges {
+export class QueryComponent implements OnChanges, OnInit {
 
     @Input() data: IQueryData | undefined
-
     metaSub!: Subscription
     hashtags = ''
+    hashtagOptions: string[] = []
+
     intervals: Array<{
         label: string;
         value: string;
@@ -70,6 +73,13 @@ export class QueryComponent implements OnChanges {
             })
                 .format(new Date())
         }, 1000)
+    }
+
+    ngOnInit(): void {
+        this.dataService.requestAllHashtags().subscribe((hashtagsResult)=>{
+            // @ts-ignore
+            allHashtagOptions = hashtagsResult["result"]["hashtags"]
+        })
     }
 
     ngOnChanges(): void {
@@ -314,6 +324,30 @@ export class QueryComponent implements OnChanges {
         })
     }
 
+    searchChange(e: any){
+        if (e.length<2){
+            return
+        }
+        this.hashtagOptions = allHashtagOptions.filter((hashtag)=>{
+            return hashtag.length > 1 && hashtag.includes(e)
+        })
+        .sort(
+            (a:string, b:string)=>{
+                if (a.startsWith(e) && b.startsWith(e)){
+                    return a.localeCompare(b)
+                }
+                else if (a.startsWith(e)){
+                    return -1
+                }
+                else if (b.startsWith(e)){
+                    return 1
+                }
+                else {
+                    return a.localeCompare(b)
+                }
+            }
+        ).slice(0,1000)
+    }
 
     configCountry: NgxDropdownConfig = {
         displayKey: 'name',

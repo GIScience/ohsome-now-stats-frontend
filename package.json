@@ -27,6 +27,7 @@
     "@angular/platform-browser-dynamic": "^16.2.1",
     "@angular/router": "^16.2.1",
     "@types/vanillajs-datepicker": "^1.2.2",
+    "angular-ng-autocomplete": "^2.0.12",
     "bootstrap": "^5.0.1",
     "brand-colors": "^2.1.1",
     "dayjs": "^1.11.9",

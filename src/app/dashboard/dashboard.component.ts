@@ -78,7 +78,6 @@ export class DashboardComponent implements OnInit {
                     queryParams.interval = this.dataService.defaultIntervalValue.toUpperCase()
                 }
 
-                console.log(queryParams.interval, diff)
                 if (diff > 366 && queryParams.interval === 'PT1H') {
                     console.warn('Unsupported interval for the given time range')
                     // show the message on toast

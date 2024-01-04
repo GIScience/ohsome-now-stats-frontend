@@ -5,16 +5,31 @@
       <!-- <h6 class="lh-1">Query</h6> -->
       <!-- <div class="mT-30"> -->
         <form (keyup.enter)="getStatistics()" class="needs-validation was-validated" novalidate="">
-          <div class="row">
-            <div class="mb-3 col-md-12">
-              <!-- Hashtags -->
-              <label class="form-label" for="hashtags"> Hashtag</label>
-              <input type="text" class="form-control" id="hashtags" name="hastags"
+          <div class="mb-3 row">
+            <label class="form-label" for="hashtags"> Hashtag</label>
+              <div class="ng-autocomplete">
+                <ng-autocomplete
+                  id="hashtags"
+                  [data]="hashtagOptions"
+                  [minQueryLength]="2"
+                  [debounceTime]="200"
+                  placeholder="Enter a hashtag"
+                  (inputChanged)='searchChange($event)'
+                  [itemTemplate]="itemTemplate"
+                  [notFoundTemplate]="notFoundTemplate"
+                  name="hastags"
                   [(ngModel)]="hashtags"
-                  placeholder="Enter a Hashtag"
-                  required="">
-              <small id="hastagsHelp" class="text-muted"> Hashtag used in Changesets comments eg: missingmaps</small>
-            </div>
+                >
+
+                </ng-autocomplete>
+                <ng-template #itemTemplate let-item>
+                  <a [innerHTML]="item"></a>
+                </ng-template>
+                <ng-template #notFoundTemplate let-notFound>
+                  <div>No hashtag found</div>
+                </ng-template>
+              </div>
+            <small id="hastagsHelp" class="text-muted"> Hashtag used in Changesets comments eg: missingmaps</small>
           </div>
           <div class="row">
             <div class="mb-3 col-md-12">

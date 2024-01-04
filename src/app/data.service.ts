@@ -84,6 +84,10 @@ export class DataService {
         })
     }
 
+    requestAllHashtags(){
+        return this.http.get(`${this.url}/hashtags`)
+    }
+
     /**
      * Creates query param from enitre fragment of the URL
      *

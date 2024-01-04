@@ -22,7 +22,7 @@ import {NgOptimizedImage} from '@angular/common';
 import { HelpComponent } from './help/help.component';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import {Overlay} from "./overlay.component";
-
+import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 
 @NgModule({
   declarations: [
@@ -47,7 +47,8 @@ import {Overlay} from "./overlay.component";
     HttpClientModule,
     NgxDaterangepickerMd.forRoot(),
     NgOptimizedImage,
-    SelectDropDownModule
+    SelectDropDownModule,
+    AutocompleteLibModule
   ],
   providers: [
     DataService,
