@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
+import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 
 import { of } from 'rxjs'; 
 import { QueryComponent } from './query.component';
 import { DataService } from 'src/app/data.service';
 import { ToastService } from 'src/app/toast.service';
 import { SelectDropDownModule } from 'ngx-select-dropdown'
-import {Overlay} from "../../overlay.component";
 
 describe('QueryComponent', () => {
   let component: QueryComponent;
@@ -17,6 +17,7 @@ describe('QueryComponent', () => {
   // Create a mock DataService with the necessary methods
   const dataServiceMock = {
     getMetaData: jasmine.createSpy('getMetaData').and.returnValue(of({ start: '2009-04-21T20:02:04Z', end: '2023-08-02T10:21:31Z' })),
+    requestAllHashtags: jasmine.createSpy('requestAllHashtags').and.returnValue(of(['missingmaps', 'hotosm-project-1'])),
   };
 
   beforeEach(async () => {
@@ -26,7 +27,8 @@ describe('QueryComponent', () => {
         RouterTestingModule, 
         FormsModule, 
         NgxDaterangepickerMd.forRoot(),
-        SelectDropDownModule
+        SelectDropDownModule,
+        AutocompleteLibModule
       ],
       providers: [
         { provide: DataService, useValue: dataServiceMock },
