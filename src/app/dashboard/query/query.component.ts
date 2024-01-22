@@ -48,6 +48,7 @@ export class QueryComponent implements OnChanges, OnInit {
     topicOptions: any[] = []
     selectedTopics: topicDataClass[] = []  // selected countries with name and code
 
+    hot_controls: boolean = false;
 
     constructor(
         private dataService: DataService,
@@ -321,6 +322,19 @@ export class QueryComponent implements OnChanges, OnInit {
     changeHub(hubName: string) {
         this.selectedCountries = this.dropdownOptions.filter((option: countryDataClass) => {
             return this.hubs[hubName].includes(option.value)
+        })
+
+    }
+    impactAreas: any = {
+        "disaster": "wash,waterway,social_facility,place,lulc",
+        "sus_cities": "wash,waterway,social_facility,lulc,amenity,education,commercial,financial",
+        "pub_health": "wash,waterway,social_facility,place,healthcare",
+        "migration": "waterway,social_facility,lulc,amenity,education,commercial,healthcare",
+        "g_equality": "wash,social_facility,education"
+    }
+     changeImpactArea(impactAreaName: string) {
+        this.selectedTopics = this.topicOptions.filter((option) => {
+            return this.impactAreas[impactAreaName].includes(option.value)
         })
     }
 

@@ -23,6 +23,25 @@
   --bs-gutter-x: 0;
 }
 
+.hot-toggle {
+  height: 30px;
+  border-width:  0px;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+}
+
+.hot-toggle-wrapper {
+  top: 15px;
+  right: 26px;
+  position: absolute;
+  padding: 0px !important;
+}
+
+.inactive {
+  filter: grayscale(100%);
+  opacity: 50%;
+}
+
 .inline-p{
   width: auto;
   margin: 0;
