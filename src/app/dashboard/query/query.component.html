@@ -11,18 +11,17 @@
               <div class="ng-autocomplete">
                 <ng-autocomplete
                   id="hashtags"
-                  [data]="hashtagOptions"
-                  [minQueryLength]="2"
-                  [debounceTime]="200"
+                  [data]="allHashtagOptions"
+                  [minQueryLength]="1"
+                  [searchKeyword]="keyword"
+                  [customFilter]="searchChange"
+                  [debounceTime]="150"
                   placeholder="Enter a hashtag"
-                  (inputChanged)='searchChange($event)'
                   [itemTemplate]="itemTemplate"
                   [notFoundTemplate]="notFoundTemplate"
                   name="hastags"
                   [(ngModel)]="hashtags"
-                >
-
-                </ng-autocomplete>
+                />
                 <ng-template #itemTemplate let-item>
                   <a [innerHTML]="item"></a>
                 </ng-template>

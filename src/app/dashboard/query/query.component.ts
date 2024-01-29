@@ -9,9 +9,8 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IQueryData} from "../types";
+import {IHashtags, IQueryData} from "../types";
 
-let allHashtagOptions: string[] = []
 
 @Component({
     selector: 'app-query',
@@ -23,7 +22,6 @@ export class QueryComponent implements OnChanges, OnInit {
     @Input() data: IQueryData | undefined
     metaSub!: Subscription
     hashtags = ''
-    hashtagOptions: string[] = []
 
     intervals: Array<{
         label: string;
@@ -49,6 +47,10 @@ export class QueryComponent implements OnChanges, OnInit {
     selectedTopics: topicDataClass[] = []  // selected countries with name and code
 
     hot_controls: boolean = false;
+
+    allHashtagOptions: IHashtags[] = []
+
+    keyword: string = "hashtag"
 
     constructor(
         private dataService: DataService,
@@ -79,7 +81,7 @@ export class QueryComponent implements OnChanges, OnInit {
     ngOnInit(): void {
         this.dataService.requestAllHashtags().subscribe((hashtagsResult)=>{
             // @ts-ignore
-            allHashtagOptions = hashtagsResult["result"]["hashtags"]
+            this.allHashtagOptions = hashtagsResult["result"]
         })
     }
 
@@ -338,30 +340,31 @@ export class QueryComponent implements OnChanges, OnInit {
         })
     }
 
-    searchChange(e: any){
-        if (e.length<2){
-            return
+    searchChange(items: IHashtags[], searchedHashtag: string){
+        if (searchedHashtag.length<1){
+            return []
         }
-        this.hashtagOptions = allHashtagOptions.filter((hashtag)=>{
-            return hashtag.length > 1 && hashtag.includes(e)
+        return items.filter((hashtagResult)=>{
+            return hashtagResult.hashtag.length > 1 && hashtagResult.hashtag.includes(searchedHashtag)
         })
         .sort(
-            (a:string, b:string)=>{
-                if (a.startsWith(e) && b.startsWith(e)){
-                    return a.localeCompare(b)
+            (a: IHashtags, b: IHashtags)=>{
+                if (a.hashtag.startsWith(searchedHashtag) && b.hashtag.startsWith(searchedHashtag)){
+                    return a.count <= b.count ? 1 : -1
                 }
-                else if (a.startsWith(e)){
+                else if (a.hashtag.startsWith(searchedHashtag)){
                     return -1
                 }
-                else if (b.startsWith(e)){
+                else if (b.hashtag.startsWith(searchedHashtag)){
                     return 1
                 }
                 else {
-                    return a.localeCompare(b)
+                    return a.count <= b.count ? 1 : -1
                 }
             }
-        ).slice(0,1000)
+        ).slice(0,1000).map((e)=>e.hashtag)
     }
+
 
     configCountry: NgxDropdownConfig = {
         displayKey: 'name',
