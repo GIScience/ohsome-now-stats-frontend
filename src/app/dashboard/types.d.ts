@@ -143,3 +143,7 @@ export interface IMetaData {
     end: string, // date in ISO format, ensure to keep milliseconds as 0
 }
 
+interface IHashtags{
+    hashtag: string,
+    count: number
+}

@@ -9,7 +9,7 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IQueryData} from "../types";
+import {IHashtags, IQueryData} from "../types";
 import { UTCToLocalConverterPipe } from './pipes/utc-to-local-converter.pipe';
 
 
@@ -409,10 +409,4 @@ class topicDataClass {
         this.name = name;
         this.value = value;
     }
-}
-
-
-interface IHashtags{
-    hashtag: string,
-    count: number
 }
