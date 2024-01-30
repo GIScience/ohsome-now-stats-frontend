@@ -6,9 +6,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class UTCToLocalConverterPipe implements PipeTransform {
 
-  transform(dateToFromat: Date, ...args: unknown[]): string {
+  transform(dateToFormat: Date, ...args: unknown[]): string {
     try {
-      let date = new Date(dateToFromat.toString());
+      let date = new Date(dateToFormat.toString());
       return new Intl.DateTimeFormat('de-DE', {
         year: "numeric",
         month: "numeric",
