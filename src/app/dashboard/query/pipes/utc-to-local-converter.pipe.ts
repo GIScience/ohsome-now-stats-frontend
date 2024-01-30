@@ -1,4 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import dayjs from "dayjs";
+// @ts-ignore
 
 @Pipe({
   name: 'UTCToLocalConverter',
@@ -6,9 +8,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class UTCToLocalConverterPipe implements PipeTransform {
 
-  transform(dateToFormat: Date, ...args: unknown[]): string {
+  transform(dateToFormat: Date | string, ...args: unknown[]): string {
+    if (typeof dateToFormat === "string"){
+      dateToFormat = dayjs(dateToFormat).add(dayjs().utcOffset(),"minute").toDate()
+    }
     try {
-      let date = new Date(dateToFormat.toString());
       return new Intl.DateTimeFormat('de-DE', {
         year: "numeric",
         month: "numeric",
@@ -20,9 +24,13 @@ export class UTCToLocalConverterPipe implements PipeTransform {
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         timeZoneName: "short"
       })
-        .format(date)
+        .format(dateToFormat)
     } catch (e) {
       return "Data not available";
     }
   }
+}
+
+export function UTCStringToLocalDateConverterFunction(date: string): Date{
+  return dayjs(date).add(dayjs().utcOffset(),"minute").toDate()
 }

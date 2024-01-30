@@ -6,6 +6,9 @@ import {mkConfig, generateCsv, download} from "export-to-csv";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {StatsType, IPlotData} from "../types";
 
+import {UTCToLocalConverterPipe, UTCStringToLocalDateConverterFunction} from "../query/pipes/utc-to-local-converter.pipe";
+import dayjs from "dayjs";
+
 @Component({
     selector: 'app-plot',
     templateUrl: './plot.component.html',
@@ -19,6 +22,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     @Input() isPlotsLoading!: boolean;
     layout: Layout | any;
     csvConfig = mkConfig({useKeysAsHeaders: true, filename: 'time_interval'});
+
+    constructor(private utcToLocalConverter: UTCToLocalConverterPipe) {}
 
     ngAfterContentInit(): void {
         this.initChart();
@@ -60,17 +65,20 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         const currentDate = new Date()
 
         const plotData = [{
-            x: this.data.map((e: IPlotData) => `${e.startDate}`),
+            x: this.data.map((e: IPlotData) => UTCStringToLocalDateConverterFunction(e.startDate)),
             y: this.data.map((e: any) => e[this.currentStats]),
             customdata: this.data.map((e: any) => e[this.currentStats]),
-            hovertext: this.data.map((e: IPlotData) => `From ${e.startDate}<br>To ${e.endDate}`),
+            hovertext: this.data.map((e: IPlotData) => `From ${this.utcToLocalConverter.transform(e.startDate)}<br>To ${this.utcToLocalConverter.transform(e.endDate)}`),
             hovertemplate: `%{hovertext}<br>${topicDefinitions[this.currentStats]["name"]}: %{customdata}<extra></extra>`,
             type: 'bar',
             name: `${topicDefinitions[this.currentStats]["name"]}`,
             marker: {
                 pattern: {
                     // apply striped pattern only for current running time
-                    shape: this.data.map((_: IPlotData) => (currentDate >= new Date(_.startDate) && currentDate <= new Date(_.endDate)) ? '/' : ''),
+                    shape: this.data.map((_: IPlotData) => (
+                        currentDate >= UTCStringToLocalDateConverterFunction(_.startDate)
+                        && currentDate <= UTCStringToLocalDateConverterFunction(_.endDate))
+                        ? '/' : ''),
                     size: 7,
                     solidity: 0.6
                 },
