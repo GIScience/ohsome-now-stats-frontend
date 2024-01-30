@@ -23,6 +23,7 @@ import { HelpComponent } from './help/help.component';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import {Overlay} from "./overlay.component";
 import {AutocompleteLibModule} from 'angular-ng-autocomplete';
+import { UTCToLocalConverterPipe } from './dashboard/query/pipes/utc-to-local-converter.pipe';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import {AutocompleteLibModule} from 'angular-ng-autocomplete';
     AboutComponent,
     HelpComponent,
     BigNumberComponent,
+    UTCToLocalConverterPipe,
     Overlay
   ],
   imports: [
@@ -52,6 +54,7 @@ import {AutocompleteLibModule} from 'angular-ng-autocomplete';
   ],
   providers: [
     DataService,
+    UTCToLocalConverterPipe,
     ToastService,
     { provide: APP_INITIALIZER, useFactory: metadataFactory, deps: [DataService], multi: true }
   ],

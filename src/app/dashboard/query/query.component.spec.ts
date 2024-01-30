@@ -9,6 +9,8 @@ import { QueryComponent } from './query.component';
 import { DataService } from 'src/app/data.service';
 import { ToastService } from 'src/app/toast.service';
 import { SelectDropDownModule } from 'ngx-select-dropdown'
+import { UTCToLocalConverterPipe } from './pipes/utc-to-local-converter.pipe';
+import dayjs, { Dayjs } from 'dayjs';
 
 describe('QueryComponent', () => {
   let component: QueryComponent;
@@ -20,9 +22,11 @@ describe('QueryComponent', () => {
     requestAllHashtags: jasmine.createSpy('requestAllHashtags').and.returnValue(of(['missingmaps', 'hotosm-project-1'])),
   };
 
+  
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [QueryComponent],
+      declarations: [QueryComponent, UTCToLocalConverterPipe],
       imports: [
         RouterTestingModule, 
         FormsModule, 
@@ -33,6 +37,7 @@ describe('QueryComponent', () => {
       providers: [
         { provide: DataService, useValue: dataServiceMock },
         { provide: ToastService, useValue: {} },
+        {provide: UTCToLocalConverterPipe}
       ],
     }).compileComponents();
   });
@@ -40,6 +45,7 @@ describe('QueryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(QueryComponent);
     component = fixture.componentInstance;
+    component.maxDate = dayjs("2021-01-01T00:00:00Z");
     fixture.detectChanges();
   });
 

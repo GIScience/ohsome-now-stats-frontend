@@ -10,6 +10,7 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
 import {IQueryData} from "../types";
+import { UTCToLocalConverterPipe } from './pipes/utc-to-local-converter.pipe';
 
 
 @Component({
@@ -32,7 +33,6 @@ export class QueryComponent implements OnChanges, OnInit {
     ranges: any
     minDate!: Dayjs
     maxDate!: Dayjs
-    maxDateString!: string
 
     private _start = ''
     private _end = ''
@@ -55,6 +55,7 @@ export class QueryComponent implements OnChanges, OnInit {
     constructor(
         private dataService: DataService,
         private router: Router,
+        private utcToLocalConverter: UTCToLocalConverterPipe,
         private toastService: ToastService) {
 
         this.buildTopicOptions()
@@ -63,18 +64,7 @@ export class QueryComponent implements OnChanges, OnInit {
         this.interval = dataService.defaultIntervalValue
 
         setInterval(() => {
-            this.currentTimeInUTC = new Intl.DateTimeFormat('de-DE', {
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                second: "numeric",
-                hour12: false,
-                timeZone: "UTC",
-                timeZoneName: "short"
-            })
-                .format(new Date())
+            this.currentTimeInUTC = this.utcToLocalConverter.transform(new Date())
         }, 1000)
     }
 
@@ -98,18 +88,6 @@ export class QueryComponent implements OnChanges, OnInit {
             if (metaData && metaData.start && metaData.end) {
                 this.minDate = dayjs(metaData?.start)
                 this.maxDate = dayjs(metaData?.end)
-                this.maxDateString = new Intl.DateTimeFormat('de-DE', {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric",
-                    hour12: false,
-                    timeZone: "UTC",
-                    timeZoneName: "short"
-                })
-                    .format(this.maxDate.toDate())
                 this.ranges = {
                     'Today': [dayjs().startOf('day'), dayjs()],
                     'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],

@@ -17,6 +17,7 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
 import { BigNumberComponent } from './summary/big-number/big-number.component';
 import {Overlay} from "../overlay.component";
 import {AutocompleteLibModule} from 'angular-ng-autocomplete';
+import { UTCToLocalConverterPipe } from './query/pipes/utc-to-local-converter.pipe';
 
 describe('DashboardComponent', () => {
 
@@ -40,11 +41,13 @@ describe('DashboardComponent', () => {
         TrendingHashtagsComponent,
         ToastComponent,
         BigNumberComponent,
+        UTCToLocalConverterPipe,
         Overlay
        ],
       providers: [
         { provide: DataService, useValue: dataServiceSpy },
         { provide: ActivatedRoute, useValue: { fragment: of('hashtags=missingmaps&interval=P1M&countries=DE,UGA') } },
+        { provide: UTCToLocalConverterPipe, useValue: { UTCToLocalConverterPipe: () => { } } }
       ]
     })
     .compileComponents();

@@ -57,8 +57,8 @@
                     [timePicker24Hour]="true"
                     placeholder="Select please..."
                     required=""/>
-                    <small class="text-muted fs-i">Current time: {{currentTimeInUTC}}</small><br>
-                    <small class="text-muted fs-i">Latest database entry: {{maxDateString}}</small>
+                    <small class="text-muted fs-i">Current time: {{currentTimeInUTC }}</small><br>
+                    <small class="text-muted fs-i">Latest database entry: {{this.maxDate.toDate() | UTCToLocalConverter}}</small>
                 </div>
               </div>
               <div class="mb-3 row">
