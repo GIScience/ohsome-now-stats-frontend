@@ -9,7 +9,7 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IHashtags, IQueryData} from "../types";
+import {IQueryData} from "../types";
 
 
 @Component({
@@ -431,4 +431,10 @@ class topicDataClass {
         this.name = name;
         this.value = value;
     }
+}
+
+
+interface IHashtags{
+    hashtag: string,
+    count: number
 }
