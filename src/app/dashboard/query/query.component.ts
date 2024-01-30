@@ -33,10 +33,12 @@ export class QueryComponent implements OnChanges, OnInit {
     ranges: any
     minDate!: Dayjs
     maxDate!: Dayjs
+    maxDateString!: String
+
 
     private _start = ''
     private _end = ''
-    currentTimeInUTC!: string;
+    currentTimeInUserTimeZone!: string;
 
     countries: string[] = [];  // only codes for url and get request
     dropdownOptions = dropdownOptions;  // all possible countries with name and code
@@ -56,7 +58,8 @@ export class QueryComponent implements OnChanges, OnInit {
         private dataService: DataService,
         private router: Router,
         private utcToLocalConverter: UTCToLocalConverterPipe,
-        private toastService: ToastService) {
+        private toastService: ToastService
+    ) {
 
         this.buildTopicOptions()
 
@@ -64,7 +67,7 @@ export class QueryComponent implements OnChanges, OnInit {
         this.interval = dataService.defaultIntervalValue
 
         setInterval(() => {
-            this.currentTimeInUTC = this.utcToLocalConverter.transform(new Date())
+            this.currentTimeInUserTimeZone = this.utcToLocalConverter.transform(new Date())
         }, 1000)
     }
 
@@ -88,6 +91,7 @@ export class QueryComponent implements OnChanges, OnInit {
             if (metaData && metaData.start && metaData.end) {
                 this.minDate = dayjs(metaData?.start)
                 this.maxDate = dayjs(metaData?.end)
+                this.maxDateString = this.utcToLocalConverter.transform(this.maxDate.toDate())
                 this.ranges = {
                     'Today': [dayjs().startOf('day'), dayjs()],
                     'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
