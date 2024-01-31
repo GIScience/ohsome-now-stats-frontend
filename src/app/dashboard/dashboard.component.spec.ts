@@ -25,13 +25,12 @@ describe('DashboardComponent', () => {
   let fixture: ComponentFixture<DashboardComponent>;
   let dataService: jasmine.SpyObj<DataService>;
 
-
   beforeEach(async() => {
     const dataServiceSpy = jasmine.createSpyObj('DataService', ['getDefaultValues', 'requestSummary', 'requestCountryStats', 'getTrendingHashtags']);
 
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule, SelectDropDownModule, AutocompleteLibModule],
-      declarations: [ 
+      declarations: [
         SummaryComponent,
         QueryComponent,
         PlotComponent,
@@ -42,12 +41,12 @@ describe('DashboardComponent', () => {
         ToastComponent,
         BigNumberComponent,
         UTCToLocalConverterPipe,
-        Overlay
+        Overlay,
        ],
       providers: [
         { provide: DataService, useValue: dataServiceSpy },
         { provide: ActivatedRoute, useValue: { fragment: of('hashtags=missingmaps&interval=P1M&countries=DE,UGA') } },
-        { provide: UTCToLocalConverterPipe, useValue: { UTCToLocalConverterPipe: () => { } } }
+        { provide: UTCToLocalConverterPipe }
       ]
     })
     .compileComponents();
@@ -56,7 +55,7 @@ describe('DashboardComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DashboardComponent);
     dataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
-    component = TestBed.createComponent(DashboardComponent).componentInstance;    
+    component = TestBed.createComponent(DashboardComponent).componentInstance;
   });
 
   it('should create', () => {

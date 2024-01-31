@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PlotComponent } from './plot.component';
 import {Overlay} from "../../overlay.component";
+import {UTCToLocalConverterPipe} from "../query/pipes/utc-to-local-converter.pipe";
 
 describe('PlotComponent', () => {
   let component: PlotComponent;
@@ -9,7 +10,8 @@ describe('PlotComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PlotComponent, Overlay ]
+      declarations: [ PlotComponent, Overlay, UTCToLocalConverterPipe ],
+      providers:[{ provide: UTCToLocalConverterPipe, useValue: { UTCToLocalConverterPipe: () => { } } }]
     })
     .compileComponents();
 
