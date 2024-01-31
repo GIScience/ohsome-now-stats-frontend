@@ -58,9 +58,24 @@ export class DashboardComponent implements OnInit {
             this.isCountriesLoading = true;
             const queryParams = this.getQueryParamsFromFragments(fragment)
             if (queryParams !== null && this.queryParamsComplete(queryParams)) {
-                // console.log('>>> DashboardComponent >>> queryParams ', queryParams, this.dataService.defaultHashtag)
+
                 if (queryParams['hashtags'] == null)
                     queryParams['hashtags'] = this.dataService.defaultHashtag
+
+
+                if (queryParams['hashtags'] === "*"){
+                    console.warn('Unsupported hashtag *')
+                    // show the message on toast
+                    this.toastService.show({
+                        title: 'Unsupported hashtag 🍞',
+                        body: 'Unsupported hashtag \'*\', defaulting to hashtag missingmaps',
+                        type: 'warning',
+                        time: 6000
+                    })
+                    queryParams.hashtags = 'missingmaps'
+                }
+
+
                 // difference of time between start and end dates in days
                 let diff = 0
 
