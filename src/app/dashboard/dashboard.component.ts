@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import dayjs from "dayjs/esm";
+import dayjs from "dayjs";
 import {DataService} from '../data.service';
 import {
     StatsType, ICountryStatsData,
@@ -17,6 +17,8 @@ import {
     TopicValues
 } from './types';
 import {ToastService} from "../toast.service";
+import duration from 'dayjs/plugin/duration'
+dayjs.extend(duration)
 
 @Component({
     selector: 'app-dashboard',
@@ -78,7 +80,7 @@ export class DashboardComponent implements OnInit {
                     queryParams.interval = this.dataService.defaultIntervalValue.toUpperCase()
                 }
 
-                if (diff > 366 && queryParams.interval === 'PT1H') {
+                if (diff > 366 && dayjs.duration(queryParams.interval) < dayjs.duration('P1D')) {
                     console.warn('Unsupported interval for the given time range')
                     // show the message on toast
                     this.toastService.show({
@@ -89,6 +91,20 @@ export class DashboardComponent implements OnInit {
                     })
                     queryParams.interval = 'P1D'
                 }
+
+                let max_bins = 10000
+                if (dayjs.duration(diff,    "day").as("second") / dayjs.duration(queryParams.interval).as("second") > max_bins) {
+                    console.warn('Too many bins requested')
+                    // show the message on toast
+                    this.toastService.show({
+                        title: 'Unsupported interval',
+                        body: `Unsupported interval for the given time range, max ${max_bins} interval bins allowed, hence changed it to \'${diff > 366 ? "Daily" : "Hourly"}\'`,
+                        type: 'warning',
+                        time: 6000
+                    })
+                    queryParams.interval = diff > 366 ? 'P1D' : 'PT1H'
+                }
+
 
                 if (queryParams['countries'] == null)
                     queryParams.countries = ''

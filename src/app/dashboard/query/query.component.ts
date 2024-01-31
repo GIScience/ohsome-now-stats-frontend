@@ -1,8 +1,7 @@
 import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Subscription} from 'rxjs';
-import dayjs from 'dayjs/esm';
-import {Dayjs} from "dayjs";
+import dayjs from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
 
 import dropdownOptions from "../../../assets/static/json/countryCodes.json"
@@ -11,12 +10,18 @@ import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
 import {IHashtags, IQueryData} from "../types";
 import { UTCToLocalConverterPipe } from './pipes/utc-to-local-converter.pipe';
+import duration from 'dayjs/plugin/duration'
+import utc from 'dayjs/plugin/utc'
+import isoWeek from 'dayjs/plugin/isoWeek'
 
+dayjs.extend(duration)
+dayjs.extend(utc)
+dayjs.extend(isoWeek)
 
 @Component({
     selector: 'app-query',
     templateUrl: './query.component.html',
-    styleUrls: ['./query.component.scss']
+    styleUrls: ['./query.component.scss'],
 })
 export class QueryComponent implements OnChanges, OnInit {
 
@@ -31,8 +36,8 @@ export class QueryComponent implements OnChanges, OnInit {
     interval: string | undefined // default value as 'P1M'
     selectedDateRange: { end: any; start: any; } | undefined;
     ranges: any
-    minDate!: Dayjs
-    maxDate!: Dayjs
+    minDate!: dayjs.Dayjs
+    maxDate!: dayjs.Dayjs
     maxDateString!: String
 
 
@@ -65,7 +70,7 @@ export class QueryComponent implements OnChanges, OnInit {
 
         this.intervals = dataService.timeIntervals
         this.interval = dataService.defaultIntervalValue
-
+        this.currentTimeInUserTimeZone = this.utcToLocalConverter.transform(new Date())
         setInterval(() => {
             this.currentTimeInUserTimeZone = this.utcToLocalConverter.transform(new Date())
         }, 1000)
@@ -79,7 +84,6 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     ngOnChanges(): void {
-
         // listener to metaData request,
         // theoritically should be called only once as metaData request
         // is fired only at the start of application
@@ -102,7 +106,6 @@ export class QueryComponent implements OnChanges, OnInit {
                 }
             }
         })
-
 
         if (this.data) {
             this.initFormValues(this.data)
@@ -385,7 +388,7 @@ export class QueryComponent implements OnChanges, OnInit {
             return true
         if (this.selectedDateRange.start && this.selectedDateRange.end) {
             const diff = (this.selectedDateRange.end).diff(this.selectedDateRange.start, 'day')
-            return (diff > 366 && value === 'PT1H');
+            return (diff > 366 && dayjs.duration(value) < dayjs.duration('P1D'));
         }
         return false
     }

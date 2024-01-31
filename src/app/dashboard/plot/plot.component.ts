@@ -7,7 +7,6 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {StatsType, IPlotData} from "../types";
 
 import {UTCToLocalConverterPipe, UTCStringToLocalDateConverterFunction} from "../query/pipes/utc-to-local-converter.pipe";
-import dayjs from "dayjs";
 
 @Component({
     selector: 'app-plot',

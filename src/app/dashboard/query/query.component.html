@@ -65,7 +65,7 @@
                 <div class="col-md-12">
                   <label class="form-label" for="intervals"> Interval </label>
                   <select name="intervals" class="form-control" id="intervals" [(ngModel)]="interval">
-                    <option *ngFor="let option of intervals" [value]="option.value" [disabled]="allowedInterval(option.value)">{{option.label}}</option>
+                    <option *ngFor="let option of intervals; index as i; first as isFirst" [value]="option.value" [disabled]="allowedInterval(option.value)">{{option.label}}</option>
                   </select>
                 </div>
               </div>
@@ -103,9 +103,6 @@
                         <div class="hub-icon-wrapper"><button title="Gender Equality" (click)="changeImpactArea('g_equality')" class="hub-icon" style="background: url(../../../assets/images/impact_areas/gender_equality.png)"></button></div>
                     </div>
                 </div>
-
-
-
             </div>
           </div>
           <button class="btn btn-primary btn-color" (click)="getStatistics()" type="submit">Get Statistics</button>
