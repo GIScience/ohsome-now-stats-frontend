@@ -176,7 +176,7 @@ export class QueryComponent implements OnChanges, OnInit {
                 }
 
             // set hashtags textarea
-            this.hashtags = data.hashtags.toString()
+            this.hashtags = decodeURIComponent(data.hashtags.toString())
 
             // set interval
             this.interval = data.interval

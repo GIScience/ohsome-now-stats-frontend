@@ -53,31 +53,31 @@ export interface IQueryData {
 }
 
 export interface IWrappedPlotData {
-    result: Array<IPlotData>
+    result: IPlotData
 }
 
 export interface IPlotData {
-    changesets?: number,
-    users: number,
-    roads: number,
-    buildings: number,
-    edits: number,
+    changesets?: number[],
+    users: number[],
+    roads: number[],
+    buildings: number[],
+    edits: number[],
     latest?: string,
     hashtag?: string,
-    startDate: string,
-    endDate: string
+    startDate: string[],
+    endDate: string[]
 }
 
 
 export interface IWrappedTopicPlotData {
-    result: Record<string, Array<ITopicPlotData>>
+    result: Record<string, ITopicPlotData>
 }
 
 export interface ITopicPlotData {
-    value: number,
+    value: number[],
     topic: string,
-    startDate: string,
-    endDate: string
+    startDate: string[],
+    endDate: string[]
 }
 
 export interface IWrappedTopicCountryData {

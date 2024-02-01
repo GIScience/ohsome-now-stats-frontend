@@ -15,7 +15,7 @@ import {UTCToLocalConverterPipe, UTCStringToLocalDateConverterFunction} from "..
 })
 export class PlotComponent implements AfterContentInit, OnChanges {
 
-    @Input() data!: Array<IPlotData>;
+    @Input() data!: IPlotData;
     @Input() currentStats!: StatsType;
     @Input() selectedTopics: string | undefined;
     @Input() isPlotsLoading!: boolean;
@@ -64,19 +64,21 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         const currentDate = new Date()
 
         const plotData = [{
-            x: this.data.map((e: IPlotData) => UTCStringToLocalDateConverterFunction(e.startDate)),
-            y: this.data.map((e: any) => e[this.currentStats]),
-            customdata: this.data.map((e: any) => e[this.currentStats]),
-            hovertext: this.data.map((e: IPlotData) => `From ${this.utcToLocalConverter.transform(e.startDate)}<br>To ${this.utcToLocalConverter.transform(e.endDate)}`),
+            x: this.data.startDate.map(e=>UTCStringToLocalDateConverterFunction(e)),
+            // @ts-ignore
+            y: this.data[this.currentStats],
+            // @ts-ignore
+            customdata: this.data[this.currentStats],
+            hovertext: this.data.startDate.map((start_date, index) => `From ${this.utcToLocalConverter.transform(start_date)}<br>To ${this.utcToLocalConverter.transform(this.data.endDate[index])}`),
             hovertemplate: `%{hovertext}<br>${topicDefinitions[this.currentStats]["name"]}: %{customdata}<extra></extra>`,
             type: 'bar',
             name: `${topicDefinitions[this.currentStats]["name"]}`,
             marker: {
                 pattern: {
                     // apply striped pattern only for current running time
-                    shape: this.data.map((_: IPlotData) => (
-                        currentDate >= UTCStringToLocalDateConverterFunction(_.startDate)
-                        && currentDate <= UTCStringToLocalDateConverterFunction(_.endDate))
+                    shape: this.data.startDate.map((start_date, index) => (
+                        currentDate >= UTCStringToLocalDateConverterFunction(start_date)
+                        && currentDate <= UTCStringToLocalDateConverterFunction(this.data.endDate[index]))
                         ? '/' : ''),
                     size: 7,
                     solidity: 0.6
