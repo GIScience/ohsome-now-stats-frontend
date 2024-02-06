@@ -657,7 +657,8 @@ describe('DataService', () => {
     const queryParams = {
       start: '2022-08-16T00:52:40.000Z',
       end: '2023-08-16T00:52:40.000Z',
-      limit: 10
+      limit: 10,
+      countries: ''
     };
   
     service.getTrendingHashtags( queryParams ).subscribe({
@@ -669,7 +670,7 @@ describe('DataService', () => {
     });  
     
     const req = httpTestingController.expectOne(
-        `${service.url}/most-used-hashtags?startdate=${queryParams['start']}&enddate=${queryParams['end']}&limit=${queryParams['limit']}`
+        `${service.url}/most-used-hashtags?startdate=${queryParams['start']}&enddate=${queryParams['end']}&limit=${queryParams['limit']}&countries=${queryParams['countries']}`
       );
       expect(req.request.method).toBe('GET');
       req.flush(trendingHashtagsResponse);

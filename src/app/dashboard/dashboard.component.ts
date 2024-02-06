@@ -213,7 +213,8 @@ export class DashboardComponent implements OnInit {
         this.dataService.getTrendingHashtags({
             start: timeRange.start,
             end: timeRange.end,
-            limit: this.dataService.trendingHashtagLimit
+            limit: this.dataService.trendingHashtagLimit,
+            countries: this.queryParams.countries
         }).subscribe({
             next: (res: any) => {
                 // console.log('>>> getTrendingHashtags >>> res = ', res)
