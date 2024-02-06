@@ -74,9 +74,9 @@ export class DataService {
             const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment);
 
             this.updateURL({
-                hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : this.defaultHashtag,
+                hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
                 interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
-                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtags ? meta.result.min_timestamp : tempStart.toISOString(),
+                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : tempStart.toISOString(),
                 end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
                 countries: queryParams && queryParams.countries ? queryParams.countries : '',
                 topics: queryParams && queryParams.topics ? queryParams.topics : ''
@@ -108,42 +108,42 @@ export class DataService {
     }
 
     requestSummary(params: any): Observable<IWrappedSummaryData> {
-        return this.http.get<IWrappedSummaryData>(`${this.url}/stats/${params['hashtags']}?startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
+        return this.http.get<IWrappedSummaryData>(`${this.url}/stats/${params['hashtag']}?startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
             .pipe(
                 takeUntil(this.abortSummaryReqSub)
             )
     }
 
     requestTopic(params: any): Observable<IWrappedTopicData> {
-        return this.http.get<IWrappedTopicData>(`${this.url}/topic/${params['topics']}?hashtag=${params['hashtags']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
+        return this.http.get<IWrappedTopicData>(`${this.url}/topic/${params['topics']}?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
             .pipe(
                 takeUntil(this.abortTopicReqSub)
             )
     }
 
     requestTopicInterval(params: any): Observable<IWrappedTopicPlotData> {
-        return this.http.get<IWrappedTopicPlotData>(`${this.url}/topic/${params['topics']}/interval?hashtag=${params['hashtags']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}&interval=${params['interval']}`)
+        return this.http.get<IWrappedTopicPlotData>(`${this.url}/topic/${params['topics']}/interval?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}&interval=${params['interval']}`)
             .pipe(
                 takeUntil(this.abortTopicReqSub)
             )
     }
 
     requestTopicCountryStats(params: any): Observable<IWrappedTopicCountryData> {
-        return this.http.get<IWrappedTopicCountryData>(`${this.url}/topic/${params['topics']}/country?hashtag=${params['hashtags']}&startdate=${params['start']}&enddate=${params['end']}`)
+        return this.http.get<IWrappedTopicCountryData>(`${this.url}/topic/${params['topics']}/country?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}`)
             .pipe(
                 takeUntil(this.abortIntervalReqSub)
             )
     }
 
     requestPlot(params: any): Observable<IWrappedPlotData> {
-        return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtags']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}&countries=${params['countries']}`)
+        return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtag']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}&countries=${params['countries']}`)
             .pipe(
                 takeUntil(this.abortIntervalReqSub)
             )
     }
 
     requestCountryStats(params: any): Observable<IWrappedCountryStatsData> {
-        return this.http.get<IWrappedCountryStatsData>(`${this.url}/stats/${params['hashtags']}/country?startdate=${params['start']}&enddate=${params['end']}`)
+        return this.http.get<IWrappedCountryStatsData>(`${this.url}/stats/${params['hashtag']}/country?startdate=${params['start']}&enddate=${params['end']}`)
             .pipe(
                 takeUntil(this.abortIntervalReqSub)
             )
@@ -196,7 +196,7 @@ export class DataService {
         return {
             start: tempStart.toISOString(),
             end: this.maxDate,
-            hashtags: this.defaultHashtag,
+            hashtag: this.defaultHashtag,
             interval: this.defaultIntervalValue,
             countries: '',
             topics: ''
@@ -215,7 +215,7 @@ export class DataService {
 
     updateURL(data: IQueryParam): void {
         this.router.navigate([], {
-            fragment: `hashtags=${data.hashtags}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
+            fragment: `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
         })
     }
 }

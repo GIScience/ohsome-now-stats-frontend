@@ -7,10 +7,10 @@
       <!-- <div class="mT-30"> -->
         <form (keyup.enter)="getStatistics()" class="needs-validation was-validated" novalidate="">
             <div class="mb-3 row">
-              <label class="form-label" for="hashtags"> Hashtag</label>
+              <label class="form-label" for="hashtag"> Hashtag</label>
               <div class="ng-autocomplete">
                 <ng-autocomplete
-                  id="hashtags"
+                  id="hashtag"
                   [data]="allHashtagOptions"
                   [minQueryLength]="1"
                   [searchKeyword]="keyword"
@@ -19,8 +19,8 @@
                   placeholder="Enter a hashtag"
                   [itemTemplate]="itemTemplate"
                   [notFoundTemplate]="notFoundTemplate"
-                  name="hastags"
-                  [(ngModel)]="hashtags"
+                  name="hashtag"
+                  [(ngModel)]="hashtag"
                 />
                 <ng-template #itemTemplate let-item>
                   <a [innerHTML]="item"></a>
@@ -29,7 +29,7 @@
                   <div>No hashtag found</div>
                 </ng-template>
               </div>
-            <small id="hastagsHelp" class="text-muted"> Hashtag used in Changesets comments eg: missingmaps</small>
+            <small id="hashtagHelp" class="text-muted"> Hashtag used in Changesets comments eg: missingmaps</small>
           </div>
           <div class="row">
             <div class="mb-3 col-md-12">

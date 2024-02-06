@@ -46,7 +46,7 @@ export interface ISummaryData {
 export interface IQueryData {
     start: string
     end: string
-    hashtags: Array<string>
+    hashtag: string
     interval: string
     countries: string
     topics: string
@@ -123,7 +123,7 @@ export interface ICountryStatsData {
 
 export interface IQueryParam {
     countries: string,
-    hashtags: string,
+    hashtag: string,
     start: string, // date in ISO format, ensure to keep milliseconds as 0
     end: string, // date in ISO format, ensure to keep milliseconds as 0
     interval: string, // eg:'P1D' default value: 'P1M'

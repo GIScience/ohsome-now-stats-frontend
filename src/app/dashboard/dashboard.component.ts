@@ -63,7 +63,7 @@ export class DashboardComponent implements OnInit {
                 return
             }
 
-            queryParams['hashtags'] = this.checkHashtagParameter(queryParams["hashtags"])
+            queryParams['hashtag'] = this.checkHashtagParameter(queryParams["hashtag"])
 
             queryParams.start = this.setQueryParamOrDefault("start", queryParams)
             queryParams.end = this.setQueryParamOrDefault("end", queryParams)
@@ -122,7 +122,7 @@ export class DashboardComponent implements OnInit {
                                 roads: tempSummaryData.roads,
                                 latest: tempSummaryData.latest,
                                 ...topicValue,
-                                hashtag: this.queryParams['hashtags']
+                                hashtag: this.queryParams['hashtag']
                             }
                         },
                         error: (err) => {
@@ -138,7 +138,7 @@ export class DashboardComponent implements OnInit {
                         edits: tempSummaryData.edits,
                         roads: tempSummaryData.roads,
                         latest: tempSummaryData.latest,
-                        hashtag: this.queryParams['hashtags']
+                        hashtag: this.queryParams['hashtag']
                     }
                 }
                 this.isSummaryLoading = false;
@@ -187,7 +187,7 @@ export class DashboardComponent implements OnInit {
             .subscribe((res: IWrappedCountryStatsData) => {
                 // add 'hashtag'
                 res.result.map((r: any) => {
-                    r['hashtag'] = this.queryParams['hashtags']
+                    r['hashtag'] = this.queryParams['hashtag']
                 })
 
                 const tempCountryResponse = res.result
@@ -234,9 +234,9 @@ export class DashboardComponent implements OnInit {
         // if URL params are empty then fill it with default values
         if (defaultParams !== null) {
             this.dataService.updateURL({
-                hashtags: queryParams && queryParams.hashtags ? queryParams.hashtags : defaultParams.hashtags,
+                hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : defaultParams.hashtag,
                 interval: queryParams && queryParams.interval ? queryParams.interval : defaultParams.interval,
-                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtags ? "2009-04-21T22:02:04Z" : defaultParams.start,
+                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? "2009-04-21T22:02:04Z" : defaultParams.start,
                 end: queryParams && queryParams.end ? queryParams.end : defaultParams.end,
                 countries: queryParams && queryParams.countries ? queryParams.countries : defaultParams.countries,
                 topics: queryParams && queryParams.topics ? queryParams.topics : defaultParams.topics,
@@ -246,7 +246,7 @@ export class DashboardComponent implements OnInit {
 
 
     queryParamsComplete(params: any): boolean {
-        return ["start", "end", "interval", "hashtags", "countries", "topics"].sort().join() === Object.keys(params).sort().join()
+        return ["start", "end", "interval", "hashtag", "countries", "topics"].sort().join() === Object.keys(params).sort().join()
     }
 
     setQueryParamOrDefault(target: string, queryParams: any) :string{
@@ -349,9 +349,8 @@ export class DashboardComponent implements OnInit {
             return `Summarized statistics for all contributions`
 
         let message = ''
-        if (queryParams.hashtags)
-            message += `Summarized statistics of contributions with 
-        ${queryParams.hashtags.split(',').map((h: string) => ' #' + h)}`
+        if (queryParams.hashtag)
+            message += `Summarized statistics of contributions with  #${queryParams.hashtag}`
 
         if (queryParams.start)
             message += ` from ${queryParams.start}`

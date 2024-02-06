@@ -27,7 +27,7 @@ export class QueryComponent implements OnChanges, OnInit {
 
     @Input() data: IQueryData | undefined
     metaSub!: Subscription
-    hashtags = ''
+    hashtag = ''
 
     intervals: Array<{
         label: string;
@@ -175,8 +175,8 @@ export class QueryComponent implements OnChanges, OnInit {
                     end: dayjs(data.end)
                 }
 
-            // set hashtags textarea
-            this.hashtags = decodeURIComponent(data.hashtags.toString())
+            // set hashtag textarea
+            this.hashtag = decodeURIComponent(data.hashtag.toString())
 
             // set interval
             this.interval = data.interval
@@ -210,7 +210,7 @@ export class QueryComponent implements OnChanges, OnInit {
         const tempEnd = (this.selectedDateRange.end).toISOString()
         const tempStart = (this.selectedDateRange.start).toISOString()
 
-        const tempHashTags = this.cleanHashTags(this.hashtags)
+        const tempHashTag = this.cleanHashTag(this.hashtag)
 
         if (this.selectedCountries.length === this.dropdownOptions.length) {
             this.countries = [""]
@@ -222,7 +222,7 @@ export class QueryComponent implements OnChanges, OnInit {
 
         // update the url fragment
         this.router.navigate([], {
-            fragment: `hashtags=${tempHashTags}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}&countries=${this.countries}&topics=${this.topics}`,
+            fragment: `hashtag=${tempHashTag}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}&countries=${this.countries}&topics=${this.topics}`,
         })
     }
 
@@ -230,7 +230,7 @@ export class QueryComponent implements OnChanges, OnInit {
      * Validates the form values before its being fired to API
      */
     validateForm(): boolean {
-        if (this.hashtags === '') {
+        if (this.hashtag === '') {
             console.error('Hashtag is empty')
             // show the message on toast
             this.toastService.show({
@@ -240,9 +240,9 @@ export class QueryComponent implements OnChanges, OnInit {
                 time: 3000
             })
 
-            const hashtagsEle = document.getElementById('hashtags')
-            if (hashtagsEle) {
-                hashtagsEle.focus()
+            const hashtagEle = document.getElementById('hashtag')
+            if (hashtagEle) {
+                hashtagEle.focus()
             }
             return false
         }
@@ -283,20 +283,17 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     /**
-     * Cleans the hashtags field values
+     * Cleans the hashtag field value
      *
-     * @param hashtags
-     * @returns string comma seperated hashtags without the symbol hashtag
+     * @param hashtag
+     * @returns string comma seperated hashtag without the symbol hashtag
      */
-    cleanHashTags(hashtags: string): string {
-        const cleanedHashtags = hashtags
-            .trim() // Remove leading/trailing whitespace
-            .split(',') // Split by commas
-            .map(h => h.trim()) // Trim each hashtag
-            .filter(h => h !== '') // Filter out empty hashtags
-            .map(h => h.replace(/^#/, '')) // Remove '#' symbol from each hashtag if it's at the beginning
-            .map(h => encodeURIComponent(h)); // escape everyting but A–Z a–z 0–9 - _ . ! ~ * ' ( )
-        return cleanedHashtags.join(',');
+    cleanHashTag(hashtag: string): string {
+        return encodeURIComponent( // escape everyting but A–Z a–z 0–9 - _ . ! ~ * ' ( )
+            hashtag
+                .trim() // Remove leading/trailing whitespace
+                .replace(/^#/, '')
+        ) // Remove '#' symbol from hashtag if it's at the beginning
     }
 
     hubs: any = {
