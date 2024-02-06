@@ -12,6 +12,7 @@ import {
     IWrappedTopicData,
     IWrappedTopicPlotData
 } from "./dashboard/types";
+import dayjs from "dayjs";
 
 export const propertyOrderForCSV: string[] = [
     "changesets",
@@ -76,7 +77,7 @@ export class DataService {
             this.updateURL({
                 hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
                 interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
-                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : tempStart.toISOString(),
+                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : dayjs(tempStart).format('YYYY-MM-DDTHH:mm:ss') + 'Z',
                 end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
                 countries: queryParams && queryParams.countries ? queryParams.countries : '',
                 topics: queryParams && queryParams.topics ? queryParams.topics : ''
@@ -194,7 +195,7 @@ export class DataService {
         const tempStart = moment(this.maxDate).subtract(1, 'year').startOf('day')
 
         return {
-            start: tempStart.toISOString(),
+            start: tempStart.format('YYYY-MM-DDTHH:mm:ss') + 'Z',
             end: this.maxDate,
             hashtag: this.defaultHashtag,
             interval: this.defaultIntervalValue,
@@ -204,8 +205,8 @@ export class DataService {
     }
 
     setDefaultTime(minTimestamp: string, maxTimestamp: string) {
-        this.maxDate = new Date(maxTimestamp).toISOString()
-        this.minDate = new Date(minTimestamp).toISOString()
+        this.maxDate = dayjs(maxTimestamp).format('YYYY-MM-DDTHH:mm:ss') + 'Z'
+        this.minDate = dayjs(minTimestamp).format('YYYY-MM-DDTHH:mm:ss') + 'Z'
 
         this.bsMetaData.next({
             start: this.minDate,

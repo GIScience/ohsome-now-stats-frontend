@@ -207,8 +207,8 @@ export class QueryComponent implements OnChanges, OnInit {
         if (!this.selectedDateRange)
             return
 
-        const tempEnd = (this.selectedDateRange.end).toISOString()
-        const tempStart = (this.selectedDateRange.start).toISOString()
+        const tempEnd = (this.selectedDateRange.end).format('YYYY-MM-DDTHH:mm:ss') + 'Z'
+        const tempStart = (this.selectedDateRange.start).format('YYYY-MM-DDTHH:mm:ss') + 'Z'
 
         const tempHashTag = this.cleanHashTag(this.hashtag)
 
