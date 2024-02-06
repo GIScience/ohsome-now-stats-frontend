@@ -10,6 +10,7 @@
 The **ohsomeNow stats** website offers up-to-date and global scale overview statistics on mapping activity in OpenStreetMap (OSM). 
 
 The website allows you to get insights into the number of contributors, total map edits, added buildings and added road length for a given time range and OSM changesets hashtag filter.
+Additionally, topics covering a range from the length of added waterways, to the number of newly added healthcare facilities are reported.
 You can use this website to report mapping statistics for any time range starting from 2009-04-21 when the OSM-API version 0.6 introduced changesets.
 
 The numbers you obtain from ohsomeNow stats get updated in near-realtime.
@@ -19,7 +20,7 @@ This means that every change to OSM will be considered by the dashboard a few mi
 
 The core features are:
 * **Overview Statistics**: Your mapping activity statistics summarized into a single line. Currently we do report on number of contributors (green), total edits (red), buildings (purple) and km of roads (blue) for your hashtag time range.
-* **Trending Hashtags Chart**: Most frequently used mapping-hashtags in your chosen time-intervals! The first entry in the list represents the hashtag with the highest number of distinct OSM contributors. 
+* **Trending Hashtags Chart**: Most frequently used mapping-hashtags in your chosen time-interval and country selection! The first entry in the list represents the hashtag with the highest number of distinct OSM contributors. 
 * **Country Map**: Number of contributions and OSM edits per country - graphically nicely displayed in form of an interactive world map.
 * **Timeline Plot**: Insights about the dynamics in mapping activity over time. Define your time interval and show the effectiveness of single mapathons or long-term mapping campaigns.  
 
