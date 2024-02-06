@@ -22,9 +22,10 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
 
 
     constructor(
-        dataService: DataService,
+        private dataService: DataService,
         private route: ActivatedRoute,
-        private router: Router) {
+        private router: Router,
+) {
         this.trendingHashtagLimit = dataService.trendingHashtagLimit
         this.dashboardTooltips = dashboard
     }
@@ -65,11 +66,16 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
     clickHashtag(hashtag: string) {
         // console.log('>>> clickHashtag ', hashtag)
         const queryParams = this.getQueryParamsFromFragments()
-
-        if (queryParams)
-            this.router.navigate([], {
-                fragment: `hashtags=${hashtag}&start=${queryParams.start}&end=${queryParams.end}&interval=${queryParams.interval}`
-            });
+        this.dataService.updateURL(
+            {
+                hashtag: hashtag,
+                interval: queryParams.interval,
+                start: queryParams.start,
+                end: queryParams.end,
+                countries: queryParams.countries,
+                topics: queryParams.topics
+            }
+        )
     }
 
     /**
