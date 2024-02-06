@@ -16,7 +16,8 @@ You can use this website to report mapping statistics for any time range startin
 The numbers you obtain from ohsomeNow stats get updated in near-realtime.
 This means that every change to OSM will be considered by the dashboard a few minutes after the edit has happened in OSM.
 
-![ohsome-now-stats-screenshot](https://github.com/GIScience/ohsome-now-stats-frontend/assets/7045979/39cfa69b-46c5-4e0f-ab60-45facf7a810a)
+![Screenshot from 2024-02-06 17-47-23](https://github.com/GIScience/ohsome-now-stats-frontend/assets/44268882/cd4ffe29-2b9b-4333-a6f1-1469c9837825)
+
 
 The core features are:
 * **Overview Statistics**: Your mapping activity statistics summarized into a single line. Currently we do report on number of contributors (green), total edits (red), buildings (purple) and km of roads (blue) for your hashtag time range.
