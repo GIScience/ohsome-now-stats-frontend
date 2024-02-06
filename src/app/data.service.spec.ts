@@ -590,7 +590,7 @@ describe('DataService', () => {
         declarations: [BigNumberComponent],
         providers: [ 
             DataService,
-            { provide: ActivatedRoute, useValue: { fragment: of('hashtags=missingmaps&interval=P1M') } },
+            { provide: ActivatedRoute, useValue: { fragment: of('hashtag=missingmaps&interval=P1M') } },
         ]
     });
     service = TestBed.inject(DataService)
@@ -609,7 +609,7 @@ describe('DataService', () => {
     const queryParams = {
       start: '2022-08-16T00:52:40.000Z',
       end: '2023-08-16T00:52:40.000Z',
-      hashtags: 'missingmaps',
+      hashtag: 'missingmaps',
       countries: ''
     };
   
@@ -623,7 +623,7 @@ describe('DataService', () => {
     });  
 
     const req = httpTestingController.expectOne(
-        `${service.url}/stats/${queryParams['hashtags']}?startdate=${queryParams['start']}&enddate=${queryParams['end']}&countries=`
+        `${service.url}/stats/${queryParams['hashtag']}?startdate=${queryParams['start']}&enddate=${queryParams['end']}&countries=`
     );
     expect(req.request.method).toBe('GET');
     req.flush(summaryResponse);
@@ -634,7 +634,7 @@ describe('DataService', () => {
       start: "2022-08-16T00:52:40.000Z",
       end: "2023-08-16T00:52:40.000Z",
       interval: "P1M",
-      hashtags: 'missingmaps',
+      hashtag: 'missingmaps',
       countries: ''
     };
   
@@ -647,7 +647,7 @@ describe('DataService', () => {
     });  
     
     const req = httpTestingController.expectOne(
-        `${service.url}/stats/${queryParams['hashtags']}/interval?startdate=${queryParams['start']}&enddate=${queryParams['end']}&interval=${queryParams['interval']}&countries=`
+        `${service.url}/stats/${queryParams['hashtag']}/interval?startdate=${queryParams['start']}&enddate=${queryParams['end']}&interval=${queryParams['interval']}&countries=`
     );
     expect(req.request.method).toBe('GET');
     req.flush(plotResponse);
@@ -679,7 +679,7 @@ describe('DataService', () => {
     const queryParams = {
       start: '2022-08-16T00:52:40.000Z',
       end: '2023-08-16T00:52:40.000Z',
-      hashtags: 'syria'
+      hashtag: 'syria'
     };
 
     service.requestCountryStats( queryParams ).subscribe({
@@ -693,7 +693,7 @@ describe('DataService', () => {
     });  
 
     const req = httpTestingController.expectOne(
-        `${service.url}/stats/${queryParams['hashtags']}/country?startdate=${queryParams['start']}&enddate=${queryParams['end']}`
+        `${service.url}/stats/${queryParams['hashtag']}/country?startdate=${queryParams['start']}&enddate=${queryParams['end']}`
     );
     expect(req.request.method).toBe('GET');
     req.flush(statsByCountryResponse);
