@@ -220,10 +220,16 @@ export class QueryComponent implements OnChanges, OnInit {
 
         this.topics = this.selectedTopics.map(e => e.value)
 
-        // update the url fragment
-        this.router.navigate([], {
-            fragment: `hashtag=${tempHashTag}&start=${tempStart}&end=${tempEnd}&interval=${this.interval}&countries=${this.countries}&topics=${this.topics}`,
-        })
+        this.dataService.updateURL(
+            {
+                hashtag: tempHashTag,
+                interval: this.interval ? this.interval : "",
+                start: tempStart,
+                end: tempEnd,
+                countries: this.countries.toString(),
+                topics: this.topics.toString()
+            }
+        )
     }
 
     /**
