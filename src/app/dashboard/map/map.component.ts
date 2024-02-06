@@ -166,6 +166,10 @@ export class MapComponent implements OnChanges {
                 marker: {
                     size: selectedCountryStatsArrays[stats],
                     color: selectedCountryStatsArrays[stats],
+                    showscale: true,
+                    colorbar: {
+                        title: `${stats[0].toUpperCase() + stats.slice(1)}`
+                    },
                     cmin: cmin,
                     cmax: cmax,
                     sizemode: 'area',
