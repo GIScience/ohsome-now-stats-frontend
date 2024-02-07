@@ -164,7 +164,6 @@ export class DashboardComponent implements OnInit {
                                     // add each Topic data to Plot data to make them a part of CSV
                                     this.plotData = this.addTopicDataToPlot(res.result, tempPlotResponse)
                                 }
-                                console.log(this.plotData)
                             },
                             error: (err) => {
                                 console.error('Error while requesting Topic data ', err)

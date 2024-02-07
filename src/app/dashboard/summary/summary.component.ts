@@ -84,8 +84,6 @@ export class SummaryComponent implements OnChanges {
 
         // always have "Contributors" as the first object in the array
         this.bignumberData = this.bignumberData.sort((a, b) => {
-            console.log(a.name)
-            console.log(b.name)
             if (a.name === "Contributors" || a.name === "Total Edits") {
                 return -1;
             } else if (b.name === "Contributors"  || b.name === "Total Edits") {
