@@ -9,14 +9,17 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
 import {IHashtags, IQueryData} from "../types";
-import { UTCToLocalConverterPipe } from './pipes/utc-to-local-converter.pipe';
+import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
 import isoWeek from 'dayjs/plugin/isoWeek'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
 dayjs.extend(isoWeek)
+dayjs.extend(customParseFormat)
+
 
 @Component({
     selector: 'app-query',
@@ -34,11 +37,11 @@ export class QueryComponent implements OnChanges, OnInit {
         value: string;
     }> | undefined
     interval: string | undefined // default value as 'P1M'
-    selectedDateRange: { end: any; start: any; } | undefined;
+    selectedDateRange: { end: dayjs.Dayjs; start: dayjs.Dayjs; } | undefined;
     ranges: any
     minDate!: dayjs.Dayjs
     maxDate!: dayjs.Dayjs
-    maxDateString!: String
+    maxDateString!: string
 
 
     private _start = ''
@@ -77,8 +80,9 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     ngOnInit(): void {
-        this.dataService.requestAllHashtags().subscribe((hashtagsResult)=>{
-            // @ts-ignore
+        this.dataService.requestAllHashtags().subscribe((hashtagsResult) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             this.allHashtagOptions = hashtagsResult["result"]
         })
     }
@@ -284,6 +288,20 @@ export class QueryComponent implements OnChanges, OnInit {
 
             return false
         }
+        if (!(dayjs(this.selectedDateRange.start, 'DD-MM-YYYY', true).isValid()
+            && dayjs(this.selectedDateRange.end, 'DD-MM-YYYY', true).isValid())) {
+
+            console.error('Either the start date or end is invalid')
+            // show the message on toast
+            this.toastService.show({
+                title: 'Invalid date',
+                body: 'Please provide a valid date for the start and end',
+                type: 'error',
+                time: 3000
+            })
+
+            return false
+        }
 
         return true
     }
@@ -302,7 +320,7 @@ export class QueryComponent implements OnChanges, OnInit {
         ) // Remove '#' symbol from hashtag if it's at the beginning
     }
 
-    hubs: any = {
+    hubs: { [hubName: string]: string } = {
         "asia-pacific": "AFG,BGD,BTN,BRN,KHM,TLS,FSM,FJI,IND,IDN,KIR,LAO,MYS,MMR,NPL,PAK,PNG,PHL,SLB,LKA,TON,UZB,VUT,VNM,YEM",
         "la-carribean": "ATG,BLZ,BOL,BRA,CHL,CRI,DMA,DOM,ECU,SLV,GTM,GUY,HTI,HND,JAM,MEX,NIC,PAN,PER,TTO,URY,VEN",
         "wna": "DZA,BEN,BFA,CMR,CPV,CAF,TCD,CIV,GNQ,GHA,GIN,GNB,LBR,MLI,MRT,MAR,NER,NGA,STP,SEN,SLE,GMB,TGO",
@@ -315,42 +333,41 @@ export class QueryComponent implements OnChanges, OnInit {
         })
 
     }
-    impactAreas: any = {
+
+    impactAreas: { [id: string]: string } = {
         "disaster": "wash,waterway,social_facility,place,lulc",
         "sus_cities": "wash,waterway,social_facility,lulc,amenity,education,commercial,financial",
         "pub_health": "wash,waterway,social_facility,place,healthcare",
         "migration": "waterway,social_facility,lulc,amenity,education,commercial,healthcare",
         "g_equality": "wash,social_facility,education"
     }
-     changeImpactArea(impactAreaName: string) {
+
+    changeImpactArea(impactAreaName: string) {
         this.selectedTopics = this.topicOptions.filter((option) => {
             return this.impactAreas[impactAreaName].includes(option.value)
         })
     }
 
-    searchChange(items: IHashtags[], searchedHashtag: string){
-        if (searchedHashtag.length<1){
+    searchChange(items: IHashtags[], searchedHashtag: string) {
+        if (searchedHashtag.length < 1) {
             return []
         }
-        return items.filter((hashtagResult)=>{
+        return items.filter((hashtagResult) => {
             return hashtagResult.hashtag.length > 1 && hashtagResult.hashtag.includes(searchedHashtag)
         })
-        .sort(
-            (a: IHashtags, b: IHashtags)=>{
-                if (a.hashtag.startsWith(searchedHashtag) && b.hashtag.startsWith(searchedHashtag)){
-                    return a.count <= b.count ? 1 : -1
+            .sort(
+                (a: IHashtags, b: IHashtags) => {
+                    if (a.hashtag.startsWith(searchedHashtag) && b.hashtag.startsWith(searchedHashtag)) {
+                        return a.count <= b.count ? 1 : -1
+                    } else if (a.hashtag.startsWith(searchedHashtag)) {
+                        return -1
+                    } else if (b.hashtag.startsWith(searchedHashtag)) {
+                        return 1
+                    } else {
+                        return a.count <= b.count ? 1 : -1
+                    }
                 }
-                else if (a.hashtag.startsWith(searchedHashtag)){
-                    return -1
-                }
-                else if (b.hashtag.startsWith(searchedHashtag)){
-                    return 1
-                }
-                else {
-                    return a.count <= b.count ? 1 : -1
-                }
-            }
-        ).slice(0,1000).map((e)=>e.hashtag)
+            ).slice(0, 1000).map((e) => e.hashtag)
     }
 
 
@@ -395,6 +412,28 @@ export class QueryComponent implements OnChanges, OnInit {
         }
         return false
     }
+
+    /**
+     * Function used if user manually writes in the date range. Currently, users can only
+     * write the date part and not the time part manually
+     *
+     * @param $event
+     */
+    dateUpdated($event: any) {
+        if (!$event.target)
+            return
+
+        if (!this.validateForm())
+            return
+
+        const dateRange = ($event.target.value).split(' - ')
+        this.selectedDateRange = {
+            start: dayjs((dateRange[0]).trim(), 'DD-MM-YYYY'),
+            end: dayjs((dateRange[1]).trim(), 'DD-MM-YYYY').endOf('day')
+        }
+        // console.log('>>> dateUpdated ', $event.target.value, this.selectedDateRange)
+    }
+
 }
 
 function customComparator(a: any, b: any) {
