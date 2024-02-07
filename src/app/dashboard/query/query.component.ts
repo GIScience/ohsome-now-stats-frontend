@@ -37,7 +37,7 @@ export class QueryComponent implements OnChanges, OnInit {
         value: string;
     }> | undefined
     interval: string | undefined // default value as 'P1M'
-    selectedDateRange: { end: dayjs.Dayjs; start: dayjs.Dayjs; } | undefined;
+    selectedDateRangeUTC: { end: dayjs.Dayjs; start: dayjs.Dayjs; } | undefined;
     ranges: any
     minDate!: dayjs.Dayjs
     maxDate!: dayjs.Dayjs
@@ -64,7 +64,6 @@ export class QueryComponent implements OnChanges, OnInit {
 
     constructor(
         private dataService: DataService,
-        private router: Router,
         private utcToLocalConverter: UTCToLocalConverterPipe,
         private toastService: ToastService
     ) {
@@ -97,11 +96,13 @@ export class QueryComponent implements OnChanges, OnInit {
 
         this.metaSub = this.dataService.getMetaData().subscribe(metaData => {
             if (metaData && metaData.start && metaData.end) {
-                this.minDate = dayjs(metaData?.start)
-                this.maxDate = dayjs(metaData?.end)
-                this.maxDateString = this.utcToLocalConverter.transform(this.maxDate.toDate())
+                this.minDate = dayjs.utc(metaData?.start)
+                this.maxDate = dayjs.utc(metaData?.end).add(dayjs().utcOffset(),"minute")
+
+                this.maxDateString = this.utcToLocalConverter.transform(dayjs.utc(metaData?.end).toDate())
+
                 this.ranges = {
-                    'Today': [dayjs().startOf('day'), dayjs()],
+                    'Today': [dayjs().startOf('day'), this.maxDate],
                     'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
                     'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
                     'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
@@ -174,9 +175,9 @@ export class QueryComponent implements OnChanges, OnInit {
             }
             // set Start and end dates
             if (data.start && data.end)
-                this.selectedDateRange = {
-                    start: dayjs(data.start),
-                    end: dayjs(data.end)
+                this.selectedDateRangeUTC = {
+                    start: dayjs.utc(data.start).add(dayjs(data.start).utcOffset(),"minute"),
+                    end: dayjs.utc(data.end).add(dayjs(data.end).utcOffset(),"minute")
                 }
 
             // set hashtag textarea
@@ -208,11 +209,11 @@ export class QueryComponent implements OnChanges, OnInit {
         this.dataService.requestMetadata()
 
         // get all values from form
-        if (!this.selectedDateRange)
+        if (!this.selectedDateRangeUTC)
             return
 
-        const tempEnd = (this.selectedDateRange.end).format('YYYY-MM-DDTHH:mm:ss') + 'Z'
-        const tempStart = (this.selectedDateRange.start).format('YYYY-MM-DDTHH:mm:ss') + 'Z'
+        const tempStart = this.selectedDateRangeUTC.start.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0]+"Z"//.format('YYYY-MM-DDTHH:mm:ss')
+        const tempEnd = this.selectedDateRangeUTC.end.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0]+"Z"//.format('YYYY-MM-DDTHH:mm:ss')
 
         const tempHashTag = this.cleanHashTag(this.hashtag)
 
@@ -274,9 +275,9 @@ export class QueryComponent implements OnChanges, OnInit {
         }
 
         // check for actual values
-        if (!this.selectedDateRange)
+        if (!this.selectedDateRangeUTC)
             return false
-        if (!(this.selectedDateRange.start && this.selectedDateRange.end)) {
+        if (!(this.selectedDateRangeUTC.start && this.selectedDateRangeUTC.end)) {
             console.error('Date range is empty')
             // show the message on toast
             this.toastService.show({
@@ -288,8 +289,8 @@ export class QueryComponent implements OnChanges, OnInit {
 
             return false
         }
-        if (!(dayjs(this.selectedDateRange.start, 'DD-MM-YYYY', true).isValid()
-            && dayjs(this.selectedDateRange.end, 'DD-MM-YYYY', true).isValid())) {
+        if (!(dayjs(this.selectedDateRangeUTC.start, 'DD-MM-YYYY', true).isValid()
+            && dayjs(this.selectedDateRangeUTC.end, 'DD-MM-YYYY', true).isValid())) {
 
             console.error('Either the start date or end is invalid')
             // show the message on toast
@@ -404,10 +405,10 @@ export class QueryComponent implements OnChanges, OnInit {
     };
 
     allowedInterval(value: string) {
-        if (!this.selectedDateRange)
+        if (!this.selectedDateRangeUTC)
             return true
-        if (this.selectedDateRange.start && this.selectedDateRange.end) {
-            const diff = (this.selectedDateRange.end).diff(this.selectedDateRange.start, 'day')
+        if (this.selectedDateRangeUTC.start && this.selectedDateRangeUTC.end) {
+            const diff = (this.selectedDateRangeUTC.end).diff(this.selectedDateRangeUTC.start, 'day')
             return (diff > 366 && dayjs.duration(value) < dayjs.duration('P1D'));
         }
         return false
@@ -427,9 +428,9 @@ export class QueryComponent implements OnChanges, OnInit {
             return
 
         const dateRange = ($event.target.value).split(' - ')
-        this.selectedDateRange = {
-            start: dayjs((dateRange[0]).trim(), 'DD-MM-YYYY'),
-            end: dayjs((dateRange[1]).trim(), 'DD-MM-YYYY').endOf('day')
+        this.selectedDateRangeUTC = {
+            start: dayjs.utc((dateRange[0]), 'DD-MM-YYYY'),
+            end: dayjs.utc((dateRange[1]), 'DD-MM-YYYY').endOf('day')
         }
         // console.log('>>> dateUpdated ', $event.target.value, this.selectedDateRange)
     }

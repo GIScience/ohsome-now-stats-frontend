@@ -205,8 +205,8 @@ export class DataService {
     }
 
     setDefaultTime(minTimestamp: string, maxTimestamp: string) {
-        this.maxDate = dayjs(maxTimestamp).format('YYYY-MM-DDTHH:mm:ss') + 'Z'
-        this.minDate = dayjs(minTimestamp).format('YYYY-MM-DDTHH:mm:ss') + 'Z'
+        this.maxDate = dayjs(maxTimestamp).toISOString()
+        this.minDate = dayjs(minTimestamp).toISOString()
 
         this.bsMetaData.next({
             start: this.minDate,

@@ -368,16 +368,15 @@ export class DashboardComponent implements OnInit {
         let endDate = new Date()
         let interval: string
 
-        // startDate.setDate(startDate.getDate() - 365)
         startDate.setMilliseconds(0)
 
         endDate.setDate(endDate.getDate() - 1)
         endDate.setMilliseconds(0)
 
-
+        // todo: what if one is set, the other one isnt?
         if (queryParams && queryParams['start'] && queryParams['end']) {
-            startDate = new Date(queryParams['start'])
-            endDate = new Date(queryParams['end'])
+            startDate = dayjs.utc(queryParams['start']).toDate()
+            endDate = dayjs.utc(queryParams['end']).toDate()
         }
         // if start and end date are not present in the URL fragment then use default values
         else if (queryParams && queryParams['start'] == null && queryParams['end'] == null) {

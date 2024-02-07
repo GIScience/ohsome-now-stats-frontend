@@ -1,14 +1,14 @@
 <div class="row gap-20" style="overflow: visible !important;">
-    <div style="position: relative">
-        <div class="hub-icon-wrapper hot-toggle-wrapper" data-bs-toggle="tooltip" data-bs-placement="bottom"
-             data-bs-delay='{ "show": 400, "hide": 100 }'
-             data-bs-title="Toggle quick selection icons for the Humanitarian OSM Team"
-             (click)="hot_controls = !hot_controls" [ngClass]="hot_controls ? '' : 'inactive'">
-            <button class="hub-icon hot-toggle" style="background: url(../../../assets/images/hot_logo.png)"></button>
-        </div>
-    </div>
     <!-- #Total Visits ==================== -->
     <div class='col-md-12'>
+        <div style="position: relative">
+            <div class="hub-icon-wrapper hot-toggle-wrapper" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                 data-bs-delay='{ "show": 400, "hide": 100 }'
+                 data-bs-title="Toggle quick selection icons for the Humanitarian OSM Team"
+                 (click)="hot_controls = !hot_controls" [ngClass]="hot_controls ? '' : 'inactive'">
+                <button class="hub-icon hot-toggle" style="background: url(../../../assets/images/hot_logo.png)"></button>
+            </div>
+        </div>
         <div class="bgc-white p-20 bd">
             <!-- <h6 class="lh-1">Query</h6> -->
             <!-- <div class="mT-30"> -->
@@ -44,7 +44,7 @@
                         <!-- Start date, End date and interval -->
                         <div class="mb-3 row">
                             <div class="col-md-12">
-                                <label class="form-label" for="dateRange"> Date range (in UTC) </label>
+                                <label class="form-label" for="dateRange"> Date and Time Range</label>
                                 <input type="text"
                                        class="form-control"
                                        ngxDaterangepickerMd
@@ -53,7 +53,7 @@
                                        endKey="end"
                                        [minDate]="minDate"
                                        [maxDate]="maxDate"
-                                       [(ngModel)]="selectedDateRange"
+                                       [(ngModel)]="selectedDateRangeUTC"
                                        id="dateRange"
                                        name="daterange"
                                        [showCustomRangeLabel]="true"
@@ -63,8 +63,9 @@
                                        [showClearButton]="true"
                                        [timePicker]="true"
                                        [timePicker24Hour]="true"
-                                       [autoApply]="true"
                                        (change)="dateUpdated($event)"
+                                       [autoApply]="true"
+                                       [closeOnAutoApply]="false"
                                        placeholder="Select please..."
                                        required=""/>
                                 <small class="text-muted fs-i">Current time: {{currentTimeInUserTimeZone }}</small><br>
