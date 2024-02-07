@@ -1,3 +1,7 @@
 .z-500 {
   z-index: 500;
 }
+
+.download-button:not(:hover){
+  background-color: white;
+}
