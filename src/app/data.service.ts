@@ -69,15 +69,18 @@ export class DataService {
         return this.http.get(`${this.url}/metadata`).subscribe((meta: any) => {
             // console.log('>>> DataService >>> meta = ', meta)
             this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
-            const tempStart = new Date(meta.result.max_timestamp)
-            tempStart.setDate(tempStart.getDate() - 365)
+            const tempStart = dayjs(meta.result.max_timestamp)
+                .subtract(1, "year")
+                .startOf("day")
+                .subtract(dayjs().utcOffset(), "minute")
+                .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
             // if URL params are empty then fill it with default values
             const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment);
 
             this.updateURL({
                 hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
                 interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
-                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : dayjs(tempStart).format('YYYY-MM-DDTHH:mm:ss') + 'Z',
+                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : tempStart,
                 end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
                 countries: queryParams && queryParams.countries ? queryParams.countries : '',
                 topics: queryParams && queryParams.topics ? queryParams.topics : ''
