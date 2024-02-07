@@ -431,4 +431,27 @@ export class DashboardComponent implements OnInit {
         return plotData
     }
 
+    private rearrangeKeys(input: any): any {
+        const rearrangedObj: any = {}
+
+        // Extract keys from the input object
+        const keys = Object.keys(input)
+
+        // Filter out 'startDate' and 'endDate' keys
+        const dateKeys = keys.filter((key) => key === 'startDate' || key === 'endDate')
+
+        // Filter out non-date keys
+        const otherKeys = keys.filter((key) => key !== 'startDate' && key !== 'endDate')
+
+        // Create a new object with rearranged keys
+        otherKeys.forEach((key) => {
+            rearrangedObj[key] = input[key]
+        });
+
+        dateKeys.forEach((key) => {
+            rearrangedObj[key] = input[key]
+        });
+
+        return rearrangedObj
+    }
 }
