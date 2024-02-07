@@ -187,6 +187,8 @@ export class DashboardComponent implements OnInit {
                 // add 'hashtag'
                 res.result.map((r: any) => {
                     r['hashtag'] = this.queryParams['hashtag']
+                    r['startDate'] = this.queryParams['start']
+                    r['endDate'] = this.queryParams['end']
                 })
 
                 const tempCountryResponse = res.result
@@ -425,33 +427,11 @@ export class DashboardComponent implements OnInit {
 
     private addTopicDataToPlot(res: Record<string, ITopicPlotData>, plotData: IPlotData) {
         Object.keys(res).forEach((topic: string)=> {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             plotData[topic] = res[topic].value
         })
         return plotData
     }
 
-    private rearrangeKeys(input: any): any {
-        const rearrangedObj: any = {}
-
-        // Extract keys from the input object
-        const keys = Object.keys(input)
-
-        // Filter out 'startDate' and 'endDate' keys
-        const dateKeys = keys.filter((key) => key === 'startDate' || key === 'endDate')
-
-        // Filter out non-date keys
-        const otherKeys = keys.filter((key) => key !== 'startDate' && key !== 'endDate')
-
-        // Create a new object with rearranged keys
-        otherKeys.forEach((key) => {
-            rearrangedObj[key] = input[key]
-        });
-
-        dateKeys.forEach((key) => {
-            rearrangedObj[key] = input[key]
-        });
-
-        return rearrangedObj
-    }
 }

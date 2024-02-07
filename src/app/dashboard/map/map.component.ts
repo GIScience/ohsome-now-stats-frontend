@@ -52,7 +52,6 @@ export class MapComponent implements OnChanges {
 
     @ViewChild('d3Map') d3MapElement: ElementRef | undefined;
 
-    csvConfig = mkConfig({useKeysAsHeaders: true, filename: 'data_per_country'});
     @Input() isCountriesLoading!: boolean;
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -238,27 +237,29 @@ export class MapComponent implements OnChanges {
         }
 
         if (selectedCountryCSV.length > 0) {
-            selectedCountryCSV = this.sortArrayByCustomOrder(selectedCountryCSV)
+            // Extract keys from the input object
+            const keys = Object.keys(selectedCountryCSV[0])
+            // Filter out 'startDate' and 'endDate' keys
+            const dateKeys = keys.filter((key) => key === 'startDate' || key === 'endDate')
+            // Filter out non-date keys
+            const otherKeys = keys.filter((key) => key !== 'startDate' && key !== 'endDate')
+            // Place the date keys at the start and then the other keys
+            const arrangedHeaders = [
+                ...dateKeys,
+                ...otherKeys
+            ]
+
+            const csvConfig = mkConfig({
+                filename: 'data_per_country',
+                columnHeaders: arrangedHeaders
+            });
+
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            const csv = generateCsv(this.csvConfig)(selectedCountryCSV);
-            download(this.csvConfig)(csv)
+            const csv = generateCsv(csvConfig)(selectedCountryCSV);
+            download(csvConfig)(csv)
         }
         // console.log('selectedCountryCSV ', selectedCountryCSV)
     }
 
-    sortArrayByCustomOrder(arr: Array<ICountryStatsData>): Array<ICountryStatsData> {
-
-        return arr.map((obj) => {
-            const sortedObj: ICountryStatsData = {} as ICountryStatsData;
-            propertyOrderForCSV.forEach((property) => {
-                if (property in obj) {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    sortedObj[property] = obj[property];
-                }
-            });
-            return sortedObj;
-        });
-    }
 }
