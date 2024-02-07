@@ -122,8 +122,12 @@ export class DashboardComponent implements OnInit {
                                 roads: tempSummaryData.roads,
                                 latest: tempSummaryData.latest,
                                 ...topicValue,
-                                hashtag: this.queryParams['hashtag']
+                                hashtag: this.queryParams['hashtag'],
+                                startDate: this.queryParams['start'],
+                                endDate: this.queryParams['end']
                             }
+                            if(this.queryParams['countries'] !== '')
+                                this.summaryData['countries'] = this.queryParams['countries']
                         },
                         error: (err) => {
                             console.error('Error while requesting Topic data ', err)
@@ -138,8 +142,12 @@ export class DashboardComponent implements OnInit {
                         edits: tempSummaryData.edits,
                         roads: tempSummaryData.roads,
                         latest: tempSummaryData.latest,
-                        hashtag: this.queryParams['hashtag']
+                        hashtag: this.queryParams['hashtag'],
+                        startDate: this.queryParams['start'],
+                        endDate: this.queryParams['end']
                     }
+                    if(this.queryParams['countries'] !== '')
+                        this.summaryData['countries'] = this.queryParams['countries']
                 }
                 this.isSummaryLoading = false;
 

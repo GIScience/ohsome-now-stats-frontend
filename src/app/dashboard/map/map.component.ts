@@ -11,7 +11,6 @@ import {
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';
 import {download, generateCsv, mkConfig} from "export-to-csv";
-import {propertyOrderForCSV} from '../../data.service';
 import {StatsType, ICountryStatsData} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 

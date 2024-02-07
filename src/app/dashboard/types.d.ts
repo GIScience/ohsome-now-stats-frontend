@@ -41,6 +41,9 @@ export interface ISummaryData {
     roads: number,
     latest?: string,
     hashtag?: string,
+    countries?: string,
+    startDate?: string,
+    endDate?: string,
 }
 
 export interface IQueryData {

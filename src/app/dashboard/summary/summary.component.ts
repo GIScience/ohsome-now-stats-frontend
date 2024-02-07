@@ -10,7 +10,6 @@ import {
 import * as bootstrap from 'bootstrap';
 import {mkConfig, generateCsv, download} from "export-to-csv";
 
-import {propertyOrderForCSV} from '../../data.service';
 import {StatsType, ISummaryData, TopicDefinitionValue} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 
@@ -26,7 +25,6 @@ export class SummaryComponent implements OnChanges {
     @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
 
     currentlySelected = 'users';
-    csvConfig = mkConfig({useKeysAsHeaders: true, filename: 'summary'});
     bignumberData: Array<TopicDefinitionValue> = []
 
     constructor(private injector: EnvironmentInjector, private appRef: ApplicationRef) {
@@ -43,7 +41,7 @@ export class SummaryComponent implements OnChanges {
 
         this.bignumberData = []
         for (const summaryEntry of Object.entries(this.data)) {
-            if (['latest', 'hashtag', 'changesets'].includes(summaryEntry[0]))
+            if (['latest', 'hashtag', 'changesets', 'countries', 'startDate', 'endDate'].includes(summaryEntry[0]))
                 continue;
 
             // merge the 'value' with other static data from topicDefinitions
@@ -126,30 +124,32 @@ export class SummaryComponent implements OnChanges {
         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
     }
 
-    sortArrayByCustomOrder(arr: Array<ISummaryData>): Array<ISummaryData> {
-
-        return arr.map((obj) => {
-            const sortedObj: ISummaryData = {} as ISummaryData;
-            propertyOrderForCSV.forEach((property) => {
-                if (property in obj) {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    sortedObj[property] = obj[property];
-                }
-            });
-            return sortedObj;
-        });
-    }
-
     downloadCsv() {
         // Converts your Array<Object> to a CsvOutput string based on the configs
         if (this.data && [this.data].length > 0) {
-            let tempData = []
-            tempData = this.sortArrayByCustomOrder([this.data])
+            // console.log('this.data ', this.data)
+
+            // Extract keys from the input object
+            const keys = Object.keys(this.data)
+            // Filter out 'startDate' and 'endDate' keys
+            const dateKeys = keys.filter((key) => key === 'startDate' || key === 'endDate')
+            // Filter out non-date keys
+            const otherKeys = keys.filter((key) => key !== 'startDate' && key !== 'endDate')
+            // Place the date keys at the start and then the other keys
+            const arrangedHeaders = [
+                ...dateKeys,
+                ...otherKeys
+            ]
+
+            const csvConfig = mkConfig({
+                filename: 'summary',
+                columnHeaders: arrangedHeaders
+            });
+
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            const csv = generateCsv(this.csvConfig)(tempData);
-            download(this.csvConfig)(csv)
+            const csv = generateCsv(csvConfig)([this.data]);
+            download(csvConfig)(csv)
         }
     }
 

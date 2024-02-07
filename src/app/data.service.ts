@@ -14,19 +14,6 @@ import {
 } from "./dashboard/types";
 import dayjs from "dayjs";
 
-export const propertyOrderForCSV: string[] = [
-    "changesets",
-    "users",
-    "roads",
-    "buildings",
-    "edits",
-    "healthcare",
-    "waterway",
-    "latest",
-    "country",
-    "hashtag",
-];
-
 @Injectable()
 export class DataService {
 
