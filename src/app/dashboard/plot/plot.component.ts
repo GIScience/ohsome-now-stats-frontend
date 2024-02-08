@@ -90,15 +90,16 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     }
 
     downloadCsv() {
+        const tempPlotdata = this.addHashtagAndCountriesToPlot(this.data)
         // Extract keys from the input object
-        const keys = Object.keys(this.data)
+        const keys = Object.keys(tempPlotdata)
         // Filter out 'startDate' and 'endDate' keys
-        const dateKeys = keys.filter((key) => key === 'startDate' || key === 'endDate')
+        const metaKeys = keys.filter((key) => key === 'startDate' || key === 'endDate' || key === 'hashtag' || key === 'countries')
         // Filter out non-date keys
-        const otherKeys = keys.filter((key) => key !== 'startDate' && key !== 'endDate')
+        const otherKeys = keys.filter((key) => key !== 'startDate' && key !== 'endDate' && key !== 'hashtag' && key !== 'countries')
         // Place the date keys at the start and then the other keys
         const arrangedHeaders = [
-            ...dateKeys,
+            ...metaKeys,
             ...otherKeys
         ]
 
@@ -107,7 +108,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
             columnHeaders: arrangedHeaders
         });
 
-        const convertedData = this.convertToJsonArray(this.data)
+        const convertedData = this.convertToJsonArray(tempPlotdata)
         // console.log(convertedData)
 
         // Converts your Array<Object> to a CsvOutput string based on the configs
@@ -115,6 +116,22 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         // @ts-ignore
         const csv = generateCsv(csvConfig)(convertedData);
         download(csvConfig)(csv)
+    }
+
+    private addHashtagAndCountriesToPlot(plotData: IPlotData) {
+        // get first key's values's length
+        const tempHashtagArr: string[] = []
+        const tempCountriesArr: string[] = []
+        for (let i = 0; i < Object.values(plotData)[0].length; i++) {
+            tempHashtagArr.push(<string>plotData['hashtag'])
+            tempCountriesArr.push(<string>plotData['countries'])
+        }
+
+        plotData['hashtag'] = tempHashtagArr
+        plotData['countries'] = tempCountriesArr
+
+        // console.log('plotData ', plotData)
+        return plotData
     }
 
     convertToJsonArray(input: any): any[] {
