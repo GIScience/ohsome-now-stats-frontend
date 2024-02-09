@@ -236,6 +236,15 @@ export class MapComponent implements OnChanges {
         }
 
         if (selectedCountryCSV.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const tempHashtag = selectedCountryCSV[0]['hashtag']
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const tempStartDate = selectedCountryCSV[0]['startDate']!.substring(0, 10)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const tempEndDate = selectedCountryCSV[0]['endDate']!.substring(0, 10)
             // Extract keys from the input object
             const keys = Object.keys(selectedCountryCSV[0])
             // Filter out 'startDate' and 'endDate' keys
@@ -249,7 +258,7 @@ export class MapComponent implements OnChanges {
             ]
 
             const csvConfig = mkConfig({
-                filename: 'data_per_country',
+                filename: `ohsome-now-stats_${tempHashtag}_${tempStartDate}_${tempEndDate}_per-country`,
                 columnHeaders: arrangedHeaders
             });
 
