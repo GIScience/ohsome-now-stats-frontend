@@ -90,6 +90,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     }
 
     downloadCsv() {
+        const tempHashtag = <string>this.data['hashtag']
         const tempPlotdata = this.addHashtagAndCountriesToPlot(this.data)
         // Extract keys from the input object
         const keys = Object.keys(tempPlotdata)
@@ -104,7 +105,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         ]
 
         const csvConfig = mkConfig({
-            filename: 'time_interval',
+            filename: `ohsome-now-stats_${tempHashtag}_${tempPlotdata['startDate'][0]!.substring(0, 10)}_${tempPlotdata['endDate'][tempPlotdata['endDate'].length - 1]!.substring(0, 10)}_interval`,
             columnHeaders: arrangedHeaders
         });
 
