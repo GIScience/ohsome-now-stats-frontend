@@ -93,7 +93,7 @@ export class DashboardComponent implements OnInit {
 
     requestsToAPI(){
         const timeRange = this.initTimeIntervals(this.queryParams)
-
+        Object.assign(this.queryParams, timeRange)
         this.dataService.requestSummary(this.queryParams).subscribe({
             next: res => {
                 // console.log('>>> res = ', res)
@@ -264,7 +264,7 @@ export class DashboardComponent implements OnInit {
     }
 
     setQueryParamOrDefault(target: string, queryParams: any) :string{
-        if (queryParams[target] == null) {
+        if (queryParams[target] == null || queryParams[target] == "") {
             const defaultParams = this.dataService.getDefaultValues()
             if (defaultParams !== null) {
                 // @ts-ignore

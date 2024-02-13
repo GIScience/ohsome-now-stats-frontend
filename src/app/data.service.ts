@@ -183,7 +183,8 @@ export class DataService {
         if (!(this.minDate && this.maxDate))
             return null
 
-        const tempStart = moment(this.maxDate).subtract(1, 'year').startOf('day')
+        let queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment)
+        const tempStart = queryParams && queryParams.hashtag ?  moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
 
         return {
             start: tempStart.format('YYYY-MM-DDTHH:mm:ss') + 'Z',
