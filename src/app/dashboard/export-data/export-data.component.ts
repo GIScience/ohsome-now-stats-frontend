@@ -78,13 +78,13 @@ export class ExportDataComponent {
         const tempCountriesArr: string[] = []
         for (let i = 0; i < Object.values(plotData)[0].length; i++) {
             tempHashtagArr.push(<string>plotData['hashtag'])
-            if(plotData['countries'] && <string>plotData['countries'] !== '')
-              tempCountriesArr.push(<string>plotData['countries'])
+            if (plotData['countries'] && <string>plotData['countries'] !== '')
+                tempCountriesArr.push(<string>plotData['countries'])
         }
 
         plotData['hashtag'] = tempHashtagArr
-        if(tempCountriesArr.toString() !== '')
-          plotData['countries'] = tempCountriesArr
+        if (tempCountriesArr.toString() !== '')
+            plotData['countries'] = tempCountriesArr
 
         console.log('plotData ', plotData)
         return plotData
