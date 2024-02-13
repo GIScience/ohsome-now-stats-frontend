@@ -329,11 +329,13 @@ export class QueryComponent implements OnChanges, OnInit {
         "esa": "AGO,BDI,COM,COD,DJI,EGY,SWZ,ETH,KEN,LSO,MDG,MWI,MUS,MOZ,NAM,RWA,SOM,SSD,SDN,TZA,UGA,ZMB,ZWE"
     }
 
+    selectedHub: string | undefined
+
     changeHub(hubName: string) {
         this.selectedCountries = this.dropdownOptions.filter((option: countryDataClass) => {
             return this.hubs[hubName].includes(option.value)
         })
-
+        this.selectedHub = hubName
     }
 
     impactAreas: { [id: string]: string } = {

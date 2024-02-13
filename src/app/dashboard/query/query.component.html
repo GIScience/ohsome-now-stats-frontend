@@ -94,24 +94,24 @@
                             </p>
                             <div class="custom-row" style="width: auto;">
                                 <div class="custom-row" style="width: auto;  padding: 0;">
-                                    <div class="hub-icon-wrapper">
+                                    <div class="hub-icon-wrapper" [ngClass]="{'selected-hub': selectedHub === 'asia-pacific'}">
                                         <button title="Asia-Pacific" (click)="changeHub('asia-pacific')"
                                                 class="hub-icon"
                                                 style="background: url(../../../assets/images/hubs/asia-pacific.png)"></button>
                                     </div>
-                                    <div class="hub-icon-wrapper">
+                                    <div class="hub-icon-wrapper" [ngClass]="{'selected-hub': selectedHub === 'la-carribean'}">
                                         <button title="Latin America & the Carribean"
                                                 (click)="changeHub('la-carribean')" class="hub-icon"
                                                 style="background: url(../../../assets/images/hubs/la-carribean.png)"></button>
                                     </div>
                                 </div>
                                 <div class="custom-row" style="width: auto;  padding: 0;">
-                                    <div class="hub-icon-wrapper">
+                                    <div class="hub-icon-wrapper" [ngClass]="{'selected-hub': selectedHub === 'wna'}">
                                         <button title="West & Northern Africa" (click)="changeHub('wna')"
                                                 class="hub-icon"
                                                 style="background: url(../../../assets/images/hubs/wna.png)"></button>
                                     </div>
-                                    <div class="hub-icon-wrapper">
+                                    <div class="hub-icon-wrapper" [ngClass]="{'selected-hub': selectedHub === 'esa'}">
                                         <button title="Eastern & Southern Africa" (click)="changeHub('esa')"
                                                 class="hub-icon"
                                                 style="background: url(../../../assets/images/hubs/esa.png)"></button>

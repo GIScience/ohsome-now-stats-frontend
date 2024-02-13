@@ -23,6 +23,10 @@
   --bs-gutter-x: 0;
 }
 
+.selected-hub {
+  box-shadow: 0 0 10px rgba(158, 158, 158, 0.9) !important;
+}
+
 .hot-toggle {
   height: 30px;
   border-width:  0px;
