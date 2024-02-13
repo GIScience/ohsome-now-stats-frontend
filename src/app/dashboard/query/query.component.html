@@ -83,7 +83,7 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="form-label" for="countries">Country Filter</label>
+                            <label class="form-label" for="countries">Country</label>
                             <ngx-select-dropdown [options]="dropdownOptions" id="countries" name="countries"
                                                  [config]="configCountry"
                                                  [(ngModel)]="selectedCountries" [multiple]="true"
@@ -121,7 +121,7 @@
                         </div>
 
               <div class="mb-3 row">
-                <label class="form-label" for="topics-selection">Topic Selection</label>
+                <label class="form-label" for="topics-selection">OSM Data Topic</label>
                 <ngx-select-dropdown [options]="topicOptions" name="topics" [config]="configTopics"
                 [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown" id="topics-selection"></ngx-select-dropdown>
               </div>
