@@ -346,10 +346,13 @@ export class QueryComponent implements OnChanges, OnInit {
         "g_equality": "wash,social_facility,education"
     }
 
+    selectedImpactArea: string | undefined
+
     changeImpactArea(impactAreaName: string) {
         this.selectedTopics = this.topicOptions.filter((option) => {
             return this.impactAreas[impactAreaName].includes(option.value)
         })
+        this.selectedImpactArea = impactAreaName
     }
 
     searchChange(items: IHashtags[], searchedHashtag: string) {
