@@ -171,6 +171,8 @@ export class DashboardComponent implements OnInit {
                                 if (res) {
                                     // add each Topic data to Plot data to make them a part of CSV
                                     this.plotData = this.addTopicDataToPlot(res.result, tempPlotResponse)
+                                    this.plotData['hashtag'] = this.queryParams['hashtag']
+                                    this.plotData['countries'] = this.queryParams['countries']
                                 }
                             },
                             error: (err) => {
@@ -180,6 +182,8 @@ export class DashboardComponent implements OnInit {
                     } else {
                         // if non Topic is selected only countryData is sent to MapComponent
                         this.plotData = tempPlotResponse
+                        this.plotData['hashtag'] = this.queryParams['hashtag']
+                        this.plotData['countries'] = this.queryParams['countries']
                     }
                     this.isPlotsLoading = false;
                 }

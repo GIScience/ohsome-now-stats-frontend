@@ -66,9 +66,10 @@ export interface IPlotData {
     buildings: number[],
     edits: number[],
     latest?: string,
-    hashtag?: string,
+    hashtag?: string | string[],
     startDate: string[],
-    endDate: string[]
+    endDate: string[],
+    countries?: string | string[]
 }
 
 

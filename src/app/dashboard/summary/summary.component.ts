@@ -142,7 +142,7 @@ export class SummaryComponent implements OnChanges {
             ]
 
             const csvConfig = mkConfig({
-                filename: 'summary',
+                filename: `ohsome-now-stats_${this.data['hashtag']}_${this.data['startDate']!.substring(0, 10)}_${this.data['endDate']!.substring(0, 10)}_summary`,
                 columnHeaders: arrangedHeaders
             });
 
