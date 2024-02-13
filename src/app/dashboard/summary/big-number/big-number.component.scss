@@ -4,8 +4,16 @@
     right: 8px;
 }
 
+.tooltip1:active{
+    filter: contrast(5%);
+}
+
 .tooltip2 {
     position:absolute;
+}
+
+.icon-holder:hover {
+    transform: scale(1.05);
 }
 
 .layers {
