@@ -142,7 +142,7 @@ export class DashboardComponent implements OnInit {
                         edits: tempSummaryData.edits,
                         roads: tempSummaryData.roads,
                         latest: tempSummaryData.latest,
-                        hashtag: this.queryParams['hashtag'],
+                        hashtag: decodeURIComponent(this.queryParams['hashtag']),
                         startDate: this.queryParams['start'],
                         endDate: this.queryParams['end']
                     }
@@ -171,8 +171,9 @@ export class DashboardComponent implements OnInit {
                                 if (res) {
                                     // add each Topic data to Plot data to make them a part of CSV
                                     this.plotData = this.addTopicDataToPlot(res.result, tempPlotResponse)
-                                    this.plotData['hashtag'] = this.queryParams['hashtag']
-                                    this.plotData['countries'] = this.queryParams['countries']
+                                    this.plotData['hashtag'] = decodeURIComponent(this.queryParams['hashtag'])
+                                    if(this.queryParams['countries'] !== '')
+                                        this.plotData['countries'] = this.queryParams['countries']
                                 }
                             },
                             error: (err) => {
@@ -180,10 +181,11 @@ export class DashboardComponent implements OnInit {
                             }
                         })
                     } else {
-                        // if non Topic is selected only countryData is sent to MapComponent
+                        // if non Topic is selected only countryData is sent to PlotComponent
                         this.plotData = tempPlotResponse
-                        this.plotData['hashtag'] = this.queryParams['hashtag']
-                        this.plotData['countries'] = this.queryParams['countries']
+                        this.plotData['hashtag'] = decodeURIComponent(this.queryParams['hashtag'])
+                        if(this.queryParams['countries'] !== '')
+                            this.plotData['countries'] = this.queryParams['countries']
                     }
                     this.isPlotsLoading = false;
                 }
@@ -198,7 +200,7 @@ export class DashboardComponent implements OnInit {
             .subscribe((res: IWrappedCountryStatsData) => {
                 // add 'hashtag'
                 res.result.map((r: any) => {
-                    r['hashtag'] = this.queryParams['hashtag']
+                    r['hashtag'] = decodeURIComponent(this.queryParams['hashtag'])
                     r['startDate'] = this.queryParams['start']
                     r['endDate'] = this.queryParams['end']
                 })

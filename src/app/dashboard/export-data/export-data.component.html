@@ -1,0 +1,46 @@
+<div class="bd bgc-white">
+    <div class="fxw-nw@lg+ ai-s p-20">
+        <div class="layers">
+            <div class="layer w-100 mB-10">
+                <div class="peers ai-sb fxw-nw">
+                    <div class="peer peer-greed pX-5 pT-5">
+                        <h6 class="lh-1"><i class="ti-download"></i> Export data as CSV</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="layer w-100">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Dataset</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                        </thead>
+                        <tbody class="table-group-divider">
+                        <tr>
+                            <th scope="row"><i class="ti-quote-right"></i></th>
+                            <td><a style="cursor:pointer" class="p-1 rounded" (click)="exportOverview()">Overview
+                                statistics data</a></td>
+                            <td>This csv file contains overview statistics numbers.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><i class="ti-bar-chart"></i></th>
+                            <td><a style="cursor:pointer" class="p-1 rounded" (click)="exportTimeSeries()">Timeseries
+                                data</a></td>
+                            <td>This csv files contains information about the dynamics in mapping activity over time.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><i class="ti-world"></i></th>
+                            <td><a style="cursor:pointer" class="p-1 rounded" (click)="exportMap()">Map data</a></td>
+                            <td>This csv file contains overview statistics per country.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
