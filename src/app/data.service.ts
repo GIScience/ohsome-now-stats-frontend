@@ -30,6 +30,7 @@ export class DataService {
     defaultHashtag = 'missingmaps'
     trendingHashtagLimit = 10
     timeIntervals = [
+        {label: 'five minutes', value: 'PT5M'},
         {label: 'hourly', value: 'PT1H'},
         {label: 'daily', value: 'P1D'},
         {label: 'weekly', value: 'P1W'},

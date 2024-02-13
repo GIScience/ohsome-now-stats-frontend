@@ -104,6 +104,7 @@ export class QueryComponent implements OnChanges, OnInit {
                 this.ranges = {
                     'Today': [dayjs().startOf('day'), this.maxDate],
                     'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
+                    'Last 3 Hours': [dayjs().subtract(3, 'hours').startOf('hour'), dayjs().endOf('day')],
                     'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
                     'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
                     'Last Year': [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
