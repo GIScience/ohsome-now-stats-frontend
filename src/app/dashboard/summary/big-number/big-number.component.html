@@ -1,6 +1,6 @@
 <div class="big_number">
   <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm- {{startSelected ? 'selected' : ''}}">
-    <span class="icon-holder tooltip1" data-bs-placement="bottom" data-bs-toggle="tooltip" title="{{tooltip}}" data-bs-html="true">
+    <span class="icon-holder tooltip1" data-bs-placement="bottom" data-bs-toggle="tooltip" title="{{tooltip}}" data-bs-html="true" (click)="openHelp($event)">
       <i class="c-grey-800 ti-help-alt"></i>
     </span>
     <div class="layer w-100 mB-10">

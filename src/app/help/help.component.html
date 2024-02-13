@@ -219,7 +219,7 @@
             The number of modified objects is not considered.
         </p>
 
-        <div *ngFor="let topic of topicDefinitions | keyvalue: returnZero">
+        <div *ngFor="let topic of topicDefinitions | keyvalue: returnZero" id="{{topic.key}}">
             <h3><i _ngcontent-nly-c2="" class="fa-solid {{topic.value['icon']}} fsz-xl"></i>  {{topic.value["name"]}}</h3>
             <p>
                 {{topic.value["tooltip"]}}

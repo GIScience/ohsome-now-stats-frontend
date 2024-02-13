@@ -24,6 +24,9 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
 import {Overlay} from "./overlay.component";
 import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 import { UTCToLocalConverterPipe } from './dashboard/query/pipes/utc-to-local-converter.pipe';
+import {RouterModule} from "@angular/router";
+
+let routes = [{path: 'help', component: HelpComponent}];
 
 @NgModule({
   declarations: [
@@ -50,7 +53,10 @@ import { UTCToLocalConverterPipe } from './dashboard/query/pipes/utc-to-local-co
     NgxDaterangepickerMd.forRoot(),
     NgOptimizedImage,
     SelectDropDownModule,
-    AutocompleteLibModule
+    AutocompleteLibModule,
+    RouterModule.forRoot(routes, {
+      scrollOffset: [0, 80]
+    })
   ],
   providers: [
     DataService,
