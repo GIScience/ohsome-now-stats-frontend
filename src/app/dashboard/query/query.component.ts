@@ -2,6 +2,11 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angula
 import {Subscription} from 'rxjs';
 import dayjs from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
+import duration from 'dayjs/plugin/duration'
+import utc from 'dayjs/plugin/utc'
+import isoWeek from 'dayjs/plugin/isoWeek'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import * as bootstrap from 'bootstrap';
 
 import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
@@ -9,10 +14,6 @@ import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
 import {IHashtags, IQueryData} from "../types";
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
-import duration from 'dayjs/plugin/duration'
-import utc from 'dayjs/plugin/utc'
-import isoWeek from 'dayjs/plugin/isoWeek'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -460,6 +461,8 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     toggleLiveMode() {
+        const tooltipElement = <HTMLElement>document.getElementById('btnLive')
+
         this.liveMode = !this.liveMode
         if (this.liveMode) {
             console.log("live mode enabled")
@@ -467,8 +470,19 @@ export class QueryComponent implements OnChanges, OnInit {
             this.refreshIntervalId = setInterval(() => {
                 this.getStatistics()
             }, 10000)
+
+            // change tooltip
+            tooltipElement.setAttribute('data-bs-title', 'Stop Live')
+            // give sometime to the renderer to actually find elements
+            setTimeout(() => {
+                this.enableTooltips()
+            }, 300)
         } else {
             this.turnOffLiveMode()
+            tooltipElement.setAttribute('data-bs-title', 'Query Live')
+            setTimeout(() => {
+                this.enableTooltips()
+            }, 300)
         }
     }
 
@@ -479,6 +493,21 @@ export class QueryComponent implements OnChanges, OnInit {
             clearInterval(this.refreshIntervalId)
             this.refreshIntervalId = null
         }
+    }
+
+    /**
+     * Boostrap need to enable tooltip on every element with its attribute
+     */
+    enableTooltips(): void {
+        // enble tooltip
+        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
+
+        // remove previous tooltips
+        const tooltips = Array.from(document.getElementsByClassName("tooltip"))
+        tooltips.forEach(tooltipEle => {
+            tooltipEle.remove()
+        })
     }
 }
 
