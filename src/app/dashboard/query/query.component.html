@@ -28,6 +28,7 @@
                                 [notFoundTemplate]="notFoundTemplate"
                                 name="hashtag"
                                 [(ngModel)]="hashtag"
+                                (keydown)="turnOffLiveMode()"
                         />
                         <ng-template #itemTemplate let-item>
                             <a [innerHTML]="item"></a>
@@ -63,7 +64,8 @@
                                        [showClearButton]="true"
                                        [timePicker]="true"
                                        [timePicker24Hour]="true"
-                                       (change)="dateUpdated($event)"
+                                       (change)="dateUpdated($event); turnOffLiveMode()"
+                                       (keydown)="turnOffLiveMode()"
                                        [autoApply]="true"
                                        [closeOnAutoApply]="false"
                                        placeholder="Select please..."
@@ -75,7 +77,7 @@
                         <div class="mb-3 row">
                             <div class="col-md-12">
                                 <label class="form-label" for="intervals"> Interval </label>
-                                <select name="intervals" class="form-control" id="intervals" [(ngModel)]="interval">
+                                <select name="intervals" class="form-control" id="intervals" [(ngModel)]="interval" (change)="turnOffLiveMode()">
                                     <option *ngFor="let option of intervals; index as i; first as isFirst"
                                             [value]="option.value"
                                             [disabled]="allowedInterval(option.value)">{{option.label}}</option>
@@ -87,7 +89,7 @@
                             <ngx-select-dropdown [options]="dropdownOptions" id="countries" name="countries"
                                                  [config]="configCountry"
                                                  [(ngModel)]="selectedCountries" [multiple]="true"
-                                                 class="customDropdown" (change)="selectedHub=undefined"></ngx-select-dropdown>
+                                                 class="customDropdown" (change)="selectedHub=undefined; turnOffLiveMode();"></ngx-select-dropdown>
                         </div>
                         <div class="row" *ngIf="hot_controls" style="align-items: center; margin-bottom: 1rem;">
                             <p class="inline-p"><a class="inline-p" target="_blank" rel="noopener" href="https://www.hotosm.org/hubs/">HOT-Priority-Regions:</a>
@@ -123,7 +125,7 @@
               <div class="mb-3 row">
                 <label class="form-label" for="topics-selection">OSM Data Topic</label>
                 <ngx-select-dropdown [options]="topicOptions" name="topics" [config]="configTopics"
-                [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown" id="topics-selection" (change)="selectedImpactArea=undefined"></ngx-select-dropdown>
+                [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown" id="topics-selection" (change)="selectedImpactArea=undefined; turnOffLiveMode();"></ngx-select-dropdown>
               </div>
                 <div class="row" *ngIf="hot_controls" style="align-items: center; margin-bottom: 1rem;">
                     <p class="inline-p"><a class="inline-p" target="_blank" rel="noopener" href="https://www.hotosm.org/impact-areas/">HOT-Impact-Areas:</a></p>
@@ -148,6 +150,7 @@
             </div>
           </div>
           <button class="btn btn-primary btn-color" (click)="getStatistics()" type="submit">Get Statistics</button>
+          <div *ngIf="enableLiveModeButton()" (click)="toggleLiveMode()" class="fa-solid fa-play"></div>
         </form>
       <!-- </div> -->
     </div>

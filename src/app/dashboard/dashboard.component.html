@@ -2,7 +2,7 @@
     <div class="col-md-3">
         <div class="w-100">
             <!-- #User input ==================== -->
-            <app-query [data]="queryParams"></app-query>
+            <app-query [data]="queryParams" (maxDateEmitter)="maxDate=$event"></app-query>
         </div>
         <div class="w-100 mT-10">
             <!-- #Treanding hashtags ==================== -->
@@ -26,7 +26,7 @@
             <!-- #Common graph for Summary ==================== -->
             <div class="pT-10">
                 <app-plot [data]="plotData" [currentStats]="currentStats" [selectedTopics]="selectedTopics"
-                          [isPlotsLoading]="isPlotsLoading"></app-plot>
+                          [isPlotsLoading]="isPlotsLoading" [maxDate]="maxDate"></app-plot>
             </div>
         </div>
         <div class="row">

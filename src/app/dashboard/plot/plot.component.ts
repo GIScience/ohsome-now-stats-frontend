@@ -2,11 +2,11 @@ import {Component, Input, OnChanges, AfterContentInit} from '@angular/core';
 
 import Plotly from 'plotly.js-basic-dist-min';
 import {Layout} from 'plotly.js-basic-dist-min';
-import {mkConfig, generateCsv, download} from "export-to-csv";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {StatsType, IPlotData} from "../types";
 
 import {UTCToLocalConverterPipe, UTCStringToLocalDateConverterFunction} from "../query/pipes/utc-to-local-converter.pipe";
+import dayjs from "dayjs";
 
 @Component({
     selector: 'app-plot',
@@ -19,6 +19,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     @Input() currentStats!: StatsType;
     @Input() selectedTopics: string | undefined;
     @Input() isPlotsLoading!: boolean;
+    @Input() maxDate!: dayjs.Dayjs;
     layout: Layout | any;
 
     constructor(private utcToLocalConverter: UTCToLocalConverterPipe) {}
@@ -60,7 +61,6 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     }
 
     refreshPlot() {
-        const currentDate = new Date()
 
         const plotData = [{
             x: this.data.startDate.map(e=>UTCStringToLocalDateConverterFunction(e)),
@@ -76,8 +76,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
                 pattern: {
                     // apply striped pattern only for current running time
                     shape: this.data.startDate.map((start_date, index) => (
-                        currentDate >= UTCStringToLocalDateConverterFunction(start_date)
-                        && currentDate <= UTCStringToLocalDateConverterFunction(this.data.endDate[index]))
+                        this.maxDate.subtract(dayjs().utcOffset(),"minute").toDate() < UTCStringToLocalDateConverterFunction(this.data.endDate[index]))
                         ? '/' : ''),
                     size: 7,
                     solidity: 0.6

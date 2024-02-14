@@ -1,5 +1,4 @@
-import {Component, Input, OnChanges, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angular/core';
 import {Subscription} from 'rxjs';
 import dayjs from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
@@ -41,6 +40,7 @@ export class QueryComponent implements OnChanges, OnInit {
     ranges: any
     minDate!: dayjs.Dayjs
     maxDate!: dayjs.Dayjs
+    @Output() maxDateEmitter = new EventEmitter<dayjs.Dayjs>()
     maxDateString!: string
 
 
@@ -59,6 +59,9 @@ export class QueryComponent implements OnChanges, OnInit {
     hot_controls: boolean = false;
 
     allHashtagOptions: IHashtags[] = []
+
+    liveMode: boolean = false
+    refreshIntervalId: any = null
 
     keyword: string = "hashtag"
 
@@ -97,7 +100,8 @@ export class QueryComponent implements OnChanges, OnInit {
         this.metaSub = this.dataService.getMetaData().subscribe(metaData => {
             if (metaData && metaData.start && metaData.end) {
                 this.minDate = dayjs.utc(metaData?.start)
-                this.maxDate = dayjs.utc(metaData?.end).add(dayjs().utcOffset(),"minute")
+                this.maxDate = dayjs.utc(metaData?.end).add(dayjs().utcOffset(), "minute")
+                this.maxDateEmitter.emit(this.maxDate);
 
                 this.maxDateString = this.utcToLocalConverter.transform(dayjs.utc(metaData?.end).toDate())
 
@@ -177,8 +181,8 @@ export class QueryComponent implements OnChanges, OnInit {
             // set Start and end dates
             if (data.start && data.end)
                 this.selectedDateRangeUTC = {
-                    start: dayjs.utc(data.start).add(dayjs(data.start).utcOffset(),"minute"),
-                    end: dayjs.utc(data.end).add(dayjs(data.end).utcOffset(),"minute")
+                    start: dayjs.utc(data.start).add(dayjs(data.start).utcOffset(), "minute"),
+                    end: dayjs.utc(data.end).add(dayjs(data.end).utcOffset(), "minute")
                 }
 
             // set hashtag textarea
@@ -213,8 +217,17 @@ export class QueryComponent implements OnChanges, OnInit {
         if (!this.selectedDateRangeUTC)
             return
 
-        const tempStart = this.selectedDateRangeUTC.start.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0]+"Z"//.format('YYYY-MM-DDTHH:mm:ss')
-        const tempEnd = this.selectedDateRangeUTC.end.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0]+"Z"//.format('YYYY-MM-DDTHH:mm:ss')
+        if (this.liveMode) {
+            setTimeout( () => {
+                this.selectedDateRangeUTC = {
+                    start: dayjs(this.maxDate).subtract(3, 'hours'),
+                    end: this.maxDate
+                }
+            }, 1500);
+        }
+
+        const tempStart = this.selectedDateRangeUTC.start.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"//.format('YYYY-MM-DDTHH:mm:ss')
+        const tempEnd = this.selectedDateRangeUTC.end.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"//.format('YYYY-MM-DDTHH:mm:ss')
 
         const tempHashTag = this.cleanHashTag(this.hashtag)
 
@@ -441,6 +454,32 @@ export class QueryComponent implements OnChanges, OnInit {
         // console.log('>>> dateUpdated ', $event.target.value, this.selectedDateRange)
     }
 
+    enableLiveModeButton() {
+        return this.interval === 'PT5M'
+            && Math.abs(this.selectedDateRangeUTC!!.end.diff(this.selectedDateRangeUTC!!.start, 'hours')) < 4
+    }
+
+    toggleLiveMode() {
+        this.liveMode = !this.liveMode
+        if (this.liveMode) {
+            console.log("live mode enabled")
+            this.getStatistics()
+            this.refreshIntervalId = setInterval(() => {
+                this.getStatistics()
+            }, 10000)
+        } else {
+            this.turnOffLiveMode()
+        }
+    }
+
+    turnOffLiveMode() {
+        this.liveMode = false
+        if (this.refreshIntervalId) {
+            console.log("live mode disabled")
+            clearInterval(this.refreshIntervalId)
+            this.refreshIntervalId = null
+        }
+    }
 }
 
 function customComparator(a: any, b: any) {

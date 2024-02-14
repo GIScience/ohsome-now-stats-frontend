@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit {
     isPlotsLoading = false;
     isCountriesLoading = false;
     isHashtagsLoading = false;
+    maxDate: dayjs.Dayjs = dayjs()
 
     constructor(
         private dataService: DataService,
@@ -56,7 +57,7 @@ export class DashboardComponent implements OnInit {
             this.isHashtagsLoading = true;
             this.isPlotsLoading = true;
             this.isCountriesLoading = true;
-            const queryParams = this.getQueryParamsFromFragments(fragment)
+            const queryParams = this.dataService.getQueryParamsFromFragments(fragment)
 
             if (queryParams === null || !this.queryParamsComplete(queryParams)){
                 this.setDefaultValues(queryParams)
@@ -338,20 +339,6 @@ export class DashboardComponent implements OnInit {
         this.dataService.abortHashtagReqSub.unsubscribe()
         this.dataService.getAbortHashtagReqSubject()
         // this.dataService.abortHashtagReqSub.complete()
-    }
-
-    /**
-     * Creates query param from enitre fragment of the URL
-     *
-     * @param fragment URL fragment part
-     * @returns Object with all query params sepearted
-     */
-    getQueryParamsFromFragments(fragment: string | null): any {
-        if (fragment == null || fragment.length < 2)
-            return null
-        const tempQueryParams: Array<Array<string>> = fragment?.split('&')
-            .map(q => [q.split('=')[0], q.split('=')[1]])
-        return Object.fromEntries(tempQueryParams)
     }
 
     /**
