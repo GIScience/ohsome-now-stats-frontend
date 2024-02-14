@@ -461,8 +461,6 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     toggleLiveMode() {
-        const tooltipElement = <HTMLElement>document.getElementById('btnLive')
-
         this.liveMode = !this.liveMode
         if (this.liveMode) {
             // console.log("live mode enabled")
@@ -472,30 +470,31 @@ export class QueryComponent implements OnChanges, OnInit {
             }, 10000)
 
             // change tooltip
-            tooltipElement.setAttribute('data-bs-title', 'Stop Live')
-            // give sometime to the renderer to actually find elements
-            setTimeout(() => {
-                this.enableTooltips()
-            }, 300)
+            this.updateLiveTooltip('Stop Live')
         } else {
             this.turnOffLiveMode()
-            tooltipElement.setAttribute('data-bs-title', 'Query Live')
-            setTimeout(() => {
-                this.enableTooltips()
-            }, 300)
         }
-
         this.dataService.toggleLiveMode(this.liveMode)
     }
 
     turnOffLiveMode() {
+        // console.log("live mode disabled")
         this.liveMode = false
-        this.dataService.toggleLiveMode(this.liveMode)
+        this.dataService.toggleLiveMode(false)
+        this.updateLiveTooltip('Query Live')
         if (this.refreshIntervalId) {
             // console.log("live mode disabled")
             clearInterval(this.refreshIntervalId)
             this.refreshIntervalId = null
         }
+    }
+
+    updateLiveTooltip(msg: string) {
+        const tooltipElement = <HTMLElement>document.getElementById('btnLive')
+        tooltipElement.setAttribute('data-bs-title', msg)
+        setTimeout(() => {
+            this.enableTooltips()
+        }, 300)
     }
 
     /**
