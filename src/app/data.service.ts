@@ -41,6 +41,8 @@ export class DataService {
     defaultIntervalValue = 'P1M'
     minDate!: string
     maxDate!: string
+    bsLive = new BehaviorSubject<boolean>(false)
+    liveMode = this.bsLive.asObservable()
 
     constructor(
         private http: HttpClient,
@@ -76,7 +78,7 @@ export class DataService {
         })
     }
 
-    requestAllHashtags(){
+    requestAllHashtags() {
         return this.http.get(`${this.url}/hashtags`)
     }
 
@@ -184,7 +186,7 @@ export class DataService {
             return null
 
         let queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment)
-        const tempStart = queryParams && queryParams.hashtag ?  moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
+        const tempStart = queryParams && queryParams.hashtag ? moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
 
         return {
             start: tempStart.format('YYYY-MM-DDTHH:mm:ss') + 'Z',
@@ -210,5 +212,9 @@ export class DataService {
         this.router.navigate([], {
             fragment: `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
         })
+    }
+
+    toggleLiveMode(mode: boolean) {
+        this.bsLive.next(mode)
     }
 }

@@ -465,7 +465,7 @@ export class QueryComponent implements OnChanges, OnInit {
 
         this.liveMode = !this.liveMode
         if (this.liveMode) {
-            console.log("live mode enabled")
+            // console.log("live mode enabled")
             this.getStatistics()
             this.refreshIntervalId = setInterval(() => {
                 this.getStatistics()
@@ -484,12 +484,15 @@ export class QueryComponent implements OnChanges, OnInit {
                 this.enableTooltips()
             }, 300)
         }
+
+        this.dataService.toggleLiveMode(this.liveMode)
     }
 
     turnOffLiveMode() {
         this.liveMode = false
+        this.dataService.toggleLiveMode(this.liveMode)
         if (this.refreshIntervalId) {
-            console.log("live mode disabled")
+            // console.log("live mode disabled")
             clearInterval(this.refreshIntervalId)
             this.refreshIntervalId = null
         }
