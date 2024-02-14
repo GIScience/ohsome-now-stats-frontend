@@ -9,7 +9,7 @@ import {DataService} from "./data.service";
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterViewInit {
-    title = 'Dashboard - ohsomeNow Stats';
+    title = 'ohsomeNow Stats';
     name = 'HeiGIT';
     isOpen = false
     activeLink = ''

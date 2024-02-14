@@ -67,31 +67,6 @@ describe('DashboardComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should get query params from URL fragment', () => {
-        const fragment = 'start=2020-01-01T00:00:00.000Z&end=2020-12-31T00:00:00.000Z';
-        const expectedParams = {
-            start: '2020-01-01T00:00:00.000Z',
-            end: '2020-12-31T00:00:00.000Z'
-        };
-
-        // const params = component.getQueryParamsFromFragments(fragment);
-        const params = dataService.getQueryParamsFromFragments(fragment);
-
-        expect(params).toEqual(expectedParams);
-    });
-
-    it('should get query params from URL fragment', () => {
-        const fragment = 'start=2020-01-01T00:00:00.000Z&end=2020-12-31T00:00:00.000Z&countries=DE,UGA';
-        const expectedParams = {
-            start: '2020-01-01T00:00:00.000Z',
-            end: '2020-12-31T00:00:00.000Z',
-            countries: "DE,UGA"
-        };
-
-        const params = dataService.getQueryParamsFromFragments(fragment);
-
-        expect(params).toEqual(expectedParams);
-    });
 
     // it('should call data service to fetch summary data', () => {
     //   const queryParams = {

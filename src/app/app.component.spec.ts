@@ -8,21 +8,39 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { TrendingHashtagsComponent } from './dashboard/trending-hashtags/trending-hashtags.component';
 import { DataService } from './data.service';
 import { BigNumberComponent } from './dashboard/summary/big-number/big-number.component';
+import {ExportDataComponent} from "./dashboard/export-data/export-data.component";
+import {PlotComponent} from "./dashboard/plot/plot.component";
+import {PageNotFoundComponent} from "./page-not-found/page-not-found.component";
+import {MapComponent} from "./dashboard/map/map.component";
+import {AboutComponent} from "./about/about.component";
+import {HelpComponent} from "./help/help.component";
+import {UTCToLocalConverterPipe} from "./dashboard/query/pipes/utc-to-local-converter.pipe";
+import {Overlay} from "./overlay.component";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
+        HttpClientTestingModule
       ],
       declarations: [
         AppComponent,
         SummaryComponent,
         QueryComponent,
+        PlotComponent,
         DashboardComponent,
+        PageNotFoundComponent,
+        MapComponent,
         TrendingHashtagsComponent,
         ToastComponent,
-        BigNumberComponent
+        AboutComponent,
+        HelpComponent,
+        BigNumberComponent,
+        ExportDataComponent,
+        UTCToLocalConverterPipe,
+        Overlay
       ],
       providers: [
         DataService
@@ -36,10 +54,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'Dashboard - ohsomeNow Stats'`, () => {
+  it(`should have as title 'ohsomeNow Stats'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('Dashboard - ohsomeNow Stats');
+    expect(app.title).toEqual('ohsomeNow Stats');
   });
   
 });
