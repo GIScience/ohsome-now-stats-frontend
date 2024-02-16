@@ -491,6 +491,8 @@ export class QueryComponent implements OnChanges, OnInit {
 
     updateLiveTooltip(msg: string) {
         const tooltipElement = <HTMLElement>document.getElementById('btnLive')
+        if(! tooltipElement)
+            return
         tooltipElement.setAttribute('data-bs-title', msg)
         setTimeout(() => {
             this.enableTooltips()
