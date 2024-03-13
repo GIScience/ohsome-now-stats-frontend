@@ -22,10 +22,11 @@ import {NgOptimizedImage} from '@angular/common';
 import {HelpComponent} from './help/help.component';
 import {SelectDropDownModule} from 'ngx-select-dropdown';
 import {Overlay} from "./overlay.component";
-import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 import {UTCToLocalConverterPipe} from './dashboard/query/pipes/utc-to-local-converter.pipe';
 import {RouterModule} from "@angular/router";
 import {ExportDataComponent} from "./dashboard/export-data/export-data.component";
+import {AutoCompleteModule} from 'primeng/autocomplete';
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 let routes = [{path: 'help', component: HelpComponent}];
 
@@ -55,7 +56,8 @@ let routes = [{path: 'help', component: HelpComponent}];
         NgxDaterangepickerMd.forRoot(),
         NgOptimizedImage,
         SelectDropDownModule,
-        AutocompleteLibModule,
+        BrowserAnimationsModule,
+        AutoCompleteModule,
         RouterModule.forRoot(routes, {
             scrollOffset: [0, 80]
         })

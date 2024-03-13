@@ -10,15 +10,17 @@
   box-shadow: 1px 1px 1px rgb(78, 78, 78);
 }
 
-.hub-icon-wrapper{
+.hub-icon-wrapper {
   :hover {
     filter: brightness(90%);
-    transition:  0.3s;
+    transition: 0.3s;
   }
+
   :active {
     filter: brightness(80%);
-    transition:  0.3s;
+    transition: 0.3s;
   }
+
   width: auto;
   --bs-gutter-x: 0;
 }
@@ -29,7 +31,7 @@
 
 .hot-toggle {
   height: 30px;
-  border-width:  0px;
+  border-width: 0px;
   background-size: contain !important;
   background-repeat: no-repeat !important;
   border-radius: 10px;
@@ -47,16 +49,17 @@
   opacity: 50%;
 }
 
-.inline-p{
+.inline-p {
   width: auto;
   margin: 0;
   color: #72777a !important;
+
   :hover {
     color: #383a3b !important;
   }
 }
 
-.custom-row{
+.custom-row {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -72,5 +75,47 @@
 }
 
 .ng-autocomplete {
+  width: 100%;
+}
+
+:host ::ng-deep .p-inputwrapper {
+  box-sizing: border-box;
+  width: 100%;
+  line-height: 40px;
+  height: 40px;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+  border-color: var(--bs-form-valid-border-color);
+  color: black;
+}
+
+:host ::ng-deep .p-inputtext:focus {
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-success-rgb), 0.25);
+}
+
+:host ::ng-deep .p-autocomplete-items {
+  padding-left: 0.5rem;
+}
+
+:host ::ng-deep .p-autocomplete-item {
+  padding: 0.5rem;
+  font-size: 15px;
+  line-height: 1.5;
+  color: black;
+  overflow: hidden;
+}
+
+:host ::ng-deep .p-autocomplete-empty-message {
+  padding: 0.5rem;
+}
+
+:host ::ng-deep p-autoComplete {
+  width: 100%;
+}
+
+:host ::ng-deep p-overlay > div {
   width: 100%;
 }

@@ -16,29 +16,21 @@
             <form (keyup.enter)="getStatistics()" class="needs-validation was-validated" novalidate="">
                 <div class="mb-3 row">
                     <label class="form-label" for="hashtag"> Hashtag</label>
-                    <div class="ng-autocomplete">
-                        <ng-autocomplete
-                                id="hashtag"
-                                [data]="allHashtagOptions"
-                                [minQueryLength]="1"
-                                [searchKeyword]="keyword"
-                                [customFilter]="searchChange"
-                                [debounceTime]="150"
-                                placeholder="Enter a hashtag"
-                                [itemTemplate]="itemTemplate"
-                                [notFoundTemplate]="notFoundTemplate"
-                                name="hashtag"
-                                [(ngModel)]="hashtag"
-                                (keydown)="turnOffLiveMode()"
-                                (inputCleared)="turnOffLiveMode()"
-                        />
-                        <ng-template #itemTemplate let-item>
-                            <a [innerHTML]="item"></a>
+                    <p-autoComplete
+                            id="hashtag"
+                            [(ngModel)]="hashtag"
+                            name="hashtag"
+                            [suggestions]="filteredHashtagOptions"
+                            (completeMethod)="searchChange($event)"
+                            [minLength]=1
+                            placeholder="Enter a hashtag"
+                            (keydown)="turnOffLiveMode()"
+                            [required]="true"
+                    >
+                        <ng-template let-value pTemplate="item">
+                            <span [innerHTML]="value"></span>
                         </ng-template>
-                        <ng-template #notFoundTemplate let-notFound>
-                            <div>No hashtag found</div>
-                        </ng-template>
-                    </div>
+                    </p-autoComplete>
                     <small id="hashtagHelp" class="text-muted"> Hashtag used in Changesets comments eg:
                         missingmaps</small>
                 </div>
@@ -72,8 +64,8 @@
                                        [closeOnAutoApply]="false"
                                        placeholder="Select please..."
                                        required=""/>
-                                <small class="text-muted fs-i">Current time: {{currentTimeInUserTimeZone }}</small><br>
-                                <small class="text-muted fs-i">Latest database entry: {{maxDateString}}</small>
+                                <small class="text-muted fs-i">Current time: {{ currentTimeInUserTimeZone }}</small><br>
+                                <small class="text-muted fs-i">Latest database entry: {{ maxDateString }}</small>
                             </div>
                         </div>
                         <div class="mb-3 row">
@@ -83,7 +75,8 @@
                                         (change)="turnOffLiveMode()">
                                     <option *ngFor="let option of intervals; index as i; first as isFirst"
                                             [value]="option.value"
-                                            [disabled]="allowedInterval(option.value)">{{option.label}}</option>
+                                            [disabled]="allowedInterval(option.value)">{{ option.label }}
+                                    </option>
                                 </select>
                             </div>
                         </div>

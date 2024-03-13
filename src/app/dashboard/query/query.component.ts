@@ -61,6 +61,8 @@ export class QueryComponent implements OnChanges, OnInit {
 
     allHashtagOptions: IHashtags[] = []
 
+    filteredHashtagOptions: string[] = []
+
     liveMode: boolean = false
     refreshIntervalId: any = null
 
@@ -219,7 +221,7 @@ export class QueryComponent implements OnChanges, OnInit {
             return
 
         if (this.liveMode) {
-            setTimeout( () => {
+            setTimeout(() => {
                 this.selectedDateRangeUTC = {
                     start: dayjs(this.maxDate).subtract(3, 'hours'),
                     end: this.maxDate
@@ -369,11 +371,12 @@ export class QueryComponent implements OnChanges, OnInit {
         this.selectedImpactArea = impactAreaName
     }
 
-    searchChange(items: IHashtags[], searchedHashtag: string) {
+    searchChange(event: any) {
+        let searchedHashtag = event.query
         if (searchedHashtag.length < 1) {
-            return []
+            return
         }
-        return items.filter((hashtagResult) => {
+        this.filteredHashtagOptions = this.allHashtagOptions.filter((hashtagResult) => {
             return hashtagResult.hashtag.length > 1 && hashtagResult.hashtag.includes(searchedHashtag)
         })
             .sort(
@@ -388,7 +391,7 @@ export class QueryComponent implements OnChanges, OnInit {
                         return a.count <= b.count ? 1 : -1
                     }
                 }
-            ).slice(0, 1000).map((e) => e.hashtag)
+            ).slice(0, 500).map((e) => e.hashtag.replace(searchedHashtag, `<b>${searchedHashtag}</b>`))
     }
 
 
@@ -491,7 +494,7 @@ export class QueryComponent implements OnChanges, OnInit {
 
     updateLiveTooltip(msg: string) {
         const tooltipElement = <HTMLElement>document.getElementById('btnLive')
-        if(! tooltipElement)
+        if (!tooltipElement)
             return
         tooltipElement.setAttribute('data-bs-title', msg)
         setTimeout(() => {
