@@ -4,7 +4,8 @@
 
         <p>
             These step-by-step instructions guide you through the <i class="ohsome-now-as-text"></i> and provide useful
-            recommendations. Reach out to us via <a href="mailto:ohsome@heigit.org">ohsome&#64;heigit.org</a> in case you
+            recommendations. Reach out to us via <a href="mailto:ohsome@heigit.org">ohsome&#64;heigit.org</a> in case
+            you
             need
             further assistance.
         </p>
@@ -16,7 +17,8 @@
             campaign or dedicated group of contributors.
         </p>
         <p>
-            Hashtags are further used by tools such as the <a href="https://tasks.hotosm.org/" target="_blank" rel="noopener">HOT
+            Hashtags are further used by tools such as the <a href="https://tasks.hotosm.org/" target="_blank"
+                                                              rel="noopener">HOT
             Tasking Manager</a> to identify and monitor organized mapping activity. Projects in the HOT Tasking Manager
             usually use a hashtag like
             <span class="icquote" style="white-space: nowrap;">#hotosm-project-14637</span> which contains the project
@@ -64,7 +66,9 @@
         </figure>
 
         <p class="note">
-            NOTE: You can also use * as a wildcard in the hashtag filter. For example you can use hotosm-project-* to filter for mapping organized through HOT's Tasking Manager. Wildcards are only considered at the end and act like a startsWith expression.
+            NOTE: You can also use * as a wildcard in the hashtag filter. For example you can use hotosm-project-* to
+            filter for mapping organized through HOT's Tasking Manager. Wildcards are only considered at the end and act
+            like a startsWith expression.
         </p>
 
         <h2>How to refine your query?</h2>
@@ -85,8 +89,10 @@
                 Select one or more <strong>countries</strong> in the drop down menu.
                 You can use this filter to make sure that the summary statistics and timeline statistics correspond
                 only to your countries of interest.
-                You can use the buttons below the drop down menu to select a <strong>pre-defined</strong> list of countries,
-                which refers to the countries covered by <a target="_blank" href="https://www.hotosm.org/hubs/" rel="noopener">HOT's regional hubs</a>.
+                You can use the buttons below the drop down menu to select a <strong>pre-defined</strong> list of
+                countries,
+                which refers to the countries covered by <a target="_blank" href="https://www.hotosm.org/hubs/"
+                                                            rel="noopener">HOT's regional hubs</a>.
             </li>
             <li>
                 If you are interested in more detailed statistics beyond building and road mapping you can select one
@@ -104,13 +110,14 @@
             from <span class="icquote">2023-06-01</span> - <span class="icquote">2023-06-30</span>.
         </p>
         <p>
-            Currently we always report on number of contributors (green), total edits (red), buildings (purple) and km of
+            Currently we always report on number of contributors (green), total edits (red), buildings (purple) and km
+            of
             roads (blue). You can click on each card to update the timeline plot and the map. If any topics were chosen,
             they also get their own interactive card in this section.
         </p>
         <figure>
             <img class="img-fluid" style="max-height: 150px;" src="../../assets/images/help/summary-stats.png"
-                 alt="example screenshot of the query form with fields: hashtag, date range, intevals, and 'Get Statistics'-Button">
+                 alt="The summary numbers which serve as a menu for more detailed stats on each topic.">
             <figcaption>The four main stats</figcaption>
         </figure>
 
@@ -129,7 +136,7 @@
         </p>
         <figure>
             <img class="img-fluid" style="max-height: 400px;" src="../../assets/images/help/timeline-bar-chart.png"
-                 alt="example screenshot of the query form with fields: hashtag, date range, intervals, and 'Get Statistics'-Button">
+                 alt="Bar Chart component containing data for June 2023">
             <!--<figcaption>The four main stats</figcaption>-->
         </figure>
 
@@ -154,7 +161,7 @@
         <figure>
             <img class="img-fluid" style="max-height: 400px;"
                  src="../../assets/images/help/timeline-bar-chart-negative.png"
-                 alt="example screenshot of the query form with fields: hashtag, date range, intervals, and 'Get Statistics'-Button">
+                 alt="Bar Chart component containing data for April 2023. Some bars are in the negative.">
             <!--<figcaption>The four main stats</figcaption>-->
         </figure>
 
@@ -175,12 +182,13 @@
 
         <p>Both a) bigger circles and b) lighter color indicate a higher absolute value. In the example map Malawi
             reached the highest value (249 contributors) followed by the Democratic Republic of the Congo (193
-            contributors). If countries were selected in the country filter, all other countries appear as gray in this plot.</p>
+            contributors). If countries were selected in the country filter, all other countries appear as gray in this
+            plot.</p>
 
         <figure>
             <img class="img-fluid" style="max-height: 400px;"
                  src="../../assets/images/help/map.png"
-                 alt="example screenshot of the query form with fields: hashtag, date range, intervals, and 'Get Statistics'-Button">
+                 alt="Image of the map component.">
             <!--<figcaption>The four main stats</figcaption>-->
         </figure>
 
@@ -204,7 +212,7 @@
         <figure>
             <img class="img-fluid" style="max-height: 400px;"
                  src="../../assets/images/help/trending-hashtags.png"
-                 alt="example screenshot of the query form with fields: hashtag, date range, intervals, and 'Get Statistics'-Button">
+                 alt="Trending Hashtags section which serves as a quick selection for the most popular hashtags during your selected timeframe.">
             <!--<figcaption>The four main stats</figcaption>-->
         </figure>
 
@@ -243,14 +251,17 @@
         </p>
 
         <div *ngFor="let topic of topicDefinitions | keyvalue: returnZero" id="{{topic.key}}">
-            <h3><i _ngcontent-nly-c2="" class="fa-solid {{topic.value['icon']}} fsz-xl"></i>  {{topic.value["name"]}}</h3>
+            <h3><i _ngcontent-nly-c2="" class="fa-solid {{topic.value['icon']}} fsz-xl"></i>  {{ topic.value["name"] }}
+            </h3>
             <p>
-                {{topic.value["tooltip"]}}
+                {{ topic.value["tooltip"] }}
             </p>
             <h4 *ngIf="topic.value['formula']" [innerHTML]="topic.value['formula']" class="query-parameter"></h4>
             <p [innerHTML]="topic.value['additional-help']">
             </p>
-            <div *ngIf="topic.value['query-parameter']" class="icquote query-parameter">{{topic.value["query-parameter"]}}</div>
+            <div *ngIf="topic.value['query-parameter']"
+                 class="icquote query-parameter">{{ topic.value["query-parameter"] }}
+            </div>
         </div>
     </div>
 </div>
