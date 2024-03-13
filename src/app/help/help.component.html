@@ -10,7 +10,7 @@
             further assistance.
         </p>
 
-        <h2>What are hashtags?</h2>
+        <h2 id="hashtag-definition">What are hashtags?</h2>
 
         <p>
             Hashtags are used as a popular way to mark OSM Changesets which belong to a particular mapping event, larger
@@ -35,7 +35,7 @@
                     class="icquote">#missingmaps</span>.
         </p>
 
-        <h2>How to define your query?</h2>
+        <h2 id="define-query">How to define your query?</h2>
 
         <ol>
             <li>Enter your OpenStreetMap <strong>hashtag</strong> in the first field. In the example we have used
@@ -71,7 +71,7 @@
             like a startsWith expression.
         </p>
 
-        <h2>How to refine your query?</h2>
+        <h2 id="refine-query">How to refine your query?</h2>
         <p>In addition to the query parameters mentioned above you can refine your query by specifying:</p>
 
         <ol>
@@ -103,7 +103,7 @@
 
 
         <h2>How to read the results?</h2>
-        <h3>Overview Statistics</h3>
+        <h3 id="overview-statistics">Overview Statistics</h3>
         <p>
             The overview statistics provide numbers about mapping activity for the hashtag and the time range defined in
             your query. In this example we consider data for <span class="icquote">#missingmaps</span> for a time range
@@ -121,7 +121,7 @@
             <figcaption>The four main stats</figcaption>
         </figure>
 
-        <h3>Timeline</h3>
+        <h3 id="timeline">Timeline</h3>
         <p>
             The timeline plot shows insights about the dynamics in mapping activity over time. The plot provides
             information for the hashtag and the time range defined in your query and the time interval you have
@@ -170,7 +170,7 @@
             interval, but data is only available for the first few days of that month.
         </p>
 
-        <h2>Map</h2>
+        <h2 id="map">Map</h2>
 
         <p>The map plot breaks down the overview statistics per country for the hashtag and the time range defined in
             your query. The interval setting is not considered in the map. In this example we consider data for
@@ -196,7 +196,7 @@
             currently not properly depicted in the map symbology.
         </p>
 
-        <h2>Trending Hashtags</h2>
+        <h2 id="trending-hashtags">Trending Hashtags</h2>
         <p>
             The trending hashtags leaderboard lists the 10 most used changeset comment hashtags for the time range
             defined in your query. The first entry in the lists represents the hashtag with the highest number of
@@ -220,7 +220,7 @@
             hashtag will be directly considered in your query. The statistics will be updated immediately.
         </p>
 
-        <h2>Download Section</h2>
+        <h2 id="download-section">Download Section</h2>
         <p>
             At the bottom left you can download the data that corresponds to your current selection.
         </p>
@@ -239,9 +239,27 @@
             <img class="img-fluid" style="max-height: 400px;"
                  src="../../assets/images/help/download-section.png"
                  alt="The download section. It provides three links corresponding to each stats section.">
-            <!--<figcaption>The four main stats</figcaption>-->
         </figure>
 
+        <div class="d-f flex-row">
+            <h2 id="live-mode">Live Mode</h2>
+            <figure>
+                <img class="img-fluid" style="max-height: 50px; box-shadow: none; margin: 0; margin-top: 2.5rem;"
+                     src="../../assets/images/live.png"
+                     alt="The download section. It provides three links corresponding to each stats section.">
+            </figure>
+        </div>
+        <p>Live Mode automatically refreshes the displayed statistics whenever new contributions to OSM arrive.</p>
+        <p>
+            To enter Live Mode simply select a <b>three hour time frame</b> and an <b>interval of five minutes</b>.
+            A <b>play button</b> will appear next to the "Get Statistics" button. Press it and Live Mode will
+            activate
+            🥳.
+        </p>
+
+        <p class="note">NOTE: Changing any query parameters will disable live mode immediately. The only exception to
+            this rule is changing the hashtag via the trending hashtags section.
+        </p>
 
         <h2>How are the statistics calculated?</h2>
 
