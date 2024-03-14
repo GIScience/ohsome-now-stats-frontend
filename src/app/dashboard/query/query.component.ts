@@ -12,7 +12,7 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IHashtags, IQueryData} from "../types";
+import {IHashtags, IHighlightedHashtag, IQueryData} from "../types";
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 
 dayjs.extend(duration)
@@ -60,13 +60,12 @@ export class QueryComponent implements OnChanges, OnInit {
     hot_controls: boolean = false;
 
     allHashtagOptions: IHashtags[] = []
+    filteredHashtagOptions: IHighlightedHashtag[] = []
+    selectedHashtagOption: IHighlightedHashtag = {hashtag: "", highlighted: ""}
 
-    filteredHashtagOptions: string[] = []
 
     liveMode: boolean = false
     refreshIntervalId: any = null
-
-    keyword: string = "hashtag"
 
     constructor(
         private dataService: DataService,
@@ -190,6 +189,7 @@ export class QueryComponent implements OnChanges, OnInit {
 
             // set hashtag textarea
             this.hashtag = decodeURIComponent(data.hashtag.toString())
+            this.selectedHashtagOption = {hashtag: this.hashtag, highlighted: ""}
 
             // set interval
             this.interval = data.interval
@@ -232,7 +232,7 @@ export class QueryComponent implements OnChanges, OnInit {
         const tempStart = this.selectedDateRangeUTC.start.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"//.format('YYYY-MM-DDTHH:mm:ss')
         const tempEnd = this.selectedDateRangeUTC.end.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"//.format('YYYY-MM-DDTHH:mm:ss')
 
-        const tempHashTag = this.cleanHashTag(this.hashtag)
+        const tempHashTag = this.cleanHashTag(this.selectedHashtagOption)
 
         if (this.selectedCountries.length === this.dropdownOptions.length) {
             this.countries = [""]
@@ -330,9 +330,9 @@ export class QueryComponent implements OnChanges, OnInit {
      * @param hashtag
      * @returns string comma seperated hashtag without the symbol hashtag
      */
-    cleanHashTag(hashtag: string): string {
+    cleanHashTag(hashtag: IHighlightedHashtag): string {
         return encodeURIComponent( // escape everyting but A–Z a–z 0–9 - _ . ! ~ * ' ( )
-            hashtag
+            hashtag.hashtag
                 .trim() // Remove leading/trailing whitespace
                 .replace(/^#/, '')
         ) // Remove '#' symbol from hashtag if it's at the beginning
@@ -372,10 +372,7 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     searchChange(event: any) {
-        let searchedHashtag = event.query
-        if (searchedHashtag.length < 1) {
-            return
-        }
+        let searchedHashtag = event.query.toString().toLocaleLowerCase()
         this.filteredHashtagOptions = this.allHashtagOptions.filter((hashtagResult) => {
             return hashtagResult.hashtag.length > 1 && hashtagResult.hashtag.includes(searchedHashtag)
         })
@@ -391,7 +388,12 @@ export class QueryComponent implements OnChanges, OnInit {
                         return a.count <= b.count ? 1 : -1
                     }
                 }
-            ).slice(0, 500).map((e) => e.hashtag.replace(searchedHashtag, `<b>${searchedHashtag}</b>`))
+            ).slice(0, 100).map((e) => {
+                return {
+                    "hashtag": e.hashtag,
+                    "highlighted": e.hashtag.replace(searchedHashtag, `<b>${searchedHashtag}</b>`)
+                }
+            })
     }
 
 

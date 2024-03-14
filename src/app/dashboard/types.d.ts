@@ -1,6 +1,32 @@
-export type StatsType = 'users' | 'edits' | 'buildings' | 'roads' | 'amenity' | 'commercial' | 'education' | 'financial' | 'healthcare' | 'lulc' | 'place' | 'poi' | 'social_facility' | 'wash' | 'waterway';
+export type StatsType =
+    'users'
+    | 'edits'
+    | 'buildings'
+    | 'roads'
+    | 'amenity'
+    | 'commercial'
+    | 'education'
+    | 'financial'
+    | 'healthcare'
+    | 'lulc'
+    | 'place'
+    | 'poi'
+    | 'social_facility'
+    | 'wash'
+    | 'waterway';
 
-export type TopicName = 'amenity' | 'commercial' | 'education' | 'financial' | 'healthcare' | 'lulc' | 'place' | 'poi' | 'social_facility' | 'wash' | 'waterway'
+export type TopicName =
+    'amenity'
+    | 'commercial'
+    | 'education'
+    | 'financial'
+    | 'healthcare'
+    | 'lulc'
+    | 'place'
+    | 'poi'
+    | 'social_facility'
+    | 'wash'
+    | 'waterway'
 
 export interface TopicValues {
     hashtag: string
@@ -96,7 +122,6 @@ export interface ITopicCountryData {
 }
 
 
-
 /**
  * Response JSON returned by /stats/{hashtag}/country endoint
  */
@@ -147,7 +172,13 @@ export interface IMetaData {
     end: string, // date in ISO format, ensure to keep milliseconds as 0
 }
 
-interface IHashtags{
+interface IHashtags {
     hashtag: string,
     count: number
+}
+
+
+interface IHighlightedHashtag {
+    hashtag: string,
+    highlighted: string
 }

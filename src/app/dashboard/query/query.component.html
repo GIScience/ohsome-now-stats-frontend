@@ -18,17 +18,20 @@
                     <label class="form-label" for="hashtag"> Hashtag</label>
                     <p-autoComplete
                             id="hashtag"
-                            [(ngModel)]="hashtag"
+                            [(ngModel)]="selectedHashtagOption"
                             name="hashtag"
                             [suggestions]="filteredHashtagOptions"
                             (completeMethod)="searchChange($event)"
                             [minLength]=1
+                            [delay]="150"
                             placeholder="Enter a hashtag"
                             (keydown)="turnOffLiveMode()"
                             [required]="true"
+                            emptyMessage="No hashtag found"
+                            optionLabel="hashtag"
                     >
                         <ng-template let-value pTemplate="item">
-                            <span [innerHTML]="value"></span>
+                            <span [innerHTML]="value.highlighted"></span>
                         </ng-template>
                     </p-autoComplete>
                     <small id="hashtagHelp" class="text-muted"> Hashtag used in Changesets comments eg:
