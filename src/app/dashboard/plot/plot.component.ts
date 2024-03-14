@@ -1,11 +1,13 @@
-import {Component, Input, OnChanges, AfterContentInit} from '@angular/core';
+import {AfterContentInit, Component, Input, OnChanges} from '@angular/core';
 
-import Plotly from 'plotly.js-basic-dist-min';
-import {Layout} from 'plotly.js-basic-dist-min';
+import Plotly, {Layout} from 'plotly.js-basic-dist-min';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-import {StatsType, IPlotData} from "../types";
+import {IDateRange, IPlotData, StatsType} from "../types";
 
-import {UTCToLocalConverterPipe, UTCStringToLocalDateConverterFunction} from "../query/pipes/utc-to-local-converter.pipe";
+import {
+    UTCStringToLocalDateConverterFunction,
+    UTCToLocalConverterPipe
+} from "../query/pipes/utc-to-local-converter.pipe";
 import dayjs from "dayjs";
 
 @Component({
@@ -19,10 +21,11 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     @Input() currentStats!: StatsType;
     @Input() selectedTopics: string | undefined;
     @Input() isPlotsLoading!: boolean;
-    @Input() maxDate!: dayjs.Dayjs;
+    @Input() selectedDateRange!: IDateRange;
     layout: Layout | any;
 
-    constructor(private utcToLocalConverter: UTCToLocalConverterPipe) {}
+    constructor(private utcToLocalConverter: UTCToLocalConverterPipe) {
+    }
 
     ngAfterContentInit(): void {
         this.initChart();
@@ -57,13 +60,11 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         };
 
         Plotly.react('summaryplot', [], this.layout, {responsive: true});
-
     }
 
     refreshPlot() {
-
         const plotData = [{
-            x: this.data.startDate.map(e=>UTCStringToLocalDateConverterFunction(e)),
+            x: this.data.startDate.map(e => UTCStringToLocalDateConverterFunction(e)),
             // @ts-ignore
             y: this.data[this.currentStats],
             // @ts-ignore
@@ -75,9 +76,9 @@ export class PlotComponent implements AfterContentInit, OnChanges {
             marker: {
                 pattern: {
                     // apply striped pattern only for current running time
-                    shape: this.data.startDate.map((start_date, index) => (
-                        this.maxDate.subtract(dayjs().utcOffset(),"minute").toDate() < UTCStringToLocalDateConverterFunction(this.data.endDate[index]))
-                        ? '/' : ''),
+                    shape: this.data.startDate.map((start_date, index) =>
+                        this.stripedOrNot(index)
+                    ),
                     size: 7,
                     solidity: 0.6
                 },
@@ -88,4 +89,21 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         Plotly.react('summaryplot', plotData as any, this.layout, {responsive: true});
     }
 
+    /**
+     * Return striped if first or last element are not fully contained in timeline.
+     */
+    stripedOrNot(index: number) {
+        if (index !== 0 && index !== this.data.startDate.length - 1) {
+            return ''
+        }
+
+        if (
+            this.selectedDateRange.end.subtract(dayjs().utcOffset(), "minute").toDate() < UTCStringToLocalDateConverterFunction(this.data.endDate[index])
+            || this.selectedDateRange.start.subtract(dayjs().utcOffset(), "minute").toDate() > UTCStringToLocalDateConverterFunction(this.data.startDate[index])
+        ) {
+            return '/'
+        }
+
+        return ''
+    }
 }

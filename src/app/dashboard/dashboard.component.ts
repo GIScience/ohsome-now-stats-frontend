@@ -3,21 +3,24 @@ import {ActivatedRoute} from '@angular/router';
 import dayjs from "dayjs";
 import {DataService} from '../data.service';
 import {
-    StatsType, ICountryStatsData,
+    ICountryStatsData,
+    IDateRange,
     IHashtag,
     IPlotData,
     IQueryParam,
-    ITopicPlotData,
     ISummaryData,
+    ITopicCountryData,
+    ITopicPlotData,
     IWrappedCountryStatsData,
     IWrappedPlotData,
     IWrappedTopicCountryData,
-    ITopicCountryData,
+    StatsType,
     TopicName,
     TopicValues
 } from './types';
 import {ToastService} from "../toast.service";
 import duration from 'dayjs/plugin/duration'
+
 dayjs.extend(duration)
 
 @Component({
@@ -39,7 +42,7 @@ export class DashboardComponent implements OnInit {
     isPlotsLoading = false;
     isCountriesLoading = false;
     isHashtagsLoading = false;
-    maxDate: dayjs.Dayjs = dayjs()
+    selectedDateRange!: IDateRange
 
     constructor(
         private dataService: DataService,
@@ -50,7 +53,7 @@ export class DashboardComponent implements OnInit {
     ngOnInit() {
 
         // listener for any changes in the fragment part of the URL
-        // assumption is that fragments sould never be empty as is its empty the routes
+        // assumption is that fragments should never be empty as is its empty the routes
         // should be redirected to have default values
         this.route.fragment.subscribe((fragment: string | null) => {
             this.isSummaryLoading = true;
@@ -59,7 +62,7 @@ export class DashboardComponent implements OnInit {
             this.isCountriesLoading = true;
             const queryParams = this.dataService.getQueryParamsFromFragments(fragment)
 
-            if (queryParams === null || !this.queryParamsComplete(queryParams)){
+            if (queryParams === null || !this.queryParamsComplete(queryParams)) {
                 this.setDefaultValues(queryParams)
                 return
             }
@@ -85,14 +88,13 @@ export class DashboardComponent implements OnInit {
 
             // form a appropriate message for summary data
             this.summaryMessage = this.formSummaryMessage(this.queryParams)
-
             this.requestsToAPI()
             // fire the request to API
         })
     }
 
 
-    requestsToAPI(){
+    requestsToAPI() {
         const timeRange = this.initTimeIntervals(this.queryParams)
         Object.assign(this.queryParams, timeRange)
         this.dataService.requestSummary(this.queryParams).subscribe({
@@ -127,7 +129,7 @@ export class DashboardComponent implements OnInit {
                                 startDate: this.queryParams['start'],
                                 endDate: this.queryParams['end']
                             }
-                            if(this.queryParams['countries'] !== '')
+                            if (this.queryParams['countries'] !== '')
                                 this.summaryData['countries'] = this.queryParams['countries']
                         },
                         error: (err) => {
@@ -147,7 +149,7 @@ export class DashboardComponent implements OnInit {
                         startDate: this.queryParams['start'],
                         endDate: this.queryParams['end']
                     }
-                    if(this.queryParams['countries'] !== '')
+                    if (this.queryParams['countries'] !== '')
                         this.summaryData['countries'] = this.queryParams['countries']
                 }
                 this.isSummaryLoading = false;
@@ -173,7 +175,7 @@ export class DashboardComponent implements OnInit {
                                     // add each Topic data to Plot data to make them a part of CSV
                                     this.plotData = this.addTopicDataToPlot(res.result, tempPlotResponse)
                                     this.plotData['hashtag'] = decodeURIComponent(this.queryParams['hashtag'])
-                                    if(this.queryParams['countries'] !== '')
+                                    if (this.queryParams['countries'] !== '')
                                         this.plotData['countries'] = this.queryParams['countries']
                                 }
                             },
@@ -185,7 +187,7 @@ export class DashboardComponent implements OnInit {
                         // if non Topic is selected only countryData is sent to PlotComponent
                         this.plotData = tempPlotResponse
                         this.plotData['hashtag'] = decodeURIComponent(this.queryParams['hashtag'])
-                        if(this.queryParams['countries'] !== '')
+                        if (this.queryParams['countries'] !== '')
                             this.plotData['countries'] = this.queryParams['countries']
                     }
                     this.isPlotsLoading = false;
@@ -245,7 +247,7 @@ export class DashboardComponent implements OnInit {
     }
 
 
-    setDefaultValues(queryParams: any){
+    setDefaultValues(queryParams: any) {
         // resolve #26
         const defaultParams = this.dataService.getDefaultValues()
         // if URL params are empty then fill it with default values
@@ -266,7 +268,7 @@ export class DashboardComponent implements OnInit {
         return ["start", "end", "interval", "hashtag", "countries", "topics"].sort().join() === Object.keys(params).sort().join()
     }
 
-    setQueryParamOrDefault(target: string, queryParams: any) :string{
+    setQueryParamOrDefault(target: string, queryParams: any): string {
         if (queryParams[target] == null || queryParams[target] == "") {
             const defaultParams = this.dataService.getDefaultValues()
             if (defaultParams !== null) {
@@ -277,11 +279,11 @@ export class DashboardComponent implements OnInit {
         return queryParams[target]
     }
 
-    checkHashtagParameter(hashtag: string) :string{
+    checkHashtagParameter(hashtag: string): string {
         if (hashtag == null)
             hashtag = this.dataService.defaultHashtag
 
-        if (hashtag === "*"){
+        if (hashtag === "*") {
             console.warn('Unsupported hashtag *')
             // show the message on toast
             this.toastService.show({
@@ -296,7 +298,7 @@ export class DashboardComponent implements OnInit {
         return hashtag
     }
 
-    checkIntervalParameter(interval:string, queryParams: any): string{
+    checkIntervalParameter(interval: string, queryParams: any): string {
         // difference of time between start and end dates in days
         const startDate = dayjs(queryParams.start)
         const endDate = dayjs(queryParams.end)
@@ -427,7 +429,7 @@ export class DashboardComponent implements OnInit {
     }
 
     private addTopicDataToPlot(res: Record<string, ITopicPlotData>, plotData: IPlotData) {
-        Object.keys(res).forEach((topic: string)=> {
+        Object.keys(res).forEach((topic: string) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             plotData[topic] = res[topic].value

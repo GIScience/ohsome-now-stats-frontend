@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export type StatsType =
     'users'
     | 'edits'
@@ -181,4 +183,9 @@ interface IHashtags {
 interface IHighlightedHashtag {
     hashtag: string,
     highlighted: string
+}
+
+interface IDateRange {
+    end: dayjs.Dayjs;
+    start: dayjs.Dayjs;
 }

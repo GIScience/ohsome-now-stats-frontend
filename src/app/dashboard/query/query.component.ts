@@ -12,7 +12,7 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IHashtags, IHighlightedHashtag, IQueryData} from "../types";
+import {IDateRange, IHashtags, IHighlightedHashtag, IQueryData} from "../types";
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 
 dayjs.extend(duration)
@@ -37,11 +37,12 @@ export class QueryComponent implements OnChanges, OnInit {
         value: string;
     }> | undefined
     interval: string | undefined // default value as 'P1M'
-    selectedDateRangeUTC: { end: dayjs.Dayjs; start: dayjs.Dayjs; } | undefined;
+    selectedDateRangeUTC: IDateRange | undefined;
     ranges: any
     minDate!: dayjs.Dayjs
     maxDate!: dayjs.Dayjs
-    @Output() maxDateEmitter = new EventEmitter<dayjs.Dayjs>()
+
+    @Output() dateRangeEmitter = new EventEmitter<IDateRange>()
     maxDateString!: string
 
 
@@ -103,7 +104,6 @@ export class QueryComponent implements OnChanges, OnInit {
             if (metaData && metaData.start && metaData.end) {
                 this.minDate = dayjs.utc(metaData?.start)
                 this.maxDate = dayjs.utc(metaData?.end).add(dayjs().utcOffset(), "minute")
-                this.maxDateEmitter.emit(this.maxDate);
 
                 this.maxDateString = this.utcToLocalConverter.transform(dayjs.utc(metaData?.end).toDate())
 
@@ -181,11 +181,13 @@ export class QueryComponent implements OnChanges, OnInit {
                 console.log('date range is null')
             }
             // set Start and end dates
-            if (data.start && data.end)
+            if (data.start && data.end) {
                 this.selectedDateRangeUTC = {
                     start: dayjs.utc(data.start).add(dayjs(data.start).utcOffset(), "minute"),
                     end: dayjs.utc(data.end).add(dayjs(data.end).utcOffset(), "minute")
                 }
+                this.dateRangeEmitter.emit(this.selectedDateRangeUTC);
+            }
 
             // set hashtag textarea
             this.hashtag = decodeURIComponent(data.hashtag.toString())
@@ -241,6 +243,8 @@ export class QueryComponent implements OnChanges, OnInit {
         }
 
         this.topics = this.selectedTopics.map(e => e.value)
+
+        this.dateRangeEmitter.emit(this.selectedDateRangeUTC)
 
         this.dataService.updateURL(
             {

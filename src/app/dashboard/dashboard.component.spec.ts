@@ -16,9 +16,9 @@ import {ToastComponent} from '../toast/toast.component';
 import {SelectDropDownModule} from 'ngx-select-dropdown';
 import {BigNumberComponent} from './summary/big-number/big-number.component';
 import {Overlay} from "../overlay.component";
-import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 import {UTCToLocalConverterPipe} from './query/pipes/utc-to-local-converter.pipe';
 import {ExportDataComponent} from "./export-data/export-data.component";
+import {AutoCompleteModule} from "primeng/autocomplete";
 
 describe('DashboardComponent', () => {
 
@@ -30,7 +30,7 @@ describe('DashboardComponent', () => {
         const dataServiceSpy = jasmine.createSpyObj('DataService', ['getDefaultValues', 'requestSummary', 'requestCountryStats', 'getTrendingHashtags', 'getQueryParamsFromFragments']);
 
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientTestingModule, SelectDropDownModule, AutocompleteLibModule],
+            imports: [RouterTestingModule, HttpClientTestingModule, SelectDropDownModule, AutoCompleteModule],
             declarations: [
                 SummaryComponent,
                 QueryComponent,
