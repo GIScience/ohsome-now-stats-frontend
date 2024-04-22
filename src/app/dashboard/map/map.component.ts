@@ -10,29 +10,8 @@ import {
 
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';
-import {download, generateCsv, mkConfig} from "export-to-csv";
-import {StatsType, ICountryStatsData} from '../types';
+import {ICountryStatsData, ICountryStatsDataAsArrays, StatsType} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-
-export interface ICountryStatsDataAsArrays {
-    country: string[],
-    users: number[],
-    roads: number[],
-    buildings: number[],
-    'amenity': number[],
-    'commercial': number[],
-    'education': number[],
-    'financial': number[],
-    'healthcare': number[],
-    'lulc': number[],
-    'place': number[],
-    'poi': number[],
-    'social_facility': number[],
-    'wash': number[],
-    'waterway': number[],
-    edits: number[],
-    latest: string[]
-}
 
 // Purples from d3-scale-chromatic at https://observablehq.com/@d3/color-schemes
 

@@ -6,6 +6,7 @@ export type StatsType =
     | 'buildings'
     | 'roads'
     | 'amenity'
+    | 'body_of_water'
     | 'commercial'
     | 'education'
     | 'financial'
@@ -19,6 +20,7 @@ export type StatsType =
 
 export type TopicName =
     'amenity'
+    | 'body_of_water'
     | 'commercial'
     | 'education'
     | 'financial'
@@ -138,6 +140,7 @@ export interface ICountryStatsData {
     buildings: number
     edits: number
     'amenity'?: number
+    'body_of_water'?: number
     'commercial'?: number
     'education'?: number
     'financial'?: number
@@ -188,4 +191,25 @@ interface IHighlightedHashtag {
 interface IDateRange {
     end: dayjs.Dayjs
     start: dayjs.Dayjs
+}
+
+export interface ICountryStatsDataAsArrays {
+    country: string[],
+    users: number[],
+    roads: number[],
+    buildings: number[],
+    'amenity': number[],
+    'body_of_water': number[]
+    'commercial': number[],
+    'education': number[],
+    'financial': number[],
+    'healthcare': number[],
+    'lulc': number[],
+    'place': number[],
+    'poi': number[],
+    'social_facility': number[],
+    'wash': number[],
+    'waterway': number[],
+    edits: number[],
+    latest: string[]
 }
