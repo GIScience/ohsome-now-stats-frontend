@@ -102,10 +102,7 @@ export class MapComponent implements OnChanges {
         cmin: number,
         cmax: number
     }) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const plotData: Data[] = [
-
+        const plotData: object[] = [
             {
                 type: 'scattergeo',
                 mode: 'markers',
