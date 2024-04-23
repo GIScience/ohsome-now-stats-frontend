@@ -140,9 +140,15 @@ export class MapComponent implements OnChanges {
                 marker: {
                     size: selectedCountryStatsArrays[stats],
                     color: selectedCountryStatsArrays[stats],
-                    showscale: true,
                     colorbar: {
-                        title: `${stats[0].toUpperCase() + stats.slice(1)}`
+                        title: {
+                            text: topicDefinitions[stats]["dropdown_name"],
+                            side: "top"
+                        },
+                        orientation: 'h',
+                        y: 0,
+                        thicknessmode: 'fraction',
+                        thickness: 0.03
                     },
                     cmin: cmin,
                     cmax: cmax,
@@ -188,7 +194,21 @@ export class MapComponent implements OnChanges {
             },
             xaxis: {
                 automargin: true
-            }
+            },
+            shapes: [{
+                type: 'rect',
+                xref: 'paper',
+                yref: 'paper',
+                y0: 0,
+                y1: 0.1,
+                x0: 0,
+                x1: 1,
+                fillcolor: 'white',
+                opacity: 1,
+                line: {
+                    width: 0
+                }
+            }]
         };
 
         const config: Partial<Config> = {
