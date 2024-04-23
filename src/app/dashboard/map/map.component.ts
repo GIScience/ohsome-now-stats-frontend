@@ -148,7 +148,8 @@ export class MapComponent implements OnChanges {
                         orientation: 'h',
                         y: 0,
                         thicknessmode: 'fraction',
-                        thickness: 0.03
+                        thickness: 0.03,
+                        len: 0.75
                     },
                     cmin: cmin,
                     cmax: cmax,
