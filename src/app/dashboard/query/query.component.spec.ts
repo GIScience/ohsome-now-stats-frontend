@@ -68,6 +68,13 @@ describe('QueryComponent', () => {
             const expectedOutput = 'hashtag';
             expect(component.cleanHashTag(input)).toEqual(expectedOutput);
         });
+
+        it('should handle only string not object input', () => {
+            const input = '#hashtag';
+
+            const expectedOutput = 'hashtag';
+            expect(component.cleanHashTag(input)).toEqual(expectedOutput);
+        })
     });
 
 });

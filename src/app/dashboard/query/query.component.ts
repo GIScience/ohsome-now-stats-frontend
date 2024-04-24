@@ -334,9 +334,12 @@ export class QueryComponent implements OnChanges, OnInit {
      * @param hashtag
      * @returns string comma seperated hashtag without the symbol hashtag
      */
-    cleanHashTag(hashtag: IHighlightedHashtag): string {
+    cleanHashTag(hashtag: IHighlightedHashtag | string): string {
+        if (typeof hashtag != "string") {
+            hashtag = hashtag.hashtag
+        }
         return encodeURIComponent( // escape everyting but A–Z a–z 0–9 - _ . ! ~ * ' ( )
-            hashtag.hashtag
+            hashtag
                 .trim() // Remove leading/trailing whitespace
                 .replace(/^#/, '')
         ) // Remove '#' symbol from hashtag if it's at the beginning
