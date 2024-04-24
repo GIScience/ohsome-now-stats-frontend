@@ -27,6 +27,7 @@ import {RouterModule} from "@angular/router";
 import {ExportDataComponent} from "./dashboard/export-data/export-data.component";
 import {AutoCompleteModule} from 'primeng/autocomplete';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {StatusBannerComponent} from "./status-banner/status-banner.component";
 
 let routes = [{path: 'help', component: HelpComponent}];
 
@@ -46,7 +47,8 @@ let routes = [{path: 'help', component: HelpComponent}];
         BigNumberComponent,
         ExportDataComponent,
         UTCToLocalConverterPipe,
-        Overlay
+        Overlay,
+        StatusBannerComponent
     ],
     imports: [
         BrowserModule,

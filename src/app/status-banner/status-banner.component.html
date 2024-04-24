@@ -1,0 +1,6 @@
+<div *ngIf="show" class="status-banner">
+    <div class="alert-icon fa-solid fa-triangle-exclamation"></div>
+    <div [innerHtml]="announcement" class="text-container"></div>
+    <div (click)="hide()" class="alert-icon fa-solid fa-xmark x-button">
+    </div>
+</div>
