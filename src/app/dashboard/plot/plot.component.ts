@@ -1,6 +1,6 @@
-import {AfterContentInit, Component, Input, OnChanges} from '@angular/core';
+import {AfterContentInit, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 
-import Plotly, {Layout} from 'plotly.js-basic-dist-min';
+import Plotly, {Config, Layout} from 'plotly.js-basic-dist-min';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {IDateRange, IPlotData, StatsType} from "../types";
 
@@ -23,6 +23,15 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     @Input() isPlotsLoading!: boolean;
     @Input() selectedDateRange!: IDateRange;
     layout: Layout | any;
+    fitToContentIcon = {
+        'width': 600,
+        'height': 500,
+        'path': 'M0 0H49.8339V500H0V0ZM550.166 0H600V500H550.166V0ZM450.086 225L421.887 196.707C412.14 186.928 412.14 171.072 421.887 161.293C431.634 151.514 447.436 151.514 457.183 161.293L527.659 232.004C532.569 236.93 535.006 243.398 534.969 249.855C535.006 256.312 532.569 262.781 527.659 267.707L457.183 338.418C447.436 348.197 431.634 348.197 421.887 338.418C412.14 328.638 412.14 312.783 421.887 303.004L449.797 275H146.924L174.835 303.004C184.582 312.783 184.582 328.638 174.835 338.418C165.088 348.197 149.285 348.197 139.538 338.418L69.0627 267.707C64.1526 262.781 61.7161 256.312 61.753 249.855C61.7161 243.399 64.1526 236.93 69.0627 232.004L139.538 161.293C149.285 151.514 165.088 151.514 174.835 161.293C184.582 171.072 184.582 186.928 174.835 196.707L146.636 225H450.086Z'
+    }
+    config: Partial<Config> = {
+        responsive: true,
+        modeBarButtonsToRemove: ['select2d', 'lasso2d', 'resetScale2d', 'zoomOut2d', 'zoomIn2d'],
+    }
 
     constructor(private utcToLocalConverter: UTCToLocalConverterPipe) {
     }
@@ -35,9 +44,13 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         }
     }
 
-    ngOnChanges(): void {
-        if (this.data)
+    ngOnChanges(changes: SimpleChanges): void {
+        if (this.data) {
+            if ("data" in changes) {
+                this.resetZoom()
+            }
             this.refreshPlot();
+        }
     }
 
     /**
@@ -59,7 +72,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
         };
 
-        Plotly.react('summaryplot', [], this.layout, {responsive: true});
+        Plotly.react('summaryplot', [], this.layout, this.config);
     }
 
     refreshPlot() {
@@ -86,7 +99,14 @@ export class PlotComponent implements AfterContentInit, OnChanges {
             },
         }];
         this.layout.yaxis.title = `${topicDefinitions[this.currentStats]["y-title"]}`
-        Plotly.react('summaryplot', plotData as any, this.layout, {responsive: true});
+        this.config.modeBarButtonsToAdd = [
+            {
+                name: 'FitToContent',
+                icon: this.fitToContentIcon,
+                title: 'Fit to Content',
+                click: this.fitToContent()
+            }]
+        Plotly.react('summaryplot', plotData as any, this.layout, this.config);
     }
 
     /**
@@ -105,5 +125,31 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         }
 
         return ''
+    }
+
+    // @ts-ignore
+    fitToContent() {
+        return () => {
+            // @ts-ignore
+            let data_start = this.data[this.currentStats].findIndex(value => value != 0)
+            // @ts-ignore
+            let data_end = this.data[this.currentStats].findLastIndex(value => value != 0)
+            Plotly.relayout('summaryplot', {
+                xaxis: {
+                    range: [
+                        this.data.startDate[data_start > 0 ? data_start : 0],
+                        this.data.startDate[data_end > 0 ? data_end : this.data.startDate.length - 1]
+                    ],
+                },
+            });
+        }
+    }
+
+    resetZoom() {
+        Plotly.relayout('summaryplot', {
+            xaxis: {
+                autorange: true
+            }
+        });
     }
 }
