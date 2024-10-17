@@ -140,8 +140,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
             Plotly.relayout('summaryplot', {
                 xaxis: {
                     range: [
-                        dayjs(this.data.startDate[data_start > 0 ? data_start : 0]).subtract(half_an_interval, 'milliseconds').toDate(),
-                        dayjs(this.data.startDate[data_end > 0 ? data_end : this.data.startDate.length - 1]).add(half_an_interval, 'milliseconds').toDate()
+                        UTCStringToLocalDateConverterFunction(dayjs(this.data.startDate[data_start > 0 ? data_start : 0]).subtract(half_an_interval, 'milliseconds').toDate().toISOString()),
+                        UTCStringToLocalDateConverterFunction(dayjs(this.data.startDate[data_end > 0 ? data_end : this.data.startDate.length - 1]).add(half_an_interval, 'milliseconds').toDate().toISOString())
                     ],
                 },
             });
