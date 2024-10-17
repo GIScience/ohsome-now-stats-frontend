@@ -9,6 +9,7 @@ import {
     UTCToLocalConverterPipe
 } from "../query/pipes/utc-to-local-converter.pipe";
 import dayjs from "dayjs";
+import moment from "moment";
 
 @Component({
     selector: 'app-plot',
@@ -22,6 +23,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     @Input() selectedTopics: string | undefined;
     @Input() isPlotsLoading!: boolean;
     @Input() selectedDateRange!: IDateRange;
+    @Input() currentInterval!: string;
     layout: Layout | any;
     fitToContentIcon = {
         'width': 600,
@@ -134,11 +136,12 @@ export class PlotComponent implements AfterContentInit, OnChanges {
             let data_start = this.data[this.currentStats].findIndex(value => value != 0)
             // @ts-ignore
             let data_end = this.data[this.currentStats].findLastIndex(value => value != 0)
+            const half_an_interval = moment.duration(this.currentInterval).asMilliseconds() / 2;
             Plotly.relayout('summaryplot', {
                 xaxis: {
                     range: [
-                        this.data.startDate[data_start > 0 ? data_start : 0],
-                        this.data.startDate[data_end > 0 ? data_end : this.data.startDate.length - 1]
+                        dayjs(this.data.startDate[data_start > 0 ? data_start : 0]).subtract(half_an_interval, 'milliseconds').toDate(),
+                        dayjs(this.data.startDate[data_end > 0 ? data_end : this.data.startDate.length - 1]).add(half_an_interval, 'milliseconds').toDate()
                     ],
                 },
             });

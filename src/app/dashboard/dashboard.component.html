@@ -26,7 +26,9 @@
             <!-- #Common graph for Summary ==================== -->
             <div class="pT-10">
                 <app-plot [data]="plotData" [currentStats]="currentStats" [selectedTopics]="selectedTopics"
-                          [isPlotsLoading]="isPlotsLoading" [selectedDateRange]="selectedDateRange"></app-plot>
+                          [isPlotsLoading]="isPlotsLoading" [selectedDateRange]="selectedDateRange"
+                          [currentInterval]="queryParams.interval"
+                ></app-plot>
             </div>
         </div>
         <div class="row">
