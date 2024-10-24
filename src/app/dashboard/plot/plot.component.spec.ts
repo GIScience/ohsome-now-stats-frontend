@@ -4,6 +4,7 @@ import {PlotComponent} from './plot.component';
 import {Overlay} from "../../overlay.component";
 import {UTCToLocalConverterPipe} from "../query/pipes/utc-to-local-converter.pipe";
 import dayjs from "dayjs";
+import {ActivatedRoute} from "@angular/router";
 
 describe('PlotComponent', () => {
     let component: PlotComponent;
@@ -12,9 +13,10 @@ describe('PlotComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [PlotComponent, Overlay, UTCToLocalConverterPipe],
-            providers: [{
-                provide: UTCToLocalConverterPipe
-            }]
+            providers: [
+                {provide: UTCToLocalConverterPipe},
+                {provide: ActivatedRoute, useValue: {}},
+            ]
         })
             .compileComponents();
 
