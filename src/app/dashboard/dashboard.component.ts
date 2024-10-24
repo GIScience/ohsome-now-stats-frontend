@@ -67,13 +67,13 @@ export class DashboardComponent implements OnInit {
                 return
             }
 
-            queryParams['hashtag'] = this.checkHashtagParameter(queryParams["hashtag"])
+            queryParams.hashtag = this.checkHashtagParameter(queryParams["hashtag"])
 
             queryParams.start = this.setQueryParamOrDefault("start", queryParams)
             queryParams.end = this.setQueryParamOrDefault("end", queryParams)
             queryParams.interval = this.setQueryParamOrDefault("interval", queryParams)
 
-            queryParams['interval'] = this.checkIntervalParameter(queryParams["interval"], queryParams)
+            queryParams.interval = this.checkIntervalParameter(queryParams["interval"], queryParams)
 
             if (queryParams['countries'] == null)
                 queryParams.countries = ''
@@ -247,7 +247,7 @@ export class DashboardComponent implements OnInit {
     }
 
 
-    setDefaultValues(queryParams: any) {
+    setDefaultValues(queryParams: IQueryParam | null) {
         // resolve #26
         const defaultParams = this.dataService.getDefaultValues()
         // if URL params are empty then fill it with default values
@@ -260,8 +260,8 @@ export class DashboardComponent implements OnInit {
                 countries: queryParams && queryParams.countries ? queryParams.countries : defaultParams.countries,
                 topics: queryParams && queryParams.topics ? queryParams.topics : defaultParams.topics
             }
-            if (queryParams["fit_to_content"]) {
-                newParams["fit_to_content"] = queryParams["fit_to_content"]
+            if (queryParams?.fit_to_content !== undefined) {
+                newParams.fit_to_content = queryParams.fit_to_content
             }
             this.dataService.updateURL(newParams)
         }

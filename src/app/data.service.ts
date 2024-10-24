@@ -70,15 +70,18 @@ export class DataService {
                 .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
             // if URL params are empty then fill it with default values
             const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment);
-
-            this.updateURL({
+            let defaults: IQueryParam = {
                 hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
                 interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
                 start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : tempStart,
                 end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
                 countries: queryParams && queryParams.countries ? queryParams.countries : '',
                 topics: queryParams && queryParams.topics ? queryParams.topics : ''
-            })
+            }
+            if (queryParams?.fit_to_content !== undefined) {
+                defaults.fit_to_content = queryParams.fit_to_content
+            }
+            this.updateURL(defaults)
         })
     }
 
@@ -92,7 +95,7 @@ export class DataService {
      * @param fragment URL fragment part
      * @returns Object with all query params sepearted
      */
-    getQueryParamsFromFragments(fragment: string | null): any {
+    getQueryParamsFromFragments(fragment: string | null): IQueryParam | null {
         if (fragment == null || fragment.length < 2)
             return null
 
