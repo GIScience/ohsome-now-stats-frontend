@@ -162,6 +162,7 @@ export interface IQueryParam {
     end: string // date in ISO format, ensure to keep milliseconds as 0
     interval: string // eg:'P1D' default value: 'P1M'
     topics: string
+    fit_to_content?: string
 }
 
 export interface IHashtag {

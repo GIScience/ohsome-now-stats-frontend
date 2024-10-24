@@ -10,6 +10,7 @@ import {
 } from "../query/pipes/utc-to-local-converter.pipe";
 import dayjs from "dayjs";
 import moment from "moment";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
     selector: 'app-plot',
@@ -35,7 +36,7 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         modeBarButtonsToRemove: ['select2d', 'lasso2d', 'resetScale2d', 'zoomOut2d', 'zoomIn2d'],
     }
 
-    constructor(private utcToLocalConverter: UTCToLocalConverterPipe) {
+    constructor(private utcToLocalConverter: UTCToLocalConverterPipe, private route: ActivatedRoute) {
     }
 
     ngAfterContentInit(): void {
@@ -48,10 +49,14 @@ export class PlotComponent implements AfterContentInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (this.data) {
-            if ("data" in changes) {
-                this.resetZoom()
-            }
             this.refreshPlot();
+            if ("data" in changes) {
+                if (this.route.snapshot.fragment?.includes("fit_to_content")) {
+                    this.fitToContent()()
+                } else {
+                    this.resetZoom()
+                }
+            }
         }
     }
 

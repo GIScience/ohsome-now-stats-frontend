@@ -252,20 +252,25 @@ export class DashboardComponent implements OnInit {
         const defaultParams = this.dataService.getDefaultValues()
         // if URL params are empty then fill it with default values
         if (defaultParams !== null) {
-            this.dataService.updateURL({
+            let newParams: IQueryParam = {
                 hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : defaultParams.hashtag,
                 interval: queryParams && queryParams.interval ? queryParams.interval : defaultParams.interval,
                 start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? "2009-04-21T22:02:04Z" : defaultParams.start,
                 end: queryParams && queryParams.end ? queryParams.end : defaultParams.end,
                 countries: queryParams && queryParams.countries ? queryParams.countries : defaultParams.countries,
-                topics: queryParams && queryParams.topics ? queryParams.topics : defaultParams.topics,
-            })
+                topics: queryParams && queryParams.topics ? queryParams.topics : defaultParams.topics
+            }
+            if (queryParams["fit_to_content"]) {
+                newParams["fit_to_content"] = queryParams["fit_to_content"]
+            }
+            this.dataService.updateURL(newParams)
         }
     }
 
 
     queryParamsComplete(params: any): boolean {
-        return ["start", "end", "interval", "hashtag", "countries", "topics"].sort().join() === Object.keys(params).sort().join()
+        return ["start", "end", "interval", "hashtag", "countries", "topics"].sort().join()
+            === Object.keys(params).filter((item) => item !== "fit_to_content").sort().join()
     }
 
     setQueryParamOrDefault(target: string, queryParams: any): string {

@@ -6,9 +6,13 @@ import {environment} from '../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 import moment from 'moment';
 import {
-    IMetaData, IQueryParam,
-    ISummaryData, IWrappedCountryStatsData, IWrappedPlotData,
-    IWrappedSummaryData, IWrappedTopicCountryData,
+    IMetaData,
+    IQueryParam,
+    ISummaryData,
+    IWrappedCountryStatsData,
+    IWrappedPlotData,
+    IWrappedSummaryData,
+    IWrappedTopicCountryData,
     IWrappedTopicData,
     IWrappedTopicPlotData
 } from "./dashboard/types";
@@ -209,8 +213,12 @@ export class DataService {
     }
 
     updateURL(data: IQueryParam): void {
+        let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
+        if (data.fit_to_content !== undefined) {
+            fragment += "&fit_to_content="
+        }
         this.router.navigate([], {
-            fragment: `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
+            fragment: fragment
         })
     }
 
