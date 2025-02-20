@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {environment} from "../../environments/environment";
 
 @Component({
     selector: 'status-banner',
@@ -14,14 +15,12 @@ export class StatusBannerComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        fetch('https://int-stats.now.ohsome.org/statuspage').then(res => res.json()).then(data => {
+        fetch(`${environment["ohsomeStatsUrl"]}/statuspage`).then(res => res.json()).then(data => {
             if (data["Announce"]) {
                 this.announcement = data["Announce"]
                 if (this.announcement != "") {
                     this.show = true
                 }
-            } else {
-                console.log("No announcement in Statuscake available!!!")
             }
         });
     }
