@@ -337,7 +337,7 @@
     @include from($breakpoint-md) {
       width: $collapsed-size;
 
-      &:not(:hover) .sidebar-logo .logo img {
+      .sidebar-logo .logo img {
         width: 32px;
         height: 32px;
         margin: 0 20px;
@@ -376,40 +376,40 @@
         }
       }
 
-      &:hover {
-        width: $offscreen-size;
-
-        .sidebar-inner {
-          .sidebar-logo {
-            border-bottom: 1px solid $border-color;
-            padding: 0 20px;
-          }
-
-          .sidebar-menu {
-            > li {
-              > a {
-                .title {
-                  display: inline-block;
-                }
-              }
-            }
-
-            li {
-              &.dropdown {
-                .arrow {
-                  opacity: 1;
-                }
-              }
-
-              &.open {
-                > ul.dropdown-menu {
-                  display: block !important;
-                }
-              }
-            }
-          }
-        }
-      }
+      //&:hover {
+      //  width: $offscreen-size;
+      //
+      //  .sidebar-inner {
+      //    .sidebar-logo {
+      //      border-bottom: 1px solid $border-color;
+      //      padding: 0 20px;
+      //    }
+      //
+      //    .sidebar-menu {
+      //      > li {
+      //        > a {
+      //          .title {
+      //            display: inline-block;
+      //          }
+      //        }
+      //      }
+      //
+      //      li {
+      //        &.dropdown {
+      //          .arrow {
+      //            opacity: 1;
+      //          }
+      //        }
+      //
+      //        &.open {
+      //          > ul.dropdown-menu {
+      //            display: block !important;
+      //          }
+      //        }
+      //      }
+      //    }
+      //  }
+      //}
     }
 
     // @include between($breakpoint-md, $breakpoint-xl) {
