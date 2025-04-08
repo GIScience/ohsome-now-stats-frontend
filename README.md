@@ -28,7 +28,7 @@ The core features are:
 For details about the ohsomeNow stats API check [GIScience/ohsome-now-stats-service](https://github.com/GIScience/ohsome-now-stats-service).
 
 # For Developers
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.0.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.8.
 ## Development server
 
 Run `pnpm install` to install the dependencies.
