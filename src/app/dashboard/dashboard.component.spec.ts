@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import {DashboardComponent} from './dashboard.component';
 import {DataService} from '../data.service';
@@ -19,6 +19,7 @@ import {Overlay} from "../overlay.component";
 import {UTCToLocalConverterPipe} from './query/pipes/utc-to-local-converter.pipe';
 import {ExportDataComponent} from "./export-data/export-data.component";
 import {AutoCompleteModule} from "primeng/autocomplete";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('DashboardComponent', () => {
 
@@ -30,30 +31,32 @@ describe('DashboardComponent', () => {
         const dataServiceSpy = jasmine.createSpyObj('DataService', ['getDefaultValues', 'requestSummary', 'requestCountryStats', 'getTrendingHashtags', 'getQueryParamsFromFragments']);
 
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientTestingModule, SelectDropDownModule, AutoCompleteModule],
-            declarations: [
-                SummaryComponent,
-                QueryComponent,
-                PlotComponent,
-                DashboardComponent,
-                PageNotFoundComponent,
-                MapComponent,
-                TrendingHashtagsComponent,
-                ToastComponent,
-                BigNumberComponent,
-                ExportDataComponent,
-                UTCToLocalConverterPipe,
-                Overlay,
-            ],
-            providers: [
-                {provide: DataService, useValue: dataServiceSpy},
-                {
-                    provide: ActivatedRoute,
-                    useValue: {fragment: of('hashtags=missingmaps&interval=P1M&countries=DE,UGA')}
-                },
-                {provide: UTCToLocalConverterPipe}
-            ]
-        })
+    declarations: [
+        SummaryComponent,
+        QueryComponent,
+        PlotComponent,
+        DashboardComponent,
+        PageNotFoundComponent,
+        MapComponent,
+        TrendingHashtagsComponent,
+        ToastComponent,
+        BigNumberComponent,
+        ExportDataComponent,
+        UTCToLocalConverterPipe,
+        Overlay,
+    ],
+    imports: [RouterTestingModule, SelectDropDownModule, AutoCompleteModule],
+    providers: [
+        { provide: DataService, useValue: dataServiceSpy },
+        {
+            provide: ActivatedRoute,
+            useValue: { fragment: of('hashtags=missingmaps&interval=P1M&countries=DE,UGA') }
+        },
+        { provide: UTCToLocalConverterPipe },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
             .compileComponents();
     });
 

@@ -16,38 +16,38 @@ import {AboutComponent} from "./about/about.component";
 import {HelpComponent} from "./help/help.component";
 import {UTCToLocalConverterPipe} from "./dashboard/query/pipes/utc-to-local-converter.pipe";
 import {Overlay} from "./overlay.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AppComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [
-                RouterTestingModule,
-                HttpClientTestingModule
-            ],
-            declarations: [
-                AppComponent,
-                SummaryComponent,
-                QueryComponent,
-                PlotComponent,
-                DashboardComponent,
-                PageNotFoundComponent,
-                MapComponent,
-                TrendingHashtagsComponent,
-                ToastComponent,
-                AboutComponent,
-                HelpComponent,
-                BigNumberComponent,
-                ExportDataComponent,
-                UTCToLocalConverterPipe,
-                Overlay,
-                StatusBannerComponent
-            ],
-            providers: [
-                DataService
-            ]
-        }).compileComponents();
+    declarations: [
+        AppComponent,
+        SummaryComponent,
+        QueryComponent,
+        PlotComponent,
+        DashboardComponent,
+        PageNotFoundComponent,
+        MapComponent,
+        TrendingHashtagsComponent,
+        ToastComponent,
+        AboutComponent,
+        HelpComponent,
+        BigNumberComponent,
+        ExportDataComponent,
+        UTCToLocalConverterPipe,
+        Overlay,
+        StatusBannerComponent
+    ],
+    imports: [RouterTestingModule],
+    providers: [
+        DataService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+}).compileComponents();
     });
 
     it('should create the app', () => {
