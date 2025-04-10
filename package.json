@@ -35,7 +35,6 @@
     "moment": "^2.29.1",
     "ngx-daterangepicker-material": "^6.0.4",
     "ngx-select-dropdown": "^3.3.1",
-    "ol": "^7.4.0",
     "perfect-scrollbar": "^1.5.5",
     "plotly.js-basic-dist-min": "^2.24.2",
     "plotly.js-geo-dist": "^2.24.3",
