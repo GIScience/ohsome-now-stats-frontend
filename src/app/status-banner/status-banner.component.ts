@@ -4,7 +4,8 @@ import {environment} from "../../environments/environment";
 @Component({
     selector: 'status-banner',
     templateUrl: './status-banner.component.html',
-    styleUrl: './status-banner.component.css'
+    styleUrl: './status-banner.component.css',
+    standalone: false
 })
 export class StatusBannerComponent implements OnInit {
     announcement: string = ""

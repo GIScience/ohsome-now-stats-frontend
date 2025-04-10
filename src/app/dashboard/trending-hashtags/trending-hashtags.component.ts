@@ -10,7 +10,8 @@ import {IHashtag} from "../types";
 @Component({
     selector: 'app-trending-hashtags',
     templateUrl: './trending-hashtags.component.html',
-    styleUrls: ['./trending-hashtags.component.scss']
+    styleUrls: ['./trending-hashtags.component.scss'],
+    standalone: false
 })
 export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
 

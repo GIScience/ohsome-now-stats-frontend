@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -63,7 +63,10 @@ let routes = [{path: 'help', component: HelpComponent}];
         DataService,
         UTCToLocalConverterPipe,
         ToastService,
-        { provide: APP_INITIALIZER, useFactory: metadataFactory, deps: [DataService], multi: true },
+        provideAppInitializer(() => {
+        const initializerFn = (metadataFactory)(inject(DataService));
+        return initializerFn();
+      }),
         provideHttpClient(withInterceptorsFromDi())
     ] })
 export class AppModule {

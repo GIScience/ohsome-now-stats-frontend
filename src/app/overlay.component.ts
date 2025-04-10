@@ -2,16 +2,15 @@ import {AfterContentInit, Component, Input} from "@angular/core";
 
 @Component({
     selector: 'overlay',
-    template:
-        `
+    template: `
             <div [ngClass]="isLoading ? 'opened' : 'closed'" >
                 <div class="custom-modal" >
                     <div class="lds-dual-ring"></div>
                 </div>
             </div>
-        `
-    ,
-    styleUrls: ['./overlay.component.scss']
+        `,
+    styleUrls: ['./overlay.component.scss'],
+    standalone: false
 })
 export class Overlay implements AfterContentInit {
     @Input() isLoading: boolean = false;

@@ -16,7 +16,8 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 @Component({
     selector: 'app-summary',
     templateUrl: './summary.component.html',
-    styleUrls: ['./summary.component.scss']
+    styleUrls: ['./summary.component.scss'],
+    standalone: false
 })
 export class SummaryComponent implements OnChanges {
     @Input() data!: ISummaryData;
