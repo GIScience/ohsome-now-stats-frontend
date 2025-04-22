@@ -3,6 +3,9 @@ import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -31,7 +34,8 @@ import {StatusBannerComponent} from "./status-banner/status-banner.component";
 
 let routes = [{path: 'help', component: HelpComponent}];
 
-@NgModule({ declarations: [
+@NgModule({
+    declarations: [
         AppComponent,
         SummaryComponent,
         QueryComponent,
@@ -49,7 +53,8 @@ let routes = [{path: 'help', component: HelpComponent}];
         Overlay,
         StatusBannerComponent
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+    bootstrap: [AppComponent],
+    imports: [BrowserModule,
         FormsModule,
         AppRoutingModule,
         NgxDaterangepickerMd.forRoot(),
@@ -59,14 +64,24 @@ let routes = [{path: 'help', component: HelpComponent}];
         AutoCompleteModule,
         RouterModule.forRoot(routes, {
             scrollOffset: [0, 80]
-        })], providers: [
+        })],
+    providers: [
         DataService,
         UTCToLocalConverterPipe,
         ToastService,
+        provideAnimationsAsync(),
+        providePrimeNG({
+            theme: {
+                preset: Aura,
+                options: {
+                    darkModeSelector: 'none'
+                }
+            }
+        }),
         provideAppInitializer(() => {
-        const initializerFn = (metadataFactory)(inject(DataService));
-        return initializerFn();
-      }),
+            const initializerFn = (metadataFactory)(inject(DataService));
+            return initializerFn();
+        }),
         provideHttpClient(withInterceptorsFromDi())
     ] })
 export class AppModule {
