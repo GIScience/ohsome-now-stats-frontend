@@ -58,9 +58,8 @@ export class DataService {
         this.getAbortIntervalReqSubject()
     }
 
-    // will be called by APP_INITIALIZER provider in app.module.ts on the start of the application
-    requestMetadata() {
-        return this.http.get(`${this.url}/metadata`).subscribe((meta: any) => {
+    processMetadata(metaDataObs: Observable<any>) {
+        metaDataObs.subscribe((meta: any) => {
             // console.log('>>> DataService >>> meta = ', meta)
             this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
             const tempStart = dayjs(meta.result.max_timestamp)
@@ -70,7 +69,7 @@ export class DataService {
                 .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
             // if URL params are empty then fill it with default values
             const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment);
-            let defaults: IQueryParam = {
+            const defaults: IQueryParam = {
                 hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
                 interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
                 start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : tempStart,
@@ -83,6 +82,13 @@ export class DataService {
             }
             this.updateURL(defaults)
         })
+    }
+
+    // will be called by APP_INITIALIZER provider in app.module.ts on the start of the application
+    requestMetadata() {
+        const metaObs = this.http.get(`${this.url}/metadata`)
+        this.processMetadata(metaObs)
+        return metaObs
     }
 
     requestAllHashtags() {
