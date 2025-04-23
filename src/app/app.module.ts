@@ -32,7 +32,7 @@ import {AutoCompleteModule} from 'primeng/autocomplete';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
 
-let routes = [{path: 'help', component: HelpComponent}];
+const routes = [{path: 'help', component: HelpComponent}];
 
 @NgModule({
     declarations: [
