@@ -25,6 +25,7 @@ dayjs.extend(customParseFormat)
     selector: 'app-query',
     templateUrl: './query.component.html',
     styleUrls: ['./query.component.scss'],
+    standalone: false
 })
 export class QueryComponent implements OnChanges, OnInit {
 

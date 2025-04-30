@@ -15,7 +15,8 @@ import {ActivatedRoute} from "@angular/router";
 @Component({
     selector: 'app-plot',
     templateUrl: './plot.component.html',
-    styleUrls: ['./plot.component.scss']
+    styleUrls: ['./plot.component.scss'],
+    standalone: false
 })
 export class PlotComponent implements AfterContentInit, OnChanges {
 

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { DataService } from './data.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -585,14 +585,16 @@ describe('DataService', () => {
 
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    TestBed.configureTestingModule({ 
-        imports: [ HttpClientTestingModule ],
-        declarations: [BigNumberComponent],
-        providers: [ 
-            DataService,
-            { provide: ActivatedRoute, useValue: { fragment: of('hashtag=missingmaps&interval=P1M') } },
-        ]
-    });
+    TestBed.configureTestingModule({
+    declarations: [BigNumberComponent],
+    imports: [],
+    providers: [
+        DataService,
+        { provide: ActivatedRoute, useValue: { fragment: of('hashtag=missingmaps&interval=P1M') } },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
     service = TestBed.inject(DataService)
     httpTestingController = TestBed.inject(HttpTestingController);
   });

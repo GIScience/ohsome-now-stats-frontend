@@ -1,9 +1,10 @@
 import {Component, Input, OnChanges, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'app-big-number',
-  templateUrl: './big-number.component.html',
-  styleUrls: ['./big-number.component.scss']
+    selector: 'app-big-number',
+    templateUrl: './big-number.component.html',
+    styleUrls: ['./big-number.component.scss'],
+    standalone: false
 })
 export class BigNumberComponent implements OnInit, OnChanges{
   @Input() name: string | undefined;

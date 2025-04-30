@@ -1,8 +1,11 @@
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -29,7 +32,7 @@ import {AutoCompleteModule} from 'primeng/autocomplete';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
 
-let routes = [{path: 'help', component: HelpComponent}];
+const routes = [{path: 'help', component: HelpComponent}];
 
 @NgModule({
     declarations: [
@@ -50,11 +53,10 @@ let routes = [{path: 'help', component: HelpComponent}];
         Overlay,
         StatusBannerComponent
     ],
-    imports: [
-        BrowserModule,
+    bootstrap: [AppComponent],
+    imports: [BrowserModule,
         FormsModule,
         AppRoutingModule,
-        HttpClientModule,
         NgxDaterangepickerMd.forRoot(),
         NgOptimizedImage,
         SelectDropDownModule,
@@ -62,16 +64,26 @@ let routes = [{path: 'help', component: HelpComponent}];
         AutoCompleteModule,
         RouterModule.forRoot(routes, {
             scrollOffset: [0, 80]
-        })
-    ],
+        })],
     providers: [
         DataService,
         UTCToLocalConverterPipe,
         ToastService,
-        {provide: APP_INITIALIZER, useFactory: metadataFactory, deps: [DataService], multi: true}
-    ],
-    bootstrap: [AppComponent]
-})
+        provideAnimationsAsync(),
+        providePrimeNG({
+            theme: {
+                preset: Aura,
+                options: {
+                    darkModeSelector: 'none'
+                }
+            }
+        }),
+        provideAppInitializer(() => {
+            const initializerFn = (metadataFactory)(inject(DataService));
+            return initializerFn();
+        }),
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule {
 }
 

@@ -1,7 +1,6 @@
 import {Component, Input, OnChanges, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import * as bootstrap from 'bootstrap';
-// declare var bootstrap: any;
 
 import {DataService} from '../../data.service';
 import {dashboard} from '../tooltip-data';
@@ -10,7 +9,8 @@ import {IHashtag} from "../types";
 @Component({
     selector: 'app-trending-hashtags',
     templateUrl: './trending-hashtags.component.html',
-    styleUrls: ['./trending-hashtags.component.scss']
+    styleUrls: ['./trending-hashtags.component.scss'],
+    standalone: false
 })
 export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
 

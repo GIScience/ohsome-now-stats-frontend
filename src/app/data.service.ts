@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, Subject, takeUntil} from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import {BehaviorSubject, Observable, retry, Subject, takeUntil, tap} from 'rxjs';
 
 import {environment} from '../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -60,29 +60,33 @@ export class DataService {
 
     // will be called by APP_INITIALIZER provider in app.module.ts on the start of the application
     requestMetadata() {
-        return this.http.get(`${this.url}/metadata`).subscribe((meta: any) => {
-            // console.log('>>> DataService >>> meta = ', meta)
-            this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
-            const tempStart = dayjs(meta.result.max_timestamp)
-                .subtract(1, "year")
-                .startOf("day")
-                .subtract(dayjs().utcOffset(), "minute")
-                .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
-            // if URL params are empty then fill it with default values
-            const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment);
-            let defaults: IQueryParam = {
-                hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
-                interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
-                start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : tempStart,
-                end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
-                countries: queryParams && queryParams.countries ? queryParams.countries : '',
-                topics: queryParams && queryParams.topics ? queryParams.topics : ''
-            }
-            if (queryParams?.fit_to_content !== undefined) {
-                defaults.fit_to_content = queryParams.fit_to_content
-            }
-            this.updateURL(defaults)
-        })
+        return this.http.get(`${this.url}/metadata`)
+            .pipe(
+                retry({count: 2, delay: 2000, resetOnSuccess: true}),
+                tap((meta: any) => {
+                    // consoles.log('>>> DataService >>> meta = ', meta)
+                    this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
+                    const tempStart = dayjs(meta.result.max_timestamp)
+                        .subtract(1, "year")
+                        .startOf("day")
+                        .subtract(dayjs().utcOffset(), "minute")
+                        .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
+                    // if URL params are empty then fill it with default values
+                    const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment);
+                    const defaults: IQueryParam = {
+                        hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
+                        interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
+                        start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : tempStart,
+                        end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
+                        countries: queryParams && queryParams.countries ? queryParams.countries : '',
+                        topics: queryParams && queryParams.topics ? queryParams.topics : ''
+                    }
+                    if (queryParams?.fit_to_content !== undefined) {
+                        defaults.fit_to_content = queryParams.fit_to_content
+                    }
+                    this.updateURL(defaults)
+                })
+            )
     }
 
     requestAllHashtags() {
@@ -192,7 +196,7 @@ export class DataService {
         if (!(this.minDate && this.maxDate))
             return null
 
-        let queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment)
+        const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment)
         const tempStart = queryParams && queryParams.hashtag ? moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
 
         return {

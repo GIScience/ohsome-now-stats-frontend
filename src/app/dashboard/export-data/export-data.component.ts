@@ -5,7 +5,8 @@ import {ICountryStatsData, IPlotData, ISummaryData} from "../types";
 @Component({
     selector: 'app-export-data',
     templateUrl: './export-data.component.html',
-    styleUrl: './export-data.component.scss'
+    styleUrl: './export-data.component.scss',
+    standalone: false
 })
 export class ExportDataComponent {
 

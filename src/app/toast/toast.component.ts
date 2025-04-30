@@ -5,9 +5,10 @@ import { IToastUI, ToastService } from '../toast.service';
 import { ToastTypes } from './toasttypes.modal';
 
 @Component({
-  selector: 'app-toast',
-  templateUrl: './toast.component.html',
-  styleUrls: ['./toast.component.scss']
+    selector: 'app-toast',
+    templateUrl: './toast.component.html',
+    styleUrls: ['./toast.component.scss'],
+    standalone: false
 })
 export class ToastComponent implements OnInit {
   toastVisible = false

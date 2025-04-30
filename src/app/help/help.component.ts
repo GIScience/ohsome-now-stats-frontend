@@ -4,9 +4,10 @@ import {dashboard} from 'src/app/dashboard/tooltip-data'
 import topicDefinitions from "../../assets/static/json/topicDefinitions.json"
 
 @Component({
-  selector: 'app-help',
-  templateUrl: './help.component.html',
-  styleUrls: ['./help.component.scss']
+    selector: 'app-help',
+    templateUrl: './help.component.html',
+    styleUrls: ['./help.component.scss'],
+    standalone: false
 })
 export class HelpComponent implements AfterViewChecked{
     topicDefinitions = topicDefinitions
