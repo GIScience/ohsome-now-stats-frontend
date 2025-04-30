@@ -72,8 +72,8 @@ importers:
         specifier: ^2.24.3
         version: 2.35.3
       primeng:
-        specifier: ^19.0.10
-        version: 19.0.10(652847f070c39051440d609f3fd25455)
+        specifier: ^19.1.0
+        version: 19.1.0(652847f070c39051440d609f3fd25455)
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -112,7 +112,7 @@ importers:
         specifier: ^5.2.6
         version: 5.2.10
       '@types/jasmine':
-        specifier: ~4.3.0
+        specifier: ~4.3.6
         version: 4.3.6
       '@types/plotly.js-basic-dist-min':
         specifier: ^2.12.1
@@ -130,10 +130,10 @@ importers:
         specifier: ~4.5.0
         version: 4.5.0
       karma:
-        specifier: ~6.4.0
+        specifier: ~6.4.4
         version: 6.4.4
       karma-chrome-launcher:
-        specifier: ~3.1.0
+        specifier: ~3.1.1
         version: 3.1.1
       karma-coverage:
         specifier: ~2.2.0
@@ -3821,6 +3821,9 @@ packages:
   parse5@7.2.1:
     resolution: {integrity: sha512-BuBYQYlv1ckiPdQi/ohiivi9Sagc9JG+Ozs0r7b/0iK3sKmrb0b9FdWdBbOdx6hBCM/F9Ir82ofnBhtZOjCRPQ==}
 
+  parse5@7.3.0:
+    resolution: {integrity: sha512-IInvU7fabl34qmi9gY8XOVxhYyMyuH2xUNpb2q8/Y+7552KlejkRvqvD19nMoUW/uQGGbqNpA6Tufu5FL5BZgw==}
+
   parseurl@1.3.3:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
     engines: {node: '>= 0.8'}
@@ -3945,11 +3948,11 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  primeng@19.0.10:
-    resolution: {integrity: sha512-pVvywU6WoDtS6cwyGm5wyHp/RPqsqtTL3Z6eNgwsP7wMRpNYxVQB2W5ewF64byP8bqFqRQMWY2ZPj0lDeTQ/sA==}
+  primeng@19.1.0:
+    resolution: {integrity: sha512-xzPOvq6m0nyD3HQpqIgXmfTFqWiI4P9AIraRKjMdfwOruGzpimxf0iYJDgNNvJJvH32DwLZD6OnFTh3PaiP5Fg==}
     peerDependencies:
       '@angular/animations': ^19.0.0
-      '@angular/cdk': ^19.0.0
+      '@angular/cdk': 19.2.3
       '@angular/common': ^19.0.0
       '@angular/core': ^19.0.0
       '@angular/forms': ^19.0.0
@@ -5073,7 +5076,7 @@ snapshots:
     dependencies:
       '@angular/common': 19.2.6(@angular/core@19.2.6(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
       '@angular/core': 19.2.6(rxjs@7.8.2)(zone.js@0.15.0)
-      parse5: 7.2.1
+      parse5: 7.3.0
       rxjs: 7.8.2
       tslib: 2.8.1
 
@@ -8785,6 +8788,10 @@ snapshots:
     dependencies:
       entities: 4.5.0
 
+  parse5@7.3.0:
+    dependencies:
+      entities: 6.0.0
+
   parseurl@1.3.3: {}
 
   path-exists@4.0.0: {}
@@ -8884,7 +8891,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  primeng@19.0.10(652847f070c39051440d609f3fd25455):
+  primeng@19.1.0(652847f070c39051440d609f3fd25455):
     dependencies:
       '@angular/animations': 19.2.6(@angular/common@19.2.6(@angular/core@19.2.6(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.6(rxjs@7.8.2)(zone.js@0.15.0))
       '@angular/cdk': 19.2.9(@angular/common@19.2.6(@angular/core@19.2.6(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.6(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
