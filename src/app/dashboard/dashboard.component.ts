@@ -31,14 +31,14 @@ dayjs.extend(duration)
 })
 export class DashboardComponent implements OnInit {
 
-    summaryData!: ISummaryData
-    plotData!: IPlotData
+    summaryData!: ISummaryData;
+    plotData!: IPlotData;
     countryWithTopic: ICountryStatsData[] = [];
     selectedTopics: TopicName | "" = "";
     currentStats: StatsType = 'users';
-    queryParams: any
-    summaryMessage = ''
-    hashtagsData!: Array<IHashtag> | []
+    queryParams: any;
+    summaryMessage = '';
+    hashtagsData!: Array<IHashtag> | [];
     isSummaryLoading = false;
     isPlotsLoading = false;
     isCountriesLoading = false;
@@ -96,6 +96,10 @@ export class DashboardComponent implements OnInit {
 
 
     requestsToAPI() {
+        if(! this.queryParams) {
+            console.error('queryParams was empty')
+            return
+        }
         const timeRange = this.initTimeIntervals(this.queryParams)
         Object.assign(this.queryParams, timeRange)
         this.dataService.requestSummary(this.queryParams).subscribe({

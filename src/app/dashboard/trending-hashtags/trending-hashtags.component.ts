@@ -1,7 +1,6 @@
 import {Component, Input, OnChanges, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import * as bootstrap from 'bootstrap';
-// declare var bootstrap: any;
 
 import {DataService} from '../../data.service';
 import {dashboard} from '../tooltip-data';
