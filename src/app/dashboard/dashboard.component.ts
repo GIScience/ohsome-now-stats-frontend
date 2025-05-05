@@ -32,6 +32,7 @@ dayjs.extend(duration)
 export class DashboardComponent implements OnInit {
 
     summaryData!: ISummaryData;
+    topicData!: { [p: string]: number } | null;
     plotData!: IPlotData;
     countryWithTopic: ICountryStatsData[] = [];
     selectedTopics: TopicName | "" = "";
@@ -107,56 +108,21 @@ export class DashboardComponent implements OnInit {
                 // console.log('>>> res = ', res)
                 const tempSummaryData = res.result
                 // fire the requests to API
-                if (this.queryParams['topics']) {
-                    this.dataService.requestTopic(this.queryParams).subscribe({
-                        next: res => {
-                            // send response data to Summary Component
-                            const input: { [key: string]: TopicValues } = res.result
-                            const topicValue: { [key: string]: number } = {};
-
-                            // Iterate over the keys and extract the 'value'
-                            for (const key in input) {
-                                if (Object.prototype.hasOwnProperty.call(input, key)) {
-                                    topicValue[key] = input[key].value;
-                                }
-                            }
-
-                            // send response data to Summary Component
-                            this.summaryData = {
-                                changesets: tempSummaryData.changesets,
-                                buildings: tempSummaryData.buildings,
-                                users: tempSummaryData.users,
-                                edits: tempSummaryData.edits,
-                                roads: tempSummaryData.roads,
-                                latest: tempSummaryData.latest,
-                                ...topicValue,
-                                hashtag: this.queryParams['hashtag'],
-                                startDate: this.queryParams['start'],
-                                endDate: this.queryParams['end']
-                            }
-                            if (this.queryParams['countries'] !== '')
-                                this.summaryData['countries'] = this.queryParams['countries']
-                        },
-                        error: (err) => {
-                            console.error('Error while requesting Topic data ', err)
-                        }
-                    })
-                } else {
-                    // send response data to Summary Component
-                    this.summaryData = {
-                        changesets: tempSummaryData.changesets,
-                        buildings: tempSummaryData.buildings,
-                        users: tempSummaryData.users,
-                        edits: tempSummaryData.edits,
-                        roads: tempSummaryData.roads,
-                        latest: tempSummaryData.latest,
-                        hashtag: decodeURIComponent(this.queryParams['hashtag']),
-                        startDate: this.queryParams['start'],
-                        endDate: this.queryParams['end']
-                    }
-                    if (this.queryParams['countries'] !== '')
-                        this.summaryData['countries'] = this.queryParams['countries']
+                // send response data to Summary Component
+                this.summaryData = {
+                    changesets: tempSummaryData.changesets,
+                    buildings: tempSummaryData.buildings,
+                    users: tempSummaryData.users,
+                    edits: tempSummaryData.edits,
+                    roads: tempSummaryData.roads,
+                    latest: tempSummaryData.latest,
+                    hashtag: decodeURIComponent(this.queryParams['hashtag']),
+                    startDate: this.queryParams['start'],
+                    endDate: this.queryParams['end']
                 }
+                if (this.queryParams['countries'] !== '')
+                    this.summaryData['countries'] = this.queryParams['countries']
+
                 this.isSummaryLoading = false;
 
                 this.dataService.setSummary(this.summaryData)
@@ -165,6 +131,42 @@ export class DashboardComponent implements OnInit {
                 console.error('Error while requesting Summary data ', err)
             }
         })
+
+        if (this.queryParams['topics']) {
+            this.dataService.requestTopic(this.queryParams).subscribe({
+                next: res => {
+                    const tempSummaryData = this.dataService.getSummary()
+                    if(! tempSummaryData) {
+                        console.error('Got response of Topics but SummaryData was empty')
+                        return
+                    }
+                    // send response data to Summary Component
+                    const input: { [key: string]: TopicValues } = res.result
+                    const topicValue: { [key: string]: number } = {};
+
+                    // Iterate over the keys and extract the 'value'
+                    for (const key in input) {
+                        if (Object.prototype.hasOwnProperty.call(input, key)) {
+                            topicValue[key] = input[key].value;
+                        }
+                    }
+
+                    // send response data to Summary Component
+                    this.topicData = {
+                        ...topicValue
+                    }
+                    if (this.queryParams['countries'] !== '')
+                        this.summaryData['countries'] = this.queryParams['countries']
+
+                    // this.dataService.setSummary(this.summaryData)
+                },
+                error: (err) => {
+                    console.error('Error while requesting Topic data ', err)
+                }
+            })
+        } else {
+            this.topicData = null
+        }
 
         // fire timeseries API to get plot data
         this.dataService.requestPlot(this.queryParams).subscribe({
