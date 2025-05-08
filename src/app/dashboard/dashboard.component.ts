@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import dayjs from "dayjs";
 import {DataService} from '../data.service';
@@ -29,7 +29,7 @@ dayjs.extend(duration)
     styleUrls: ['./dashboard.component.scss'],
     standalone: false
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
     summaryData!: ISummaryData;
     topicData!: { [p: string]: number } | null;
@@ -367,7 +367,7 @@ export class DashboardComponent implements OnInit {
 
         let message = ''
         if (queryParams.hashtag)
-            message += `Summarized statistics of contributions with  #${queryParams.hashtag}`
+            message += `Summarized statistics of contributions with #${queryParams.hashtag}`
 
         if (queryParams.start)
             message += ` from ${queryParams.start}`
@@ -447,6 +447,12 @@ export class DashboardComponent implements OnInit {
             plotData[topic] = res[topic].value
         })
         return plotData
+    }
+
+    ngOnDestroy(): void {
+        this.dataService.abortIntervalReqSub.unsubscribe()
+        this.dataService.abortSummaryReqSub.unsubscribe()
+        this.dataService.abortSummaryReqSub.unsubscribe()
     }
 
 }
