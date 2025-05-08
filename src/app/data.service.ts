@@ -155,8 +155,8 @@ export class DataService {
     }
 
     getSummary() {
-        // return this.bsSummaryData.getValue()
-        return this.summaryData
+        return this.bsSummaryData.getValue()
+        // return this.summaryData
     }
 
     setSummary(data: ISummaryData) {
