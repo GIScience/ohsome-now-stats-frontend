@@ -112,7 +112,8 @@ export class SummaryComponent implements OnChanges {
         const newSelected = e.target.nodeName != "APP-BIG-NUMBER" ? e.target.closest(".big_number") : e.target.children[0].closest(".big_number")
         const siblings = [...newSelected.parentNode.parentNode.children];
         siblings.forEach((e) => e.children[0].children[0].classList.remove("selected"))
-        newSelected.children[0].classList.add("selected")
+        if(newSelected.children)
+            newSelected.children[0].classList.add("selected")
     }
 
     changeCurrentStats(e: any, newCurrentStats: string) {
