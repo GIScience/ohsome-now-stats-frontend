@@ -72,8 +72,8 @@ importers:
         specifier: ^2.24.3
         version: 2.35.3
       primeng:
-        specifier: ^19.1.0
-        version: 19.1.0(652847f070c39051440d609f3fd25455)
+        specifier: ^19.1.2
+        version: 19.1.2(652847f070c39051440d609f3fd25455)
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -3948,11 +3948,11 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  primeng@19.1.0:
-    resolution: {integrity: sha512-xzPOvq6m0nyD3HQpqIgXmfTFqWiI4P9AIraRKjMdfwOruGzpimxf0iYJDgNNvJJvH32DwLZD6OnFTh3PaiP5Fg==}
+  primeng@19.1.2:
+    resolution: {integrity: sha512-iu4lDrStBPCyYn+iSfofp/Hsv/dHVlnlsOhqFZlYTQB1o+MlVXa4PanLgHdoBr1thy3ozRkNDZHsICkUecWu0A==}
     peerDependencies:
       '@angular/animations': ^19.0.0
-      '@angular/cdk': 19.2.3
+      '@angular/cdk': ^19.0.0
       '@angular/common': ^19.0.0
       '@angular/core': ^19.0.0
       '@angular/forms': ^19.0.0
@@ -8891,7 +8891,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  primeng@19.1.0(652847f070c39051440d609f3fd25455):
+  primeng@19.1.2(652847f070c39051440d609f3fd25455):
     dependencies:
       '@angular/animations': 19.2.6(@angular/common@19.2.6(@angular/core@19.2.6(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.6(rxjs@7.8.2)(zone.js@0.15.0))
       '@angular/cdk': 19.2.9(@angular/common@19.2.6(@angular/core@19.2.6(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.6(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
