@@ -33,35 +33,36 @@
             <!-- ### $Sidebar Menu ### -->
             <ul class="sidebar-menu scrollable pos-r">
                 <li class="nav-item mT-30 actived">
-                    <a class="sidebar-link" [routerLink]="['/dashboard']">
-            <span class="icon-holder">
-              <i class="c-blue-500 ti-home"></i>
-            </span>
+                    <a class="sidebar-link" (click)="redirectTo('dashboard')" style="cursor: pointer">
+                        <span class="icon-holder">
+                          <i class="c-blue-500 ti-home"></i>
+                        </span>
                         <span class="title">Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="sidebar-link" [routerLink]="['/dashboard/hotosm']">
-                        <div class="logo">
+                    <a class="sidebar-link" (click)="redirectTo('hotosm')">
+                        <div class="logo" style="cursor: pointer">
                             <img alt="HOT"
                                  src="assets/images/hot_logo.png"
                                  style="height: 20px">
                         </div>
+                        <span class="title">HOT View</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class='sidebar-link' [routerLink]="['/about']">
-            <span class="icon-holder">
-              <i class="c-deep-orange-500 ti-info"></i>
-            </span>
+                        <span class="icon-holder">
+                          <i class="c-deep-orange-500 ti-info"></i>
+                        </span>
                         <span class="title">About</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class='sidebar-link' [routerLink]="['/help']">
-            <span class="icon-holder">
-              <i class="c-indigo-500 ti-help-alt"></i>
-            </span>
+                        <span class="icon-holder">
+                          <i class="c-indigo-500 ti-help-alt"></i>
+                        </span>
                         <span class="title">Help</span>
                     </a>
                 </li>

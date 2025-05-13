@@ -62,7 +62,7 @@ export class DashboardComponent implements OnInit {
             this.isHashtagsLoading = true;
             this.isPlotsLoading = true;
             this.isCountriesLoading = true;
-            const queryParams = this.dataService.getQueryParamsFromFragments(fragment)
+            const queryParams = this.dataService.getQueryParamsFromFragments()
 
             if (queryParams === null || !this.queryParamsComplete(queryParams)) {
                 this.setDefaultValues(queryParams)
