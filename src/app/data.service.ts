@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {BehaviorSubject, Observable, retry, Subject, takeUntil, tap} from 'rxjs';
+import {BehaviorSubject, map, Observable, retry, Subject, takeUntil, tap} from 'rxjs';
 
 import {environment} from '../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -90,7 +90,10 @@ export class DataService {
     }
 
     requestAllHashtags() {
-        return this.http.get(`${this.url}/hashtags`)
+        return this.http.get<any>(`${this.url}/hashtags`)
+            .pipe(
+                map(res => res.result)
+            )
     }
 
     /**
@@ -232,4 +235,5 @@ export class DataService {
     toggleLiveMode(mode: boolean) {
         this.bsLive.next(mode)
     }
+
 }
