@@ -18,7 +18,7 @@ const routes: Routes = [
         pathMatch: 'full',
     },
     {
-        path: 'hot',
+        path: 'dashboard/hotosm',
         component: DashboardComponent,
         pathMatch: 'full',
     },
