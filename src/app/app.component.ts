@@ -56,7 +56,6 @@ export class AppComponent implements AfterViewInit {
         const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
 
-
     }
 
     toggleSidebar() {
@@ -88,7 +87,6 @@ export class AppComponent implements AfterViewInit {
 
                 parentListItem.classList.add('open')
             }
-
     }
 
     /**
@@ -98,19 +96,26 @@ export class AppComponent implements AfterViewInit {
      * Gets the fragment values directly from the
      */
     redirectTo(pageName: string) {
-        const fragmentData = this.dataService.getQueryParamsFromFragments()
+        const fragmentData = this.dataService.getQueryParamsFromFragments();
         if(pageName == "dashboard") {
-            let fragment = `hashtag=${fragmentData.hashtag}&start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}&countries=${fragmentData.countries}&topics=${fragmentData.topics}`
-            if (fragmentData.fit_to_content !== undefined) {
-                fragment += "&fit_to_content="
+            const requiredKeys = ["hashtag", "start", "end", "interval", "countries", "topics"];
+            const hasAllKeys = requiredKeys.every(key => key in fragmentData);
+            if (!hasAllKeys) {
+                console.error(`Page with Fragment data ${JSON.stringify(fragmentData)} missing required fields.`);
+                return;
             }
-            this.router.navigate(['/dashboard'], {fragment: fragment});
-        } else if(pageName == "hotosm") {
-            let fragment = `start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}`
+
+            let fragment = `hashtag=${fragmentData.hashtag}&start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}&countries=${fragmentData.countries}&topics=${fragmentData.topics}`;
             if (fragmentData.fit_to_content !== undefined) {
-                fragment += "&fit_to_content="
+                fragment += "&fit_to_content=";
             }
-            this.router.navigate(['/dashboard/hotosm'], {fragment: fragment});
+            this.router.navigate(['/dashboard'], { fragment: fragment });
+        } else if (pageName == "hotosm") {
+            let fragment = `start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}`;
+            if (fragmentData.fit_to_content !== undefined) {
+                fragment += "&fit_to_content=";
+            }
+            this.router.navigate(['/dashboard/hotosm'], { fragment: fragment });
         }
     }
 }
