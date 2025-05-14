@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit {
         // listener for any changes in the fragment part of the URL
         // assumption is that fragments should never be empty as is its empty the routes
         // should be redirected to have default values
-        this.route.fragment.subscribe((fragment: string | null) => {
+        this.route.fragment.subscribe(() => {
             this.isSummaryLoading = true;
             this.isHashtagsLoading = true;
             this.isPlotsLoading = true;
@@ -96,7 +96,7 @@ export class DashboardComponent implements OnInit {
 
 
     requestsToAPI() {
-        if(! this.queryParams) {
+        if (!this.queryParams) {
             console.error('queryParams was empty')
             return
         }
@@ -135,7 +135,7 @@ export class DashboardComponent implements OnInit {
             this.dataService.requestTopic(this.queryParams).subscribe({
                 next: res => {
                     const tempSummaryData = this.dataService.getSummary()
-                    if(! tempSummaryData) {
+                    if (!tempSummaryData) {
                         console.error('Got response of Topics but SummaryData was empty')
                         return
                     }

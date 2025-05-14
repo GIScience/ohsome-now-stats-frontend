@@ -91,13 +91,13 @@ export class AppComponent implements AfterViewInit {
 
     /**
      * Redirects to HOT view
-     * Maintains the parameter the user selected in the QueryComponent except the Hastag as that
+     * Maintains the parameter the user selected in the QueryComponent except the Hashtag as that
      * defaults to "hotosm-project-*"
      * Gets the fragment values directly from the
      */
     redirectTo(pageName: string) {
         const fragmentData = this.dataService.getQueryParamsFromFragments();
-        if(pageName == "dashboard") {
+        if (pageName == "dashboard") {
             const requiredKeys = ["hashtag", "start", "end", "interval", "countries", "topics"];
             const hasAllKeys = requiredKeys.every(key => key in fragmentData);
             if (!hasAllKeys) {
@@ -109,13 +109,13 @@ export class AppComponent implements AfterViewInit {
             if (fragmentData.fit_to_content !== undefined) {
                 fragment += "&fit_to_content=";
             }
-            this.router.navigate(['/dashboard'], { fragment: fragment });
+            this.router.navigate(['/dashboard'], {fragment: fragment});
         } else if (pageName == "hotosm") {
             let fragment = `start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}`;
             if (fragmentData.fit_to_content !== undefined) {
                 fragment += "&fit_to_content=";
             }
-            this.router.navigate(['/dashboard/hotosm'], { fragment: fragment });
+            this.router.navigate(['/dashboard/hotosm'], {fragment: fragment});
         }
     }
 }
