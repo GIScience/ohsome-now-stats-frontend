@@ -18,6 +18,11 @@ const routes: Routes = [
         pathMatch: 'full',
     },
     {
+        path: 'dashboard/hotosm',
+        component: DashboardComponent,
+        pathMatch: 'full',
+    },
+    {
         path: 'about',
         pathMatch: 'full',
         component: AboutComponent

@@ -14,6 +14,7 @@ import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
 import {IDateRange, IHashtags, IHighlightedHashtag, IQueryData} from "../types";
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
+import {ActivatedRoute} from "@angular/router";
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -38,7 +39,7 @@ export class QueryComponent implements OnChanges, OnInit {
         value: string;
     }> | undefined
     interval: string | undefined // default value as 'P1M'
-    selectedDateRangeUTC: IDateRange | undefined;
+    selectedDateRangeUTC: IDateRange | undefined
     ranges: any
     minDate!: dayjs.Dayjs
     maxDate!: dayjs.Dayjs
@@ -58,21 +59,18 @@ export class QueryComponent implements OnChanges, OnInit {
     topics: string[] = [];  // only codes for url and get request
     topicOptions: any[] = []
     selectedTopics: topicDataClass[] = []  // selected countries with name and code
-
     hot_controls: boolean = false;
-
     allHashtagOptions: IHashtags[] = []
     filteredHashtagOptions: IHighlightedHashtag[] = []
     selectedHashtagOption: IHighlightedHashtag = {hashtag: "", highlighted: ""}
-
-
     liveMode: boolean = false
     refreshIntervalId: any = null
 
     constructor(
         private dataService: DataService,
         private utcToLocalConverter: UTCToLocalConverterPipe,
-        private toastService: ToastService
+        private toastService: ToastService,
+        private activatedRoute: ActivatedRoute
     ) {
 
         this.buildTopicOptions()
@@ -86,10 +84,15 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     ngOnInit(): void {
-        this.dataService.requestAllHashtags().subscribe((hashtagsResult) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            this.allHashtagOptions = hashtagsResult["result"]
+        this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
+            // view mode is HOT
+            if(this.activatedRoute.snapshot.url.length >= 2 )
+            if (this.activatedRoute.snapshot.url[0].path == 'dashboard' && this.activatedRoute.snapshot.url[1].path == 'hotosm') {
+                this.hot_controls = true
+                this.selectedHashtagOption = { hashtag: "hotosm-project-*", highlighted: "hotosm-project-*" }
+                this.getStatistics()
+            }
+            this.allHashtagOptions = hashtagsResult
         })
     }
 
@@ -380,7 +383,7 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     searchChange(event: any) {
-        let searchedHashtag = event.query.toString().toLocaleLowerCase()
+        const searchedHashtag = event.query.toString().toLocaleLowerCase()
         this.filteredHashtagOptions = this.allHashtagOptions.filter((hashtagResult) => {
             return hashtagResult.hashtag.length > 1 && hashtagResult.hashtag.includes(searchedHashtag)
         })
@@ -526,6 +529,8 @@ export class QueryComponent implements OnChanges, OnInit {
             tooltipEle.remove()
         })
     }
+
+
 }
 
 function customComparator(a: any, b: any) {

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {BehaviorSubject, Observable, retry, Subject, takeUntil, tap} from 'rxjs';
+import {BehaviorSubject, map, Observable, retry, Subject, takeUntil, tap} from 'rxjs';
 
 import {environment} from '../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -72,7 +72,7 @@ export class DataService {
                         .subtract(dayjs().utcOffset(), "minute")
                         .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
                     // if URL params are empty then fill it with default values
-                    const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment);
+                    const queryParams = this.getQueryParamsFromFragments();
                     const defaults: IQueryParam = {
                         hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
                         interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
@@ -90,20 +90,22 @@ export class DataService {
     }
 
     requestAllHashtags() {
-        return this.http.get(`${this.url}/hashtags`)
+        return this.http.get<any>(`${this.url}/hashtags`)
+            .pipe(
+                map(res => res.result)
+            )
     }
 
     /**
      * Creates query param from enitre fragment of the URL
      *
-     * @param fragment URL fragment part
      * @returns Object with all query params sepearted
      */
-    getQueryParamsFromFragments(fragment: string | null): IQueryParam | null {
-        if (fragment == null || fragment.length < 2)
+    getQueryParamsFromFragments(): any {
+        if (this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 2)
             return null
 
-        const tempQueryParams: Array<Array<string>> = fragment?.split('&')
+        const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&')
             .map(q => [q.split('=')[0], q.split('=')[1]])
         return Object.fromEntries(tempQueryParams)
     }
@@ -196,7 +198,7 @@ export class DataService {
         if (!(this.minDate && this.maxDate))
             return null
 
-        const queryParams = this.getQueryParamsFromFragments(this.route.snapshot.fragment)
+        const queryParams = this.getQueryParamsFromFragments()
         const tempStart = queryParams && queryParams.hashtag ? moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
 
         return {
@@ -232,4 +234,5 @@ export class DataService {
     toggleLiveMode(mode: boolean) {
         this.bsLive.next(mode)
     }
+
 }

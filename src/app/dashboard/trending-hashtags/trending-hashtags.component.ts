@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnDestroy} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import * as bootstrap from 'bootstrap';
 
 import {DataService} from '../../data.service';
@@ -24,7 +24,6 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
     constructor(
         private dataService: DataService,
         private route: ActivatedRoute,
-        private router: Router,
 ) {
         this.trendingHashtagLimit = dataService.trendingHashtagLimit
         this.dashboardTooltips = dashboard
@@ -66,21 +65,19 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
     clickHashtag(hashtag: string) {
         // console.log('>>> clickHashtag ', hashtag)
         const queryParams = this.getQueryParamsFromFragments()
-        this.dataService.updateURL(
-            {
-                hashtag: hashtag,
-                interval: queryParams.interval,
-                start: queryParams.start,
-                end: queryParams.end,
-                countries: queryParams.countries,
-                topics: queryParams.topics
-            }
-        )
+        this.dataService.updateURL({
+            hashtag: hashtag,
+            interval: queryParams.interval,
+            start: queryParams.start,
+            end: queryParams.end,
+            countries: queryParams.countries,
+            topics: queryParams.topics
+        })
     }
 
     /**
-     * Creates query param from enitre fragment of the URL
-     * @returns Object with all query params sepearted
+     * Creates query param from entire fragment of the URL
+     * @returns Object with all query params separated
      */
     getQueryParamsFromFragments(): any {
         if (this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 2)

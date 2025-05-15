@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import dayjs from "dayjs";
 import {DataService} from '../data.service';
@@ -29,7 +29,7 @@ dayjs.extend(duration)
     styleUrls: ['./dashboard.component.scss'],
     standalone: false
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
 
     summaryData!: ISummaryData;
     topicData!: { [p: string]: number } | null;
@@ -57,12 +57,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // listener for any changes in the fragment part of the URL
         // assumption is that fragments should never be empty as is its empty the routes
         // should be redirected to have default values
-        this.route.fragment.subscribe((fragment: string | null) => {
+        this.route.fragment.subscribe(() => {
             this.isSummaryLoading = true;
             this.isHashtagsLoading = true;
             this.isPlotsLoading = true;
             this.isCountriesLoading = true;
-            const queryParams = this.dataService.getQueryParamsFromFragments(fragment)
+            const queryParams = this.dataService.getQueryParamsFromFragments()
 
             if (queryParams === null || !this.queryParamsComplete(queryParams)) {
                 this.setDefaultValues(queryParams)
@@ -87,17 +87,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
             this.queryParams = queryParams
 
-
             // form a appropriate message for summary data
             this.summaryMessage = this.formSummaryMessage(this.queryParams)
-            this.requestsToAPI()
             // fire the request to API
+            this.requestsToAPI()
         })
     }
 
 
     requestsToAPI() {
-        if(! this.queryParams) {
+        if (!this.queryParams) {
             console.error('queryParams was empty')
             return
         }
@@ -136,7 +135,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.dataService.requestTopic(this.queryParams).subscribe({
                 next: res => {
                     const tempSummaryData = this.dataService.getSummary()
-                    if(! tempSummaryData) {
+                    if (!tempSummaryData) {
                         console.error('Got response of Topics but SummaryData was empty')
                         return
                     }
@@ -206,8 +205,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
 
         // fire API to get map data
-        this.dataService.requestCountryStats(this.queryParams)
-            .subscribe((res: IWrappedCountryStatsData) => {
+        this.dataService.requestCountryStats(this.queryParams).subscribe({
+            next: (res: IWrappedCountryStatsData) => {
                 // add 'hashtag'
                 res.result.map((r: any) => {
                     r['hashtag'] = decodeURIComponent(this.queryParams['hashtag'])
@@ -227,7 +226,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.countryWithTopic = tempCountryResponse
                 }
                 this.isCountriesLoading = false;
-            });
+            },
+            error: (err) => {
+                console.error('Error while requesting Country data  ', err)
+            }
+        });
 
         this.selectedTopics = this.queryParams["topics"]
 
@@ -259,7 +262,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         const defaultParams = this.dataService.getDefaultValues()
         // if URL params are empty then fill it with default values
         if (defaultParams !== null) {
-            let newParams: IQueryParam = {
+            const newParams: IQueryParam = {
                 hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : defaultParams.hashtag,
                 interval: queryParams && queryParams.interval ? queryParams.interval : defaultParams.interval,
                 start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? "2009-04-21T22:02:04Z" : defaultParams.start,
@@ -284,7 +287,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (queryParams[target] == null || queryParams[target] == "") {
             const defaultParams = this.dataService.getDefaultValues()
             if (defaultParams !== null) {
-                // @ts-ignore
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
                 return defaultParams[target]
             }
         }
@@ -314,9 +318,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // difference of time between start and end dates in days
         const startDate = dayjs(queryParams.start)
         const endDate = dayjs(queryParams.end)
-        let diff = endDate.diff(startDate, 'day')
+        const diff = endDate.diff(startDate, 'day')
 
-        let max_bins = 10000
+        const max_bins = 10000
         if (dayjs.duration(diff, "day").as("second") / dayjs.duration(queryParams.interval).as("second") > max_bins) {
             console.warn('Too many bins requested')
             // show the message on toast
@@ -447,12 +451,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             plotData[topic] = res[topic].value
         })
         return plotData
-    }
-
-    ngOnDestroy(): void {
-        this.dataService.abortIntervalReqSub.unsubscribe()
-        this.dataService.abortSummaryReqSub.unsubscribe()
-        this.dataService.abortSummaryReqSub.unsubscribe()
     }
 
 }

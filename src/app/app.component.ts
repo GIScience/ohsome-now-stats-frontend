@@ -2,6 +2,7 @@ import {AfterViewInit, Component, HostListener} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {ToastService} from './toast.service';
 import {DataService} from "./data.service";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-root',
@@ -17,7 +18,8 @@ export class AppComponent implements AfterViewInit {
     live: boolean = false
 
     constructor(private toastService: ToastService,
-                private dataService: DataService) {
+                private dataService: DataService,
+                private router: Router) {
         this.dataService.liveMode.subscribe(mode => {
             this.live = mode
         })
@@ -54,7 +56,6 @@ export class AppComponent implements AfterViewInit {
         const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
 
-
     }
 
     toggleSidebar() {
@@ -86,7 +87,35 @@ export class AppComponent implements AfterViewInit {
 
                 parentListItem.classList.add('open')
             }
-
     }
 
+    /**
+     * Redirects to HOT view
+     * Maintains the parameter the user selected in the QueryComponent except the Hashtag as that
+     * defaults to "hotosm-project-*"
+     * Gets the fragment values directly from the
+     */
+    redirectTo(pageName: string) {
+        const fragmentData = this.dataService.getQueryParamsFromFragments();
+        if (pageName == "dashboard") {
+            const requiredKeys = ["hashtag", "start", "end", "interval", "countries", "topics"];
+            const hasAllKeys = requiredKeys.every(key => key in fragmentData);
+            if (!hasAllKeys) {
+                console.error(`Page with Fragment data ${JSON.stringify(fragmentData)} missing required fields.`);
+                return;
+            }
+
+            let fragment = `hashtag=${fragmentData.hashtag}&start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}&countries=${fragmentData.countries}&topics=${fragmentData.topics}`;
+            if (fragmentData.fit_to_content !== undefined) {
+                fragment += "&fit_to_content=";
+            }
+            this.router.navigate(['/dashboard'], {fragment: fragment});
+        } else if (pageName == "hotosm") {
+            let fragment = `start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}`;
+            if (fragmentData.fit_to_content !== undefined) {
+                fragment += "&fit_to_content=";
+            }
+            this.router.navigate(['/dashboard/hotosm'], {fragment: fragment});
+        }
+    }
 }
