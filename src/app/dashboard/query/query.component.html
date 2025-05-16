@@ -5,52 +5,18 @@
             <form (keyup.enter)="getStatistics()" class="needs-validation was-validated" novalidate="">
                 <div class="row">
                     <div class="mb-3 col-md-12">
-                        <!-- Start date, End date and interval -->
                         <div class="mb-3 row">
-                            <div class="col-md-12">
-                                <label class="form-label" for="dateRange"> Date and Time Range</label>
-                                <input type="text"
-                                       class="form-control"
-                                       ngxDaterangepickerMd
-                                       [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
-                                       startKey="start"
-                                       endKey="end"
-                                       [minDate]="minDate"
-                                       [maxDate]="maxDate"
-                                       [(ngModel)]="selectedDateRangeUTC"
-                                       id="dateRange"
-                                       name="daterange"
-                                       [showCustomRangeLabel]="true"
-                                       [alwaysShowCalendars]="false"
-                                       [ranges]="ranges"
-                                       [linkedCalendars]="true"
-                                       [showClearButton]="true"
-                                       [timePicker]="true"
-                                       [timePicker24Hour]="true"
-                                       (change)="dateUpdated($event); turnOffLiveMode()"
-                                       (keydown)="turnOffLiveMode()"
-                                       [autoApply]="true"
-                                       [closeOnAutoApply]="false"
-                                       placeholder="Select please..."
-                                       required=""/>
-                                <small class="text-muted fs-i">Current time: {{ currentTimeInUserTimeZone }}</small><br>
-                                <small class="text-muted fs-i">Latest database entry: {{ maxDateString }}</small>
+                            <div class="col-md-10">
+                                <label class="form-label" for="hashtag"> Hashtag</label>
                             </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <div class="col-md-12">
-                                <label class="form-label" for="intervals"> Interval </label>
-                                <select name="intervals" class="form-control" id="intervals" [(ngModel)]="interval"
-                                        (change)="turnOffLiveMode()">
-                                    <option *ngFor="let option of intervals; index as i; first as isFirst"
-                                            [value]="option.value"
-                                            [disabled]="allowedInterval(option.value)">{{ option.label }}
-                                    </option>
-                                </select>
+                            <div class="col-md-2">
+                                <span class="icon-holder tooltip1" data-bs-placement="bottom"
+                                      data-bs-toggle="tooltip"
+                                      title="Filter stats by hashtag used in changesets comments eg: missingmaps. Keep it blank for statistics of all data with or without hashtags"
+                                      data-bs-html="true">
+                                    <i class="c-grey-800 ti-help-alt"></i>
+                                </span>
                             </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label class="form-label" for="hashtag"> Hashtag</label>
                             <p-autoComplete
                                     id="hashtag"
                                     [(ngModel)]="selectedHashtagOption"
@@ -67,9 +33,60 @@
                                     <span [innerHTML]="value.highlighted"></span>
                                 </ng-template>
                             </p-autoComplete>
-                            <small id="hashtagHelp" class="text-muted">
-                                For all contributions keep blank or enter Hashtag used in changesets comments eg: missingmaps.
-                            </small>
+                        </div>
+                        <!-- Start date, End date and interval -->
+                        <div class="mb-3 row">
+                            <div class="col-md-10">
+                                <label class="form-label" for="dateRange"> Date and Time Range</label>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="icon-holder tooltip1" data-bs-placement="bottom"
+                                      data-bs-toggle="tooltip"
+                                      title="Latest database entry: {{ maxDateString }}. You can't query for data later then this."
+                                      data-bs-html="true">
+                                    <i class="c-grey-800 ti-help-alt"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <input type="text"
+                                   class="form-control"
+                                   ngxDaterangepickerMd
+                                   [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
+                                   startKey="start"
+                                   endKey="end"
+                                   [minDate]="minDate"
+                                   [maxDate]="maxDate"
+                                   [(ngModel)]="selectedDateRangeUTC"
+                                   id="dateRange"
+                                   name="daterange"
+                                   [showCustomRangeLabel]="true"
+                                   [alwaysShowCalendars]="false"
+                                   [ranges]="ranges"
+                                   [linkedCalendars]="true"
+                                   [showClearButton]="true"
+                                   [timePicker]="true"
+                                   [timePicker24Hour]="true"
+                                   (change)="dateUpdated($event); turnOffLiveMode()"
+                                   (keydown)="turnOffLiveMode()"
+                                   [autoApply]="true"
+                                   [closeOnAutoApply]="false"
+                                   placeholder="Select please..."
+                                   required=""/>
+<!--                                <small class="text-muted fs-i">Current time: {{ currentTimeInUserTimeZone }}</small><br>-->
+<!--                                <small class="text-muted fs-i">Latest database entry: {{ maxDateString }}</small>-->
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-md-12">
+                                <label class="form-label" for="intervals"> Interval </label>
+                                <select name="intervals" class="form-control" id="intervals" [(ngModel)]="interval"
+                                        (change)="turnOffLiveMode()">
+                                    <option *ngFor="let option of intervals; index as i; first as isFirst"
+                                            [value]="option.value"
+                                            [disabled]="allowedInterval(option.value)">{{ option.label }}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
                         <div class="mb-3 row">
                             <div class="col-md-12">

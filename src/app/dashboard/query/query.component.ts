@@ -84,6 +84,7 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     ngOnInit(): void {
+        this.enableTooltips()
         this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
             // view mode is HOT
             if(this.activatedRoute.snapshot.url.length >= 2 )
