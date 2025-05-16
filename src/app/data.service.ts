@@ -31,7 +31,7 @@ export class DataService {
     abortSummaryReqSub!: Subject<void>
     abortIntervalReqSub!: Subject<void>
 
-    defaultHashtag = 'missingmaps'
+    defaultHashtag = ''
     trendingHashtagLimit = 10
     timeIntervals = [
         {label: 'five minutes', value: 'PT5M'},
@@ -199,7 +199,7 @@ export class DataService {
             return null
 
         const queryParams = this.getQueryParamsFromFragments()
-        const tempStart = queryParams && queryParams.hashtag ? moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
+        const tempStart = queryParams ? moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
 
         return {
             start: tempStart.format('YYYY-MM-DDTHH:mm:ss') + 'Z',
