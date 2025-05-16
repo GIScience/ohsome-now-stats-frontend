@@ -31,7 +31,7 @@ export class DataService {
     abortSummaryReqSub!: Subject<void>
     abortIntervalReqSub!: Subject<void>
 
-    defaultHashtag = 'missingmaps'
+    defaultHashtag = ''
     trendingHashtagLimit = 10
     timeIntervals = [
         {label: 'five minutes', value: 'PT5M'},
@@ -115,7 +115,7 @@ export class DataService {
     }
 
     requestSummary(params: any): Observable<IWrappedSummaryData> {
-        return this.http.get<IWrappedSummaryData>(`${this.url}/stats/${params['hashtag']}?startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
+        return this.http.get<IWrappedSummaryData>(`${this.url}/stats?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
             .pipe(
                 takeUntil(this.abortSummaryReqSub)
             )
@@ -143,14 +143,14 @@ export class DataService {
     }
 
     requestPlot(params: any): Observable<IWrappedPlotData> {
-        return this.http.get<IWrappedPlotData>(`${this.url}/stats/${params['hashtag']}/interval?startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}&countries=${params['countries']}`)
+        return this.http.get<IWrappedPlotData>(`${this.url}/stats/interval?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}&countries=${params['countries']}`)
             .pipe(
                 takeUntil(this.abortIntervalReqSub)
             )
     }
 
     requestCountryStats(params: any): Observable<IWrappedCountryStatsData> {
-        return this.http.get<IWrappedCountryStatsData>(`${this.url}/stats/${params['hashtag']}/country?startdate=${params['start']}&enddate=${params['end']}`)
+        return this.http.get<IWrappedCountryStatsData>(`${this.url}/stats/country?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}`)
             .pipe(
                 takeUntil(this.abortIntervalReqSub)
             )
@@ -199,7 +199,7 @@ export class DataService {
             return null
 
         const queryParams = this.getQueryParamsFromFragments()
-        const tempStart = queryParams && queryParams.hashtag ? moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
+        const tempStart = queryParams ? moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
 
         return {
             start: tempStart.format('YYYY-MM-DDTHH:mm:ss') + 'Z',

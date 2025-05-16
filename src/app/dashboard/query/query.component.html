@@ -2,64 +2,78 @@
     <!-- #Total Visits ==================== -->
     <div class='col-md-12'>
         <div class="bgc-white p-20 bd">
-            <!-- <h6 class="lh-1">Query</h6> -->
-            <!-- <div class="mT-30"> -->
             <form (keyup.enter)="getStatistics()" class="needs-validation was-validated" novalidate="">
-                <div class="mb-3 row">
-                    <label class="form-label" for="hashtag"> Hashtag</label>
-                    <p-autoComplete
-                            id="hashtag"
-                            [(ngModel)]="selectedHashtagOption"
-                            name="hashtag"
-                            [suggestions]="filteredHashtagOptions"
-                            (completeMethod)="searchChange($event)"
-                            [minLength]=1
-                            [delay]="150"
-                            placeholder="Enter a hashtag"
-                            (keydown)="turnOffLiveMode()"
-                            [required]="true"
-                            emptyMessage="No hashtag found"
-                            optionLabel="hashtag"
-                    >
-                        <ng-template let-value pTemplate="item">
-                            <span [innerHTML]="value.highlighted"></span>
-                        </ng-template>
-                    </p-autoComplete>
-                    <small id="hashtagHelp" class="text-muted"> Hashtag used in Changesets comments eg:
-                        missingmaps</small>
-                </div>
                 <div class="row">
                     <div class="mb-3 col-md-12">
+                        <div class="mb-3 row">
+                            <div class="col-md-10">
+                                <label class="form-label" for="hashtag"> Hashtag</label>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="icon-holder tooltip1" data-bs-placement="bottom"
+                                      data-bs-toggle="tooltip"
+                                      title="Filter stats by hashtag used in changesets comments eg: missingmaps. Keep it blank for statistics of all edits with or without hashtags"
+                                      data-bs-html="true">
+                                    <i class="c-grey-800 ti-help-alt"></i>
+                                </span>
+                            </div>
+                            <p-autoComplete
+                                    id="hashtag"
+                                    [(ngModel)]="selectedHashtagOption"
+                                    name="hashtag"
+                                    [suggestions]="filteredHashtagOptions"
+                                    (completeMethod)="searchChange($event)"
+                                    [minLength]=1
+                                    [delay]="150"
+                                    placeholder="Keep blank or Enter a hashtag"
+                                    (keydown)="turnOffLiveMode()"
+                                    optionLabel="hashtag"
+                            >
+                                <ng-template let-value pTemplate="item">
+                                    <span [innerHTML]="value.highlighted"></span>
+                                </ng-template>
+                            </p-autoComplete>
+                        </div>
                         <!-- Start date, End date and interval -->
                         <div class="mb-3 row">
-                            <div class="col-md-12">
+                            <div class="col-md-10">
                                 <label class="form-label" for="dateRange"> Date and Time Range</label>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="icon-holder tooltip1" data-bs-placement="bottom"
+                                      data-bs-toggle="tooltip"
+                                      title="Latest database entry: {{ maxDateString }}. You can't query for data later then this."
+                                      data-bs-html="true">
+                                    <i class="c-grey-800 ti-help-alt"></i>
+                                </span>
+                            </div>
+                            <div>
                                 <input type="text"
-                                       class="form-control"
-                                       ngxDaterangepickerMd
-                                       [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
-                                       startKey="start"
-                                       endKey="end"
-                                       [minDate]="minDate"
-                                       [maxDate]="maxDate"
-                                       [(ngModel)]="selectedDateRangeUTC"
-                                       id="dateRange"
-                                       name="daterange"
-                                       [showCustomRangeLabel]="true"
-                                       [alwaysShowCalendars]="false"
-                                       [ranges]="ranges"
-                                       [linkedCalendars]="true"
-                                       [showClearButton]="true"
-                                       [timePicker]="true"
-                                       [timePicker24Hour]="true"
-                                       (change)="dateUpdated($event); turnOffLiveMode()"
-                                       (keydown)="turnOffLiveMode()"
-                                       [autoApply]="true"
-                                       [closeOnAutoApply]="false"
-                                       placeholder="Select please..."
-                                       required=""/>
-                                <small class="text-muted fs-i">Current time: {{ currentTimeInUserTimeZone }}</small><br>
-                                <small class="text-muted fs-i">Latest database entry: {{ maxDateString }}</small>
+                                   class="form-control"
+                                   ngxDaterangepickerMd
+                                   [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
+                                   startKey="start"
+                                   endKey="end"
+                                   [minDate]="minDate"
+                                   [maxDate]="maxDate"
+                                   [(ngModel)]="selectedDateRangeUTC"
+                                   id="dateRange"
+                                   name="daterange"
+                                   [showCustomRangeLabel]="true"
+                                   [alwaysShowCalendars]="false"
+                                   [ranges]="ranges"
+                                   [linkedCalendars]="true"
+                                   [showClearButton]="true"
+                                   [timePicker]="true"
+                                   [timePicker24Hour]="true"
+                                   (change)="dateUpdated($event); turnOffLiveMode()"
+                                   (keydown)="turnOffLiveMode()"
+                                   [autoApply]="true"
+                                   [closeOnAutoApply]="false"
+                                   placeholder="Select please..."
+                                   required=""/>
+<!--                                <small class="text-muted fs-i">Current time: {{ currentTimeInUserTimeZone }}</small><br>-->
+<!--                                <small class="text-muted fs-i">Latest database entry: {{ maxDateString }}</small>-->
                             </div>
                         </div>
                         <div class="mb-3 row">
@@ -75,12 +89,14 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="form-label" for="countries">Country</label>
-                            <ngx-select-dropdown [options]="dropdownOptions" id="countries" name="countries"
-                                                 [config]="configCountry"
-                                                 [(ngModel)]="selectedCountries" [multiple]="true"
-                                                 class="customDropdown"
-                                                 (change)="selectedHub=undefined; turnOffLiveMode();"></ngx-select-dropdown>
+                            <div class="col-md-12">
+                                <label class="form-label" for="countries">Country</label>
+                                <ngx-select-dropdown [options]="dropdownOptions" id="countries" name="countries"
+                                                     [config]="configCountry"
+                                                     [(ngModel)]="selectedCountries" [multiple]="true"
+                                                     class="customDropdown"
+                                                     (change)="selectedHub=undefined; turnOffLiveMode();"></ngx-select-dropdown>
+                            </div>
                         </div>
                         <div class="row" *ngIf="hot_controls" style="align-items: center; margin-bottom: 1rem;">
                             <p class="inline-p"><a class="inline-p" target="_blank" rel="noopener"
@@ -160,6 +176,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
                 <button class="btn btn-primary btn-color" (click)="getStatistics()" type="submit" id="btnGetStats"
                         [disabled]="liveMode" data-bs-toggle="tooltip" title="Submit">Get Statistics
@@ -168,7 +185,6 @@
                         (click)="toggleLiveMode()" data-bs-toggle="tooltip" [attr.data-bs-title]="'Query Live'">
                     <i [ngClass]="liveMode ? 'ti-control-pause': 'ti-control-play'"></i></button>
             </form>
-            <!-- </div> -->
         </div>
     </div>
 </div>

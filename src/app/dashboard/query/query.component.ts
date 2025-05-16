@@ -84,6 +84,7 @@ export class QueryComponent implements OnChanges, OnInit {
     }
 
     ngOnInit(): void {
+        this.enableTooltips()
         this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
             // view mode is HOT
             if(this.activatedRoute.snapshot.url.length >= 2 )
@@ -266,23 +267,6 @@ export class QueryComponent implements OnChanges, OnInit {
      * Validates the form values before its being fired to API
      */
     validateForm(): boolean {
-        if (this.hashtag === '') {
-            console.error('Hashtag is empty')
-            // show the message on toast
-            this.toastService.show({
-                title: 'Hashtag is empty',
-                body: 'Please provide a Hashtag',
-                type: 'error',
-                time: 3000
-            })
-
-            const hashtagEle = document.getElementById('hashtag')
-            if (hashtagEle) {
-                hashtagEle.focus()
-            }
-            return false
-        }
-
         const dateRangeEle = document.getElementById('dateRange')
 
         // check if text feild is empty

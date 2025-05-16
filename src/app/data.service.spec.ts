@@ -625,7 +625,7 @@ describe('DataService', () => {
     });  
 
     const req = httpTestingController.expectOne(
-        `${service.url}/stats/${queryParams['hashtag']}?startdate=${queryParams['start']}&enddate=${queryParams['end']}&countries=`
+        `${service.url}/stats?hashtag=${queryParams['hashtag']}&startdate=${queryParams['start']}&enddate=${queryParams['end']}&countries=`
     );
     expect(req.request.method).toBe('GET');
     req.flush(summaryResponse);
@@ -649,7 +649,7 @@ describe('DataService', () => {
     });  
     
     const req = httpTestingController.expectOne(
-        `${service.url}/stats/${queryParams['hashtag']}/interval?startdate=${queryParams['start']}&enddate=${queryParams['end']}&interval=${queryParams['interval']}&countries=`
+        `${service.url}/stats/interval?hashtag=${queryParams['hashtag']}&startdate=${queryParams['start']}&enddate=${queryParams['end']}&interval=${queryParams['interval']}&countries=`
     );
     expect(req.request.method).toBe('GET');
     req.flush(plotResponse);
@@ -696,7 +696,7 @@ describe('DataService', () => {
     });  
 
     const req = httpTestingController.expectOne(
-        `${service.url}/stats/${queryParams['hashtag']}/country?startdate=${queryParams['start']}&enddate=${queryParams['end']}`
+        `${service.url}/stats/country?hashtag=${queryParams['hashtag']}&startdate=${queryParams['start']}&enddate=${queryParams['end']}`
     );
     expect(req.request.method).toBe('GET');
     req.flush(statsByCountryResponse);

@@ -74,15 +74,6 @@ describe('QueryComponent', () => {
         expect(mockDataService.requestAllHashtags).toHaveBeenCalled();
     });
 
-    it('should validate hashtag presence', () => {
-        component.hashtag = '';
-        const result = component.validateForm();
-        expect(result).toBeFalse();
-        expect(mockToastService.show).toHaveBeenCalledWith(jasmine.objectContaining({
-            title: 'Hashtag is empty'
-        }));
-    });
-
     it('should validate date range', () => {
         component.hashtag = 'test';
         const result = component.validateForm();
