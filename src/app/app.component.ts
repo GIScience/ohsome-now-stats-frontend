@@ -90,10 +90,12 @@ export class AppComponent implements AfterViewInit {
     }
 
     /**
-     * Redirects to HOT view
+     * Redirects to the page requested for
      * Maintains the parameter the user selected in the QueryComponent except the Hashtag as that
      * defaults to "hotosm-project-*"
-     * Gets the fragment values directly from the
+     * Gets the fragment values directly from the getQueryParamsFromFragments
+     *
+     * @param pageName
      */
     redirectTo(pageName: string) {
         const fragmentData = this.dataService.getQueryParamsFromFragments();
