@@ -97,6 +97,12 @@ export class AppComponent implements AfterViewInit {
      */
     redirectTo(pageName: string) {
         const fragmentData = this.dataService.getQueryParamsFromFragments();
+        // when redirecting from 'about'/'help' page to 'Dashboard'/'hotosm' page the fragment is null‚
+        if(! fragmentData) {
+            // assumption is that individual components will fill in the default values if fragment are null
+            this.router.navigate([`/${pageName}`]);
+            return;
+        }
         if (pageName == "dashboard") {
             const requiredKeys = ["hashtag", "start", "end", "interval", "countries", "topics"];
             const hasAllKeys = requiredKeys.every(key => key in fragmentData);
@@ -110,7 +116,7 @@ export class AppComponent implements AfterViewInit {
                 fragment += "&fit_to_content=";
             }
             this.router.navigate(['/dashboard'], {fragment: fragment});
-        } else if (pageName == "hotosm") {
+        } else if (pageName == "dashboard/hotosm") {
             let fragment = `start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}`;
             if (fragmentData.fit_to_content !== undefined) {
                 fragment += "&fit_to_content=";
