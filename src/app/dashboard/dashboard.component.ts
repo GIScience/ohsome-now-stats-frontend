@@ -83,12 +83,12 @@ export class DashboardComponent implements OnInit {
             if (queryParams['topics'] == null)
                 queryParams.topics = ''
 
-            this.dataService.updateURL(queryParams)
+            // this.dataService.updateURL(queryParams)
 
             this.queryParams = queryParams
 
             // form a appropriate message for summary data
-            this.summaryMessage = this.formSummaryMessage(this.queryParams)
+            this.summaryMessage = this.formSummaryMessage(queryParams)
             // fire the request to API
             this.requestsToAPI()
         })

@@ -131,7 +131,7 @@ describe('AppComponent', () => {
 
             (dataService.getQueryParamsFromFragments as jasmine.Spy).and.returnValue(mockFragmentData);
 
-            component.redirectTo('hotosm');
+            component.redirectTo('dashboard/hotosm');
             tick();
 
             const expectedFragment = 'start=2023-01-01&end=2023-01-31&interval=weekly';
@@ -152,7 +152,7 @@ describe('AppComponent', () => {
 
             (dataService.getQueryParamsFromFragments as jasmine.Spy).and.returnValue(mockFragmentData);
 
-            component.redirectTo('hotosm');
+            component.redirectTo('dashboard/hotosm');
             tick();
 
             const expectedFragment = 'start=2023-01-01&end=2023-01-31&interval=weekly&fit_to_content=';
