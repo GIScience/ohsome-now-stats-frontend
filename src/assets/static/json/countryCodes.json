@@ -624,6 +624,10 @@
     "value": "POL"
   },
   {
+    "name": "Puerto Rico",
+    "value": "PRI"
+  },
+  {
     "name": "North Korea",
     "value": "PRK"
   },
@@ -750,6 +754,10 @@
   {
     "name": "Thailand",
     "value": "THA"
+  },
+  {
+    "name": "Tajikistan",
+    "value": "TJK"
   },
   {
     "name": "Tokelau",
