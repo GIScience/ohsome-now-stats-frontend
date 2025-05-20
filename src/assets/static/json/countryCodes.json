@@ -552,6 +552,10 @@
     "value": "NAM"
   },
   {
+    "name": "New Caledonia",
+    "value": "NCL"
+  },
+  {
     "name": "Niger",
     "value": "NER"
   },
@@ -638,6 +642,10 @@
   {
     "name": "Paraguay",
     "value": "PRY"
+  },
+  {
+    "name": "State of Palestine",
+    "value": "PSE"
   },
   {
     "name": "Qatar",
@@ -849,7 +857,7 @@
   },
   {
     "name": "Kosovo",
-    "value": "XKX"
+    "value": "XK"
   },
   {
     "name": "Yemen",
