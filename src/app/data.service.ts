@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, map, Observable, retry, Subject, takeUntil, tap} from 'rxjs';
 
 import {environment} from '../environments/environment';
@@ -63,7 +63,6 @@ export class DataService {
             .pipe(
                 retry({count: 2, delay: 2000, resetOnSuccess: true}),
                 tap((meta: any) => {
-                    // this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
                     this.maxDate = dayjs(meta.result.max_timestamp).toISOString()
                     this.minDate = dayjs(meta.result.min_timestamp).toISOString()
 
