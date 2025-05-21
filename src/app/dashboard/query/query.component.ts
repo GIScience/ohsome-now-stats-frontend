@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output} from '@angular/core';
 import {Subscription} from 'rxjs';
 import dayjs from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
@@ -28,7 +28,7 @@ dayjs.extend(customParseFormat)
     styleUrls: ['./query.component.scss'],
     standalone: false
 })
-export class QueryComponent implements OnChanges, OnInit {
+export class QueryComponent implements OnChanges, OnInit, OnDestroy {
 
     @Input() data: IQueryData | undefined
     metaSub!: Subscription
@@ -514,7 +514,9 @@ export class QueryComponent implements OnChanges, OnInit {
         })
     }
 
-
+    ngOnDestroy(): void {
+        this.turnOffLiveMode()
+    }
 }
 
 function customComparator(a: any, b: any) {
