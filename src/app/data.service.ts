@@ -64,26 +64,6 @@ export class DataService {
                 retry({count: 2, delay: 2000, resetOnSuccess: true}),
                 tap((meta: any) => {
                     this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
-                    // const tempStart = dayjs(meta.result.max_timestamp)
-                    //     .subtract(1, "year")
-                    //     .startOf("day")
-                    //     .subtract(dayjs().utcOffset(), "minute")
-                    //     .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
-                    // if URL params are empty then fill it with default values
-                    // const queryParams = this.getQueryParamsFromFragments();
-                    // console.log('>>> requestMetadata >>> ', queryParams);
-                    // const defaults: IQueryParam = {
-                    //     hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
-                    //     interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
-                    //     start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : tempStart,
-                    //     end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
-                    //     countries: queryParams && queryParams.countries ? queryParams.countries : '',
-                    //     topics: queryParams && queryParams.topics ? queryParams.topics : ''
-                    // }
-                    // if (queryParams?.fit_to_content !== undefined) {
-                    //     defaults.fit_to_content = queryParams.fit_to_content
-                    // }
-                    // this.updateURL(defaults)
                 })
             )
     }
