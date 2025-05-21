@@ -42,8 +42,8 @@ export class DataService {
         {label: 'yearly', value: 'P1Y'},
     ]
     defaultIntervalValue = 'P1M'
-    minDate!: string
-    maxDate!: string
+    minDate!: string // min date in our DB
+    maxDate!: string // max date in our DB
     bsLive = new BehaviorSubject<boolean>(false)
     liveMode = this.bsLive.asObservable()
 
@@ -63,7 +63,14 @@ export class DataService {
             .pipe(
                 retry({count: 2, delay: 2000, resetOnSuccess: true}),
                 tap((meta: any) => {
-                    this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
+                    // this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
+                    this.maxDate = dayjs(meta.result.max_timestamp).toISOString()
+                    this.minDate = dayjs(meta.result.min_timestamp).toISOString()
+
+                    this.bsMetaData.next({
+                        start: this.minDate,
+                        end: this.maxDate
+                    })
                 })
             )
     }
@@ -191,16 +198,6 @@ export class DataService {
             countries: '',
             topics: ''
         }
-    }
-
-    setDefaultTime(minTimestamp: string, maxTimestamp: string) {
-        this.maxDate = dayjs(maxTimestamp).toISOString()
-        this.minDate = dayjs(minTimestamp).toISOString()
-
-        this.bsMetaData.next({
-            start: this.minDate,
-            end: this.maxDate
-        })
     }
 
     updateURL(data: IQueryParam): void {

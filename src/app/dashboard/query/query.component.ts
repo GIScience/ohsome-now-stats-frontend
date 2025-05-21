@@ -99,7 +99,7 @@ export class QueryComponent implements OnChanges, OnInit {
 
     ngOnChanges(): void {
         // listener to metaData request,
-        // theoritically should be called only once as metaData request
+        // theoretically should be called only once as metaData request
         // is fired only at the start of application
         // but it is called twice since first time it is due to its assignment to null
         if (this.metaSub)
@@ -221,7 +221,7 @@ export class QueryComponent implements OnChanges, OnInit {
         if (!this.validateForm())
             return
 
-        this.dataService.requestMetadata()
+        this.dataService.requestMetadata().subscribe();
 
         // get all values from form
         if (!this.selectedDateRangeUTC)
