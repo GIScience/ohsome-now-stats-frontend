@@ -221,7 +221,8 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
         if (!this.validateForm())
             return
 
-        this.dataService.requestMetadata().subscribe();
+        if(this.dataService.requestMetadata())
+            this.dataService.requestMetadata().subscribe();
 
         // get all values from form
         if (!this.selectedDateRangeUTC)
