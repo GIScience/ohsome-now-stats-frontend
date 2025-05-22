@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, map, Observable, retry, Subject, takeUntil, tap} from 'rxjs';
 
 import {environment} from '../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
-import moment from 'moment';
 import {
     IMetaData,
     IQueryParam,
@@ -43,8 +42,8 @@ export class DataService {
         {label: 'yearly', value: 'P1Y'},
     ]
     defaultIntervalValue = 'P1M'
-    minDate!: string
-    maxDate!: string
+    minDate!: string // min date in our DB
+    maxDate!: string // max date in our DB
     bsLive = new BehaviorSubject<boolean>(false)
     liveMode = this.bsLive.asObservable()
 
@@ -64,27 +63,13 @@ export class DataService {
             .pipe(
                 retry({count: 2, delay: 2000, resetOnSuccess: true}),
                 tap((meta: any) => {
-                    // consoles.log('>>> DataService >>> meta = ', meta)
-                    this.setDefaultTime(meta.result.min_timestamp, meta.result.max_timestamp)
-                    const tempStart = dayjs(meta.result.max_timestamp)
-                        .subtract(1, "year")
-                        .startOf("day")
-                        .subtract(dayjs().utcOffset(), "minute")
-                        .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
-                    // if URL params are empty then fill it with default values
-                    const queryParams = this.getQueryParamsFromFragments();
-                    const defaults: IQueryParam = {
-                        hashtag: queryParams && queryParams.hashtag ? queryParams.hashtag : this.defaultHashtag,
-                        interval: queryParams && queryParams.interval ? queryParams.interval : this.defaultIntervalValue,
-                        start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? meta.result.min_timestamp : tempStart,
-                        end: queryParams && queryParams.end ? queryParams.end : this.maxDate,
-                        countries: queryParams && queryParams.countries ? queryParams.countries : '',
-                        topics: queryParams && queryParams.topics ? queryParams.topics : ''
-                    }
-                    if (queryParams?.fit_to_content !== undefined) {
-                        defaults.fit_to_content = queryParams.fit_to_content
-                    }
-                    this.updateURL(defaults)
+                    this.maxDate = dayjs(meta.result.max_timestamp).toISOString()
+                    this.minDate = dayjs(meta.result.min_timestamp).toISOString()
+
+                    this.bsMetaData.next({
+                        start: this.minDate,
+                        end: this.maxDate
+                    })
                 })
             )
     }
@@ -199,26 +184,19 @@ export class DataService {
             return null
 
         const queryParams = this.getQueryParamsFromFragments()
-        const tempStart = queryParams ? moment(this.minDate) : moment(this.maxDate).subtract(1, 'year').startOf('day')
-
+        const tempStart = queryParams ? dayjs(this.minDate).format('YYYY-MM-DDTHH:mm:ss') + 'Z' : dayjs(this.maxDate)
+            .subtract(1, "year")
+            .startOf("day")
+            .subtract(dayjs().utcOffset(), "minute")
+            .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
         return {
-            start: tempStart.format('YYYY-MM-DDTHH:mm:ss') + 'Z',
+            start: tempStart,
             end: this.maxDate,
             hashtag: this.defaultHashtag,
             interval: this.defaultIntervalValue,
             countries: '',
             topics: ''
         }
-    }
-
-    setDefaultTime(minTimestamp: string, maxTimestamp: string) {
-        this.maxDate = dayjs(maxTimestamp).toISOString()
-        this.minDate = dayjs(minTimestamp).toISOString()
-
-        this.bsMetaData.next({
-            start: this.minDate,
-            end: this.maxDate
-        })
     }
 
     updateURL(data: IQueryParam): void {

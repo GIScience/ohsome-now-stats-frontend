@@ -205,7 +205,6 @@ describe('DashboardComponent', () => {
         (route.fragment as Subject<string | null>).next('test-fragment');
         tick();
 
-        expect(dataService.updateURL).toHaveBeenCalledWith(mockParams);
         expect(component.queryParams).toEqual(mockParams);
         expect(component.summaryMessage).toContain('Summarized statistics of contributions with #test');
         expect(component.isSummaryLoading).toBe(false);
