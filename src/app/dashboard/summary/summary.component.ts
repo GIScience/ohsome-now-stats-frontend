@@ -3,15 +3,17 @@ import {
     Component,
     EnvironmentInjector,
     EventEmitter,
-    Input,
-    OnChanges,
+    OnDestroy, OnInit,
     Output
 } from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {mkConfig, generateCsv, download} from "export-to-csv";
 
-import {StatsType, ISummaryData, TopicDefinitionValue} from '../types';
+import {StatsType, ISummaryData, TopicDefinitionValue, IQueryParam} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
+import {DataService} from "../../data.service";
+import {Subscription} from "rxjs";
+import {StateService} from "../../state.service";
 
 @Component({
     selector: 'app-summary',
@@ -19,21 +21,79 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
     styleUrls: ['./summary.component.scss'],
     standalone: false
 })
-export class SummaryComponent implements OnChanges {
-    @Input() data!: ISummaryData;
-    @Input() topicData!: { [p: string]: number } | null;
-    @Input() isSummaryLoading!: boolean;
+export class SummaryComponent implements OnInit, OnDestroy {
 
     @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
 
+    currentState: IQueryParam = {} as IQueryParam;
+    private subscription: Subscription = new Subscription();
     currentlySelected = 'users';
     bignumberData: Array<TopicDefinitionValue> = []
+    private data!: ISummaryData;
+    isSummaryLoading: boolean = false;
+    private topicData: { [p: string]: number } | null = null;
 
-    constructor(private injector: EnvironmentInjector, private appRef: ApplicationRef) {
+    constructor(
+        private stateService: StateService,
+        private dataService: DataService,
+        private injector: EnvironmentInjector,
+        private appRef: ApplicationRef) {
         this.enableTooltips()
     }
 
-    ngOnChanges(): void {
+    ngOnInit(): void {
+        // get query data from central store
+        // Subscribe to state changes
+        this.subscription.add(
+            this.stateService.queryParam$.subscribe(state => {
+                this.currentState = state;
+                console.log('State updated:', state);
+                // fire API to get response
+                this.isSummaryLoading = true;
+                this.requestFromAPI(state)
+            })
+        );
+
+    }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
+    }
+
+    requestFromAPI(queryParams: IQueryParam) {
+        this.dataService.requestSummary(queryParams).subscribe({
+            next: res => {
+                // console.log('>>> res = ', res)
+                const tempSummaryData = res.result
+                // fire the requests to API
+                // send response data to Summary Component
+                this.data = {
+                    changesets: tempSummaryData.changesets,
+                    buildings: tempSummaryData.buildings,
+                    users: tempSummaryData.users,
+                    edits: tempSummaryData.edits,
+                    roads: tempSummaryData.roads,
+                    latest: tempSummaryData.latest,
+                    hashtag: queryParams.hashtag,
+                    startDate: queryParams.start,
+                    endDate: queryParams.end
+                }
+                if (queryParams.countries!== '')
+                    this.data['countries'] = queryParams.countries
+
+                this.isSummaryLoading = false;
+
+                // this.dataService.setSummary(this.summaryData)
+
+                this.updateBigNumber()
+            },
+            error: (err) => {
+                console.error('Error while requesting Summary data ', err)
+            }
+        })
+    }
+
+    updateBigNumber(): void {
         if (!this.data)
             return
 
