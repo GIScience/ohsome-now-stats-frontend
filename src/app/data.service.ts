@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, map, Observable, retry, Subject, takeUntil, tap} from 'rxjs';
+import {BehaviorSubject, map, Observable, of, retry, Subject, takeUntil, tap} from 'rxjs';
 
 import {environment} from '../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -16,13 +16,12 @@ import {
     IWrappedTopicPlotData
 } from "./dashboard/types";
 import dayjs from "dayjs";
+import {StateService} from "./state.service";
 
 @Injectable()
 export class DataService {
 
     url = environment.ohsomeStatsServiceUrl
-    private bsMetaData = new BehaviorSubject<IMetaData | null>(null)
-    private metadata = this.bsMetaData.asObservable()
     private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
     summaryData = this.bsSummaryData.asObservable()
     abortHashtagReqSub!: Subject<void>
@@ -48,6 +47,7 @@ export class DataService {
     liveMode = this.bsLive.asObservable()
 
     constructor(
+        private stateService: StateService,
         private http: HttpClient,
         private route: ActivatedRoute,
         private router: Router) {
@@ -55,23 +55,6 @@ export class DataService {
         this.getAbortSummaryReqSubject()
         this.getAbortTopicReqSubject()
         this.getAbortIntervalReqSubject()
-    }
-
-    // will be called by APP_INITIALIZER provider in app.module.ts on the start of the application
-    requestMetadata() {
-        return this.http.get(`${this.url}/metadata`)
-            .pipe(
-                retry({count: 2, delay: 2000, resetOnSuccess: true}),
-                tap((meta: any) => {
-                    this.maxDate = dayjs(meta.result.max_timestamp).toISOString()
-                    this.minDate = dayjs(meta.result.min_timestamp).toISOString()
-
-                    this.bsMetaData.next({
-                        start: this.minDate,
-                        end: this.maxDate
-                    })
-                })
-            )
     }
 
     requestAllHashtags() {
@@ -93,10 +76,6 @@ export class DataService {
         const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&')
             .map(q => [q.split('=')[0], q.split('=')[1]])
         return Object.fromEntries(tempQueryParams)
-    }
-
-    getMetaData(): Observable<IMetaData | null> {
-        return this.metadata
     }
 
     requestSummary(params: any): Observable<IWrappedSummaryData> {
