@@ -4,40 +4,39 @@
             <!-- #User input ==================== -->
             <app-query [data]="queryParams" (dateRangeEmitter)="selectedDateRange=$event"></app-query>
         </div>
-        <div class="w-100 mT-10">
-            <!-- #Treanding hashtags ==================== -->
-            <app-trending-hashtags [hashtags]="hashtagsData"
-                                   [isHashtagsLoading]="isHashtagsLoading"></app-trending-hashtags>
-        </div>
-        <div class="w-100 mT-10">
-            <!-- #Export data as CSV ==================== -->
-            <app-export-data [summaryData]="summaryData" [plotData]="plotData" [mapData]="countryWithTopic"
-                             [selectedCountries]="queryParams?.countries"></app-export-data>
-        </div>
+<!--        <div class="w-100 mT-10">-->
+<!--            &lt;!&ndash; #Treanding hashtags ==================== &ndash;&gt;-->
+<!--            <app-trending-hashtags [hashtags]="hashtagsData"-->
+<!--                                   [isHashtagsLoading]="isHashtagsLoading"></app-trending-hashtags>-->
+<!--        </div>-->
+<!--        <div class="w-100 mT-10">-->
+<!--            &lt;!&ndash; #Export data as CSV ==================== &ndash;&gt;-->
+<!--            <app-export-data [summaryData]="summaryData" [plotData]="plotData" [mapData]="countryWithTopic"-->
+<!--                             [selectedCountries]="queryParams?.countries"></app-export-data>-->
+<!--        </div>-->
     </div>
     <div class="col-md-9">
         <div class="row">
             <div class='col-md-12'>
-                <app-summary class=row [data]="summaryData" [topicData]="topicData" [isSummaryLoading]="isSummaryLoading"
-                             (changeCurrentStatsEvent)="currentStats = $event"></app-summary>
+                <app-summary class=row (changeCurrentStatsEvent)="currentStats = $event"></app-summary>
             </div>
         </div>
         <div class="row">
             <!-- #Common graph for Summary ==================== -->
-            <div class="pT-10">
-                <app-plot [data]="plotData" [currentStats]="currentStats" [selectedTopics]="selectedTopics"
-                          [isPlotsLoading]="isPlotsLoading" [selectedDateRange]="selectedDateRange"
-                          [currentInterval]="queryParams?.interval"
-                ></app-plot>
-            </div>
+<!--            <div class="pT-10">-->
+<!--                <app-plot [data]="plotData" [currentStats]="currentStats" [selectedTopics]="selectedTopics"-->
+<!--                          [isPlotsLoading]="isPlotsLoading" [selectedDateRange]="selectedDateRange"-->
+<!--                          [currentInterval]="queryParams?.interval"-->
+<!--                ></app-plot>-->
+<!--            </div>-->
         </div>
-        <div class="row">
-            <!-- #Map View ==================== -->
-            <div class="pT-10">
-                <app-map [data]="countryWithTopic" [currentStats]="currentStats"
-                         [selectedCountries]="queryParams?.countries" [selectedTopics]="selectedTopics"
-                         [isCountriesLoading]="isCountriesLoading"></app-map>
-            </div>
-        </div>
+<!--        <div class="row">-->
+<!--            &lt;!&ndash; #Map View ==================== &ndash;&gt;-->
+<!--            <div class="pT-10">-->
+<!--                <app-map [data]="countryWithTopic" [currentStats]="currentStats"-->
+<!--                         [selectedCountries]="queryParams?.countries" [selectedTopics]="selectedTopics"-->
+<!--                         [isCountriesLoading]="isCountriesLoading"></app-map>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 </div>

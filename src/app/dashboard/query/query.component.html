@@ -134,7 +134,7 @@
 
                         <div class="mb-3 row">
                             <label class="form-label" for="topics-selection">OSM Data Topic</label>
-                            <ngx-select-dropdown [options]="topicOptions" name="topics" [config]="configTopics"
+                            <ngx-select-dropdown [options]="topicOptions" name="topics-selection" [config]="configTopics"
                                                  [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"
                                                  id="topics-selection"
                                                  (change)="selectedImpactArea=undefined; turnOffLiveMode();"></ngx-select-dropdown>

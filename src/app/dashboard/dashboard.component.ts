@@ -53,43 +53,7 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
-
-        // listener for any changes in the fragment part of the URL
-        // assumption is that fragments should never be empty as is its empty the routes
-        // should be redirected to have default values
-        this.route.fragment.subscribe(() => {
-            this.isSummaryLoading = true;
-            this.isHashtagsLoading = true;
-            this.isPlotsLoading = true;
-            this.isCountriesLoading = true;
-            const queryParams = this.dataService.getQueryParamsFromFragments()
-
-            if (queryParams === null || !this.queryParamsComplete(queryParams)) {
-                this.setDefaultValues(queryParams)
-                return
-            }
-
-            queryParams.hashtag = this.checkHashtagParameter(queryParams["hashtag"])
-
-            queryParams.start = this.setQueryParamOrDefault("start", queryParams)
-            queryParams.end = this.setQueryParamOrDefault("end", queryParams)
-            queryParams.interval = this.setQueryParamOrDefault("interval", queryParams)
-
-            queryParams.interval = this.checkIntervalParameter(queryParams["interval"], queryParams)
-
-            if (queryParams['countries'] == null)
-                queryParams.countries = ''
-
-            if (queryParams['topics'] == null)
-                queryParams.topics = ''
-
-            this.queryParams = queryParams
-
-            // form a appropriate message for summary data
-            this.summaryMessage = this.formSummaryMessage(queryParams)
-            // fire the request to API
-            this.requestsToAPI()
-        })
+        console.log('>>> DashboardComponent ')
     }
 
 
@@ -100,34 +64,6 @@ export class DashboardComponent implements OnInit {
         }
         const timeRange = this.initTimeIntervals(this.queryParams)
         Object.assign(this.queryParams, timeRange)
-        this.dataService.requestSummary(this.queryParams).subscribe({
-            next: res => {
-                // console.log('>>> res = ', res)
-                const tempSummaryData = res.result
-                // fire the requests to API
-                // send response data to Summary Component
-                this.summaryData = {
-                    changesets: tempSummaryData.changesets,
-                    buildings: tempSummaryData.buildings,
-                    users: tempSummaryData.users,
-                    edits: tempSummaryData.edits,
-                    roads: tempSummaryData.roads,
-                    latest: tempSummaryData.latest,
-                    hashtag: decodeURIComponent(this.queryParams['hashtag']),
-                    startDate: this.queryParams['start'],
-                    endDate: this.queryParams['end']
-                }
-                if (this.queryParams['countries'] !== '')
-                    this.summaryData['countries'] = this.queryParams['countries']
-
-                this.isSummaryLoading = false;
-
-                this.dataService.setSummary(this.summaryData)
-            },
-            error: (err) => {
-                console.error('Error while requesting Summary data ', err)
-            }
-        })
 
         if (this.queryParams['topics']) {
             this.dataService.requestTopic(this.queryParams).subscribe({
