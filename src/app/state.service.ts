@@ -32,10 +32,6 @@ export class StateService {
     // Public readonly signal for components to read
     public readonly appState = this._appState.asReadonly();
 
-    // BehaviorSubject to hold Meta request state
-    public bsMetaData = new BehaviorSubject<IMetaData | null>(null)
-    public metadata = this.bsMetaData.asObservable()
-
     constructor(
         private dataService: DataService,
         private router: Router
@@ -45,18 +41,13 @@ export class StateService {
             // This is THE ONLY PLACE WE WANT URL TO BE UPDATED
             this.updateURL(this.appState())
         });
-        const {min_timestamp, max_timestamp} = this.dataService.metaData
+        const {max_timestamp} = this.dataService.metaData()
         this.initialState.start = dayjs.utc(max_timestamp)
             .subtract(1, "year")
             .startOf("day")
             .format('YYYY-MM-DDTHH:mm:ss') + 'Z';
         this.initialState.end = max_timestamp
 
-        // set MetaState, which currently just holds start and end dates of data we have in DB
-        this.setMetaState({
-            min_timestamp: min_timestamp,
-            max_timestamp: max_timestamp
-        })
     }
 
     /**
@@ -74,14 +65,6 @@ export class StateService {
             ...currentState,
             ...partialState
         }));
-    }
-
-    getMetaState(): IMetaData | null {
-        return this.bsMetaData.value;
-    }
-
-    setMetaState(newState: IMetaData): void {
-        this.bsMetaData.next(newState);
     }
 
     /**

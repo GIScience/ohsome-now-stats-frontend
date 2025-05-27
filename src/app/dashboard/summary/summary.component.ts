@@ -3,7 +3,7 @@ import {
     Component, computed, effect,
     EnvironmentInjector,
     EventEmitter,
-    OnDestroy, OnInit,
+    OnDestroy,
     Output
 } from '@angular/core';
 import * as bootstrap from 'bootstrap';
@@ -21,7 +21,7 @@ import {StateService} from "../../state.service";
     styleUrls: ['./summary.component.scss'],
     standalone: false
 })
-export class SummaryComponent implements OnInit, OnDestroy {
+export class SummaryComponent implements OnDestroy {
 
     @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
 
@@ -49,25 +49,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
         this.enableTooltips()
         effect(() => {
             this.requestFromAPI(this.state())
-
-            // do something with countries signal
         });
-    }
-
-    ngOnInit(): void {
-        console.log("ngOnInit");
-
-        // get query data from central store
-        // Subscribe to state changes
-        // this.subscription.add(
-        //     this.stateService.queryParamSubject.subscribe(state => {
-        //         this.currentState = state;
-        //         console.log('State updated:', state);
-        //         // fire API to get response
-        //         this.isSummaryLoading = true;
-        //         this.requestFromAPI(state)
-        //     })
-        // );
     }
 
     ngOnDestroy(): void {

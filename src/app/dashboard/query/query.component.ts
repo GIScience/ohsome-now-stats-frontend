@@ -1,4 +1,4 @@
-import {Component, computed, effect, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, computed, effect, EventEmitter, Input, OnDestroy, OnInit, Output, Signal} from '@angular/core';
 import {Subscription} from 'rxjs';
 import dayjs from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
@@ -16,6 +16,7 @@ import {IDateRange, IHashtags, IHighlightedHashtag, IQueryData, IQueryParam} fro
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from "@angular/router";
 import {StateService} from "../../state.service";
+import {DateRanges} from "ngx-daterangepicker-material/daterangepicker.component";
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -41,14 +42,26 @@ export class QueryComponent implements OnInit, OnDestroy {
     }> | undefined
     interval: string | undefined // default value as 'P1M'
     selectedDateRangeUTC: IDateRange | undefined
-    ranges: any
-    minDate!: dayjs.Dayjs
-    maxDate!: dayjs.Dayjs
+    minDate = computed(() => dayjs.utc(this.dataService.metaData().min_timestamp).add(dayjs().utcOffset(), "minute"))
+    // maxDate!: dayjs.Dayjs
+    maxDate = computed(() => dayjs.utc(this.dataService.metaData().max_timestamp).add(dayjs().utcOffset(), "minute"))
+    ranges: Signal<DateRanges> = computed(() => {
+        return {
+            'Today': [dayjs().startOf('day'), this.maxDate()],
+            'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
+            'Last 3 Hours': [dayjs().subtract(3, 'hours').startOf('hour'), dayjs().endOf('day')],
+            'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
+            'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
+            'Last Year': [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
+            'Entire Duration': [dayjs(this.minDate()), dayjs(this.maxDate())]
+        }
+    })
+
     defaultHashtag: string = '';
     defaultIntervalValue: string = 'P1M';
 
     @Output() dateRangeEmitter = new EventEmitter<IDateRange>()
-    maxDateString!: string
+    maxDateString = this.utcToLocalConverter.transform(dayjs.utc(this.maxDate()).toDate())
 
     private _start = ''
     private _end = ''
@@ -140,27 +153,6 @@ export class QueryComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.enableTooltips()
-
-        this.subscription.add(
-            this.stateService.metadata.subscribe(metaState => {
-                if (metaState && metaState.min_timestamp && metaState.max_timestamp) {
-                    this.minDate = dayjs.utc(metaState?.min_timestamp)
-                    this.maxDate = dayjs.utc(metaState?.max_timestamp).add(dayjs().utcOffset(), "minute")
-
-                    this.maxDateString = this.utcToLocalConverter.transform(dayjs.utc(metaState?.max_timestamp).toDate())
-
-                    this.ranges = {
-                        'Today': [dayjs().startOf('day'), this.maxDate],
-                        'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
-                        'Last 3 Hours': [dayjs().subtract(3, 'hours').startOf('hour'), dayjs().endOf('day')],
-                        'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
-                        'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
-                        'Last Year': [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
-                        'Entire Duration': [dayjs(this.minDate), dayjs(this.maxDate)]
-                    }
-                }
-            })
-        )
     }
 
     /**
@@ -200,8 +192,8 @@ export class QueryComponent implements OnInit, OnDestroy {
         if (this.liveMode) {
             setTimeout(() => {
                 this.selectedDateRangeUTC = {
-                    start: dayjs(this.maxDate).subtract(3, 'hours'),
-                    end: this.maxDate
+                    start: dayjs(this.maxDate()).subtract(3, 'hours'),
+                    end: this.maxDate()
                 }
             }, 1500);
         }
@@ -441,10 +433,10 @@ export class QueryComponent implements OnInit, OnDestroy {
      * @returns IQueryParam
      */
     getDefaultValues(): IQueryParam | null {
-        if (!(this.minDate && this.maxDate))
+        if (!(this.minDate() && this.maxDate()))
             return null;
 
-        const tempStart = dayjs(this.maxDate)
+        const tempStart = dayjs(this.maxDate())
                 .subtract(1, "year")
                 .startOf("day")
                 .subtract(dayjs().utcOffset(), "minute")
@@ -452,7 +444,7 @@ export class QueryComponent implements OnInit, OnDestroy {
 
         return {
             start: tempStart,
-            end: dayjs(this.maxDate).format('YYYY-MM-DDTHH:mm:ss') + '.000Z',
+            end: dayjs(this.maxDate()).format('YYYY-MM-DDTHH:mm:ss') + '.000Z',
             hashtag: this.defaultHashtag,
             interval: this.defaultIntervalValue,
             countries: '',

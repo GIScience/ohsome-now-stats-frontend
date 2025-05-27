@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Signal, signal, WritableSignal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, catchError, map, Observable, of, retry, Subject, takeUntil, tap, throwError, lastValueFrom} from 'rxjs';
 
@@ -45,7 +45,11 @@ export class DataService {
     maxDate!: string // max date in our DB
     bsLive = new BehaviorSubject<boolean>(false)
     liveMode = this.bsLive.asObservable()
-    public metaData!: IMetaData
+    private _metaData:  WritableSignal<IMetaData> = signal<IMetaData>({
+        min_timestamp: new Date().toISOString(),
+        max_timestamp: new Date().toISOString()
+    })
+    public metaData: Signal<IMetaData> = this._metaData.asReadonly();
 
     constructor(
         private http: HttpClient,
@@ -66,7 +70,8 @@ export class DataService {
                     return response!.result as IMetaData
                 }),
                 tap((meta: IMetaData) => {
-                    this.metaData = meta
+                    this._metaData.set(meta)
+                    console.log('>>> requestMetadata >>> ',this.metaData());
                 }),
                 catchError( error => {
                     if (error.status === 0) {

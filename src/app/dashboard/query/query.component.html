@@ -54,14 +54,14 @@
                                    [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
                                    startKey="start"
                                    endKey="end"
-                                   [minDate]="minDate"
-                                   [maxDate]="maxDate"
+                                   [minDate]="minDate()"
+                                   [maxDate]="maxDate()"
                                    [(ngModel)]="selectedDateRangeUTC"
                                    id="dateRange"
                                    name="daterange"
                                    [showCustomRangeLabel]="true"
                                    [alwaysShowCalendars]="false"
-                                   [ranges]="ranges"
+                                   [ranges]="ranges()"
                                    [linkedCalendars]="true"
                                    [showClearButton]="true"
                                    [timePicker]="true"
@@ -72,8 +72,6 @@
                                    [closeOnAutoApply]="false"
                                    placeholder="Select please..."
                                    required=""/>
-<!--                                <small class="text-muted fs-i">Current time: {{ currentTimeInUserTimeZone }}</small><br>-->
-<!--                                <small class="text-muted fs-i">Latest database entry: {{ maxDateString }}</small>-->
                             </div>
                         </div>
                         <div class="mb-3 row">
