@@ -207,7 +207,7 @@ export class DashboardComponent implements OnInit {
             if (queryParams?.fit_to_content !== undefined) {
                 newParams.fit_to_content = queryParams.fit_to_content
             }
-            this.dataService.updateURL(newParams)
+            // this.dataService.updateURL(newParams)
         }
     }
 

@@ -49,8 +49,8 @@ export class DataService {
 
     constructor(
         private http: HttpClient,
-        private route: ActivatedRoute,
-        private router: Router) {
+        private route: ActivatedRoute
+        ) {
         this.getAbortHashtagReqSubject()
         this.getAbortSummaryReqSubject()
         this.getAbortTopicReqSubject()
@@ -203,16 +203,6 @@ export class DataService {
             countries: '',
             topics: ''
         }
-    }
-
-    updateURL(data: IQueryParam): void {
-        let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
-        if (data.fit_to_content !== undefined) {
-            fragment += "&fit_to_content="
-        }
-        this.router.navigate([], {
-            fragment: fragment
-        })
     }
 
     toggleLiveMode(mode: boolean) {

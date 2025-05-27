@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, computed, effect, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Subscription} from 'rxjs';
 import dayjs from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
@@ -113,6 +113,7 @@ export class QueryComponent implements OnInit, OnDestroy {
         enableSelectAll: true
     }
     private subscription = new Subscription();
+    state = computed(() => this.stateService.appState())
 
     constructor(
         private stateService: StateService,
@@ -121,6 +122,11 @@ export class QueryComponent implements OnInit, OnDestroy {
         private toastService: ToastService,
         private activatedRoute: ActivatedRoute
     ) {
+
+        effect(() => {
+            // TODO: check if the values differ
+            this.updateFormFromState(this.state());
+        });
 
         this.buildTopicOptions()
 
@@ -134,13 +140,6 @@ export class QueryComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.enableTooltips()
-
-        // Subscribe to state changes to keep form in sync
-        this.subscription.add(
-            this.stateService.queryParamSubject.subscribe(state => {
-                this.updateFormFromState(state);
-            })
-        );
 
         this.subscription.add(
             this.stateService.metadata.subscribe(metaState => {
@@ -222,16 +221,6 @@ export class QueryComponent implements OnInit, OnDestroy {
 
         this.dateRangeEmitter.emit(this.selectedDateRangeUTC)
 
-        this.dataService.updateURL(
-            {
-                hashtag: tempHashTag,
-                interval: this.interval ? this.interval : "",
-                start: tempStart,
-                end: tempEnd,
-                countries: this.countries.toString(),
-                topics: this.topics.toString(),
-            }
-        )
         const state = {
             countries: this.countries.toString(),
             hashtag: tempHashTag,

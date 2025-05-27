@@ -5,6 +5,7 @@ import * as bootstrap from 'bootstrap';
 import {DataService} from '../../data.service';
 import {dashboard} from '../tooltip-data';
 import {IHashtag} from "../types";
+import {StateService} from "../../state.service";
 
 @Component({
     selector: 'app-trending-hashtags',
@@ -22,6 +23,7 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
 
 
     constructor(
+        private stateService: StateService,
         private dataService: DataService,
         private route: ActivatedRoute,
 ) {
@@ -65,14 +67,25 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
     clickHashtag(hashtag: string) {
         // console.log('>>> clickHashtag ', hashtag)
         const queryParams = this.getQueryParamsFromFragments()
-        this.dataService.updateURL({
+        // this.dataService.updateURL({
+        //     hashtag: hashtag,
+        //     interval: queryParams.interval,
+        //     start: queryParams.start,
+        //     end: queryParams.end,
+        //     countries: queryParams.countries,
+        //     topics: queryParams.topics
+        // })
+        const state = {
             hashtag: hashtag,
             interval: queryParams.interval,
             start: queryParams.start,
             end: queryParams.end,
             countries: queryParams.countries,
             topics: queryParams.topics
-        })
+        }
+
+        // update the state
+        this.stateService.updatePartialState(state)
     }
 
     /**

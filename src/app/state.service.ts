@@ -1,10 +1,11 @@
-import {Injectable, signal} from '@angular/core';
+import {effect, Injectable, signal} from '@angular/core';
 import {IMetaData, IQueryParam} from "./dashboard/types";
 import {BehaviorSubject, Observable, ReplaySubject, retry, tap} from "rxjs";
 import {environment} from "../environments/environment";
 import dayjs from "dayjs";
 import {HttpClient} from "@angular/common/http";
 import {DataService} from "./data.service";
+import {Router} from "@angular/router";
 
 @Injectable({
     providedIn: 'root'
@@ -26,18 +27,24 @@ export class StateService {
     public queryParamSubject: BehaviorSubject<IQueryParam> = new BehaviorSubject<IQueryParam>(this.initialState);
 
     // Private signal to hold the current state
-    private readonly _queryParamState = signal<IQueryParam>(this.initialState);
+    private _appState = signal<IQueryParam>(this.initialState);
 
     // Public readonly signal for components to read
-    public readonly queryParamState = this._queryParamState.asReadonly();
+    public readonly appState = this._appState.asReadonly();
 
     // BehaviorSubject to hold Meta request state
     public bsMetaData = new BehaviorSubject<IMetaData | null>(null)
     public metadata = this.bsMetaData.asObservable()
 
     constructor(
-        private dataService: DataService
+        private dataService: DataService,
+        private router: Router
     ) {
+        effect(() => {
+            console.log('Query state changed in component:', this.appState());
+            // This is THE ONLY PLACE WE WANT URL TO BE UPDATED
+            this.updateURL(this.appState())
+        });
         const {min_timestamp, max_timestamp} = this.dataService.metaData
         this.initialState.start = dayjs.utc(max_timestamp)
             .subtract(1, "year")
@@ -50,6 +57,23 @@ export class StateService {
             min_timestamp: min_timestamp,
             max_timestamp: max_timestamp
         })
+    }
+
+    /**
+     * Update the entire state
+     */
+    updateState(newState: IQueryParam): void {
+        this._appState.set({ ...newState });
+    }
+
+    /**
+     * Update partial state (merge with current state)
+     */
+    updatePartialState(partialState: Partial<IQueryParam>): void {
+        this._appState.update(currentState => ({
+            ...currentState,
+            ...partialState
+        }));
     }
 
     getMetaState(): IMetaData | null {
@@ -65,22 +89,6 @@ export class StateService {
      */
     getCurrentState(): IQueryParam {
         return this.queryParamSubject.value;
-    }
-
-    /**
-     * Update the entire state
-     */
-    updateState(newState: IQueryParam): void {
-        this.queryParamSubject.next(newState);
-    }
-
-    /**
-     * Update partial state (merge with current state)
-     */
-    updatePartialState(partialState: Partial<IQueryParam>): void {
-        const currentState = this.getCurrentState();
-        const newState = { ...currentState, ...partialState };
-        this.queryParamSubject.next(newState);
     }
 
     /**
@@ -223,5 +231,15 @@ export class StateService {
         return new Observable(observer => {
             this.queryParamSubject.subscribe(state => observer.next(state.fit_to_content));
         });
+    }
+
+    private updateURL(data: IQueryParam): void {
+        let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
+        if (data.fit_to_content !== undefined) {
+            fragment += "&fit_to_content="
+        }
+        this.router.navigate([], {
+            fragment: fragment
+        })
     }
 }

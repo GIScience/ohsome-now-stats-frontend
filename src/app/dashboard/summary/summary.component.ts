@@ -33,7 +33,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
     isSummaryLoading: boolean = false;
     private topicData: { [p: string]: number } | null = null;
 
-    state = computed(() => this.stateService.queryParamState())
+    state = computed(() => this.stateService.appState())
     // Individual property signals
     // countries = computed(() => this.stateService.countries);
     // hashtag = computed(() => this.stateService.hashtag());
@@ -48,8 +48,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
             private appRef: ApplicationRef) {
         this.enableTooltips()
         effect(() => {
-            console.log('Query state changed in component:', this.state());
             this.requestFromAPI(this.state())
+
+            // do something with countries signal
         });
     }
 
