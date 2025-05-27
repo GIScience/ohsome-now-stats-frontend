@@ -1,6 +1,6 @@
 import {
     ApplicationRef,
-    Component,
+    Component, computed, effect,
     EnvironmentInjector,
     EventEmitter,
     OnDestroy, OnInit,
@@ -33,27 +33,40 @@ export class SummaryComponent implements OnInit, OnDestroy {
     isSummaryLoading: boolean = false;
     private topicData: { [p: string]: number } | null = null;
 
+    state = computed(() => this.stateService.queryParamState())
+    // Individual property signals
+    // countries = computed(() => this.stateService.countries);
+    // hashtag = computed(() => this.stateService.hashtag());
+    // start = computed(() => this.stateService.start());
+    // end = computed(() => this.stateService.end());
+    // topics = computed(() => this.stateService.topics());
+
     constructor(
-        private stateService: StateService,
-        private dataService: DataService,
-        private injector: EnvironmentInjector,
-        private appRef: ApplicationRef) {
+            private stateService: StateService,
+            private dataService: DataService,
+            private injector: EnvironmentInjector,
+            private appRef: ApplicationRef) {
         this.enableTooltips()
+        effect(() => {
+            console.log('Query state changed in component:', this.state());
+            this.requestFromAPI(this.state())
+        });
     }
 
     ngOnInit(): void {
+        console.log("ngOnInit");
+
         // get query data from central store
         // Subscribe to state changes
-        this.subscription.add(
-            this.stateService.queryParamSubject.subscribe(state => {
-                this.currentState = state;
-                console.log('State updated:', state);
-                // fire API to get response
-                this.isSummaryLoading = true;
-                this.requestFromAPI(state)
-            })
-        );
-
+        // this.subscription.add(
+        //     this.stateService.queryParamSubject.subscribe(state => {
+        //         this.currentState = state;
+        //         console.log('State updated:', state);
+        //         // fire API to get response
+        //         this.isSummaryLoading = true;
+        //         this.requestFromAPI(state)
+        //     })
+        // );
     }
 
     ngOnDestroy(): void {

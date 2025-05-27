@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {IMetaData, IQueryParam} from "./dashboard/types";
 import {BehaviorSubject, Observable, ReplaySubject, retry, tap} from "rxjs";
 import {environment} from "../environments/environment";
@@ -24,8 +24,12 @@ export class StateService {
     };
     // Private BehaviorSubject to hold the current state
     public queryParamSubject: BehaviorSubject<IQueryParam> = new BehaviorSubject<IQueryParam>(this.initialState);
-    // Public Observable for components to subscribe to
-    // public readonly queryParam$: Observable<IQueryParam> = this.queryParamSubject.asObservable();
+
+    // Private signal to hold the current state
+    private readonly _queryParamState = signal<IQueryParam>(this.initialState);
+
+    // Public readonly signal for components to read
+    public readonly queryParamState = this._queryParamState.asReadonly();
 
     // BehaviorSubject to hold Meta request state
     public bsMetaData = new BehaviorSubject<IMetaData | null>(null)
