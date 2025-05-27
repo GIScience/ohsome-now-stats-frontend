@@ -1,9 +1,8 @@
 import {effect, Injectable, signal} from '@angular/core';
-import {IMetaData, IQueryParam} from "./dashboard/types";
-import {BehaviorSubject, Observable, ReplaySubject, retry, tap} from "rxjs";
+import {IQueryParam} from "./dashboard/types";
+import {BehaviorSubject, Observable} from "rxjs";
 import {environment} from "../environments/environment";
 import dayjs from "dayjs";
-import {HttpClient} from "@angular/common/http";
 import {DataService} from "./data.service";
 import {Router} from "@angular/router";
 

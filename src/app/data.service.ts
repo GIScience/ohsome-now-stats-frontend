@@ -1,11 +1,12 @@
 import {Injectable, Signal, signal, WritableSignal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, catchError, map, Observable, of, retry, Subject, takeUntil, tap, throwError, lastValueFrom} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, retry, Subject, takeUntil, tap, throwError} from 'rxjs';
 
 import {environment} from '../environments/environment';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {
-    IMetaData, IMetadataResponse,
+    IMetaData,
+    IMetadataResponse,
     IQueryParam,
     ISummaryData,
     IWrappedCountryStatsData,
@@ -16,7 +17,6 @@ import {
     IWrappedTopicPlotData
 } from "./dashboard/types";
 import dayjs from "dayjs";
-import {StateService} from "./state.service";
 
 @Injectable()
 export class DataService {

@@ -1,15 +1,17 @@
 import {
     ApplicationRef,
-    Component, computed, effect,
+    Component,
+    computed,
+    effect,
     EnvironmentInjector,
     EventEmitter,
     OnDestroy,
     Output
 } from '@angular/core';
 import * as bootstrap from 'bootstrap';
-import {mkConfig, generateCsv, download} from "export-to-csv";
+import {download, generateCsv, mkConfig} from "export-to-csv";
 
-import {StatsType, ISummaryData, TopicDefinitionValue, IQueryParam} from '../types';
+import {IQueryParam, ISummaryData, StatsType, TopicDefinitionValue} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from "../../data.service";
 import {Subscription} from "rxjs";
