@@ -137,18 +137,18 @@ export class QueryComponent implements OnInit, OnDestroy {
 
         // Subscribe to state changes to keep form in sync
         this.subscription.add(
-            this.stateService.queryParam$.subscribe(state => {
+            this.stateService.queryParamSubject.subscribe(state => {
                 this.updateFormFromState(state);
             })
         );
 
         this.subscription.add(
             this.stateService.metadata.subscribe(metaState => {
-                if (metaState && metaState.start && metaState.end) {
-                    this.minDate = dayjs.utc(metaState?.start)
-                    this.maxDate = dayjs.utc(metaState?.end).add(dayjs().utcOffset(), "minute")
+                if (metaState && metaState.min_timestamp && metaState.max_timestamp) {
+                    this.minDate = dayjs.utc(metaState?.min_timestamp)
+                    this.maxDate = dayjs.utc(metaState?.max_timestamp).add(dayjs().utcOffset(), "minute")
 
-                    this.maxDateString = this.utcToLocalConverter.transform(dayjs.utc(metaState?.end).toDate())
+                    this.maxDateString = this.utcToLocalConverter.transform(dayjs.utc(metaState?.max_timestamp).toDate())
 
                     this.ranges = {
                         'Today': [dayjs().startOf('day'), this.maxDate],
@@ -191,8 +191,8 @@ export class QueryComponent implements OnInit, OnDestroy {
         if (!this.validateForm())
             return
 
-        if(this.stateService.requestMetadata())
-            this.stateService.requestMetadata().subscribe();
+        // if(this.stateService.requestMetadata())
+        //     this.stateService.requestMetadata().subscribe();
 
         // get all values from form
         if (!this.selectedDateRangeUTC)

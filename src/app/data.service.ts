@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, map, Observable, of, retry, Subject, takeUntil, tap} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, of, retry, Subject, takeUntil, tap, throwError, lastValueFrom} from 'rxjs';
 
 import {environment} from '../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
-    IMetaData,
+    IMetaData, IMetadataResponse,
     IQueryParam,
     ISummaryData,
     IWrappedCountryStatsData,
@@ -45,9 +45,9 @@ export class DataService {
     maxDate!: string // max date in our DB
     bsLive = new BehaviorSubject<boolean>(false)
     liveMode = this.bsLive.asObservable()
+    public metaData!: IMetaData
 
     constructor(
-        private stateService: StateService,
         private http: HttpClient,
         private route: ActivatedRoute,
         private router: Router) {
@@ -55,6 +55,33 @@ export class DataService {
         this.getAbortSummaryReqSubject()
         this.getAbortTopicReqSubject()
         this.getAbortIntervalReqSubject()
+    }
+
+    // will be called by APP_INITIALIZER provider in app.module.ts on the start of the application
+    requestMetadata(): Observable<IMetaData> {
+        return this.http.get<IMetadataResponse>(`${this.url}/metadata`)
+            .pipe(
+                retry({count: 2, delay: 2000, resetOnSuccess: true}),
+                map((response: IMetadataResponse) => {
+                    return response!.result as IMetaData
+                }),
+                tap((meta: IMetaData) => {
+                    this.metaData = meta
+                }),
+                catchError( error => {
+                    if (error.status === 0) {
+                        // A client-side or network error occurred. Handle it accordingly.
+                        console.error('An error occurred:', error.error);
+                    } else {
+                        // The backend returned an unsuccessful response code.
+                        // The response body may contain clues as to what went wrong.
+                        console.error(
+                            `Backend returned code ${error.status}, body was: `, error.error);
+                    }
+                    // Return an observable with a user-facing error message.
+                    return throwError(() => new Error('ohsomeNow Stats Service did not respond with a metadata response.'));
+                })
+            )
     }
 
     requestAllHashtags() {

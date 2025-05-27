@@ -45,7 +45,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
         // get query data from central store
         // Subscribe to state changes
         this.subscription.add(
-            this.stateService.queryParam$.subscribe(state => {
+            this.stateService.queryParamSubject.subscribe(state => {
                 this.currentState = state;
                 console.log('State updated:', state);
                 // fire API to get response

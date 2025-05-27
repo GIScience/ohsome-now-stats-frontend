@@ -1,234 +1,223 @@
 import { Injectable } from '@angular/core';
 import {IMetaData, IQueryParam} from "./dashboard/types";
-import {BehaviorSubject, Observable, retry, tap} from "rxjs";
+import {BehaviorSubject, Observable, ReplaySubject, retry, tap} from "rxjs";
 import {environment} from "../environments/environment";
 import dayjs from "dayjs";
 import {HttpClient} from "@angular/common/http";
+import {DataService} from "./data.service";
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class StateService {
 
-  url = environment.ohsomeStatsServiceUrl
-  // Initial default state
-  private initialState: IQueryParam = {
-    countries: '',
-    hashtag: '',
-    start: new Date().toISOString().split('.')[0] + '.000Z', // Current date with 0 milliseconds
-    end: new Date().toISOString().split('.')[0] + '.000Z', // Current date with 0 milliseconds
-    interval: 'P1M', // Default monthly interval
-    topics: '',
-    fit_to_content: undefined
-  };
-  // Private BehaviorSubject to hold the current state
-  private readonly queryParamSubject = new BehaviorSubject<IQueryParam>(this.initialState);
-  // Public Observable for components to subscribe to
-  public readonly queryParam$: Observable<IQueryParam> = this.queryParamSubject.asObservable();
+    url = environment.ohsomeStatsServiceUrl
+    // Initial default state
+    private initialState: IQueryParam = {
+        countries: '',
+        hashtag: '',
+        start: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
+        end: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
+        interval: 'P1M', // Default monthly interval
+        topics: '',
+        fit_to_content: undefined
+    };
+    // Private BehaviorSubject to hold the current state
+    public queryParamSubject: BehaviorSubject<IQueryParam> = new BehaviorSubject<IQueryParam>(this.initialState);
+    // Public Observable for components to subscribe to
+    // public readonly queryParam$: Observable<IQueryParam> = this.queryParamSubject.asObservable();
 
-  // BehaviorSubject to hold Meta request state
-  public bsMetaData = new BehaviorSubject<IMetaData | null>(null)
-  public metadata = this.bsMetaData.asObservable()
+    // BehaviorSubject to hold Meta request state
+    public bsMetaData = new BehaviorSubject<IMetaData | null>(null)
+    public metadata = this.bsMetaData.asObservable()
 
-  constructor(
-      private http: HttpClient
-  ) {}
+    constructor(
+        private dataService: DataService
+    ) {
+        const {min_timestamp, max_timestamp} = this.dataService.metaData
+        this.initialState.start = dayjs.utc(max_timestamp)
+            .subtract(1, "year")
+            .startOf("day")
+            .format('YYYY-MM-DDTHH:mm:ss') + 'Z';
+        this.initialState.end = max_timestamp
 
-  // will be called by APP_INITIALIZER provider in app.module.ts on the start of the application
-  requestMetadata() {
-    return this.http.get(`${this.url}/metadata`)
-        .pipe(
-            retry({count: 2, delay: 2000, resetOnSuccess: true}),
-            tap((meta: any) => {
-              const maxDate = dayjs(meta.result.max_timestamp).toISOString()
-              const minDate = dayjs(meta.result.min_timestamp).toISOString()
+        // set MetaState, which currently just holds start and end dates of data we have in DB
+        this.setMetaState({
+            min_timestamp: min_timestamp,
+            max_timestamp: max_timestamp
+        })
+    }
 
-              this.initialState.start = dayjs(maxDate)
-                  .subtract(1, "year")
-                  .startOf("day")
-                  .subtract(dayjs().utcOffset(), "minute")
-                  .format('YYYY-MM-DDTHH:mm:ss') + '.000Z';
-              this.initialState.end = dayjs(maxDate).format('YYYY-MM-DDTHH:mm:ss') + '.000Z';
+    getMetaState(): IMetaData | null {
+        return this.bsMetaData.value;
+    }
 
-              // set MetaState, which currently just holds start and end dates of data we have in DB
-              this.setMetaState({
-                start: minDate,
-                end: maxDate
-              })
-            })
-        )
-  }
+    setMetaState(newState: IMetaData): void {
+        this.bsMetaData.next(newState);
+    }
 
-  getMetaState(): IMetaData | null {
-    return this.bsMetaData.value;
-  }
+    /**
+     * Get the current state value synchronously
+     */
+    getCurrentState(): IQueryParam {
+        return this.queryParamSubject.value;
+    }
 
-  setMetaState(newState: IMetaData): void {
-    this.bsMetaData.next(newState);
-  }
+    /**
+     * Update the entire state
+     */
+    updateState(newState: IQueryParam): void {
+        this.queryParamSubject.next(newState);
+    }
 
-  /**
-   * Get the current state value synchronously
-   */
-  getCurrentState(): IQueryParam {
-    return this.queryParamSubject.value;
-  }
+    /**
+     * Update partial state (merge with current state)
+     */
+    updatePartialState(partialState: Partial<IQueryParam>): void {
+        const currentState = this.getCurrentState();
+        const newState = { ...currentState, ...partialState };
+        this.queryParamSubject.next(newState);
+    }
 
-  /**
-   * Update the entire state
-   */
-  updateState(newState: IQueryParam): void {
-    this.queryParamSubject.next(newState);
-  }
+    /**
+     * Individual property setters for convenience
+     */
+    setCountries(countries: string): void {
+        this.updatePartialState({ countries });
+    }
 
-  /**
-   * Update partial state (merge with current state)
-   */
-  updatePartialState(partialState: Partial<IQueryParam>): void {
-    const currentState = this.getCurrentState();
-    const newState = { ...currentState, ...partialState };
-    this.queryParamSubject.next(newState);
-  }
+    setHashtag(hashtag: string): void {
+        this.updatePartialState({ hashtag });
+    }
 
-  /**
-   * Individual property setters for convenience
-   */
-  setCountries(countries: string): void {
-    this.updatePartialState({ countries });
-  }
+    setStart(start: string): void {
+        // Ensure milliseconds are set to 0
+        const dateWithZeroMs = start.includes('.')
+            ? start.split('.')[0] + '.000Z'
+            : start.replace('Z', '.000Z');
+        this.updatePartialState({ start: dateWithZeroMs });
+    }
 
-  setHashtag(hashtag: string): void {
-    this.updatePartialState({ hashtag });
-  }
+    setEnd(end: string): void {
+        // Ensure milliseconds are set to 0
+        const dateWithZeroMs = end.includes('.')
+            ? end.split('.')[0] + '.000Z'
+            : end.replace('Z', '.000Z');
+        this.updatePartialState({ end: dateWithZeroMs });
+    }
 
-  setStart(start: string): void {
-    // Ensure milliseconds are set to 0
-    const dateWithZeroMs = start.includes('.')
-        ? start.split('.')[0] + '.000Z'
-        : start.replace('Z', '.000Z');
-    this.updatePartialState({ start: dateWithZeroMs });
-  }
+    setInterval(interval: string): void {
+        this.updatePartialState({ interval });
+    }
 
-  setEnd(end: string): void {
-    // Ensure milliseconds are set to 0
-    const dateWithZeroMs = end.includes('.')
-        ? end.split('.')[0] + '.000Z'
-        : end.replace('Z', '.000Z');
-    this.updatePartialState({ end: dateWithZeroMs });
-  }
+    setTopics(topics: string): void {
+        this.updatePartialState({ topics });
+    }
 
-  setInterval(interval: string): void {
-    this.updatePartialState({ interval });
-  }
+    setFitToContent(fit_to_content?: string): void {
+        this.updatePartialState({ fit_to_content });
+    }
 
-  setTopics(topics: string): void {
-    this.updatePartialState({ topics });
-  }
+    /**
+     * Individual property getters for convenience
+     */
+    getCountries(): string {
+        return this.getCurrentState().countries;
+    }
 
-  setFitToContent(fit_to_content?: string): void {
-    this.updatePartialState({ fit_to_content });
-  }
+    getHashtag(): string {
+        return this.getCurrentState().hashtag;
+    }
 
-  /**
-   * Individual property getters for convenience
-   */
-  getCountries(): string {
-    return this.getCurrentState().countries;
-  }
+    getStart(): string {
+        return this.getCurrentState().start;
+    }
 
-  getHashtag(): string {
-    return this.getCurrentState().hashtag;
-  }
+    getEnd(): string {
+        return this.getCurrentState().end;
+    }
 
-  getStart(): string {
-    return this.getCurrentState().start;
-  }
+    getInterval(): string {
+        return this.getCurrentState().interval;
+    }
 
-  getEnd(): string {
-    return this.getCurrentState().end;
-  }
+    getTopics(): string {
+        return this.getCurrentState().topics;
+    }
 
-  getInterval(): string {
-    return this.getCurrentState().interval;
-  }
+    getFitToContent(): string | undefined {
+        return this.getCurrentState().fit_to_content;
+    }
 
-  getTopics(): string {
-    return this.getCurrentState().topics;
-  }
+    /**
+     * Reset state to initial values
+     */
+    resetState(): void {
+        this.queryParamSubject.next(this.initialState);
+    }
 
-  getFitToContent(): string | undefined {
-    return this.getCurrentState().fit_to_content;
-  }
+    /**
+     * Meta request state setters
+     */
+    /*setMinDate(start: string): void {
+      // console.log('>>> setMinDate >>> ', start);
+      // this.
+    }
 
-  /**
-   * Reset state to initial values
-   */
-  resetState(): void {
-    this.queryParamSubject.next(this.initialState);
-  }
+    setMaxDate(end: string): void {
+      // console.log('>>> setMaxDate >>> ', end);
+    }
 
-  /**
-   * Meta request state setters
-   */
-  /*setMinDate(start: string): void {
-    // console.log('>>> setMinDate >>> ', start);
-    // this.
-  }
+    getMinDate(): string {
+      return this.getMetaState().start;
+    }
 
-  setMaxDate(end: string): void {
-    // console.log('>>> setMaxDate >>> ', end);
-  }
+    getMaxDate(): string {
+      return this.getMetaState().end;
+    }*/
 
-  getMinDate(): string {
-    return this.getMetaState().start;
-  }
+    /**
+     * Get specific property as Observable
+     */
+    getCountries$(): Observable<string> {
+        return new Observable(observer => {
+            this.queryParamSubject.subscribe(state => observer.next(state.countries));
+        });
+    }
 
-  getMaxDate(): string {
-    return this.getMetaState().end;
-  }*/
+    getHashtag$(): Observable<string> {
+        return new Observable(observer => {
+            this.queryParamSubject.subscribe(state => observer.next(state.hashtag));
+        });
+    }
 
-  /**
-   * Get specific property as Observable
-   */
-  getCountries$(): Observable<string> {
-    return new Observable(observer => {
-      this.queryParam$.subscribe(state => observer.next(state.countries));
-    });
-  }
+    getStart$(): Observable<string> {
+        return new Observable(observer => {
+            this.queryParamSubject.subscribe(state => observer.next(state.start));
+        });
+    }
 
-  getHashtag$(): Observable<string> {
-    return new Observable(observer => {
-      this.queryParam$.subscribe(state => observer.next(state.hashtag));
-    });
-  }
+    getEnd$(): Observable<string> {
+        return new Observable(observer => {
+            this.queryParamSubject.subscribe(state => observer.next(state.end));
+        });
+    }
 
-  getStart$(): Observable<string> {
-    return new Observable(observer => {
-      this.queryParam$.subscribe(state => observer.next(state.start));
-    });
-  }
+    getInterval$(): Observable<string> {
+        return new Observable(observer => {
+            this.queryParamSubject.subscribe(state => observer.next(state.interval));
+        });
+    }
 
-  getEnd$(): Observable<string> {
-    return new Observable(observer => {
-      this.queryParam$.subscribe(state => observer.next(state.end));
-    });
-  }
+    getTopics$(): Observable<string> {
+        return new Observable(observer => {
+            this.queryParamSubject.subscribe(state => observer.next(state.topics));
+        });
+    }
 
-  getInterval$(): Observable<string> {
-    return new Observable(observer => {
-      this.queryParam$.subscribe(state => observer.next(state.interval));
-    });
-  }
-
-  getTopics$(): Observable<string> {
-    return new Observable(observer => {
-      this.queryParam$.subscribe(state => observer.next(state.topics));
-    });
-  }
-
-  getFitToContent$(): Observable<string | undefined> {
-    return new Observable(observer => {
-      this.queryParam$.subscribe(state => observer.next(state.fit_to_content));
-    });
-  }
+    getFitToContent$(): Observable<string | undefined> {
+        return new Observable(observer => {
+            this.queryParamSubject.subscribe(state => observer.next(state.fit_to_content));
+        });
+    }
 }

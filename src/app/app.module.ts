@@ -80,7 +80,7 @@ const routes = [{path: 'help', component: HelpComponent}];
             }
         }),
         provideAppInitializer(() => {
-            const initializerFn = (metadataFactory)(inject(StateService));
+            const initializerFn = (metadataFactory)(inject(DataService));
             return initializerFn();
         }),
         provideHttpClient(withInterceptorsFromDi())
@@ -88,6 +88,7 @@ const routes = [{path: 'help', component: HelpComponent}];
 export class AppModule {
 }
 
-export function metadataFactory(provider: StateService) {
+export function metadataFactory(provider: DataService) {
+    // return async () => await provider.requestMetadata();
     return () => provider.requestMetadata();
 }
