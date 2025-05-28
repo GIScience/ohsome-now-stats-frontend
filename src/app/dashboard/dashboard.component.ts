@@ -65,41 +65,6 @@ export class DashboardComponent implements OnInit {
         const timeRange = this.initTimeIntervals(this.queryParams)
         Object.assign(this.queryParams, timeRange)
 
-        if (this.queryParams['topics']) {
-            this.dataService.requestTopic(this.queryParams).subscribe({
-                next: res => {
-                    const tempSummaryData = this.dataService.getSummary()
-                    if (!tempSummaryData) {
-                        console.error('Got response of Topics but SummaryData was empty')
-                        return
-                    }
-                    // send response data to Summary Component
-                    const input: { [key: string]: TopicValues } = res.result
-                    const topicValue: { [key: string]: number } = {};
-
-                    // Iterate over the keys and extract the 'value'
-                    for (const key in input) {
-                        if (Object.prototype.hasOwnProperty.call(input, key)) {
-                            topicValue[key] = input[key].value;
-                        }
-                    }
-
-                    // send response data to Summary Component
-                    this.topicData = {
-                        ...topicValue
-                    }
-                    if (this.queryParams['countries'] !== '')
-                        this.summaryData['countries'] = this.queryParams['countries']
-
-                    // this.dataService.setSummary(this.summaryData)
-                },
-                error: (err) => {
-                    console.error('Error while requesting Topic data ', err)
-                }
-            })
-        } else {
-            this.topicData = null
-        }
 
         // fire timeseries API to get plot data
         this.dataService.requestPlot(this.queryParams).subscribe({

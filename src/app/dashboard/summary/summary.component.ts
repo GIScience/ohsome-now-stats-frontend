@@ -11,7 +11,7 @@ import {
 import * as bootstrap from 'bootstrap';
 import {download, generateCsv, mkConfig} from "export-to-csv";
 
-import {IQueryParam, ISummaryData, StatsType, TopicDefinitionValue} from '../types';
+import {IQueryParam, ISummaryData, StatsType, TopicDefinitionValue, TopicValues} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from "../../data.service";
 import {Subscription} from "rxjs";
@@ -27,7 +27,6 @@ export class SummaryComponent implements OnDestroy {
 
     @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
 
-    currentState: IQueryParam = {} as IQueryParam;
     private subscription: Subscription = new Subscription();
     currentlySelected = 'users';
     bignumberData: Array<TopicDefinitionValue> = []
@@ -79,16 +78,42 @@ export class SummaryComponent implements OnDestroy {
                 if (queryParams.countries!== '')
                     this.data['countries'] = queryParams.countries
 
-                this.isSummaryLoading = false;
-
-                // this.dataService.setSummary(this.summaryData)
-
                 this.updateBigNumber()
             },
             error: (err) => {
                 console.error('Error while requesting Summary data ', err)
             }
         })
+
+        if (queryParams['topics']) {
+            this.dataService.requestTopic(queryParams).subscribe({
+                next: res => {
+                    // send response data to Summary Component
+                    const input: { [key: string]: TopicValues } = res.result
+                    const topicValue: { [key: string]: number } = {};
+
+                    // Iterate over the keys and extract the 'value'
+                    for (const key in input) {
+                        if (Object.prototype.hasOwnProperty.call(input, key)) {
+                            topicValue[key] = input[key].value;
+                        }
+                    }
+
+                    // send response data to Summary Component
+                    this.topicData = {
+                        ...topicValue
+                    }
+
+                    if (queryParams['countries'] !== '')
+                        this.data['countries'] = queryParams['countries']
+                },
+                error: (err) => {
+                    console.error('Error while requesting Topic data ', err)
+                }
+            })
+        } else {
+            this.topicData = null
+        }
     }
 
     updateBigNumber(): void {
@@ -104,6 +129,9 @@ export class SummaryComponent implements OnDestroy {
             this.data = {...this.data, ...this.topicData}
         else
             this.data = {...this.data}
+
+        // remove the loading mask
+        this.isSummaryLoading = false;
         this.bignumberData = []
         for (const summaryEntry of Object.entries(this.data)) {
             if (['latest', 'hashtag', 'changesets', 'countries', 'startDate', 'endDate'].includes(summaryEntry[0]))
