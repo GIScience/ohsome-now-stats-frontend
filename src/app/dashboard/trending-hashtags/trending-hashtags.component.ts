@@ -1,4 +1,4 @@
-import {Component, computed, effect} from '@angular/core';
+import {Component, computed, effect, untracked} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import * as bootstrap from 'bootstrap';
 
@@ -21,22 +21,34 @@ export class TrendingHashtagsComponent {
     dashboardTooltips
     isHashtagsLoading: boolean = false
     state = computed(() => this.stateService.appState())
+    private relevantState = computed(() => {
+        const state = this.state();
+        return {
+            start: state.start,
+            end: state.end,
+            countries: state.countries
+        };
+    }, {
+        equal: (a, b) => {
+            return a.start === b.start
+                && a.end === b.end
+                && a.countries === b.countries;
+        }
+    });
 
     constructor(
         private stateService: StateService,
-        private dataService: DataService,
-        private route: ActivatedRoute,
-) {
+        private dataService: DataService
+    ) {
         this.trendingHashtagLimit = dataService.trendingHashtagLimit
         this.dashboardTooltips = dashboard
 
         effect(() => {
-            // TODO: if only start, end or countries change then only call API
-            this.requestFromAPI(this.state())
+            this.requestFromAPI(this.relevantState());
         });
     }
 
-    private requestFromAPI(state: IQueryParam) {
+    private requestFromAPI(state: { start: string; end: string; countries: string; }) {
         this.isHashtagsLoading = true;
         // stop trending hashtag request if already fired any
         this.stopHashtagReq()

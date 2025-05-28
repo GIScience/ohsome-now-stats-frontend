@@ -26,7 +26,22 @@ export class StateService {
     public queryParamSubject: BehaviorSubject<IQueryParam> = new BehaviorSubject<IQueryParam>(this.initialState);
 
     // Private signal to hold the current state
-    private _appState = signal<IQueryParam>(this.initialState);
+    private _appState = signal<IQueryParam>(
+        this.initialState,
+        {
+            equal: (a, b) => {
+                return (
+                    a.hashtag === b.hashtag
+                    && a.start == b.start
+                    && a.end == b.end
+                    && a.interval == b.interval
+                    && a.topics == b.topics
+                    && a.countries == b.countries
+                    && a.fit_to_content == b.fit_to_content
+                )
+            },
+        }
+    );
 
     // Public readonly signal for components to read
     public readonly appState = this._appState.asReadonly();
