@@ -1,10 +1,9 @@
-import {Component, computed, effect, untracked} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {Component, computed, effect} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 
 import {DataService} from '../../data.service';
 import {dashboard} from '../tooltip-data';
-import {IHashtag, IQueryParam} from "../types";
+import {IHashtag} from "../types";
 import {StateService} from "../../state.service";
 
 @Component({
@@ -126,6 +125,5 @@ export class TrendingHashtagsComponent {
         this.dataService.abortHashtagReqSub.next()
         this.dataService.abortHashtagReqSub.unsubscribe()
         this.dataService.getAbortHashtagReqSubject()
-        // this.dataService.abortHashtagReqSub.complete()
     }
 }
