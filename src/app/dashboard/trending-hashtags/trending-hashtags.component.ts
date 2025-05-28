@@ -20,9 +20,8 @@ export class TrendingHashtagsComponent {
     numOfHashtags = 0
     dashboardTooltips
     isHashtagsLoading: boolean = false
-    state = computed(() => this.stateService.appState())
     private relevantState = computed(() => {
-        const state = this.state();
+        const state = this.stateService.appState();
         return {
             start: state.start,
             end: state.end,
