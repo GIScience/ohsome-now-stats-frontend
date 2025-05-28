@@ -166,11 +166,11 @@ export interface IQueryParam {
 }
 
 export interface IHashtag {
-    hashtagTitle: string
+    hashtagTitle?: string
     hashtag: string
     number_of_users: number
-    tooltip: string
-    percent: number
+    tooltip?: string
+    percent?: number
 }
 
 export interface IMetaData {
@@ -236,4 +236,8 @@ interface IAttribution {
 
 export interface IMetadataResponse extends IBaseResponse {
     result: IMetaData
+}
+
+export interface ITrendingHashtagResponse extends IBaseResponse {
+    result: Array<IHashtag>
 }

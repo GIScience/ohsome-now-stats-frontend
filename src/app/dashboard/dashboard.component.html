@@ -4,16 +4,15 @@
             <!-- #User input ==================== -->
             <app-query [data]="queryParams" (dateRangeEmitter)="selectedDateRange=$event"></app-query>
         </div>
-<!--        <div class="w-100 mT-10">-->
-<!--            &lt;!&ndash; #Treanding hashtags ==================== &ndash;&gt;-->
-<!--            <app-trending-hashtags [hashtags]="hashtagsData"-->
-<!--                                   [isHashtagsLoading]="isHashtagsLoading"></app-trending-hashtags>-->
-<!--        </div>-->
-<!--        <div class="w-100 mT-10">-->
-<!--            &lt;!&ndash; #Export data as CSV ==================== &ndash;&gt;-->
-<!--            <app-export-data [summaryData]="summaryData" [plotData]="plotData" [mapData]="countryWithTopic"-->
-<!--                             [selectedCountries]="queryParams?.countries"></app-export-data>-->
-<!--        </div>-->
+        <div class="w-100 mT-10">
+            <!-- #Treanding hashtags ==================== -->
+            <app-trending-hashtags></app-trending-hashtags>
+        </div>
+        <div class="w-100 mT-10">
+            <!-- #Export data as CSV ==================== -->
+            <app-export-data [summaryData]="summaryData" [plotData]="plotData" [mapData]="countryWithTopic"
+                             [selectedCountries]="queryParams?.countries"></app-export-data>
+        </div>
     </div>
     <div class="col-md-9">
         <div class="row">

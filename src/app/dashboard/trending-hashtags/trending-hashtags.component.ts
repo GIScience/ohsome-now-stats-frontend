@@ -1,10 +1,10 @@
-import {Component, Input, OnChanges, OnDestroy} from '@angular/core';
+import {Component, computed, effect} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import * as bootstrap from 'bootstrap';
 
 import {DataService} from '../../data.service';
 import {dashboard} from '../tooltip-data';
-import {IHashtag} from "../types";
+import {IHashtag, IQueryParam} from "../types";
 import {StateService} from "../../state.service";
 
 @Component({
@@ -13,14 +13,14 @@ import {StateService} from "../../state.service";
     styleUrls: ['./trending-hashtags.component.scss'],
     standalone: false
 })
-export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
+export class TrendingHashtagsComponent {
 
-    @Input() hashtags!: Array<IHashtag> | []
-    @Input() isHashtagsLoading = false;
+    hashtags!: Array<IHashtag> | []
     trendingHashtagLimit = 0
     numOfHashtags = 0
-    dashboardTooltips: any
-
+    dashboardTooltips
+    isHashtagsLoading: boolean = false
+    state = computed(() => this.stateService.appState())
 
     constructor(
         private stateService: StateService,
@@ -29,35 +29,57 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
 ) {
         this.trendingHashtagLimit = dataService.trendingHashtagLimit
         this.dashboardTooltips = dashboard
+
+        effect(() => {
+            // TODO: if only start, end or countries change then only call API
+            this.requestFromAPI(this.state())
+        });
     }
 
-    ngOnChanges(): void {
-        if (this.hashtags) {
+    private requestFromAPI(state: IQueryParam) {
+        this.isHashtagsLoading = true;
+        // stop trending hashtag request if already fired any
+        this.stopHashtagReq()
+        // fire trending hashtag API
+        this.dataService.getTrendingHashtags({
+            start: state.start,
+            end: state.end,
+            limit: this.dataService.trendingHashtagLimit,
+            countries: state.countries
+        }).subscribe({
+            next: (res: Array<IHashtag>) => {
+                // console.log('>>> getTrendingHashtags >>> res = ', res)
+                this.isHashtagsLoading = false;
+                this.hashtags = res;
+                if(this.hashtags) {
+                    this.numOfHashtags = this.hashtags ? this.hashtags.length : this.trendingHashtagLimit
+                    // arrange the hashtags in desc order
+                    this.hashtags.sort((a, b) => b.number_of_users - a.number_of_users)
+                    this.hashtags.forEach(h => {
+                        // prepare a readable tooltip
+                        h.tooltip = `${h.hashtag} with ${h.number_of_users} distinct users`
+                        // clip longer hashtag to fix in view
+                        if (h.hashtag.length > 20)
+                            h.hashtagTitle = h.hashtag.substring(0, 19) + "..."
+                        else
+                            h.hashtagTitle = h.hashtag
 
-            this.numOfHashtags = this.hashtags ? this.hashtags.length : this.trendingHashtagLimit
-            // arrange the hashtags in desc order
-            this.hashtags.sort((a, b) => b.number_of_users - a.number_of_users)
-            this.hashtags.forEach(h => {
-                // prepare a readable tooltip
-                h.tooltip = `${h.hashtag} with ${h.number_of_users} distinct users`
-                // clip longer hashtag to fix in view
-                if (h.hashtag.length > 20)
-                    h.hashtagTitle = h.hashtag.substring(0, 19) + "..."
-                else
-                    h.hashtagTitle = h.hashtag
+                        // calc hashtag's percentage
+                        if (this.hashtags[0])
+                            h.percent = h.number_of_users / this.hashtags[0].number_of_users * 100
 
-                // calc hashtag's percentage
-                if (this.hashtags[0])
-                    h.percent = h.number_of_users / this.hashtags[0].number_of_users * 100
+                    })
 
-            })
-
-            // give sometime to the renderer to actually find elements
-            setTimeout(() => {
-                this.enableTooltips()
-            }, 300)
-
-        }
+                    // give sometime to the renderer to actually find elements
+                    setTimeout(() => {
+                        this.enableTooltips()
+                    }, 300)
+                }
+            },
+            error: (err) => {
+                console.error('Error while requesting TRending hashtags data  ', err)
+            }
+        })
     }
 
     /**
@@ -66,39 +88,11 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
      */
     clickHashtag(hashtag: string) {
         // console.log('>>> clickHashtag ', hashtag)
-        const queryParams = this.getQueryParamsFromFragments()
-        // this.dataService.updateURL({
-        //     hashtag: hashtag,
-        //     interval: queryParams.interval,
-        //     start: queryParams.start,
-        //     end: queryParams.end,
-        //     countries: queryParams.countries,
-        //     topics: queryParams.topics
-        // })
         const state = {
-            hashtag: hashtag,
-            interval: queryParams.interval,
-            start: queryParams.start,
-            end: queryParams.end,
-            countries: queryParams.countries,
-            topics: queryParams.topics
+            hashtag: hashtag
         }
-
         // update the state
         this.stateService.updatePartialState(state)
-    }
-
-    /**
-     * Creates query param from entire fragment of the URL
-     * @returns Object with all query params separated
-     */
-    getQueryParamsFromFragments(): any {
-        if (this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 2)
-            return null
-
-        const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&')
-            .map(q => [q.split('=')[0], q.split('=')[1]])
-        return Object.fromEntries(tempQueryParams)
     }
 
     /**
@@ -116,7 +110,11 @@ export class TrendingHashtagsComponent implements OnChanges, OnDestroy {
         })
     }
 
-    ngOnDestroy(): void {
-        this.hashtags = []
+    stopHashtagReq() {
+        // stop all previous request, if waiting for its response
+        this.dataService.abortHashtagReqSub.next()
+        this.dataService.abortHashtagReqSub.unsubscribe()
+        this.dataService.getAbortHashtagReqSubject()
+        // this.dataService.abortHashtagReqSub.complete()
     }
 }

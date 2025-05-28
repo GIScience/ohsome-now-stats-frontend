@@ -5,10 +5,12 @@ import {BehaviorSubject, catchError, map, Observable, retry, Subject, takeUntil,
 import {environment} from '../environments/environment';
 import {ActivatedRoute} from '@angular/router';
 import {
+    IHashtag,
     IMetaData,
     IMetadataResponse,
     IQueryParam,
     ISummaryData,
+    ITrendingHashtagResponse,
     IWrappedCountryStatsData,
     IWrappedPlotData,
     IWrappedSummaryData,
@@ -176,11 +178,14 @@ export class DataService {
         this.abortTopicReqSub = new Subject<void>();
     }
 
-    getTrendingHashtags(params: any) {
+    getTrendingHashtags(params: { start?: string; end?: string; limit?: number; countries?: string; }) {
         // console.log('>>> getTrendingHashtags >>> ', params)
-        return this.http.get(`${this.url}/most-used-hashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}&countries=${params['countries']}`)
+        return this.http.get<ITrendingHashtagResponse>(`${this.url}/most-used-hashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}&countries=${params['countries']}`)
             .pipe(
-                takeUntil(this.abortHashtagReqSub)
+                takeUntil(this.abortHashtagReqSub),
+                map((response: ITrendingHashtagResponse) => {
+                    return response!.result as Array<IHashtag>
+                }),
             )
     }
 

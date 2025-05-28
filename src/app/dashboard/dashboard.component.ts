@@ -1,11 +1,9 @@
 import {Component} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
 import dayjs from "dayjs";
 import {DataService} from '../data.service';
 import {
     ICountryStatsData,
     IDateRange,
-    IHashtag,
     IPlotData,
     IQueryParam,
     ISummaryData,
@@ -31,23 +29,19 @@ dayjs.extend(duration)
 export class DashboardComponent {
 
     summaryData!: ISummaryData;
-    topicData!: { [p: string]: number } | null;
     plotData!: IPlotData;
     countryWithTopic: ICountryStatsData[] = [];
     selectedTopics: TopicName | "" = "";
     currentStats: StatsType = 'users';
     queryParams: any;
     summaryMessage = '';
-    hashtagsData!: Array<IHashtag> | [];
     isSummaryLoading = false;
     isPlotsLoading = false;
     isCountriesLoading = false;
-    isHashtagsLoading = false;
     selectedDateRange!: IDateRange
 
     constructor(
         private dataService: DataService,
-        private route: ActivatedRoute,
         private toastService: ToastService) {
     }
 
@@ -126,26 +120,6 @@ export class DashboardComponent {
         });
 
         this.selectedTopics = this.queryParams["topics"]
-
-
-        // stop trending hashtag request if already fired any
-        this.stopHashtagReq()
-        // fire trending hashtag API
-        this.dataService.getTrendingHashtags({
-            start: timeRange.start,
-            end: timeRange.end,
-            limit: this.dataService.trendingHashtagLimit,
-            countries: this.queryParams.countries
-        }).subscribe({
-            next: (res: any) => {
-                // console.log('>>> getTrendingHashtags >>> res = ', res)
-                this.isHashtagsLoading = false;
-                this.hashtagsData = res.result
-            },
-            error: (err) => {
-                console.error('Error while requesting TRending hashtags data  ', err)
-            }
-        })
 
     }
 
@@ -244,13 +218,6 @@ export class DashboardComponent {
         this.dataService.abortSummaryReqSub.complete()
     }
 
-    stopHashtagReq() {
-        // stop all previous request, if waiting for its response
-        this.dataService.abortHashtagReqSub.next()
-        this.dataService.abortHashtagReqSub.unsubscribe()
-        this.dataService.getAbortHashtagReqSubject()
-        // this.dataService.abortHashtagReqSub.complete()
-    }
 
     /**
      * Forms an appropriate message to be display above Summary data
