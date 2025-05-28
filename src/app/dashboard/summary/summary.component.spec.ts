@@ -122,7 +122,7 @@ describe('SummaryComponent', () => {
     const firstBigNumber = fixture.debugElement.query(By.css('app-big-number'));
     firstBigNumber.triggerEventHandler('click', null);
 
-    expect(component.changeCurrentStats).toHaveBeenCalled();
+    expect(component.changeSelectedBigNumber).toHaveBeenCalled();
   });
 
   // it('should have proper CSS classes and styling', () => {
@@ -208,7 +208,7 @@ describe('SummaryComponent', () => {
       const mockEvent = { target: { closest: () => ({ parentNode: { parentNode: { children: [] } } }) } };
       spyOn(component.changeCurrentStatsEvent, 'emit');
 
-      component.changeCurrentStats(mockEvent, 'users');
+      component.changeSelectedBigNumber(mockEvent, 'users');
 
       expect(component.currentlySelected).toBe('users');
       // expect(component.changeCurrentStatsEvent.emit).toHaveBeenCalledWith('activeUsers');

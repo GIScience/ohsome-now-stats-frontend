@@ -139,9 +139,9 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     fitToContent() {
         return () => {
             // @ts-ignore
-            let data_start = this.data[this.currentStats].findIndex(value => value != 0)
+            const data_start = this.data[this.currentStats].findIndex(value => value != 0)
             // @ts-ignore
-            let data_end = this.data[this.currentStats].findLastIndex(value => value != 0)
+            const data_end = this.data[this.currentStats].findLastIndex(value => value != 0)
             const half_an_interval = moment.duration(this.currentInterval).asMilliseconds() / 2;
             Plotly.relayout('summaryplot', {
                 xaxis: {

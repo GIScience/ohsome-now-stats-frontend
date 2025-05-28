@@ -13,9 +13,9 @@ describe('UTCToLocalConverterPipe', () => {
 
   it('test pipe handles errorcase', () => {
     //Arrange
-    let dateToTest = new Date("2022-12-34");
+    const dateToTest = new Date("2022-12-34");
     //Act
-    let answer = pipe.transform(dateToTest, 'invalid');
+    const answer = pipe.transform(dateToTest, 'invalid');
     //Assert
     expect(answer).toEqual('Data not available');
   });

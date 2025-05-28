@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import dayjs from "dayjs";
 import {DataService} from '../data.service';
@@ -15,8 +15,7 @@ import {
     IWrappedPlotData,
     IWrappedTopicCountryData,
     StatsType,
-    TopicName,
-    TopicValues
+    TopicName
 } from './types';
 import {ToastService} from "../toast.service";
 import duration from 'dayjs/plugin/duration'
@@ -29,7 +28,7 @@ dayjs.extend(duration)
     styleUrls: ['./dashboard.component.scss'],
     standalone: false
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
 
     summaryData!: ISummaryData;
     topicData!: { [p: string]: number } | null;
@@ -51,11 +50,6 @@ export class DashboardComponent implements OnInit {
         private route: ActivatedRoute,
         private toastService: ToastService) {
     }
-
-    ngOnInit() {
-        console.log('>>> DashboardComponent ')
-    }
-
 
     requestsToAPI() {
         if (!this.queryParams) {

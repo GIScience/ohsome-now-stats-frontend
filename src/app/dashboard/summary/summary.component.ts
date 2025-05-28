@@ -11,10 +11,18 @@ import {
 import * as bootstrap from 'bootstrap';
 import {download, generateCsv, mkConfig} from "export-to-csv";
 
-import {IQueryParam, ISummaryData, StatsType, TopicDefinitionValue, TopicValues} from '../types';
+import {
+    IQueryParam,
+    ISummaryData,
+    IWrappedSummaryData,
+    IWrappedTopicData,
+    StatsType,
+    TopicDefinitionValue,
+    TopicValues
+} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from "../../data.service";
-import {Subscription} from "rxjs";
+import {forkJoin, Observable, Subscription} from "rxjs";
 import {StateService} from "../../state.service";
 
 @Component({
@@ -58,61 +66,81 @@ export class SummaryComponent implements OnDestroy {
     }
 
     requestFromAPI(queryParams: IQueryParam) {
-        this.dataService.requestSummary(queryParams).subscribe({
-            next: res => {
-                // console.log('>>> res = ', res)
-                const tempSummaryData = res.result
-                // fire the requests to API
-                // send response data to Summary Component
-                this.data = {
-                    changesets: tempSummaryData.changesets,
-                    buildings: tempSummaryData.buildings,
-                    users: tempSummaryData.users,
-                    edits: tempSummaryData.edits,
-                    roads: tempSummaryData.roads,
-                    latest: tempSummaryData.latest,
-                    hashtag: queryParams.hashtag,
-                    startDate: queryParams.start,
-                    endDate: queryParams.end
-                }
-                if (queryParams.countries!== '')
-                    this.data['countries'] = queryParams.countries
-
-                this.updateBigNumber()
-            },
-            error: (err) => {
-                console.error('Error while requesting Summary data ', err)
-            }
-        })
-
+        this.isSummaryLoading = true
         if (queryParams['topics']) {
-            this.dataService.requestTopic(queryParams).subscribe({
-                next: res => {
-                    // send response data to Summary Component
-                    const input: { [key: string]: TopicValues } = res.result
+            // if topics are requested then wait for both the observable
+            forkJoin({
+                summary: this.dataService.requestSummary(queryParams) as Observable<IWrappedSummaryData>,
+                topic: this.dataService.requestTopic(queryParams) as Observable<IWrappedTopicData>
+            }).subscribe({
+                next: (responses) => {
+                    // Handle summary response
+                    const tempSummaryData = responses.summary.result;
+
+                    this.data = {
+                        changesets: tempSummaryData.changesets,
+                        buildings: tempSummaryData.buildings,
+                        users: tempSummaryData.users,
+                        edits: tempSummaryData.edits,
+                        roads: tempSummaryData.roads,
+                        latest: tempSummaryData.latest,
+                        hashtag: queryParams.hashtag,
+                        startDate: queryParams.start,
+                        endDate: queryParams.end
+                    };
+
+                    if (queryParams.countries !== '') {
+                        this.data['countries'] = queryParams.countries;
+                    }
+
+                    // Handle topic response
+                    const input: { [key: string]: TopicValues } = responses.topic.result;
                     const topicValue: { [key: string]: number } = {};
 
-                    // Iterate over the keys and extract the 'value'
                     for (const key in input) {
                         if (Object.prototype.hasOwnProperty.call(input, key)) {
                             topicValue[key] = input[key].value;
                         }
                     }
 
-                    // send response data to Summary Component
-                    this.topicData = {
-                        ...topicValue
-                    }
+                    this.topicData = { ...topicValue };
 
-                    if (queryParams['countries'] !== '')
-                        this.data['countries'] = queryParams['countries']
+                    this.updateBigNumber();
                 },
                 error: (err) => {
-                    console.error('Error while requesting Topic data ', err)
+                    console.error('Error while requesting data: ', err);
                 }
-            })
+            });
         } else {
-            this.topicData = null
+            // Only summary request needed
+            this.dataService.requestSummary(queryParams).subscribe({
+                next: (res: IWrappedSummaryData) => {
+                    const tempSummaryData = res.result;
+
+                    this.data = {
+                        changesets: tempSummaryData.changesets,
+                        buildings: tempSummaryData.buildings,
+                        users: tempSummaryData.users,
+                        edits: tempSummaryData.edits,
+                        roads: tempSummaryData.roads,
+                        latest: tempSummaryData.latest,
+                        hashtag: queryParams.hashtag,
+                        startDate: queryParams.start,
+                        endDate: queryParams.end
+                    };
+
+                    if (queryParams.countries !== '') {
+                        this.data['countries'] = queryParams.countries;
+                    }
+
+                    this.topicData = null;
+
+                    this.updateBigNumber();
+                },
+                error: (err) => {
+                    console.error('Error while requesting Summary data ', err);
+                }
+            });
         }
     }
 
@@ -193,16 +221,32 @@ export class SummaryComponent implements OnDestroy {
         ).format(value)
     }
 
-    changeSelectedSummaryComponent(e: any) {
+    changeSelectedSummaryComponent(e: MouseEvent) {
         // if nodeName is APP-BIG-NUMBER our actual target is a child - thus not findable with .closest
-        const newSelected = e.target.nodeName != "APP-BIG-NUMBER" ? e.target.closest(".big_number") : e.target.children[0].closest(".big_number")
-        const siblings = [...newSelected.parentNode.parentNode.children];
-        siblings.forEach((e) => e.children[0].children[0].classList.remove("selected"))
-        if(newSelected.children)
-            newSelected.children[0].classList.add("selected")
+        const target = e.target as HTMLElement;
+        if (!target) return;
+
+        const newSelected = target.nodeName !== "APP-BIG-NUMBER"
+            ? target.closest(".big_number") as HTMLElement
+            : (target.children[0] as HTMLElement)?.closest(".big_number") as HTMLElement;
+
+        if (!newSelected) return;
+
+        const parentNode = newSelected.parentNode?.parentNode;
+        if (!parentNode) return;
+
+        const siblings = Array.from(newSelected.parentNode!.parentNode!.children) as HTMLElement[];
+        siblings.forEach((element) => {
+            const firstChild = element.children[0] as HTMLElement;
+            const secondChild = firstChild?.children[0] as HTMLElement;
+            secondChild?.classList.remove("selected");
+        });
+
+        const firstChild = newSelected.children[0] as HTMLElement;
+        firstChild?.classList.add("selected");
     }
 
-    changeCurrentStats(e: any, newCurrentStats: string) {
+    changeSelectedBigNumber(e: MouseEvent, newCurrentStats: string) {
         this.currentlySelected = newCurrentStats
         this.changeSelectedSummaryComponent(e)
         this.changeCurrentStatsEvent.emit(newCurrentStats as StatsType);

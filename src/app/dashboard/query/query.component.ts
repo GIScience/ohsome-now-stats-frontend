@@ -1,6 +1,6 @@
 import {Component, computed, effect, EventEmitter, Input, OnDestroy, OnInit, Output, Signal} from '@angular/core';
 import {Subscription} from 'rxjs';
-import dayjs from "dayjs";
+import dayjs, {Dayjs} from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
@@ -16,7 +16,8 @@ import {IDateRange, IHashtags, IHighlightedHashtag, IQueryData, IQueryParam} fro
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from "@angular/router";
 import {StateService} from "../../state.service";
-import {DateRanges} from "ngx-daterangepicker-material/daterangepicker.component";
+import {DateRanges, TimePeriod} from "ngx-daterangepicker-material/daterangepicker.component";
+import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -72,14 +73,14 @@ export class QueryComponent implements OnInit, OnDestroy {
     selectedCountries: countryDataClass[] = []  // selected countries with name and code
 
     topics: string[] = [];  // only codes for url and get request
-    topicOptions: any[] = []
+    topicOptions: Array<{ name: string; value: string; }> = []
     selectedTopics: topicDataClass[] = []  // selected countries with name and code
     hot_controls: boolean = false;
     allHashtagOptions: IHashtags[] = []
     filteredHashtagOptions: IHighlightedHashtag[] = []
     selectedHashtagOption: IHighlightedHashtag = {hashtag: "", highlighted: ""}
     liveMode: boolean = false
-    refreshIntervalId: any | null = null
+    refreshIntervalId: number | null = null
     hubs: { [hubName: string]: string } = {
         "asia-pacific": "AFG,BGD,BTN,BRN,KHM,TLS,FSM,FJI,IND,IDN,KIR,LAO,MYS,MMR,NPL,PAK,PNG,PHL,SLB,LKA,TON,UZB,VUT,VNM,YEM",
         "la-carribean": "ATG,BLZ,BOL,BRA,CHL,CRI,DMA,DOM,ECU,SLV,GTM,GUY,HTI,HND,JAM,MEX,NIC,PAN,PER,TTO,URY,VEN",
@@ -310,7 +311,7 @@ export class QueryComponent implements OnInit, OnDestroy {
         this.selectedImpactArea = impactAreaName
     }
 
-    searchChange(event: any) {
+    searchChange(event: AutoCompleteCompleteEvent) {
         const searchedHashtag = event.query.toString().toLocaleLowerCase()
         this.filteredHashtagOptions = this.allHashtagOptions.filter((hashtagResult) => {
             return hashtagResult.hashtag.length > 1 && hashtagResult.hashtag.includes(searchedHashtag)
@@ -351,19 +352,20 @@ export class QueryComponent implements OnInit, OnDestroy {
      *
      * @param $event
      */
-    dateUpdated($event: any) {
-        if (!$event.target)
+    dateUpdated($event: TimePeriod | null) {
+        if (!$event)
+            return
+        
+        if (!$event['target'])
             return
 
         if (!this.validateForm())
             return
 
-        const dateRange = ($event.target.value).split(' - ')
         this.selectedDateRangeUTC = {
-            start: dayjs.utc((dateRange[0]), 'DD-MM-YYYY'),
-            end: dayjs.utc((dateRange[1]), 'DD-MM-YYYY').endOf('day')
+            start: $event.startDate as Dayjs,
+            end: ($event.endDate as Dayjs).endOf('day')
         }
-        // console.log('>>> dateUpdated ', $event.target.value, this.selectedDateRange)
 
         this.onDateRangeChange(this.selectedDateRangeUTC)
     }
@@ -460,7 +462,7 @@ export class QueryComponent implements OnInit, OnDestroy {
      * @param inputData - Current query parameters state
      */
     private updateFormFromState(inputData: IQueryParam): void {
-        console.log('>>> updateFormFromState >>> state ', inputData);
+        // console.log('>>> updateFormFromState >>> state ', inputData);
 
         // Set Start and end dates
         if (inputData.start && inputData.end) {
@@ -483,13 +485,13 @@ export class QueryComponent implements OnInit, OnDestroy {
 
         // Set countries
         this.countries = inputData.countries ? inputData.countries.split(",").filter(c => c.trim()) : [];
-        this.selectedCountries = this.dropdownOptions.filter((option: any) => {
+        this.selectedCountries = this.dropdownOptions.filter((option) => {
             return this.countries.includes(option.value);
         });
 
         // Set topics
         this.topics = inputData.topics ? inputData.topics.split(",").filter(t => t.trim()) : [];
-        this.selectedTopics = this.topicOptions.filter((option: any) => {
+        this.selectedTopics = this.topicOptions.filter((option) => {
             return this.topics.includes(option.value);
         });
     }
@@ -537,7 +539,7 @@ export class QueryComponent implements OnInit, OnDestroy {
     /**
      * Handle date range changes from date picker
      */
-    onDateRangeChange(dateRange: any): void {
+    onDateRangeChange(dateRange: IDateRange): void {
         if (dateRange.start && dateRange.end) {
             console.log('>>> onDateRangeChange >>> ', dateRange.start);
             const startISO = dayjs(dateRange.start).format('YYYY-MM-DDTHH:mm:ss') + '.000Z';

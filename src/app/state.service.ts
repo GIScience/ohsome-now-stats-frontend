@@ -36,7 +36,7 @@ export class StateService {
         private router: Router
     ) {
         effect(() => {
-            console.log('Query state changed in component:', this.appState());
+            console.info('Query state changed:', this.appState());
             // This is THE ONLY PLACE WE WANT URL TO BE UPDATED
             this.updateURL(this.appState())
         });

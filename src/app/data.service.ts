@@ -71,7 +71,6 @@ export class DataService {
                 }),
                 tap((meta: IMetaData) => {
                     this._metaData.set(meta)
-                    console.log('>>> requestMetadata >>> ',this.metaData());
                 }),
                 catchError( error => {
                     if (error.status === 0) {
