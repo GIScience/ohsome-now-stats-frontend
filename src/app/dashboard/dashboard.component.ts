@@ -8,9 +8,7 @@ import {
     IQueryParam,
     ISummaryData,
     ITopicCountryData,
-    ITopicPlotData,
     IWrappedCountryStatsData,
-    IWrappedPlotData,
     IWrappedTopicCountryData,
     StatsType,
     TopicName
