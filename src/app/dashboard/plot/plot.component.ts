@@ -1,14 +1,14 @@
 import {AfterContentInit, Component, computed, effect} from '@angular/core';
 
 import Plotly, {Config, Layout} from 'plotly.js-basic-dist-min';
+import dayjs from "dayjs";
+import moment from "moment";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 
 import {
     UTCStringToLocalDateConverterFunction,
     UTCToLocalConverterPipe
 } from "../query/pipes/utc-to-local-converter.pipe";
-import dayjs from "dayjs";
-import moment from "moment";
 import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
 import {IDateRange, IPlotData, ITopicPlotData, IWrappedPlotData, StatsType} from "../types";
@@ -101,10 +101,6 @@ export class PlotComponent implements AfterContentInit {
 
     ngAfterContentInit(): void {
         this.initChart();
-
-        // if (this.data) {
-        //     this.refreshPlot();
-        // }
     }
 
     private requestToAPI(state: { hashtag: string, start: string; end: string; countries: string; interval: string, topics: string }) {
