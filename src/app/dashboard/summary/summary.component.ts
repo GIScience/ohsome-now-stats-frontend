@@ -1,13 +1,4 @@
-import {
-    ApplicationRef,
-    Component,
-    computed,
-    effect,
-    EnvironmentInjector,
-    EventEmitter,
-    OnDestroy,
-    Output
-} from '@angular/core';
+import {Component, computed, effect, EventEmitter, OnDestroy, Output} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {download, generateCsv, mkConfig} from "export-to-csv";
 
@@ -37,32 +28,36 @@ export class SummaryComponent implements OnDestroy {
 
     private subscription: Subscription = new Subscription();
     currentlySelected = 'users';
-    bignumberData: Array<TopicDefinitionValue> = []
+    bignumberData: Array<TopicDefinitionValue> = [];
     private data!: ISummaryData;
     isSummaryLoading: boolean = false;
     private topicData: { [p: string]: number } | null = null;
-
-    state = computed(() => this.stateService.appState())
-    // Individual property signals
-    // countries = computed(() => this.stateService.countries);
-    // hashtag = computed(() => this.stateService.hashtag());
-    // start = computed(() => this.stateService.start());
-    // end = computed(() => this.stateService.end());
-    // topics = computed(() => this.stateService.topics());
+    state = computed(() => this.stateService.appState());
+    private relevantState = computed(() => {
+            return this.state()
+        }, {
+            equal: (a, b) => {
+                return a.hashtag === b.hashtag
+                    && a.start === b.start
+                    && a.end === b.end
+                    && a.countries === b.countries
+                    // && a.interval === b.interval // summary doesnt need to reflect on intervals
+                    && a.topics === b.topics
+            }
+        });
 
     constructor(
             private stateService: StateService,
-            private dataService: DataService,
-            private injector: EnvironmentInjector,
-            private appRef: ApplicationRef) {
+            private dataService: DataService
+    ) {
         this.enableTooltips()
         effect(() => {
-            this.requestFromAPI(this.state())
+            this.requestFromAPI(this.relevantState())
         });
     }
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+        this.subscription.unsubscribe()
     }
 
     requestFromAPI(queryParams: IQueryParam) {
@@ -103,12 +98,12 @@ export class SummaryComponent implements OnDestroy {
                         }
                     }
 
-                    this.topicData = { ...topicValue };
+                    this.topicData = { ...topicValue }
 
                     this.updateBigNumber();
                 },
                 error: (err) => {
-                    console.error('Error while requesting data: ', err);
+                    console.error('Error while requesting data: ', err)
                 }
             });
         } else {
@@ -135,10 +130,10 @@ export class SummaryComponent implements OnDestroy {
 
                     this.topicData = null;
 
-                    this.updateBigNumber();
+                    this.updateBigNumber()
                 },
                 error: (err) => {
-                    console.error('Error while requesting Summary data ', err);
+                    console.error('Error while requesting Summary data ', err)
                 }
             });
         }
@@ -249,7 +244,11 @@ export class SummaryComponent implements OnDestroy {
     changeSelectedBigNumber(e: MouseEvent, newCurrentStats: string) {
         this.currentlySelected = newCurrentStats
         this.changeSelectedSummaryComponent(e)
-        this.changeCurrentStatsEvent.emit(newCurrentStats as StatsType);
+        // this.changeCurrentStatsEvent.emit(newCurrentStats as StatsType);
+        // add selected stat to app state
+        this.stateService.updatePartialState({
+            active_topic: newCurrentStats as StatsType,
+        });
     }
 
     /**

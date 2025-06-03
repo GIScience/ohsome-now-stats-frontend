@@ -53,44 +53,6 @@ export class DashboardComponent {
         const timeRange = this.initTimeIntervals(this.queryParams)
         Object.assign(this.queryParams, timeRange)
 
-
-        // fire timeseries API to get plot data
-        this.dataService.requestPlot(this.queryParams).subscribe({
-            next: (res: IWrappedPlotData) => {
-                if (res) {
-                    // add 'hashtag' and 'country' ISO codes to plotData #82
-                    const tempPlotResponse = res.result
-                    // add Topics to PlotData to make them a part of CSV
-                    if (this.queryParams['topics']) {
-                        this.dataService.requestTopicInterval(this.queryParams).subscribe({
-                            next: res => {
-                                if (res) {
-                                    // add each Topic data to Plot data to make them a part of CSV
-                                    this.plotData = this.addTopicDataToPlot(res.result, tempPlotResponse)
-                                    this.plotData['hashtag'] = decodeURIComponent(this.queryParams['hashtag'])
-                                    if (this.queryParams['countries'] !== '')
-                                        this.plotData['countries'] = this.queryParams['countries']
-                                }
-                            },
-                            error: (err) => {
-                                console.error('Error while requesting Topic data ', err)
-                            }
-                        })
-                    } else {
-                        // if non Topic is selected only countryData is sent to PlotComponent
-                        this.plotData = tempPlotResponse
-                        this.plotData['hashtag'] = decodeURIComponent(this.queryParams['hashtag'])
-                        if (this.queryParams['countries'] !== '')
-                            this.plotData['countries'] = this.queryParams['countries']
-                    }
-                    this.isPlotsLoading = false;
-                }
-            },
-            error: (err) => {
-                console.error('Error while requesting Plot data  ', err)
-            }
-        });
-
         // fire API to get map data
         this.dataService.requestCountryStats(this.queryParams).subscribe({
             next: (res: IWrappedCountryStatsData) => {
@@ -135,7 +97,8 @@ export class DashboardComponent {
                 start: queryParams && queryParams.start ? queryParams.start : queryParams && queryParams.hashtag ? "2009-04-21T22:02:04Z" : defaultParams.start,
                 end: queryParams && queryParams.end ? queryParams.end : defaultParams.end,
                 countries: queryParams && queryParams.countries ? queryParams.countries : defaultParams.countries,
-                topics: queryParams && queryParams.topics ? queryParams.topics : defaultParams.topics
+                topics: queryParams && queryParams.topics ? queryParams.topics : defaultParams.topics,
+                active_topic: queryParams && queryParams.active_topic ? queryParams.active_topic : defaultParams.active_topic
             }
             if (queryParams?.fit_to_content !== undefined) {
                 newParams.fit_to_content = queryParams.fit_to_content
@@ -304,13 +267,6 @@ export class DashboardComponent {
         return mergedData;
     }
 
-    private addTopicDataToPlot(res: Record<string, ITopicPlotData>, plotData: IPlotData) {
-        Object.keys(res).forEach((topic: string) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            plotData[topic] = res[topic].value
-        })
-        return plotData
-    }
+
 
 }

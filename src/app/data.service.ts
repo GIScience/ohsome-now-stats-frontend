@@ -125,7 +125,7 @@ export class DataService {
             )
     }
 
-    requestTopicInterval(params: any): Observable<IWrappedTopicPlotData> {
+    requestTopicInterval(params: { [x: string]: any; hashtag: string; start: string; end: string; countries: string; interval: string; topics: string; }): Observable<IWrappedTopicPlotData> {
         return this.http.get<IWrappedTopicPlotData>(`${this.url}/topic/${params['topics']}/interval?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}&interval=${params['interval']}`)
             .pipe(
                 takeUntil(this.abortTopicReqSub)
@@ -139,7 +139,7 @@ export class DataService {
             )
     }
 
-    requestPlot(params: any): Observable<IWrappedPlotData> {
+    requestPlot(params: { [x: string]: any; hashtag: string; start: string; end: string; countries: string; interval: string; topics: string; }): Observable<IWrappedPlotData> {
         return this.http.get<IWrappedPlotData>(`${this.url}/stats/interval?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}&countries=${params['countries']}`)
             .pipe(
                 takeUntil(this.abortIntervalReqSub)
@@ -210,7 +210,8 @@ export class DataService {
             hashtag: this.defaultHashtag,
             interval: this.defaultIntervalValue,
             countries: '',
-            topics: ''
+            topics: '',
+            active_topic: 'users'
         }
     }
 

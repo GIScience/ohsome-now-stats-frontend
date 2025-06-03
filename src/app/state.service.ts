@@ -20,7 +20,8 @@ export class StateService {
         end: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
         interval: 'P1M', // Default monthly interval
         topics: '',
-        fit_to_content: undefined
+        fit_to_content: undefined,
+        active_topic: 'users'
     };
     // Private BehaviorSubject to hold the current state
     public queryParamSubject: BehaviorSubject<IQueryParam> = new BehaviorSubject<IQueryParam>(this.initialState);
@@ -38,6 +39,7 @@ export class StateService {
                     && a.topics == b.topics
                     && a.countries == b.countries
                     && a.fit_to_content == b.fit_to_content
+                    && a.active_topic == b.active_topic
                 )
             },
         }
@@ -231,7 +233,7 @@ export class StateService {
     }
 
     private updateURL(data: IQueryParam): void {
-        let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
+        let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&active_topic=${data.active_topic}&countries=${data.countries}&topics=${data.topics}`
         if (data.fit_to_content !== undefined) {
             fragment += "&fit_to_content="
         }

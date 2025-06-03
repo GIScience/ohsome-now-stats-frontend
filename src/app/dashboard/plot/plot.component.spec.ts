@@ -31,7 +31,7 @@ describe('PlotComponent', () => {
             edits: []
         }
         component.selectedDateRange = {start: dayjs("2008-05-01T00:00Z"), end: dayjs("2010-05-01T00:00Z")}
-        component.currentStats = "users"
+        component.activeTopic = "users"
         fixture.detectChanges();
     });
 

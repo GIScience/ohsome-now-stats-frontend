@@ -1,8 +1,7 @@
-import {AfterContentInit, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {AfterContentInit, Component, computed, effect} from '@angular/core';
 
 import Plotly, {Config, Layout} from 'plotly.js-basic-dist-min';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-import {IDateRange, IPlotData, StatsType} from "../types";
 
 import {
     UTCStringToLocalDateConverterFunction,
@@ -10,7 +9,9 @@ import {
 } from "../query/pipes/utc-to-local-converter.pipe";
 import dayjs from "dayjs";
 import moment from "moment";
-import {ActivatedRoute} from "@angular/router";
+import {StateService} from "../../state.service";
+import {DataService} from "../../data.service";
+import {IDateRange, IPlotData, ITopicPlotData, IWrappedPlotData, StatsType} from "../types";
 
 @Component({
     selector: 'app-plot',
@@ -18,14 +19,30 @@ import {ActivatedRoute} from "@angular/router";
     styleUrls: ['./plot.component.scss'],
     standalone: false
 })
-export class PlotComponent implements AfterContentInit, OnChanges {
+export class PlotComponent implements AfterContentInit {
 
-    @Input() data!: IPlotData;
-    @Input() currentStats!: StatsType;
-    @Input() selectedTopics: string | undefined;
-    @Input() isPlotsLoading!: boolean;
-    @Input() selectedDateRange!: IDateRange;
-    @Input() currentInterval!: string;
+    private relevantState = computed(() => {
+        return this.stateService.appState();
+    }, {
+        equal: (a, b) => {
+            return a.hashtag === b.hashtag
+                && a.start === b.start
+                && a.end === b.end
+                && a.countries === b.countries
+                && a.interval === b.interval
+                && a.topics === b.topics
+        }
+    });
+
+    private activeTopicState = computed(() => {
+        return this.stateService.appState().active_topic;
+    });
+
+    data!: IPlotData;
+    activeTopic!: StatsType;
+    selectedTopics: string | undefined;
+    selectedDateRange!: IDateRange;
+    currentInterval!: string;
     layout: Layout | any;
     fitToContentIcon = {
         'width': 600,
@@ -36,29 +53,117 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         responsive: true,
         modeBarButtonsToRemove: ['select2d', 'lasso2d', 'resetScale2d', 'zoomOut2d', 'zoomIn2d'],
     }
+    isPlotsLoading: boolean = false;
 
-    constructor(private utcToLocalConverter: UTCToLocalConverterPipe, private route: ActivatedRoute) {
+    constructor(
+        private stateService: StateService,
+        private dataService: DataService,
+        private utcToLocalConverter: UTCToLocalConverterPipe
+    ) {
+
+        // Overall Effect for calling API
+        effect(() => {
+            this.activeTopic = this.relevantState().active_topic
+            this.requestToAPI(this.relevantState());
+        });
+
+        // Effect for plot refresh when ONLY active_topic changes
+        effect(() => {
+            this.activeTopic = this.activeTopicState()
+            if (this.data) {
+                this.refreshPlot()
+            }
+        })
+
+        /*
+        let previousActiveTopic = this.activeTopicState();
+        effect(() => {
+            const currentActiveTopic = this.activeTopicState();
+
+            // Only refresh plot if active_topic changed in isolation
+            if (currentActiveTopic !== previousActiveTopic) {
+                // Use untracked to check if this is an isolated active_topic change
+                const hasOtherChanges = untracked(() => {
+                    const currentState = this.relevantState();
+                    return currentState.hashtag || currentState.start ||
+                        currentState.end || currentState.interval ||
+                        currentState.countries || currentState.topics ||
+                        currentState.fit_to_content;
+                });
+
+                this.activeTopic = currentActiveTopic;
+                this.refreshPlot();
+                console.log('Active topic only changed = ', currentActiveTopic);
+                previousActiveTopic = currentActiveTopic;
+            }
+        });*/
     }
 
     ngAfterContentInit(): void {
         this.initChart();
 
-        if (this.data) {
-            this.refreshPlot();
-        }
+        // if (this.data) {
+        //     this.refreshPlot();
+        // }
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (this.data) {
-            this.refreshPlot();
-            if ("data" in changes) {
-                if (this.route.snapshot.fragment?.includes("fit_to_content")) {
-                    this.fitToContent()()
-                } else {
-                    this.resetZoom()
+    private requestToAPI(state: { hashtag: string, start: string; end: string; countries: string; interval: string, topics: string }) {
+        this.isPlotsLoading = true;
+        // fire timeseries API to get plot data
+        this.dataService.requestPlot(state).subscribe({
+            next: (res: IWrappedPlotData) => {
+                if (res) {
+                    // add 'hashtag' and 'country' ISO codes to plotData #82
+                    const tempPlotResponse = res.result
+                    // add Topics to PlotData to make them a part of CSV
+                    if (state['topics']) {
+                        this.dataService.requestTopicInterval(state).subscribe({
+                            next: res => {
+                                if (res) {
+                                    // add each Topic data to Plot data to make them a part of CSV
+                                    this.data = this.addTopicDataToPlot(res.result, tempPlotResponse)
+                                    this.data['hashtag'] = decodeURIComponent(state['hashtag'])
+                                    if (state['countries'] !== '')
+                                        this.data['countries'] = state['countries']
+                                    this.refreshPlot();
+                                }
+                            },
+                            error: (err) => {
+                                console.error('Error while requesting Topic data ', err)
+                            }
+                        })
+                    } else {
+                        // if non Topic is selected only countryData is sent to PlotComponent
+                        this.data = tempPlotResponse
+                        this.data['hashtag'] = decodeURIComponent(state['hashtag'])
+                        if (state['countries'] !== '')
+                            this.data['countries'] = state['countries']
+
+                        this.refreshPlot();
+                    }
+                    this.isPlotsLoading = false;
+
+                    // this.refreshPlot();
+                    if (this.relevantState().fit_to_content) {
+                        this.fitToContent()()
+                    } else {
+                        this.resetZoom()
+                    }
                 }
+            },
+            error: (err) => {
+                console.error('Error while requesting Plot data  ', err)
             }
-        }
+        });
+    }
+
+    private addTopicDataToPlot(res: Record<string, ITopicPlotData>, plotData: IPlotData) {
+        Object.keys(res).forEach((topic: string) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            plotData[topic] = res[topic].value
+        })
+        return plotData
     }
 
     /**
@@ -86,14 +191,16 @@ export class PlotComponent implements AfterContentInit, OnChanges {
     refreshPlot() {
         const plotData = [{
             x: this.data.startDate.map(e => UTCStringToLocalDateConverterFunction(e)),
-            // @ts-ignore
-            y: this.data[this.currentStats],
-            // @ts-ignore
-            customdata: this.data[this.currentStats],
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            y: this.data[this.activeTopic],
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            customdata: this.data[this.activeTopic],
             hovertext: this.data.startDate.map((start_date, index) => `From ${this.utcToLocalConverter.transform(start_date)}<br>To ${this.utcToLocalConverter.transform(this.data.endDate[index])}`),
-            hovertemplate: `%{hovertext}<br>${topicDefinitions[this.currentStats]["name"]}: %{customdata}<extra></extra>`,
+            hovertemplate: `%{hovertext}<br>${topicDefinitions[this.activeTopic]["name"]}: %{customdata}<extra></extra>`,
             type: 'bar',
-            name: `${topicDefinitions[this.currentStats]["name"]}`,
+            name: `${topicDefinitions[this.activeTopic]["name"]}`,
             marker: {
                 pattern: {
                     // apply striped pattern only for current running time
@@ -103,10 +210,10 @@ export class PlotComponent implements AfterContentInit, OnChanges {
                     size: 7,
                     solidity: 0.6
                 },
-                color: `${topicDefinitions[this.currentStats]["color-hex"]}`
+                color: `${topicDefinitions[this.activeTopic]["color-hex"]}`
             },
         }];
-        this.layout.yaxis.title = `${topicDefinitions[this.currentStats]["y-title"]}`
+        this.layout.yaxis.title = `${topicDefinitions[this.activeTopic]["y-title"]}`
         this.config.modeBarButtonsToAdd = [
             {
                 name: 'FitToContent',
@@ -126,8 +233,8 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         }
 
         if (
-            this.selectedDateRange.end.subtract(dayjs().utcOffset(), "minute").toDate() < UTCStringToLocalDateConverterFunction(this.data.endDate[index])
-            || this.selectedDateRange.start.subtract(dayjs().utcOffset(), "minute").toDate() > UTCStringToLocalDateConverterFunction(this.data.startDate[index])
+            dayjs.utc(this.relevantState().end).subtract(dayjs().utcOffset(), "minute").toDate() < UTCStringToLocalDateConverterFunction(this.data.endDate[index])
+            || dayjs.utc(this.relevantState().start).subtract(dayjs().utcOffset(), "minute").toDate() > UTCStringToLocalDateConverterFunction(this.data.startDate[index])
         ) {
             return '/'
         }
@@ -135,13 +242,14 @@ export class PlotComponent implements AfterContentInit, OnChanges {
         return ''
     }
 
-    // @ts-ignore
     fitToContent() {
         return () => {
-            // @ts-ignore
-            const data_start = this.data[this.currentStats].findIndex(value => value != 0)
-            // @ts-ignore
-            const data_end = this.data[this.currentStats].findLastIndex(value => value != 0)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            const data_start = this.data[this.activeTopic].findIndex(value => value != 0)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            const data_end = this.data[this.activeTopic].findLastIndex(value => value != 0)
             const half_an_interval = moment.duration(this.currentInterval).asMilliseconds() / 2;
             Plotly.relayout('summaryplot', {
                 xaxis: {

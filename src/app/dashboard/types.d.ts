@@ -163,6 +163,7 @@ export interface IQueryParam {
     interval: string // eg:'P1D' default value: 'P1M'
     topics: string
     fit_to_content?: string
+    active_topic: StatsType
 }
 
 export interface IHashtag {

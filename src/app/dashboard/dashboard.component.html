@@ -8,11 +8,11 @@
             <!-- #Treanding hashtags ==================== -->
             <app-trending-hashtags></app-trending-hashtags>
         </div>
-        <div class="w-100 mT-10">
-            <!-- #Export data as CSV ==================== -->
-            <app-export-data [summaryData]="summaryData" [plotData]="plotData" [mapData]="countryWithTopic"
-                             [selectedCountries]="queryParams?.countries"></app-export-data>
-        </div>
+<!--        <div class="w-100 mT-10">-->
+<!--            &lt;!&ndash; #Export data as CSV ==================== &ndash;&gt;-->
+<!--            <app-export-data [summaryData]="summaryData" [plotData]="plotData" [mapData]="countryWithTopic"-->
+<!--                             [selectedCountries]="queryParams?.countries"></app-export-data>-->
+<!--        </div>-->
     </div>
     <div class="col-md-9">
         <div class="row">
@@ -22,12 +22,9 @@
         </div>
         <div class="row">
             <!-- #Common graph for Summary ==================== -->
-<!--            <div class="pT-10">-->
-<!--                <app-plot [data]="plotData" [currentStats]="currentStats" [selectedTopics]="selectedTopics"-->
-<!--                          [isPlotsLoading]="isPlotsLoading" [selectedDateRange]="selectedDateRange"-->
-<!--                          [currentInterval]="queryParams?.interval"-->
-<!--                ></app-plot>-->
-<!--            </div>-->
+            <div class="pT-10">
+                <app-plot></app-plot>
+            </div>
         </div>
 <!--        <div class="row">-->
 <!--            &lt;!&ndash; #Map View ==================== &ndash;&gt;-->

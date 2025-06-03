@@ -219,7 +219,7 @@ export class QueryComponent implements OnInit, OnDestroy {
             hashtag: tempHashTag,
             start: tempStart,
             end: tempEnd,
-            interval: this.interval ? this.interval : "", // Default monthly interval
+            interval: this.interval ? this.interval : "P1M", // Default monthly interval
             topics: this.topics.toString()
         };
 
@@ -451,6 +451,7 @@ export class QueryComponent implements OnInit, OnDestroy {
             interval: this.defaultIntervalValue,
             countries: '',
             topics: '',
+            active_topic: 'users',
             fit_to_content: undefined
         };
     }
@@ -541,9 +542,9 @@ export class QueryComponent implements OnInit, OnDestroy {
      */
     onDateRangeChange(dateRange: IDateRange): void {
         if (dateRange.start && dateRange.end) {
-            console.log('>>> onDateRangeChange >>> ', dateRange.start);
-            const startISO = dayjs(dateRange.start).format('YYYY-MM-DDTHH:mm:ss') + '.000Z';
-            const endISO = dayjs(dateRange.end).format('YYYY-MM-DDTHH:mm:ss') + '.000Z';
+            // console.log('>>> onDateRangeChange >>> ', dateRange.start);
+            const startISO = dayjs(dateRange.start).format('YYYY-MM-DDTHH:mm:ss') + 'Z';
+            const endISO = dayjs(dateRange.end).format('YYYY-MM-DDTHH:mm:ss') + 'Z';
 
             this.stateService.updatePartialState({
                 start: startISO,
@@ -666,6 +667,7 @@ export class QueryComponent implements OnInit, OnDestroy {
             end: new Date().toISOString(),
             interval: 'P1D',
             topics: 'technology',
+            active_topic: 'users',
             fit_to_content: 'true'
         };
         this.stateService.updateState(newState);
