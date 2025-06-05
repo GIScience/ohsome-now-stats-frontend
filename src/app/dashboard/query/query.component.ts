@@ -33,10 +33,7 @@ dayjs.extend(customParseFormat)
 })
 export class QueryComponent implements OnInit, OnDestroy {
 
-    @Input() data: IQueryData | undefined
-    metaSub!: Subscription
     hashtag = ''
-
     intervals: Array<{
         label: string;
         value: string;
@@ -44,7 +41,6 @@ export class QueryComponent implements OnInit, OnDestroy {
     interval: string | undefined // default value as 'P1M'
     selectedDateRangeUTC: IDateRange | undefined
     minDate = computed(() => dayjs.utc(this.dataService.metaData().min_timestamp).add(dayjs().utcOffset(), "minute"))
-    // maxDate!: dayjs.Dayjs
     maxDate = computed(() => dayjs.utc(this.dataService.metaData().max_timestamp).add(dayjs().utcOffset(), "minute"))
     ranges: Signal<DateRanges> = computed(() => {
         return {
@@ -154,6 +150,16 @@ export class QueryComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.enableTooltips()
+        this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
+            // view mode is HOT
+            if(this.activatedRoute.snapshot.url.length >= 2 )
+                if (this.activatedRoute.snapshot.url[0].path == 'dashboard' && this.activatedRoute.snapshot.url[1].path == 'hotosm') {
+                    this.hot_controls = true
+                    this.selectedHashtagOption = { hashtag: "hotosm-project-*", highlighted: "hotosm-project-*" }
+                    this.getStatistics()
+                }
+            this.allHashtagOptions = hashtagsResult
+        })
     }
 
     /**
@@ -183,9 +189,6 @@ export class QueryComponent implements OnInit, OnDestroy {
         if (!this.validateForm())
             return
 
-        // if(this.stateService.requestMetadata())
-        //     this.stateService.requestMetadata().subscribe();
-
         // get all values from form
         if (!this.selectedDateRangeUTC)
             return
@@ -212,7 +215,7 @@ export class QueryComponent implements OnInit, OnDestroy {
 
         this.topics = this.selectedTopics.map(e => e.value)
 
-        this.dateRangeEmitter.emit(this.selectedDateRangeUTC)
+        // this.dateRangeEmitter.emit(this.selectedDateRangeUTC)
 
         const state = {
             countries: this.countries.toString(),
@@ -471,7 +474,7 @@ export class QueryComponent implements OnInit, OnDestroy {
                 start: dayjs.utc(inputData.start).add(dayjs(inputData.start).utcOffset(), "minute"),
                 end: dayjs.utc(inputData.end).add(dayjs(inputData.end).utcOffset(), "minute")
             };
-            this.dateRangeEmitter.emit(this.selectedDateRangeUTC);
+            // this.dateRangeEmitter.emit(this.selectedDateRangeUTC);
         }
 
         // Set hashtag textarea
