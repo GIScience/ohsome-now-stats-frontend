@@ -2,7 +2,7 @@
     <div class="col-md-3">
         <div class="w-100">
             <!-- #User input ==================== -->
-            <app-query [data]="queryParams" (dateRangeEmitter)="selectedDateRange=$event"></app-query>
+            <app-query (dateRangeEmitter)="selectedDateRange=$event"></app-query>
         </div>
         <div class="w-100 mT-10">
             <!-- #Treanding hashtags ==================== -->
@@ -25,13 +25,11 @@
                 <app-plot></app-plot>
             </div>
         </div>
-<!--        <div class="row">-->
-<!--            &lt;!&ndash; #Map View ==================== &ndash;&gt;-->
-<!--            <div class="pT-10">-->
-<!--                <app-map [data]="countryWithTopic" [currentStats]="currentStats"-->
-<!--                         [selectedCountries]="queryParams?.countries" [selectedTopics]="selectedTopics"-->
-<!--                         [isCountriesLoading]="isCountriesLoading"></app-map>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="row">
+            <!-- #Map View ==================== -->
+            <div class="pT-10">
+                <app-map></app-map>
+            </div>
+        </div>
     </div>
 </div>
