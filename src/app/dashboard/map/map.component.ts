@@ -28,7 +28,6 @@ import {DataService} from "../../data.service";
     selector: 'app-map',
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
 
@@ -68,7 +67,6 @@ export class MapComponent {
     constructor(
         private stateService: StateService,
         private dataService: DataService,
-        private cd: ChangeDetectorRef
     ) {
         effect(() => {
             this.selectedTopics = this.relevantState().active_topic
@@ -93,7 +91,6 @@ export class MapComponent {
     }
 
     requestDataFromAPI(state: { hashtag: string; start: string; end: string; topics: string }) {
-        this.cd.markForCheck();
         this.isCountriesLoading = true;
         // fire API to get map data
         this.dataService.requestCountryStats(state).subscribe({
@@ -118,12 +115,10 @@ export class MapComponent {
                     this.data = tempCountryResponse
                     this.prepareMapDataToPlot(this.data)
                 }
-                this.cd.markForCheck();
                 this.isCountriesLoading = false;
             },
             error: (err) => {
                 console.error('Error while requesting Country data  ', err)
-                this.cd.markForCheck();
                 this.isCountriesLoading = false;
             }
         });
