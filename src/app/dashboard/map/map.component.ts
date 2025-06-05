@@ -95,7 +95,6 @@ export class MapComponent {
     requestDataFromAPI(state: { hashtag: string; start: string; end: string; topics: string }) {
         this.cd.markForCheck();
         this.isCountriesLoading = true;
-        console.log('this.isCountriesLoading 1', this.isCountriesLoading)
         // fire API to get map data
         this.dataService.requestCountryStats(state).subscribe({
             next: (res: IWrappedCountryStatsData) => {

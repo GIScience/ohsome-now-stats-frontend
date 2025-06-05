@@ -24,8 +24,6 @@ import {StateService} from "../../state.service";
 })
 export class SummaryComponent implements OnDestroy {
 
-    @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
-
     private subscription: Subscription = new Subscription();
     currentlySelected = 'users';
     bignumberData: Array<TopicDefinitionValue> = [];
