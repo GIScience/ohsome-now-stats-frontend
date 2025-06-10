@@ -1,10 +1,10 @@
 import {effect, Injectable, signal} from '@angular/core';
-import {IQueryParam} from "./dashboard/types";
+import {IQueryParam, StatsType} from "./dashboard/types";
 import {BehaviorSubject, Observable} from "rxjs";
 import {environment} from "../environments/environment";
 import dayjs from "dayjs";
 import {DataService} from "./data.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Injectable({
     providedIn: 'root'
@@ -13,16 +13,7 @@ export class StateService {
 
     url = environment.ohsomeStatsServiceUrl
     // Initial default state
-    private initialState: IQueryParam = {
-        countries: '',
-        hashtag: '',
-        start: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
-        end: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
-        interval: 'P1M', // Default monthly interval
-        topics: '',
-        fit_to_content: undefined,
-        active_topic: 'users'
-    };
+    private initialState = this.initInitialState()
     // Private BehaviorSubject to hold the current state
     public queryParamSubject: BehaviorSubject<IQueryParam> = new BehaviorSubject<IQueryParam>(this.initialState);
 
@@ -50,19 +41,14 @@ export class StateService {
 
     constructor(
         private dataService: DataService,
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute
     ) {
         effect(() => {
             console.info('Query state changed:', this.appState());
             // This is THE ONLY PLACE WE WANT URL TO BE UPDATED
             this.updateURL(this.appState())
         });
-        const {max_timestamp} = this.dataService.metaData()
-        this.initialState.start = dayjs.utc(max_timestamp)
-            .subtract(1, "year")
-            .startOf("day")
-            .format('YYYY-MM-DDTHH:mm:ss') + 'Z';
-        this.initialState.end = max_timestamp
 
     }
 
@@ -240,5 +226,68 @@ export class StateService {
         this.router.navigate([], {
             fragment: fragment
         })
+    }
+
+    /**
+     * Initialize the initialState, either we get values from URL or we set it to default values
+     *
+     * @private
+     * @return IQueryParam
+     */
+    private initInitialState(): IQueryParam {
+        let tempInitialState: IQueryParam
+        const queryParams = this.getQueryParamsFromFragments()
+        if(queryParams == null) {
+            tempInitialState = {
+                hashtag: '',
+                start: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
+                end: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
+                interval: 'P1M', // Default monthly interval
+                countries: '',
+                topics: '',
+                fit_to_content: undefined,
+                active_topic: 'users'
+            };
+            const {max_timestamp} = this.dataService.metaData()
+            tempInitialState.start = dayjs.utc(max_timestamp)
+                .subtract(1, "year")
+                .startOf("day")
+                .format('YYYY-MM-DDTHH:mm:ss') + 'Z';
+            tempInitialState.end = max_timestamp
+        } else {
+            tempInitialState = {
+                hashtag: queryParams.get('hashtag')!,
+                start: queryParams.get('start')!,
+                end: queryParams.get('end')!,
+                interval: queryParams.get('interval')!,
+                countries: queryParams.get('countries')!,
+                topics: queryParams.get('topics')!,
+                fit_to_content: queryParams.get('fit_to_content') ? queryParams.get('fit_to_content')! : undefined,
+                active_topic: queryParams.get('active_topic')! as StatsType
+            };
+        }
+
+        return tempInitialState;
+    }
+
+    /**
+     * Creates URLSearchParams from entire fragment of the URL
+     *
+     * @returns URLSearchParams object with all query params, or null if no fragment exists
+     */
+    getQueryParamsFromFragments(): URLSearchParams | null {
+        // Check if fragment exists and has content
+        if (this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 1) {
+            return null;
+        }
+
+        // Create URLSearchParams from the fragment
+        const searchParams = new URLSearchParams(this.route.snapshot.fragment);
+        // Optional: Log all parameters for debugging
+        // searchParams.forEach((value, key) => {
+        //     console.log(`${key}: ${value}`);
+        // });
+
+        return searchParams;
     }
 }
