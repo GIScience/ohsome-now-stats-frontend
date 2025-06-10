@@ -1,12 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    computed,
-    effect,
-    ElementRef,
-    ViewChild,
-} from '@angular/core';
+import {Component, computed, effect, ElementRef, ViewChild,} from '@angular/core';
 
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';

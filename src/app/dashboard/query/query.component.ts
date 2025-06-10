@@ -54,10 +54,6 @@ export class QueryComponent implements OnInit, OnDestroy {
         }
     })
 
-    defaultHashtag: string = '';
-    defaultIntervalValue: string = 'P1M';
-
-    @Output() dateRangeEmitter = new EventEmitter<IDateRange>()
     maxDateString = this.utcToLocalConverter.transform(dayjs.utc(this.maxDate()).toDate())
 
     private _start = ''
@@ -214,8 +210,6 @@ export class QueryComponent implements OnInit, OnDestroy {
         }
 
         this.topics = this.selectedTopics.map(e => e.value)
-
-        // this.dateRangeEmitter.emit(this.selectedDateRangeUTC)
 
         const state = {
             countries: this.countries.toString(),
@@ -433,33 +427,6 @@ export class QueryComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Gives the default values for application
-     *
-     * @returns IQueryParam
-     */
-    getDefaultValues(): IQueryParam | null {
-        if (!(this.minDate() && this.maxDate()))
-            return null;
-
-        const tempStart = dayjs(this.maxDate())
-                .subtract(1, "year")
-                .startOf("day")
-                .subtract(dayjs().utcOffset(), "minute")
-                .format('YYYY-MM-DDTHH:mm:ss') + '.000Z';
-
-        return {
-            start: tempStart,
-            end: dayjs(this.maxDate()).format('YYYY-MM-DDTHH:mm:ss') + '.000Z',
-            hashtag: this.defaultHashtag,
-            interval: this.defaultIntervalValue,
-            countries: '',
-            topics: '',
-            active_topic: 'users',
-            fit_to_content: undefined
-        };
-    }
-
-    /**
      * Updates form fields based on current state
      * This is called automatically when state changes
      *
@@ -474,7 +441,6 @@ export class QueryComponent implements OnInit, OnDestroy {
                 start: dayjs.utc(inputData.start).add(dayjs(inputData.start).utcOffset(), "minute"),
                 end: dayjs.utc(inputData.end).add(dayjs(inputData.end).utcOffset(), "minute")
             };
-            // this.dateRangeEmitter.emit(this.selectedDateRangeUTC);
         }
 
         // Set hashtag textarea
@@ -501,46 +467,6 @@ export class QueryComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Call this when user changes any form field
-     * Updates the state service which will notify all other components
-     */
-    onFormFieldChange(field: keyof IQueryParam, value: any): void {
-        switch (field) {
-            case 'start':
-            case 'end': {
-                // Handle date changes
-                const isoDate = dayjs(value).format('YYYY-MM-DDTHH:mm:ss') + '.000Z';
-                this.stateService.updatePartialState({ [field]: isoDate });
-                break;
-            }
-            case 'hashtag': {
-                this.stateService.setHashtag(encodeURIComponent(value));
-                break;
-            }
-            case 'interval': {
-                this.stateService.setInterval(value);
-                break;
-            }
-            case 'countries': {
-                // value should be array of selected countries
-                const countriesString = Array.isArray(value) ? value.join(',') : value;
-                this.stateService.setCountries(countriesString);
-                break;
-            }
-            case 'topics': {
-                // value should be array of selected topics
-                const topicsString = Array.isArray(value) ? value.join(',') : value;
-                this.stateService.setTopics(topicsString);
-                break;
-            }
-            case 'fit_to_content': {
-                this.stateService.setFitToContent(value);
-                break;
-            }
-        }
-    }
-
-    /**
      * Handle date range changes from date picker
      */
     onDateRangeChange(dateRange: IDateRange): void {
@@ -554,126 +480,6 @@ export class QueryComponent implements OnInit, OnDestroy {
                 end: endISO
             });
         }
-    }
-
-    /**
-     * Handle hashtag changes
-     */
-    onHashtagChange(hashtag: string): void {
-        this.onFormFieldChange('hashtag', hashtag);
-    }
-
-    /**
-     * Handle interval changes
-     */
-    onIntervalChange(interval: string): void {
-        this.onFormFieldChange('interval', interval);
-    }
-
-    /**
-     * Handle country selection changes
-     */
-    onCountriesChange(selectedCountries: any[]): void {
-        const countryValues = selectedCountries.map(country => country.value);
-        this.onFormFieldChange('countries', countryValues);
-    }
-
-    /**
-     * Handle topic selection changes
-     */
-    onTopicsChange(selectedTopics: any[]): void {
-        const topicValues = selectedTopics.map(topic => topic.value);
-        this.onFormFieldChange('topics', topicValues);
-    }
-
-    /**
-     * Reset form to default values
-     */
-    resetToDefaults(): void {
-        const defaultValues = this.getDefaultValues();
-        if (defaultValues) {
-            this.stateService.updateState(defaultValues);
-        }
-    }
-
-    /**
-     * Get current form state as IQueryParam
-     */
-    getCurrentFormState(): IQueryParam {
-        return this.stateService.getCurrentState();
-    }
-
-    // Your existing method (you might need to implement this)
-    private getQueryParamsFromFragments(): boolean {
-        // Implementation depends on your routing/URL fragment logic
-        // Return true if query params exist in URL fragments
-        return false;
-    }
-
-    updateCountries(event: Event): void {
-        const target = event.target as HTMLInputElement;
-        this.stateService.setCountries(target.value);
-    }
-
-    updateHashtag(event: Event): void {
-        const target = event.target as HTMLInputElement;
-        this.stateService.setHashtag(target.value);
-    }
-
-    updateStartDate(event: Event): void {
-        const target = event.target as HTMLInputElement;
-        const isoDate = new Date(target.value).toISOString();
-        this.stateService.setStart(isoDate);
-    }
-
-    updateEndDate(event: Event): void {
-        const target = event.target as HTMLInputElement;
-        const isoDate = new Date(target.value).toISOString();
-        this.stateService.setEnd(isoDate);
-    }
-
-    updateInterval(event: Event): void {
-        const target = event.target as HTMLSelectElement;
-        this.stateService.setInterval(target.value);
-    }
-
-    updateTopics(event: Event): void {
-        const target = event.target as HTMLInputElement;
-        this.stateService.setTopics(target.value);
-    }
-
-    resetAll(): void {
-        this.stateService.resetState();
-    }
-
-    // Helper method to convert ISO date to datetime-local format
-    getDateTimeLocalValue(isoDate: string): string {
-        return new Date(isoDate).toISOString().slice(0, 16);
-    }
-
-    // Example methods for different update patterns
-    updateMultipleFields(): void {
-        // Update multiple fields at once
-        this.stateService.updatePartialState({
-            countries: 'US,UK',
-            hashtag: '#example',
-            interval: 'P1W'
-        });
-    }
-
-    updateEntireState(): void {
-        // Replace entire state
-        const newState: IQueryParam = {
-            countries: 'CA',
-            hashtag: '#new',
-            start: new Date().toISOString(),
-            end: new Date().toISOString(),
-            interval: 'P1D',
-            topics: 'technology',
-            active_topic: 'users',
-            fit_to_content: 'true'
-        };
-        this.stateService.updateState(newState);
     }
 
     ngOnDestroy(): void {
