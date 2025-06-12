@@ -4,7 +4,7 @@ import {SummaryComponent} from './summary.component';
 import {DataService} from '../../data.service';
 import {StateService} from '../../state.service';
 import {IQueryParam, ISummaryData, IWrappedSummaryData, IWrappedTopicData, StatsType} from '../types';
-import { Overlay } from '../../overlay.component';
+import {Overlay} from '../../overlay.component';
 
 describe('SummaryComponent', () => {
     let component: SummaryComponent;
@@ -209,16 +209,6 @@ describe('SummaryComponent', () => {
         //         topic2: 20
         //     }));
         // });
-
-        it('should sort Contributors and Total Edits to the beginning', () => {
-            // Mock topicDefinitions to include Contributors and Total Edits
-            spyOn(component, 'updateBigNumber').and.callThrough();
-
-            component.updateBigNumber();
-
-            // This test would need the actual topicDefinitions structure
-            // You might need to mock the topicDefinitions import
-        });
     });
 
     describe('formatNumbertoNumberformatString', () => {
@@ -264,16 +254,6 @@ describe('SummaryComponent', () => {
 
         afterEach(() => {
             document.body.removeChild(mockGrandParent);
-        });
-
-        it('should handle element selection and styling', () => {
-            const mockEvent = {
-                target: mockElement
-            } as any;
-
-            component.changeSelectedSummaryComponent(mockEvent);
-
-            // Test would need more specific DOM structure based on your actual HTML
         });
 
         it('should return early if target is not found', () => {
