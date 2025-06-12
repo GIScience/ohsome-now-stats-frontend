@@ -1,6 +1,6 @@
 import {effect, Injectable, signal} from '@angular/core';
 import {IQueryParam, StatsType} from "./dashboard/types";
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {environment} from "../environments/environment";
 import dayjs from "dayjs";
 import {DataService} from "./data.service";
@@ -76,74 +76,8 @@ export class StateService {
         return this.queryParamSubject.value;
     }
 
-    /**
-     * Individual property setters for convenience
-     */
-    setCountries(countries: string): void {
-        this.updatePartialState({ countries });
-    }
-
-    setHashtag(hashtag: string): void {
-        this.updatePartialState({ hashtag });
-    }
-
-    setStart(start: string): void {
-        // Ensure milliseconds are set to 0
-        const dateWithZeroMs = start.includes('.')
-            ? start.split('.')[0] + '.000Z'
-            : start.replace('Z', '.000Z');
-        this.updatePartialState({ start: dateWithZeroMs });
-    }
-
-    setEnd(end: string): void {
-        // Ensure milliseconds are set to 0
-        const dateWithZeroMs = end.includes('.')
-            ? end.split('.')[0] + '.000Z'
-            : end.replace('Z', '.000Z');
-        this.updatePartialState({ end: dateWithZeroMs });
-    }
-
     setInterval(interval: string): void {
         this.updatePartialState({ interval });
-    }
-
-    setTopics(topics: string): void {
-        this.updatePartialState({ topics });
-    }
-
-    setFitToContent(fit_to_content?: string): void {
-        this.updatePartialState({ fit_to_content });
-    }
-
-    /**
-     * Individual property getters for convenience
-     */
-    getCountries(): string {
-        return this.getCurrentState().countries;
-    }
-
-    getHashtag(): string {
-        return this.getCurrentState().hashtag;
-    }
-
-    getStart(): string {
-        return this.getCurrentState().start;
-    }
-
-    getEnd(): string {
-        return this.getCurrentState().end;
-    }
-
-    getInterval(): string {
-        return this.getCurrentState().interval;
-    }
-
-    getTopics(): string {
-        return this.getCurrentState().topics;
-    }
-
-    getFitToContent(): string | undefined {
-        return this.getCurrentState().fit_to_content;
     }
 
     /**
@@ -151,71 +85,6 @@ export class StateService {
      */
     resetState(): void {
         this.queryParamSubject.next(this.initialState);
-    }
-
-    /**
-     * Meta request state setters
-     */
-    /*setMinDate(start: string): void {
-      // console.log('>>> setMinDate >>> ', start);
-      // this.
-    }
-
-    setMaxDate(end: string): void {
-      // console.log('>>> setMaxDate >>> ', end);
-    }
-
-    getMinDate(): string {
-      return this.getMetaState().start;
-    }
-
-    getMaxDate(): string {
-      return this.getMetaState().end;
-    }*/
-
-    /**
-     * Get specific property as Observable
-     */
-    getCountries$(): Observable<string> {
-        return new Observable(observer => {
-            this.queryParamSubject.subscribe(state => observer.next(state.countries));
-        });
-    }
-
-    getHashtag$(): Observable<string> {
-        return new Observable(observer => {
-            this.queryParamSubject.subscribe(state => observer.next(state.hashtag));
-        });
-    }
-
-    getStart$(): Observable<string> {
-        return new Observable(observer => {
-            this.queryParamSubject.subscribe(state => observer.next(state.start));
-        });
-    }
-
-    getEnd$(): Observable<string> {
-        return new Observable(observer => {
-            this.queryParamSubject.subscribe(state => observer.next(state.end));
-        });
-    }
-
-    getInterval$(): Observable<string> {
-        return new Observable(observer => {
-            this.queryParamSubject.subscribe(state => observer.next(state.interval));
-        });
-    }
-
-    getTopics$(): Observable<string> {
-        return new Observable(observer => {
-            this.queryParamSubject.subscribe(state => observer.next(state.topics));
-        });
-    }
-
-    getFitToContent$(): Observable<string | undefined> {
-        return new Observable(observer => {
-            this.queryParamSubject.subscribe(state => observer.next(state.fit_to_content));
-        });
     }
 
     private updateURL(data: IQueryParam): void {
