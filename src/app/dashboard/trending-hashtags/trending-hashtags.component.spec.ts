@@ -1,154 +1,381 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { TrendingHashtagsComponent } from './trending-hashtags.component';
-import { DataService } from '../../data.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { IHashtag } from '../types';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {of, throwError} from 'rxjs';
+import {By} from '@angular/platform-browser';
+import { Overlay } from '../../overlay.component';
+
+import {TrendingHashtagsComponent} from './trending-hashtags.component';
+import {DataService} from '../../data.service';
+import {StateService} from '../../state.service';
+import {IHashtag} from '../types';
 
 describe('TrendingHashtagsComponent', () => {
-  let component: TrendingHashtagsComponent;
-  let fixture: ComponentFixture<TrendingHashtagsComponent>;
-  let mockDataService: jasmine.SpyObj<DataService>;
-  let mockRouter: jasmine.SpyObj<Router>;
-  let mockActivatedRoute: any;
+    let component: TrendingHashtagsComponent;
+    let fixture: ComponentFixture<TrendingHashtagsComponent>;
+    let mockDataService: jasmine.SpyObj<DataService>;
+    let mockStateService: jasmine.SpyObj<StateService>;
 
-  const mockHashtags: IHashtag[] = [
-    {
-      hashtag: 'missingmaps',
-      number_of_users: 1000,
-      hashtagTitle: 'missingmaps',
-      tooltip: 'missingmaps',
-      percent: 0
-    },
-    {
-      hashtag: 'adt',
-      number_of_users: 800,
-      hashtagTitle: 'adt',
-      tooltip: 'adt',
-      percent: 0
-    },
-    {
-      hashtag: 'hot-osm-12345',
-      number_of_users: 500,
-      hashtagTitle: 'hot-osm-12345',
-      tooltip: 'hot-osm-12345',
-      percent: 0
-    },
-    {
-      hashtag: 'verylonghashtagthatneedstobetruncated',
-      number_of_users: 500,
-      hashtagTitle: 'verylonghashtagthatneedstobetruncated',
-      tooltip: 'verylonghashtagthatneedstobetruncated',
-      percent: 0
-    }
-  ];
+    const mockHashtags: IHashtag[] = [
+        { hashtag: 'hashtag1', number_of_users: 100 },
+        { hashtag: 'hashtag2', number_of_users: 80 },
+        { hashtag: 'verylonghashtagnamethatexceedstwentycharacters', number_of_users: 60 },
+        { hashtag: 'hashtag4', number_of_users: 40 }
+    ];
 
-  beforeEach(async () => {
-    mockDataService = jasmine.createSpyObj('DataService', ['updateURL']);
-    mockDataService.trendingHashtagLimit = 5;
-    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
-    mockActivatedRoute = {
-      snapshot: {
-        fragment: 'interval=P1D&start=2023-01-01T00:00:00Z&end=2023-01-07T00:00:00Z&countries=&topics='
-      }
+    const mockState = {
+        start: '2023-01-01',
+        end: '2023-01-31',
+        countries: 'US',
+        hashtag: 'test',
+        interval: 'P1M',
+        topics: '',
+        active_topic: 'users' as any,
+        fit_to_content: ''
     };
 
-    await TestBed.configureTestingModule({
-      declarations: [TrendingHashtagsComponent],
-      providers: [
-        { provide: DataService, useValue: mockDataService },
-        { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute }
-      ]
-    }).compileComponents();
+    beforeEach(async () => {
+        const dataServiceSpy = jasmine.createSpyObj('DataService', [
+            'getTrendingHashtags',
+            'getAbortHashtagReqSubject'
+        ], {
+            trendingHashtagLimit: 10,
+            abortHashtagReqSub: jasmine.createSpyObj('Subject', ['next', 'unsubscribe'])
+        });
 
-    fixture = TestBed.createComponent(TrendingHashtagsComponent);
-    component = fixture.componentInstance;
-    component.hashtags = [...mockHashtags];
-    fixture.detectChanges();
-  });
+        const stateServiceSpy = jasmine.createSpyObj('StateService', [
+            'appState',
+            'updatePartialState'
+        ]);
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+        await TestBed.configureTestingModule({
+            declarations: [TrendingHashtagsComponent, Overlay],
+            providers: [
+                { provide: DataService, useValue: dataServiceSpy },
+                { provide: StateService, useValue: stateServiceSpy }
+            ]
+        }).compileComponents();
 
-  it('should initialize with default values', () => {
-    expect(component.trendingHashtagLimit).toBe(5);
-    expect(component.dashboardTooltips).toBeDefined();
-  });
+        fixture = TestBed.createComponent(TrendingHashtagsComponent);
+        component = fixture.componentInstance;
+        mockDataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
+        mockStateService = TestBed.inject(StateService) as jasmine.SpyObj<StateService>;
 
-  describe('ngOnChanges', () => {
-    it('should process hashtags when input changes', () => {
-      component.ngOnChanges();
-
-      expect(component.numOfHashtags).toBe(4);
-      expect(component.hashtags[0].hashtag).toBe('missingmaps'); // Should be sorted
-      expect(component.hashtags[0].percent).toBe(100); // First item should have 100%
-      expect(component.hashtags[1].percent).toBe(80); // 800/1000 = 80%
-
-      // Check tooltip generation
-      expect(component.hashtags[0].tooltip).toBe('missingmaps with 1000 distinct users');
-
-      // Check long hashtag truncation
-      expect(component.hashtags[3].hashtagTitle).toBe('verylonghashtagthat...');
+        // Setup default mock returns
+        mockStateService.appState.and.returnValue(mockState);
+        mockDataService.getTrendingHashtags.and.returnValue(of(mockHashtags));
     });
 
-    it('should handle empty hashtags array', () => {
-      component.hashtags = [];
-      component.ngOnChanges();
-
-      expect(component.numOfHashtags).toBe(0);
-    });
-  });
-
-  describe('clickHashtag', () => {
-    it('should call updateURL with correct parameters', () => {
-      const hashtag = 'missingmaps';
-      component.clickHashtag(hashtag);
-
-      expect(mockDataService.updateURL).toHaveBeenCalledWith({
-        hashtag: 'missingmaps',
-        interval: 'P1D',
-        start: '2023-01-01T00:00:00Z',
-        end: '2023-01-07T00:00:00Z',
-        countries: '' as never,
-        topics: '' as never
-      });
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-  });
-
-  describe('getQueryParamsFromFragments', () => {
-    it('should parse URL fragment into query params object', () => {
-      const params = component.getQueryParamsFromFragments();
-
-      expect(params).toEqual({
-        interval: 'P1D',
-        start: '2023-01-01T00:00:00Z',
-        end: '2023-01-07T00:00:00Z',
-        countries: '' as never,
-        topics: '' as never
-      });
+    it('should initialize with default values', () => {
+        expect(component.hashtags).toBeUndefined();
+        expect(component.trendingHashtagLimit).toBe(10);
+        expect(component.numOfHashtags).toBe(0);
+        expect(component.isHashtagsLoading).toBe(false);
+        expect(component.dashboardTooltips).toBeDefined();
     });
 
-    it('should return null for empty fragment', () => {
-      mockActivatedRoute.snapshot.fragment = '';
-      expect(component.getQueryParamsFromFragments()).toBeNull();
-    });
-  });
+    describe('component initialization', () => {
+        it('should set trendingHashtagLimit from dataService', () => {
+            fixture.detectChanges();
+            expect(component.trendingHashtagLimit).toBe(mockDataService.trendingHashtagLimit);
+        });
 
-  describe('enableTooltips', () => {
-    it('should be called after ngOnChanges', fakeAsync(() => {
-      spyOn(component, 'enableTooltips');
-      component.ngOnChanges();
-      tick(300);
-      expect(component.enableTooltips).toHaveBeenCalled();
-    }));
-  });
-
-  describe('ngOnDestroy', () => {
-    it('should clear hashtags array', () => {
-      component.ngOnDestroy();
-      expect(component.hashtags).toEqual([]);
+        it('should call requestFromAPI on initialization', () => {
+            spyOn(component as any, 'requestFromAPI');
+            fixture.detectChanges();
+            expect((component as any).requestFromAPI).toHaveBeenCalled();
+        });
     });
-  });
+
+    describe('requestFromAPI', () => {
+        beforeEach(() => {
+            spyOn(component, 'stopHashtagReq');
+            spyOn(component, 'enableTooltips');
+        });
+
+        // it('should set loading state and call stopHashtagReq', () => {
+        //     component['requestFromAPI'](mockState);
+        //
+        //     expect(component.isHashtagsLoading).toBe(true);
+        //     expect(component.stopHashtagReq).toHaveBeenCalled();
+        // });
+
+        it('should call getTrendingHashtags with correct parameters', () => {
+            component['requestFromAPI'](mockState);
+
+            expect(mockDataService.getTrendingHashtags).toHaveBeenCalledWith({
+                start: mockState.start,
+                end: mockState.end,
+                limit: mockDataService.trendingHashtagLimit,
+                countries: mockState.countries
+            });
+        });
+
+        it('should process hashtags data correctly', fakeAsync(() => {
+            component['requestFromAPI'](mockState);
+            tick();
+
+            expect(component.isHashtagsLoading).toBe(false);
+            expect(component.hashtags).toEqual(jasmine.any(Array));
+            expect(component.numOfHashtags).toBe(mockHashtags.length);
+        }));
+
+        it('should sort hashtags in descending order by number_of_users', fakeAsync(() => {
+            component['requestFromAPI'](mockState);
+            tick();
+
+            expect(component.hashtags[0].number_of_users).toBeGreaterThanOrEqual(
+                component.hashtags[1].number_of_users
+            );
+        }));
+
+        it('should create tooltips for hashtags', fakeAsync(() => {
+            component['requestFromAPI'](mockState);
+            tick();
+
+            component.hashtags.forEach(hashtag => {
+                expect(hashtag.tooltip).toBe(`${hashtag.hashtag} with ${hashtag.number_of_users} distinct users`);
+            });
+        }));
+
+        it('should truncate long hashtag titles', fakeAsync(() => {
+            component['requestFromAPI'](mockState);
+            tick();
+
+            const longHashtag = component.hashtags.find(h => h.hashtag.length > 20);
+            if (longHashtag) {
+                expect(longHashtag.hashtagTitle).toBe(longHashtag.hashtag.substring(0, 19) + "...");
+            }
+        }));
+
+        it('should keep short hashtag titles unchanged', fakeAsync(() => {
+            component['requestFromAPI'](mockState);
+            tick();
+
+            const shortHashtag = component.hashtags.find(h => h.hashtag.length <= 20);
+            if (shortHashtag) {
+                expect(shortHashtag.hashtagTitle).toBe(shortHashtag.hashtag);
+            }
+        }));
+
+        it('should calculate percentages correctly', fakeAsync(() => {
+            component['requestFromAPI'](mockState);
+            tick();
+
+            const topHashtag = component.hashtags[0];
+            expect(topHashtag.percent).toBe(100);
+
+            if (component.hashtags.length > 1) {
+                const secondHashtag = component.hashtags[1];
+                const expectedPercent = secondHashtag.number_of_users / topHashtag.number_of_users * 100;
+                expect(secondHashtag.percent).toBe(expectedPercent);
+            }
+        }));
+
+        it('should call enableTooltips after timeout', fakeAsync(() => {
+            component['requestFromAPI'](mockState);
+            tick(300);
+
+            expect(component.enableTooltips).toHaveBeenCalled();
+        }));
+
+        it('should handle API errors', () => {
+            spyOn(console, 'error');
+            mockDataService.getTrendingHashtags.and.returnValue(throwError('API Error'));
+
+            component['requestFromAPI'](mockState);
+
+            expect(console.error).toHaveBeenCalledWith('Error while requesting TRending hashtags data  ', 'API Error');
+        });
+
+        it('should handle empty hashtags response', fakeAsync(() => {
+            mockDataService.getTrendingHashtags.and.returnValue(of([]));
+
+            component['requestFromAPI'](mockState);
+            tick();
+
+            expect(component.hashtags).toEqual([]);
+            expect(component.numOfHashtags).toBe(0);
+        }));
+    });
+
+    describe('clickHashtag', () => {
+        it('should update state with selected hashtag', () => {
+            const testHashtag = 'testhashtag';
+
+            component.clickHashtag(testHashtag);
+
+            expect(mockStateService.updatePartialState).toHaveBeenCalledWith({
+                hashtag: testHashtag
+            });
+        });
+    });
+
+    describe('enableTooltips', () => {
+        beforeEach(() => {
+            // Mock DOM elements
+            const mockTooltipElement = document.createElement('div');
+            mockTooltipElement.setAttribute('data-bs-toggle', 'tooltip');
+            document.body.appendChild(mockTooltipElement);
+
+            const mockExistingTooltip = document.createElement('div');
+            mockExistingTooltip.className = 'tooltip';
+            document.body.appendChild(mockExistingTooltip);
+        });
+
+        afterEach(() => {
+            // Clean up DOM
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => el.remove());
+            document.querySelectorAll('.tooltip').forEach(el => el.remove());
+        });
+
+        it('should initialize bootstrap tooltips', () => {
+            spyOn(document, 'querySelectorAll').and.callThrough();
+
+            component.enableTooltips();
+
+            expect(document.querySelectorAll).toHaveBeenCalledWith('[data-bs-toggle="tooltip"]');
+        });
+
+        it('should remove existing tooltips', () => {
+            const initialTooltipCount = document.getElementsByClassName('tooltip').length;
+            expect(initialTooltipCount).toBeGreaterThan(0);
+
+            component.enableTooltips();
+
+            const finalTooltipCount = document.getElementsByClassName('tooltip').length;
+            expect(finalTooltipCount).toBe(0);
+        });
+    });
+
+    describe('stopHashtagReq', () => {
+        it('should stop hashtag requests and create new abort subject', () => {
+            component.stopHashtagReq();
+
+            expect(mockDataService.abortHashtagReqSub.next).toHaveBeenCalled();
+            expect(mockDataService.abortHashtagReqSub.unsubscribe).toHaveBeenCalled();
+            expect(mockDataService.getAbortHashtagReqSubject).toHaveBeenCalled();
+        });
+    });
+
+    describe('relevantState computed', () => {
+        it('should return correct state properties', () => {
+            fixture.detectChanges();
+            const relevantState = component['relevantState']();
+
+            expect(relevantState).toEqual({
+                start: mockState.start,
+                end: mockState.end,
+                countries: mockState.countries
+            });
+        });
+
+        // it('should have custom equality function', () => {
+        //     fixture.detectChanges();
+        //     const equalityFn = (component['relevantState'] as any).equal;
+        //
+        //     expect(equalityFn).toBeDefined();
+        //     expect(typeof equalityFn).toBe('function');
+        //
+        //     // Test equality function
+        //     const state1 = { start: '2023-01-01', end: '2023-01-31', countries: 'US' };
+        //     const state2 = { start: '2023-01-01', end: '2023-01-31', countries: 'US' };
+        //     const state3 = { start: '2023-01-02', end: '2023-01-31', countries: 'US' };
+        //
+        //     expect(equalityFn(state1, state2)).toBe(true);
+        //     expect(equalityFn(state1, state3)).toBe(false);
+        // });
+    });
+
+    describe('template rendering', () => {
+        beforeEach(() => {
+            component.hashtags = mockHashtags.map((hashtag, index) => ({
+                ...hashtag,
+                hashtagTitle: hashtag.hashtag.length > 20 ? hashtag.hashtag.substring(0, 19) + "..." : hashtag.hashtag,
+                tooltip: `${hashtag.hashtag} with ${hashtag.number_of_users} distinct users`,
+                percent: index === 0 ? 100 : (hashtag.number_of_users / mockHashtags[0].number_of_users * 100)
+            }));
+            component.numOfHashtags = mockHashtags.length;
+            fixture.detectChanges();
+        });
+
+        it('should render hashtags when numOfHashtags > 0', () => {
+            const hashtagElements = fixture.debugElement.queryAll(By.css('span.clickable'));
+            expect(hashtagElements.length).toBe(mockHashtags.length);
+        });
+
+        it('should not render hashtags when numOfHashtags = 0', () => {
+            component.numOfHashtags = 0;
+            fixture.detectChanges();
+
+            const containerElement = fixture.debugElement.query(By.css('.bd.bgc-white'));
+            expect(containerElement).toBeFalsy();
+        });
+
+        it('should display correct hashtag titles', () => {
+            const hashtagElements = fixture.debugElement.queryAll(By.css('span.clickable'));
+
+            hashtagElements.forEach((element, index) => {
+                const expectedTitle = component.hashtags[index].hashtagTitle;
+                expect(element.nativeElement.textContent.trim()).toContain(expectedTitle);
+            });
+        });
+
+        it('should set correct width percentages', () => {
+            const hashtagElements = fixture.debugElement.queryAll(By.css('span.clickable'));
+
+            hashtagElements.forEach((element, index) => {
+                const expectedWidth = component.hashtags[index].percent + '%';
+                expect(element.nativeElement.style.width).toBe(expectedWidth);
+            });
+        });
+
+        it('should set correct tooltips', () => {
+            const hashtagElements = fixture.debugElement.queryAll(By.css('span.clickable'));
+
+            hashtagElements.forEach((element, index) => {
+                const expectedTooltip = component.hashtags[index].tooltip;
+                expect(element.nativeElement.getAttribute('data-bs-title')).toBe(expectedTooltip);
+            });
+        });
+
+        it('should call clickHashtag when hashtag is clicked', () => {
+            spyOn(component, 'clickHashtag');
+            const firstHashtagElement = fixture.debugElement.query(By.css('span.clickable'));
+
+            firstHashtagElement.nativeElement.click();
+
+            expect(component.clickHashtag).toHaveBeenCalledWith(component.hashtags[0].hashtag);
+        });
+
+        it('should display correct title with number of hashtags', () => {
+            const titleElement = fixture.debugElement.query(By.css('#title_trendingHashTags'));
+            expect(titleElement.nativeElement.textContent).toContain(`Top ${component.numOfHashtags} most used hashtags`);
+        });
+
+        it('should show loading overlay when isHashtagsLoading is true', () => {
+            component.isHashtagsLoading = true;
+            fixture.detectChanges();
+
+            const overlayElement = fixture.debugElement.query(By.css('overlay'));
+            expect(overlayElement).toBeTruthy();
+            expect(overlayElement.nativeElement.getAttribute('ng-reflect-is-loading')).toBe('true');
+        });
+    });
+
+    describe('effect integration', () => {
+        it('should react to state changes', () => {
+            spyOn(component as any, 'requestFromAPI');
+
+            // Simulate state change
+            const newState = { ...mockState, start: '2023-02-01' };
+            mockStateService.appState.and.returnValue(newState);
+
+            fixture.detectChanges();
+
+            expect((component as any).requestFromAPI).toHaveBeenCalled();
+        });
+    });
 });

@@ -1,17 +1,18 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    ElementRef,
-    Input,
-    OnChanges,
-    SimpleChanges,
-    ViewChild,
-} from '@angular/core';
+import {Component, computed, effect, ElementRef, ViewChild,} from '@angular/core';
 
 import Plotly from 'plotly.js-geo-dist';
 import {Config} from 'plotly.js-basic-dist-min';
-import {ICountryStatsData, ICountryStatsDataAsArrays, StatsType} from '../types';
+import {
+    ICountryStatsData,
+    ICountryStatsDataAsArrays,
+    ITopicCountryData,
+    IWrappedCountryStatsData,
+    IWrappedTopicCountryData,
+    StatsType
+} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
+import {StateService} from "../../state.service";
+import {DataService} from "../../data.service";
 
 // Purples from d3-scale-chromatic at https://observablehq.com/@d3/color-schemes
 
@@ -19,22 +20,103 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
     selector: 'app-map',
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
 
-export class MapComponent implements OnChanges {
-    @Input() data!: Array<ICountryStatsData>;
-    @Input() currentStats!: StatsType;
-    @Input() selectedCountries!: string;
-    @Input() selectedTopics: string | undefined;
-
+export class MapComponent {
     @ViewChild('d3Map') d3MapElement: ElementRef | undefined;
+    isCountriesLoading: boolean = false;
+    data!: Array<ICountryStatsData>;
+    selectedTopics!: StatsType;
+    selectedCountries!: string;
 
-    @Input() isCountriesLoading!: boolean;
+    private relevantState = computed(() => {
+        const state = this.stateService.appState();
+        return {
+            hashtag: state.hashtag,
+            start: state.start,
+            end: state.end,
+            countries: state.countries,
+            topics: state.topics,
+            active_topic: state.active_topic
+        }
+    }, {
+        equal: (a, b) => {
+            return a.hashtag === b.hashtag
+                && a.start === b.start
+                && a.end === b.end
+                && a.topics == b.topics
+        }
+    });
+    private activeTopicState = computed(() => {
+        return this.stateService.appState().active_topic;
+    });
+    private activeCountriesState = computed(() => {
+        return this.stateService.appState().countries;
+    });
 
-    ngOnChanges(changes: SimpleChanges): void {
-        const data: Array<ICountryStatsData> = this.data
+
+    constructor(
+        private stateService: StateService,
+        private dataService: DataService,
+    ) {
+        effect(() => {
+            this.selectedTopics = this.relevantState().active_topic
+            this.requestDataFromAPI(this.relevantState());
+        });
+
+        // Effect for map to update when ONLY active_topic changes
+        effect(() => {
+            this.selectedTopics = this.activeTopicState()
+            if (this.data) {
+                this.prepareMapDataToPlot(this.data)
+            }
+        })
+
+        // Effect for map to update to show selected countries
+        effect(() => {
+            this.selectedCountries = this.activeCountriesState()
+            if (this.data) {
+                this.prepareMapDataToPlot(this.data)
+            }
+        })
+    }
+
+    requestDataFromAPI(state: { hashtag: string; start: string; end: string; topics: string }) {
+        this.isCountriesLoading = true;
+        // fire API to get map data
+        this.dataService.requestCountryStats(state).subscribe({
+            next: (res: IWrappedCountryStatsData) => {
+                // add 'hashtag'
+                res.result.map((r: any) => {
+                    r['hashtag'] = state['hashtag']
+                    r['startDate'] = state['start']
+                    r['endDate'] = state['end']
+                })
+
+                const tempCountryResponse = res.result
+                if (state['topics'] !== '') {
+                    this.dataService.requestTopicCountryStats(state)
+                        .subscribe((res: IWrappedTopicCountryData) => {
+                            // add each Topic to Map data to make them a part of CSV
+                            this.data = this.addTopicDataToCountries(res.result, tempCountryResponse)
+                            this.prepareMapDataToPlot(this.data)
+                        });
+                } else {
+                    // if non Topic is selected only countryData is sent to MapComponent
+                    this.data = tempCountryResponse
+                    this.prepareMapDataToPlot(this.data)
+                }
+                this.isCountriesLoading = false;
+            },
+            error: (err) => {
+                console.error('Error while requesting Country data  ', err)
+                this.isCountriesLoading = false;
+            }
+        });
+    }
+
+    prepareMapDataToPlot(data: Array<ICountryStatsData>): void {
         const notSelectedCountryData: ICountryStatsData[] = [];
         const selectedCountryData = data.filter((dataPoint: any) => {
             if (this.selectedCountries.includes(dataPoint["country"])) {
@@ -46,37 +128,37 @@ export class MapComponent implements OnChanges {
         })
 
         const selectedCountryStatsArrays = this.selectedCountries != "" ?
-            this.getSortedStatsFromData(selectedCountryData, this.currentStats)
-            : this.getSortedStatsFromData(data, this.currentStats)
+            this.getSortedStatsFromData(selectedCountryData, this.activeTopicState())
+            : this.getSortedStatsFromData(data, this.activeTopicState())
         const notSelectedCountryStatsArrays = this.selectedCountries != "" ?
-            this.getSortedStatsFromData(notSelectedCountryData, this.currentStats)
-            : this.getSortedStatsFromData([], this.currentStats)
+            this.getSortedStatsFromData(notSelectedCountryData, this.activeTopicState())
+            : this.getSortedStatsFromData([], this.activeTopicState())
 
 
         let cmin;
         let cmax;
-        if (notSelectedCountryStatsArrays[this.currentStats]!.length != 0) {
-            cmax = notSelectedCountryStatsArrays[this.currentStats]![0] > selectedCountryStatsArrays[this.currentStats]![0]
-                ? notSelectedCountryStatsArrays[this.currentStats]![0]
-                : selectedCountryStatsArrays[this.currentStats]![0]
+        if (notSelectedCountryStatsArrays[this.activeTopicState()]!.length != 0) {
+            cmax = notSelectedCountryStatsArrays[this.activeTopicState()]![0] > selectedCountryStatsArrays[this.activeTopicState()]![0]
+                ? notSelectedCountryStatsArrays[this.activeTopicState()]![0]
+                : selectedCountryStatsArrays[this.activeTopicState()]![0]
 
-            cmin = notSelectedCountryStatsArrays[this.currentStats]!.at(-1)! < selectedCountryStatsArrays[this.currentStats]!.at(-1)!
-                ? notSelectedCountryStatsArrays[this.currentStats]!.at(-1)!
-                : selectedCountryStatsArrays[this.currentStats]!.at(-1)!
+            cmin = notSelectedCountryStatsArrays[this.activeTopicState()]!.at(-1)! < selectedCountryStatsArrays[this.activeTopicState()]!.at(-1)!
+                ? notSelectedCountryStatsArrays[this.activeTopicState()]!.at(-1)!
+                : selectedCountryStatsArrays[this.activeTopicState()]!.at(-1)!
         } else {
-            cmax = selectedCountryStatsArrays[this.currentStats]![0]
-            cmin = selectedCountryStatsArrays[this.currentStats]!.at(-1)!
+            cmax = selectedCountryStatsArrays[this.activeTopicState()]![0]
+            cmin = selectedCountryStatsArrays[this.activeTopicState()]!.at(-1)!
         }
 
         // min should never be negative, otherwise the positive which is currently the only one displayed
         // can lose its color scale
         cmin = cmin > 0 ? cmin : 0;
 
-        if (this.data && this.currentStats) {
+        if (data && this.activeTopicState()) {
             this.initPlotlyMap({
                 selectedCountryStatsArrays: selectedCountryStatsArrays,
                 notSelectedCountryStatsArrays: notSelectedCountryStatsArrays,
-                stats: this.currentStats,
+                stats: this.activeTopicState(),
                 cmin: cmin,
                 cmax: cmax
             });
@@ -220,6 +302,26 @@ export class MapComponent implements OnChanges {
         };
 
         Plotly.newPlot('d3-map', plotData, layout, config);
+    }
+
+    private addTopicDataToCountries(res: Record<StatsType, ITopicCountryData[]>, countryData: ICountryStatsData[]) {
+        const mergedData: any[] = [];
+        countryData.forEach(country => {
+            const countryCode = country.country;
+            const countryEntry: any = {
+                ...country,
+            };
+
+            Object.keys(res).forEach(topic => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const matchingData = res[topic].find(data => data.country === countryCode);
+                countryEntry[topic] = matchingData ? matchingData.value : 0;
+            });
+
+            mergedData.push(countryEntry);
+        });
+        return mergedData;
     }
 
 }

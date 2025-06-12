@@ -1,6 +1,22 @@
-import {Component, Input} from '@angular/core';
-import {mkConfig, generateCsv, download} from "export-to-csv";
-import {ICountryStatsData, IPlotData, ISummaryData} from "../types";
+import {Component} from '@angular/core';
+import {download, generateCsv, mkConfig} from "export-to-csv";
+import {
+    ICountryStatsData,
+    IPlotData,
+    ISummaryData,
+    ITopicCountryData,
+    ITopicPlotData,
+    IWrappedCountryStatsData,
+    IWrappedPlotData,
+    IWrappedSummaryData,
+    IWrappedTopicCountryData,
+    IWrappedTopicData,
+    StatsType,
+    TopicValues
+} from "../types";
+import {forkJoin, Observable} from "rxjs";
+import {StateService} from "../../state.service";
+import {DataService} from "../../data.service";
 
 @Component({
     selector: 'app-export-data',
@@ -10,18 +26,97 @@ import {ICountryStatsData, IPlotData, ISummaryData} from "../types";
 })
 export class ExportDataComponent {
 
-    @Input() summaryData!: ISummaryData
-    @Input() plotData!: IPlotData
-    @Input() mapData!: Array<ICountryStatsData>
-    @Input() selectedCountries!: string;
+    constructor(
+        private stateService: StateService,
+        private dataService: DataService
+    ) { }
 
     exportOverview() {
+        const state = this.stateService.appState()
+        console.log(state)
+        if (state['topics'] !== '') {
+            // if topics are requested then wait for both the observable
+            forkJoin({
+                summary: this.dataService.requestSummary(state) as Observable<IWrappedSummaryData>,
+                topic: this.dataService.requestTopic(state) as Observable<IWrappedTopicData>
+            }).subscribe({
+                next: (responses) => {
+                    // Handle summary response
+                    const tempSummaryData = responses.summary.result;
+
+                    let summaryData: ISummaryData = {
+                        changesets: tempSummaryData.changesets,
+                        buildings: tempSummaryData.buildings,
+                        users: tempSummaryData.users,
+                        edits: tempSummaryData.edits,
+                        roads: tempSummaryData.roads,
+                        latest: tempSummaryData.latest,
+                        hashtag: state.hashtag,
+                        startDate: state.start,
+                        endDate: state.end
+                    };
+
+                    if (state.countries !== '') {
+                        summaryData['countries'] = state.countries;
+                    }
+
+                    // Handle topic response
+                    const input: { [key: string]: TopicValues } = responses.topic.result;
+                    const topicValue: { [key: string]: number } = {};
+
+                    for (const key in input) {
+                        if (Object.prototype.hasOwnProperty.call(input, key)) {
+                            topicValue[key] = input[key].value;
+                        }
+                    }
+
+                    summaryData = {...summaryData, ...topicValue}
+
+                    this.prepareOverviewDataAndDownload(summaryData)
+                },
+                error: (err) => {
+                    console.error('Error while requesting data: ', err)
+                }
+            });
+        } else {
+            // Only summary request needed
+            this.dataService.requestSummary(state).subscribe({
+                next: (res: IWrappedSummaryData) => {
+                    const tempSummaryData = res.result;
+
+                    const summaryData: ISummaryData = {
+                        changesets: tempSummaryData.changesets,
+                        buildings: tempSummaryData.buildings,
+                        users: tempSummaryData.users,
+                        edits: tempSummaryData.edits,
+                        roads: tempSummaryData.roads,
+                        latest: tempSummaryData.latest,
+                        hashtag: state.hashtag,
+                        startDate: state.start,
+                        endDate: state.end
+                    };
+
+                    if (state.countries !== '') {
+                        summaryData['countries'] = state.countries;
+                    }
+
+                    this.prepareOverviewDataAndDownload(summaryData)
+                },
+                error: (err) => {
+                    console.error('Error while requesting Summary data ', err)
+                }
+            });
+        }
+
+    }
+
+    prepareOverviewDataAndDownload(summaryData: ISummaryData) {
         // Converts your Array<Object> to a CsvOutput string based on the configs
-        if (this.summaryData && [this.summaryData].length > 0) {
-            // console.log('this.summaryData ', this.summaryData)
+        if (summaryData && [summaryData].length > 0) {
+            // console.log('summaryData ', summaryData)
 
             // Extract keys from the input object
-            const keys = Object.keys(this.summaryData)
+            const keys = Object.keys(summaryData)
             // Filter out 'startDate' and 'endDate' keys
             const dateKeys = keys.filter((key) => key === 'startDate' || key === 'endDate')
             // Filter out non-date keys
@@ -33,21 +128,65 @@ export class ExportDataComponent {
             ]
 
             const csvConfig = mkConfig({
-                filename: `ohsome-now-stats_${this.summaryData['hashtag']}_${this.summaryData['startDate']!.substring(0, 10)}_${this.summaryData['endDate']!.substring(0, 10)}_summary`,
+                filename: `ohsome-now-stats_${summaryData['hashtag']}_${summaryData['startDate']!.substring(0, 10)}_${summaryData['endDate']!.substring(0, 10)}_summary`,
                 columnHeaders: arrangedHeaders
             });
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            const csv = generateCsv(csvConfig)([this.summaryData]);
+            const csv = generateCsv(csvConfig)([summaryData]);
             download(csvConfig)(csv)
         }
     }
 
     exportTimeSeries() {
-        console.log('>>> exportTimeSeries >>> this.plotData ', this.plotData)
-        const tempHashtag = <string>this.plotData['hashtag']
-        const tempPlotdata = this.addHashtagAndCountriesToPlot(this.plotData)
+        let plotData: IPlotData
+        const state = this.stateService.appState()
+        // fire timeseries API to get plot data
+        this.dataService.requestPlot(state).subscribe({
+            next: (res: IWrappedPlotData) => {
+                if (res) {
+                    // add 'hashtag' and 'country' ISO codes to plotData #82
+                    const tempPlotResponse = res.result
+                    // add Topics to PlotData to make them a part of CSV
+                    if (state['topics']) {
+                        this.dataService.requestTopicInterval(state).subscribe({
+                            next: res => {
+                                if (res) {
+                                    // add each Topic data to Plot data to make them a part of CSV
+                                    plotData = this.addTopicDataToPlot(res.result, tempPlotResponse)
+                                    plotData['hashtag'] = decodeURIComponent(state['hashtag'])
+                                    if (state['countries'] !== '')
+                                        plotData['countries'] = state['countries']
+
+                                    this.preparePlotDataAndDownload(plotData)
+                                }
+                            },
+                            error: (err) => {
+                                console.error('Error while requesting Topic data ', err)
+                            }
+                        })
+                    } else {
+                        // if non Topic is selected only countryData is sent to PlotComponent
+                        plotData = tempPlotResponse
+                        plotData['hashtag'] = decodeURIComponent(state['hashtag'])
+                        if (state['countries'] !== '')
+                            plotData['countries'] = state['countries']
+
+                        this.preparePlotDataAndDownload(plotData)
+                    }
+                }
+            },
+            error: (err) => {
+                console.error('Error while requesting Plot data  ', err)
+            }
+        });
+
+    }
+
+    private preparePlotDataAndDownload(plotData: IPlotData) {
+        const tempHashtag = <string>plotData['hashtag']
+        const tempPlotdata = this.addHashtagAndCountriesToPlot(plotData)
         // Extract keys from the input object
         const keys = Object.keys(tempPlotdata)
         // Filter out 'startDate' and 'endDate' keys
@@ -71,6 +210,15 @@ export class ExportDataComponent {
         // @ts-ignore
         const csv = generateCsv(csvConfig)(convertedData);
         download(csvConfig)(csv)
+    }
+
+    private addTopicDataToPlot(res: Record<string, ITopicPlotData>, plotData: IPlotData) {
+        Object.keys(res).forEach((topic: string) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            plotData[topic] = res[topic].value
+        })
+        return plotData
     }
 
     private addHashtagAndCountriesToPlot(plotData: IPlotData) {
@@ -110,14 +258,46 @@ export class ExportDataComponent {
     }
 
     exportMap() {
-        // Converts your Array<Object> to a CsvOutput string based on the configs
+        let mapData: Array<ICountryStatsData>
+        const state = this.stateService.appState()
+        // fire API to get map data
+        this.dataService.requestCountryStats(state).subscribe({
+            next: (res: IWrappedCountryStatsData) => {
+                // add 'hashtag'
+                res.result.map((r: any) => {
+                    r['hashtag'] = decodeURIComponent(state['hashtag'])
+                    r['startDate'] = state['start']
+                    r['endDate'] = state['end']
+                })
+
+                const tempCountryResponse = res.result
+                if (state && state['topics']) {
+                    this.dataService.requestTopicCountryStats(state)
+                        .subscribe((res: IWrappedTopicCountryData) => {
+                            // add each Topic to Map data to make them a part of CSV
+                            mapData = this.addTopicDataToCountries(res.result, tempCountryResponse)
+                        });
+                } else {
+                    // if non Topic is selected only countryData is sent to MapComponent
+                    mapData = tempCountryResponse
+                }
+                this.prepareMapDataAndDownload(mapData, state.countries)
+            },
+            error: (err) => {
+                console.error('Error while requesting Country data  ', err)
+            }
+        });
+    }
+
+    private prepareMapDataAndDownload(mapData: Array<ICountryStatsData>, selectedCountries: string) {
+        // Converts Array<Object> to a CsvOutput string based on the configs
         let selectedCountryCSV: Array<ICountryStatsData> = [];
-        if (this.selectedCountries === '') {
+        if (selectedCountries === '') {
             // if no country is selected than add all countries to CSV
-            selectedCountryCSV = this.mapData
+            selectedCountryCSV = mapData
         } else {
             // filter only selected countries
-            selectedCountryCSV = this.mapData.filter((dataPoint) => this.selectedCountries.includes(dataPoint["country"]))
+            selectedCountryCSV = mapData.filter((dataPoint) => selectedCountries.includes(dataPoint["country"]))
         }
 
         if (selectedCountryCSV.length > 0) {
@@ -154,4 +334,26 @@ export class ExportDataComponent {
         }
     }
 
+    private addTopicDataToCountries(res: Record<StatsType, ITopicCountryData[]>, countryData: ICountryStatsData[]) {
+        const mergedData: any[] = [];
+
+        countryData.forEach(country => {
+            const countryCode = country.country;
+            const countryEntry: any = {
+                ...country,
+            };
+
+            Object.keys(res).forEach(topic => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const matchingData = res[topic].find(data => data.country === countryCode);
+                countryEntry[topic] = matchingData ? matchingData.value : 0;
+            });
+
+            mergedData.push(countryEntry);
+        });
+
+        // console.log('mergedData = ', mergedData)
+        return mergedData;
+    }
 }

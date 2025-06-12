@@ -17,10 +17,10 @@ export class BigNumberComponent implements OnInit, OnChanges{
   numericValue: number = 0
 
   ngOnInit() {
-    this.numericValue = parseFloat(this.value!!)
+    this.numericValue = parseFloat(this.value!)
   }
   ngOnChanges() {
-    this.numericValue = parseFloat(this.value!!)
+    this.numericValue = parseFloat(this.value!)
   }
 
   openHelp(event: any){
