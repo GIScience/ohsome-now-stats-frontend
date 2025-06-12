@@ -9,7 +9,7 @@ import {IQueryParam, StatsType} from './dashboard/types';
 describe('StateService', () => {
   let service: StateService;
   let mockRouter: jasmine.SpyObj<Router>;
-  let mockActivatedRoute: any;
+  let mockActivatedRoute: { snapshot: { fragment: string | null}; };
   let mockDataService: jasmine.SpyObj<DataService>;
 
   const mockMetaData = {
@@ -108,8 +108,6 @@ describe('StateService', () => {
     });
 
     it('should update partial state', () => {
-      const initialHashtag = service.appState().hashtag;
-
       service.updatePartialState({ hashtag: 'partial-update' });
 
       expect(service.appState().hashtag).toBe('partial-update');
