@@ -1,13 +1,12 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
-import {By} from '@angular/platform-browser';
 
 import {PlotComponent} from './plot.component';
 import {DataService} from '../../data.service';
 import {StateService} from '../../state.service';
 import {UTCToLocalConverterPipe} from '../query/pipes/utc-to-local-converter.pipe';
 import {IPlotData, ITopicPlotData, IWrappedPlotData, IWrappedTopicPlotData, StatsType} from '../types';
-import { Overlay } from '../../overlay.component';
+import {Overlay} from '../../overlay.component';
 
 // Mock Plotly
 const mockPlotly = {
@@ -103,9 +102,9 @@ describe('PlotComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [PlotComponent, Overlay],
             providers: [
-                { provide: DataService, useValue: dataServiceSpy },
-                { provide: StateService, useValue: stateServiceSpy },
-                { provide: UTCToLocalConverterPipe, useValue: utcToLocalConverterSpy }
+                {provide: DataService, useValue: dataServiceSpy},
+                {provide: StateService, useValue: stateServiceSpy},
+                {provide: UTCToLocalConverterPipe, useValue: utcToLocalConverterSpy}
             ]
         }).compileComponents();
 
@@ -162,8 +161,8 @@ describe('PlotComponent', () => {
         it('should set correct layout properties', () => {
             component.initChart();
 
-            expect(component.layout.margin).toEqual({ l: 50, r: 20, t: 20, b: 40 });
-            expect(component.layout.legend).toEqual({ orientation: 'h' });
+            expect(component.layout.margin).toEqual({l: 50, r: 20, t: 20, b: 40});
+            expect(component.layout.legend).toEqual({orientation: 'h'});
             expect(component.layout.barmode).toBe('group');
             expect(component.layout.font.family).toContain('Roboto');
         });
@@ -172,7 +171,8 @@ describe('PlotComponent', () => {
     describe('requestToAPI', () => {
         beforeEach(() => {
             spyOn(component, 'refreshPlot');
-            spyOn(component, 'fitToContent').and.returnValue(() => {});
+            spyOn(component, 'fitToContent').and.returnValue(() => {
+            });
             spyOn(component, 'resetZoom');
         });
 
@@ -194,7 +194,7 @@ describe('PlotComponent', () => {
         }));
 
         it('should handle plot data with topics', fakeAsync(() => {
-            const stateWithTopics = { ...mockState, topics: 'amenity' };
+            const stateWithTopics = {...mockState, topics: 'amenity'};
             spyOn(component, 'addTopicDataToPlot').and.returnValue(mockPlotData);
 
             component['requestToAPI'](stateWithTopics);
@@ -222,7 +222,7 @@ describe('PlotComponent', () => {
 
         it('should handle topic API errors', fakeAsync(() => {
             spyOn(console, 'error');
-            const stateWithTopics = { ...mockState, topics: 'amenity' };
+            const stateWithTopics = {...mockState, topics: 'amenity'};
             mockDataService.requestTopicInterval.and.returnValue(throwError('Topic API Error'));
 
             component['requestToAPI'](stateWithTopics);
@@ -232,7 +232,7 @@ describe('PlotComponent', () => {
         }));
 
         it('should decode hashtag URL encoding', fakeAsync(() => {
-            const stateWithEncodedHashtag = { ...mockState, hashtag: 'test%20hashtag' };
+            const stateWithEncodedHashtag = {...mockState, hashtag: 'test%20hashtag'};
 
             component['requestToAPI'](stateWithEncodedHashtag);
             tick();
@@ -243,7 +243,7 @@ describe('PlotComponent', () => {
 
     describe('addTopicDataToPlot', () => {
         it('should merge topic data into plot data', () => {
-            const result: any = component['addTopicDataToPlot'](mockTopicPlotData, { ...mockPlotData });
+            const result: any = component['addTopicDataToPlot'](mockTopicPlotData, {...mockPlotData});
 
             expect(result['amenity']).toEqual([5, 10, 15]);
         });
@@ -259,7 +259,7 @@ describe('PlotComponent', () => {
                 }
             };
 
-            const result = component['addTopicDataToPlot'](multipleTopics, { ...mockPlotData });
+            const result = component['addTopicDataToPlot'](multipleTopics, {...mockPlotData});
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error

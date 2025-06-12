@@ -1,16 +1,16 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { QueryComponent } from './query.component';
-import { DataService } from '../../data.service';
-import { ToastService } from 'src/app/toast.service';
-import { StateService } from '../../state.service';
-import { of, BehaviorSubject } from 'rxjs';
-import { UTCToLocalConverterPipe } from './pipes/utc-to-local-converter.pipe';
-import { ActivatedRoute } from '@angular/router';
-import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {FormsModule} from '@angular/forms';
+import {QueryComponent} from './query.component';
+import {DataService} from '../../data.service';
+import {ToastService} from 'src/app/toast.service';
+import {StateService} from '../../state.service';
+import {of} from 'rxjs';
+import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
+import {ActivatedRoute} from '@angular/router';
+import {NO_ERRORS_SCHEMA, signal} from '@angular/core';
 import dayjs from 'dayjs';
-import { IHashtags, IQueryParam } from '../types';
-import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
+import {IHashtags, IQueryParam} from '../types';
+import {AutoCompleteCompleteEvent} from 'primeng/autocomplete';
 
 describe('QueryComponent', () => {
     let component: QueryComponent;
@@ -27,10 +27,10 @@ describe('QueryComponent', () => {
     };
 
     const mockHashtags: IHashtags[] = [
-        { hashtag: 'missingmaps', count: 100 },
-        { hashtag: 'hotosm-project-123', count: 50 },
-        { hashtag: 'mapathon', count: 25 },
-        { hashtag: 'hotosm-project-456', count: 75 }
+        {hashtag: 'missingmaps', count: 100},
+        {hashtag: 'hotosm-project-123', count: 50},
+        {hashtag: 'mapathon', count: 25},
+        {hashtag: 'hotosm-project-456', count: 75}
     ];
 
     const mockAppState: IQueryParam = {
@@ -49,9 +49,9 @@ describe('QueryComponent', () => {
             requestAllHashtags: jasmine.createSpy('requestAllHashtags').and.returnValue(of(mockHashtags)),
             toggleLiveMode: jasmine.createSpy('toggleLiveMode'),
             timeIntervals: [
-                { label: '1 Day', value: 'P1D' },
-                { label: '1 Month', value: 'P1M' },
-                { label: '5 Minutes', value: 'PT5M' }
+                {label: '1 Day', value: 'P1D'},
+                {label: '1 Month', value: 'P1M'},
+                {label: '5 Minutes', value: 'PT5M'}
             ],
             defaultIntervalValue: 'P1M'
         };
@@ -79,11 +79,11 @@ describe('QueryComponent', () => {
             declarations: [QueryComponent],
             imports: [FormsModule],
             providers: [
-                { provide: DataService, useValue: mockDataService },
-                { provide: ToastService, useValue: mockToastService },
-                { provide: StateService, useValue: mockStateService },
-                { provide: UTCToLocalConverterPipe, useValue: mockUTCConverter },
-                { provide: ActivatedRoute, useValue: mockActivatedRoute }
+                {provide: DataService, useValue: mockDataService},
+                {provide: ToastService, useValue: mockToastService},
+                {provide: StateService, useValue: mockStateService},
+                {provide: UTCToLocalConverterPipe, useValue: mockUTCConverter},
+                {provide: ActivatedRoute, useValue: mockActivatedRoute}
             ],
             schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();
@@ -146,8 +146,8 @@ describe('QueryComponent', () => {
 
         it('should enable HOT controls when on hotosm route', () => {
             mockActivatedRoute.snapshot.url = [
-                { path: 'dashboard' },
-                { path: 'hotosm' }
+                {path: 'dashboard'},
+                {path: 'hotosm'}
             ];
             spyOn(component, 'enableTooltips');
             spyOn(component, 'getStatistics');
@@ -160,7 +160,7 @@ describe('QueryComponent', () => {
         });
 
         it('should not enable HOT controls for regular routes', () => {
-            mockActivatedRoute.snapshot.url = [{ path: 'dashboard' }];
+            mockActivatedRoute.snapshot.url = [{path: 'dashboard'}];
             spyOn(component, 'enableTooltips');
 
             component.ngOnInit();
@@ -236,12 +236,6 @@ describe('QueryComponent', () => {
             const result = component.validateForm();
 
             expect(result).toBe(false);
-            // expect(mockToastService.show).toHaveBeenCalledWith({
-            //     title: 'Date range is empty',
-            //     body: 'Please provide a valid Date range',
-            //     type: 'error',
-            //     time: 3000
-            // });
         });
     });
 
@@ -251,12 +245,12 @@ describe('QueryComponent', () => {
                 start: dayjs('2024-01-01'),
                 end: dayjs('2024-12-31')
             };
-            component.selectedHashtagOption = { hashtag: 'missingmaps', highlighted: '' };
+            component.selectedHashtagOption = {hashtag: 'missingmaps', highlighted: ''};
             component.selectedCountries = [];
             component.selectedTopics = [];
             component.dropdownOptions = [
-                { name: 'United States', value: 'USA' },
-                { name: 'Canada', value: 'CAN' }
+                {name: 'United States', value: 'USA'},
+                {name: 'Canada', value: 'CAN'}
             ];
         });
 
@@ -306,9 +300,9 @@ describe('QueryComponent', () => {
     describe('cleanHashTag', () => {
         it('should clean hashtag string correctly', () => {
             const testCases = [
-                { input: '#missingmaps', expected: 'missingmaps' },
-                { input: 'hotosm-project-123', expected: 'hotosm-project-123' },
-                { input: '  #test  ', expected: 'test' }
+                {input: '#missingmaps', expected: 'missingmaps'},
+                {input: 'hotosm-project-123', expected: 'hotosm-project-123'},
+                {input: '  #test  ', expected: 'test'}
             ];
 
             testCases.forEach(testCase => {
@@ -318,7 +312,7 @@ describe('QueryComponent', () => {
         });
 
         it('should clean hashtag object correctly', () => {
-            const hashtagObj = { hashtag: '#test-hashtag', highlighted: '' };
+            const hashtagObj = {hashtag: '#test-hashtag', highlighted: ''};
             const result = component.cleanHashTag(hashtagObj);
             expect(decodeURIComponent(result)).toBe('test-hashtag');
         });
@@ -327,10 +321,10 @@ describe('QueryComponent', () => {
     describe('Hub Selection', () => {
         beforeEach(() => {
             component.dropdownOptions = [
-                { name: 'Afghanistan', value: 'AFG' },
-                { name: 'Bangladesh', value: 'BGD' },
-                { name: 'Brunei', value: 'BRN' },
-                { name: 'United States', value: 'USA' }
+                {name: 'Afghanistan', value: 'AFG'},
+                {name: 'Bangladesh', value: 'BGD'},
+                {name: 'Brunei', value: 'BRN'},
+                {name: 'United States', value: 'USA'}
             ];
         });
 
@@ -357,11 +351,11 @@ describe('QueryComponent', () => {
     describe('Impact Area Selection', () => {
         beforeEach(() => {
             component.topicOptions = [
-                { name: 'Water & Sanitation', value: 'wash' },
-                { name: 'Waterways', value: 'waterway' },
-                { name: 'Social Facilities', value: 'social_facility' },
-                { name: 'Places', value: 'place' },
-                { name: 'Land Use', value: 'lulc' }
+                {name: 'Water & Sanitation', value: 'wash'},
+                {name: 'Waterways', value: 'waterway'},
+                {name: 'Social Facilities', value: 'social_facility'},
+                {name: 'Places', value: 'place'},
+                {name: 'Land Use', value: 'lulc'}
             ];
         });
 
@@ -390,7 +384,7 @@ describe('QueryComponent', () => {
         });
 
         it('should filter hashtags based on search query', () => {
-            const event: AutoCompleteCompleteEvent = { query: 'missing' } as any;
+            const event: AutoCompleteCompleteEvent = {query: 'missing'} as any;
 
             component.searchChange(event);
 
@@ -400,7 +394,7 @@ describe('QueryComponent', () => {
         });
 
         it('should sort results with exact matches first', () => {
-            const event: AutoCompleteCompleteEvent = { query: 'hotosm' } as any;
+            const event: AutoCompleteCompleteEvent = {query: 'hotosm'} as any;
 
             component.searchChange(event);
 
@@ -411,13 +405,13 @@ describe('QueryComponent', () => {
 
         it('should limit results to 100 items', () => {
             // Create more than 100 matching hashtags
-            const manyHashtags = Array.from({ length: 150 }, (_, i) => ({
+            const manyHashtags = Array.from({length: 150}, (_, i) => ({
                 hashtag: `test${i}`,
                 count: i
             }));
             component.allHashtagOptions = manyHashtags;
 
-            const event: AutoCompleteCompleteEvent = { query: 'test' } as any;
+            const event: AutoCompleteCompleteEvent = {query: 'test'} as any;
             component.searchChange(event);
 
             expect(component.filteredHashtagOptions.length).toBe(100);
@@ -550,37 +544,6 @@ describe('QueryComponent', () => {
         });
     });
 
-    // describe('Tooltip Management', () => {
-    //     it('should update live tooltip message', fakeAsync(() => {
-    //         const mockElement = document.createElement('button');
-    //         spyOn(document, 'getElementById').and.returnValue(mockElement);
-    //         spyOn(component, 'enableTooltips');
-    //
-    //         component.updateLiveTooltip('Test Message');
-    //         tick(300);
-    //
-    //         expect(mockElement.getAttribute('data-bs-title')).toBe('Test Message');
-    //         expect(component.enableTooltips).toHaveBeenCalled();
-    //     }));
-    //
-    //     it('should handle missing tooltip element gracefully', () => {
-    //         spyOn(document, 'getElementById').and.returnValue(null);
-    //
-    //         expect(() => component.updateLiveTooltip('Test')).not.toThrow();
-    //     });
-    //
-    //     it('should enable tooltips and remove old ones', () => {
-    //         spyOn(document, 'querySelectorAll').and.returnValue([
-    //             document.createElement('div')
-    //         ] as any);
-    //         spyOn(document, 'getElementsByClassName').and.returnValue([
-    //             { remove: jasmine.createSpy('remove') }
-    //         ] as any);
-    //
-    //         expect(() => component.enableTooltips()).not.toThrow();
-    //     });
-    // });
-
     describe('Date Range Changes', () => {
         it('should handle date range changes and update state', () => {
             const dateRange = {
@@ -621,12 +584,12 @@ describe('QueryComponent', () => {
             };
 
             component.dropdownOptions = [
-                { name: 'United States', value: 'USA' },
-                { name: 'Canada', value: 'CAN' }
+                {name: 'United States', value: 'USA'},
+                {name: 'Canada', value: 'CAN'}
             ];
             component.topicOptions = [
-                { name: 'Roads', value: 'roads' },
-                { name: 'Buildings', value: 'buildings' }
+                {name: 'Roads', value: 'roads'},
+                {name: 'Buildings', value: 'buildings'}
             ];
 
             // Call the private method through type assertion and fixture detection

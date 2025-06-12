@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ExportDataComponent } from './export-data.component';
+import {ExportDataComponent} from './export-data.component';
 import {DataService} from "../../data.service";
 import {StateService} from "../../state.service";
 import {signal} from "@angular/core";
@@ -19,10 +19,10 @@ describe('ExportDataComponent', () => {
     };
 
     const mockHashtags: IHashtags[] = [
-        { hashtag: 'missingmaps', count: 100 },
-        { hashtag: 'hotosm-project-123', count: 50 },
-        { hashtag: 'mapathon', count: 25 },
-        { hashtag: 'hotosm-project-456', count: 75 }
+        {hashtag: 'missingmaps', count: 100},
+        {hashtag: 'hotosm-project-123', count: 50},
+        {hashtag: 'mapathon', count: 25},
+        {hashtag: 'hotosm-project-456', count: 75}
     ];
 
     const mockAppState: IQueryParam = {
@@ -48,8 +48,8 @@ describe('ExportDataComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [ExportDataComponent],
             providers: [
-                { provide: DataService, useValue: mockDataService },
-                { provide: StateService, useValue: mockStateService }
+                {provide: DataService, useValue: mockDataService},
+                {provide: StateService, useValue: mockStateService}
             ]
         })
             .compileComponents();
