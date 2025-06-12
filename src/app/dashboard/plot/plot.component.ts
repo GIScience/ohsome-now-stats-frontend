@@ -153,7 +153,7 @@ export class PlotComponent implements AfterContentInit {
         });
     }
 
-    private addTopicDataToPlot(res: Record<string, ITopicPlotData>, plotData: IPlotData) {
+    addTopicDataToPlot(res: Record<string, ITopicPlotData>, plotData: IPlotData) {
         Object.keys(res).forEach((topic: string) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore

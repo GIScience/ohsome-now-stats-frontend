@@ -259,33 +259,6 @@ export class SummaryComponent implements OnDestroy {
         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
     }
 
-    downloadCsv() {
-        // Converts your Array<Object> to a CsvOutput string based on the configs
-        if (this.data && [this.data].length > 0) {
-            // console.log('this.data ', this.data)
 
-            // Extract keys from the input object
-            const keys = Object.keys(this.data)
-            // Filter out 'startDate' and 'endDate' keys
-            const dateKeys = keys.filter((key) => key === 'startDate' || key === 'endDate')
-            // Filter out non-date keys
-            const otherKeys = keys.filter((key) => key !== 'startDate' && key !== 'endDate')
-            // Place the date keys at the start and then the other keys
-            const arrangedHeaders = [
-                ...dateKeys,
-                ...otherKeys
-            ]
-
-            const csvConfig = mkConfig({
-                filename: `ohsome-now-stats_${this.data['hashtag']}_${this.data['startDate']!.substring(0, 10)}_${this.data['endDate']!.substring(0, 10)}_summary`,
-                columnHeaders: arrangedHeaders
-            });
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const csv = generateCsv(csvConfig)([this.data]);
-            download(csvConfig)(csv)
-        }
-    }
 
 }

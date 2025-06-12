@@ -8,8 +8,6 @@ import {
     IHashtag,
     IMetaData,
     IMetadataResponse,
-    IQueryParam,
-    ISummaryData,
     ITrendingHashtagResponse,
     IWrappedCountryStatsData,
     IWrappedPlotData,
@@ -18,20 +16,16 @@ import {
     IWrappedTopicData,
     IWrappedTopicPlotData
 } from "./dashboard/types";
-import dayjs from "dayjs";
 
 @Injectable()
 export class DataService {
 
     url = environment.ohsomeStatsServiceUrl
-    private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
-    summaryData = this.bsSummaryData.asObservable()
     abortHashtagReqSub!: Subject<void>
     abortTopicReqSub!: Subject<void>
     abortSummaryReqSub!: Subject<void>
     abortIntervalReqSub!: Subject<void>
 
-    defaultHashtag = ''
     trendingHashtagLimit = 10
     timeIntervals = [
         {label: 'five minutes', value: 'PT5M'},
@@ -43,8 +37,6 @@ export class DataService {
         {label: 'yearly', value: 'P1Y'},
     ]
     defaultIntervalValue = 'P1M'
-    minDate!: string // min date in our DB
-    maxDate!: string // max date in our DB
     bsLive = new BehaviorSubject<boolean>(false)
     liveMode = this.bsLive.asObservable()
     private _metaData:  WritableSignal<IMetaData> = signal<IMetaData>({
@@ -153,15 +145,6 @@ export class DataService {
             )
     }
 
-    getSummary() {
-        return this.bsSummaryData.getValue()
-        // return this.summaryData
-    }
-
-    setSummary(data: ISummaryData) {
-        this.bsSummaryData.next(data)
-    }
-
     getAbortHashtagReqSubject() {
         this.abortHashtagReqSub = new Subject<void>();
     }
@@ -187,32 +170,6 @@ export class DataService {
                     return response!.result as Array<IHashtag>
                 }),
             )
-    }
-
-    /**
-     * Gives the default values for application
-     *
-     * @returns IQueryParam
-     */
-    getDefaultValues(): IQueryParam | null {
-        if (!(this.minDate && this.maxDate))
-            return null
-
-        const queryParams = this.getQueryParamsFromFragments()
-        const tempStart = queryParams ? dayjs(this.minDate).format('YYYY-MM-DDTHH:mm:ss') + 'Z' : dayjs(this.maxDate)
-            .subtract(1, "year")
-            .startOf("day")
-            .subtract(dayjs().utcOffset(), "minute")
-            .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
-        return {
-            start: tempStart,
-            end: this.maxDate,
-            hashtag: this.defaultHashtag,
-            interval: this.defaultIntervalValue,
-            countries: '',
-            topics: '',
-            active_topic: 'users'
-        }
     }
 
     toggleLiveMode(mode: boolean) {

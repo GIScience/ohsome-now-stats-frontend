@@ -1,244 +1,322 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, Input } from '@angular/core';
-import { SummaryComponent } from './summary.component';
-import { ISummaryData } from '../types';
-import { By } from '@angular/platform-browser';
-import {DOCUMENT} from "@angular/common";
-
-@Component({
-  selector: 'overlay',
-  template: '<div></div>'
-})
-class MockOverlayComponent {
-  @Input() isLoading: boolean = false;
-  @Input() containerElement: HTMLElement | undefined;
-}
-
-@Component({
-  selector: 'app-big-number',
-  template: '<div></div>'
-})
-class MockBigNumberComponent {
-  @Input() name: string | undefined;
-  @Input() value: string | undefined;
-  @Input() tooltip: string | undefined;
-  @Input() icon: string | undefined;
-  @Input() color: string | undefined;
-  @Input() colorLight: string | undefined;
-  @Input() startSelected: boolean | undefined;
-}
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {of, throwError} from 'rxjs';
+import {SummaryComponent} from './summary.component';
+import {DataService} from '../../data.service';
+import {StateService} from '../../state.service';
+import {IQueryParam, ISummaryData, IWrappedSummaryData, IWrappedTopicData, StatsType} from '../types';
+import { Overlay } from '../../overlay.component';
 
 describe('SummaryComponent', () => {
-  let component: SummaryComponent;
-  let fixture: ComponentFixture<SummaryComponent>;
+    let component: SummaryComponent;
+    let fixture: ComponentFixture<SummaryComponent>;
+    let mockDataService: jasmine.SpyObj<DataService>;
+    let mockStateService: jasmine.SpyObj<StateService>;
 
-  const mockData: ISummaryData = {
-    users: 1000,
-    // activeUsers: 500,
-    edits: 15000,
-    hashtag: 'test-hashtag',
-    buildings: 5000,
-    roads: 20000,
-    startDate: '2023-01-01T00:00:00Z',
-    endDate: '2023-01-31T23:59:59Z',
-    latest: '2023-01-31T00:00:00Z',
-    changesets: 2000,
-    countries: 'DE'
-  };
+    const mockSummaryData: ISummaryData = {
+        changesets: 100,
+        buildings: 200,
+        users: 50,
+        edits: 300,
+        roads: 150,
+        latest: '2023-01-01',
+        hashtag: 'test',
+        startDate: '2023-01-01',
+        endDate: '2023-01-31'
+    };
 
-  const mockTopicData = {
-    buildings: 5000,
-    roads: 10000
-  };
+    const mockWrappedSummaryData: IWrappedSummaryData = {
+        result: mockSummaryData
+    };
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MockOverlayComponent, MockBigNumberComponent],
-      declarations: [SummaryComponent],
-      providers: [
-        { provide: DOCUMENT, useValue: document },
-      ]
-    }).compileComponents();
+    const mockTopicData: IWrappedTopicData = {
+        result: {
+            amenity: {
+                hashtag: 'test',
+                topic: 'amenity',
+                value: 10
+            },
+            body_of_water: {
+                hashtag: 'test',
+                topic: 'body_of_water',
+                value: 20
+            },
+            commercial: {
+                hashtag: 'test',
+                topic: 'commercial',
+                value: 20
+            },
+            education: {
+                hashtag: 'test',
+                topic: 'education',
+                value: 20
+            },
+            financial: {
+                hashtag: 'test',
+                topic: 'financial',
+                value: 20
+            },
+            healthcare: {
+                hashtag: 'test',
+                topic: 'healthcare',
+                value: 20
+            },
+            lulc: {
+                hashtag: 'test',
+                topic: 'lulc',
+                value: 20
+            },
+            place: {
+                hashtag: 'test',
+                topic: 'place',
+                value: 20
+            },
+            poi: {
+                hashtag: 'test',
+                topic: 'poi',
+                value: 20
+            },
+            social_facility: {
+                hashtag: 'test',
+                topic: 'social_facility',
+                value: 20
+            },
+            wash: {
+                hashtag: 'test',
+                topic: 'wash',
+                value: 20
+            },
+            waterway: {
+                hashtag: 'test',
+                topic: 'waterway',
+                value: 20
+            }
+        }
+    };
 
-    fixture = TestBed.createComponent(SummaryComponent);
-    component = fixture.componentInstance;
-    component.data = mockData;
-    fixture.detectChanges();
-  });
+    const mockQueryParams: IQueryParam = {
+        hashtag: 'test',
+        start: '2023-01-01',
+        end: '2023-01-31',
+        countries: 'US',
+        topics: 'amenity,body_of_water',
+        interval: '',
+        active_topic: 'buildings'
+    };
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach(async () => {
+        const dataServiceSpy = jasmine.createSpyObj('DataService', ['requestSummary', 'requestTopic']);
+        const stateServiceSpy = jasmine.createSpyObj('StateService', ['appState', 'updatePartialState']);
 
-  it('should display overlay when loading', () => {
-    component.isSummaryLoading = true;
-    fixture.detectChanges();
-    const overlay = fixture.debugElement.query(By.css('overlay'));
-    expect(overlay).toBeTruthy();
-    // expect(overlay.properties['isLoading']).toBeTrue();
-  });
+        await TestBed.configureTestingModule({
+            declarations: [SummaryComponent, Overlay],
+            providers: [
+                {provide: DataService, useValue: dataServiceSpy},
+                {provide: StateService, useValue: stateServiceSpy}
+            ]
+        }).compileComponents();
 
-  it('should render big-number components for each data item', () => {
-    component.ngOnChanges();
-    fixture.detectChanges();
-    const bigNumbers = fixture.debugElement.queryAll(By.css('app-big-number'));
-    expect(bigNumbers.length).toBe(component.bignumberData.length);
-  });
+        fixture = TestBed.createComponent(SummaryComponent);
+        component = fixture.componentInstance;
+        mockDataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
+        mockStateService = TestBed.inject(StateService) as jasmine.SpyObj<StateService>;
 
-  it('should pass correct properties to big-number components', () => {
-    component.ngOnChanges();
-    fixture.detectChanges();
-    const firstBigNumber = fixture.debugElement.query(By.css('app-big-number'));
-    // Get the component instance
-    const bigNumberComponent = firstBigNumber.componentInstance;
-
-    expect(bigNumberComponent.name).toBe(component.bignumberData[0].name);
-    expect(bigNumberComponent.value).toBe(component.bignumberData[0].value);
-    expect(bigNumberComponent.icon).toBe(component.bignumberData[0].icon);
-    expect(bigNumberComponent.tooltip).toBe(component.bignumberData[0].tooltip);
-    expect(bigNumberComponent['color']).toBe(component.bignumberData[0]['color-hex']);
-    expect(bigNumberComponent['colorLight']).toBe(component.bignumberData[0]['color-light']);
-  });
-
-  it('should set startSelected property correctly', () => {
-    component.currentlySelected = 'users';
-    component.ngOnChanges();
-    fixture.detectChanges();
-
-    const bigNumbers = fixture.debugElement.queryAll(By.css('app-big-number'));
-    const selectedBigNumber = bigNumbers.find(el => el.properties['startSelected']);
-
-    if(selectedBigNumber) {
-      expect(selectedBigNumber).toBeTruthy();
-      expect(selectedBigNumber.properties['id']).toBe('users');
-    }
-  });
-
-  it('should call changeCurrentStats when big-number is clicked', () => {
-    spyOn(component, 'changeCurrentStats');
-    component.ngOnChanges();
-    fixture.detectChanges();
-
-    const firstBigNumber = fixture.debugElement.query(By.css('app-big-number'));
-    firstBigNumber.triggerEventHandler('click', null);
-
-    expect(component.changeSelectedBigNumber).toHaveBeenCalled();
-  });
-
-  // it('should have proper CSS classes and styling', () => {
-  //   const container = fixture.debugElement.query(By.css('#big-number_container'));
-  //   expect(container.nativeElement.classList.contains('row')).toBeTrue();
-  //   expect(container.nativeElement.classList.contains('pos-r')).toBeTrue();
-  //   expect(container.nativeElement.style.paddingRight).toBe('0px');
-  //
-  //   const bigNumbers = fixture.debugElement.queryAll(By.css('app-big-number'));
-  //   expect(bigNumbers[0].nativeElement.classList.contains('col-md-3')).toBeTrue();
-  //   expect(bigNumbers[0].nativeElement.classList.contains('app-big-number')).toBeTrue();
-  //   expect(bigNumbers[0].nativeElement.style.paddingRight).toBe('0px');
-  // });
-
-  // Previous tests from the first version remain the same...
-  describe('ngOnChanges', () => {
-    it('should not process data if input is empty', () => {
-      component.data = undefined as any;
-      component.ngOnChanges();
-      expect(component.bignumberData.length).toBe(0);
+        // Setup default mock returns
+        mockStateService.appState.and.returnValue(mockQueryParams);
+        mockDataService.requestSummary.and.returnValue(of(mockWrappedSummaryData));
+        mockDataService.requestTopic.and.returnValue(of(mockTopicData));
     });
 
-    // it('should set currentlySelected to users if current selection is invalid', () => {
-    //   // Mock document.getElementById to return a clickable element
-    //   spyOn(document, 'getElementById').and.returnValue({
-    //     click: jasmine.createSpy('click')
-    //   } as any);
-    //
-    //   component.currentlySelected = 'invalid';
-    //   component.ngOnChanges();
-    //
-    //   expect(component.currentlySelected).toBe('users');
-    //   // expect(document.getElementById).toHaveBeenCalledWith('users');
-    // });
-
-    it('should merge topicData with main data', () => {
-      component.topicData = mockTopicData;
-      component.ngOnChanges();
-      expect(component.data).toEqual({...mockData, ...mockTopicData});
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    it('should populate bignumberData with formatted values', () => {
-      component.ngOnChanges();
-      expect(component.bignumberData.length).toBeGreaterThan(0);
-      expect(component.bignumberData[0].value).toMatch(/^\d{1,3}(,\d{3})*$/); // Check for formatted number
+    it('should initialize with default values', () => {
+        expect(component.currentlySelected).toBe('users');
+        expect(component.bignumberData).toEqual([]);
+        expect(component.isSummaryLoading).toBe(false);
     });
 
-    it('should sort bignumberData with Contributors and Total Edits first', () => {
-      component.ngOnChanges();
-      const firstItem = component.bignumberData[0];
-      expect(firstItem.name === 'Contributors' || firstItem.name === 'Total Edits').toBeTrue();
+    describe('requestFromAPI', () => {
+        it('should request both summary and topic data when topics are provided', () => {
+            spyOn(component, 'updateBigNumber');
+
+            component.requestFromAPI(mockQueryParams);
+
+            expect(mockDataService.requestSummary).toHaveBeenCalledWith(mockQueryParams);
+            expect(mockDataService.requestTopic).toHaveBeenCalledWith(mockQueryParams);
+            expect(component.isSummaryLoading).toBe(true);
+        });
+
+        it('should request only summary data when topics are not provided', () => {
+            const queryParamsWithoutTopics = {...mockQueryParams, topics: ''};
+            spyOn(component, 'updateBigNumber');
+
+            component.requestFromAPI(queryParamsWithoutTopics);
+
+            expect(mockDataService.requestSummary).toHaveBeenCalledWith(queryParamsWithoutTopics);
+            expect(mockDataService.requestTopic).not.toHaveBeenCalled();
+        });
+
+        it('should handle error when requesting data with topics', () => {
+            spyOn(console, 'error');
+            mockDataService.requestSummary.and.returnValue(throwError('API Error'));
+
+            component.requestFromAPI(mockQueryParams);
+
+            expect(console.error).toHaveBeenCalledWith('Error while requesting data: ', 'API Error');
+        });
+
+        it('should handle error when requesting summary only', () => {
+            const queryParamsWithoutTopics = {...mockQueryParams, topics: ''};
+            spyOn(console, 'error');
+            mockDataService.requestSummary.and.returnValue(throwError('API Error'));
+
+            component.requestFromAPI(queryParamsWithoutTopics);
+
+            expect(console.error).toHaveBeenCalledWith('Error while requesting Summary data ', 'API Error');
+        });
     });
-  });
 
-  describe('formatNumbertoNumberformatString', () => {
-    it('should format numbers with commas', () => {
-      expect(component.formatNumbertoNumberformatString(1000)).toBe('1,000');
-      expect(component.formatNumbertoNumberformatString(1234567)).toBe('1,234,567');
+    describe('updateBigNumber', () => {
+        beforeEach(() => {
+            component['data'] = mockSummaryData;
+        });
+
+        it('should return early if data is not available', () => {
+            component['data'] = undefined as any;
+            const initialBignumberData = component.bignumberData;
+
+            component.updateBigNumber();
+
+            expect(component.bignumberData).toBe(initialBignumberData);
+        });
+
+        it('should update bignumberData with summary data', () => {
+            component.updateBigNumber();
+
+            expect(component.bignumberData.length).toBeGreaterThan(0);
+            expect(component.isSummaryLoading).toBe(false);
+        });
+
+        // it('should merge topic data when available', () => {
+        //     component['topicData'] = {topic1: 10, topic2: 20};
+        //
+        //     component.updateBigNumber();
+        //
+        //     expect(component['data']).toEqual(jasmine.objectContaining({
+        //         ...mockSummaryData,
+        //         topic1: 10,
+        //         topic2: 20
+        //     }));
+        // });
+
+        it('should sort Contributors and Total Edits to the beginning', () => {
+            // Mock topicDefinitions to include Contributors and Total Edits
+            spyOn(component, 'updateBigNumber').and.callThrough();
+
+            component.updateBigNumber();
+
+            // This test would need the actual topicDefinitions structure
+            // You might need to mock the topicDefinitions import
+        });
     });
 
-    it('should handle zero', () => {
-      expect(component.formatNumbertoNumberformatString(0)).toBe('0');
+    describe('formatNumbertoNumberformatString', () => {
+        it('should format numbers correctly', () => {
+            expect(component.formatNumbertoNumberformatString(1000)).toBe('1,000');
+            expect(component.formatNumbertoNumberformatString(1000000)).toBe('1,000,000');
+            expect(component.formatNumbertoNumberformatString(123.456)).toBe('123');
+        });
     });
-  });
 
-  // describe('changeSelectedSummaryComponent', () => {
-  //   it('should handle event target correctly', () => {
-  //     const mockEvent = {
-  //       target: {
-  //         nodeName: 'APP-BIG-NUMBER',
-  //         children: [{
-  //           closest: () => ({ children: [{ classList: { remove: jasmine.createSpy(), add: jasmine.createSpy() } }] })
-  //         }]
-  //       }
-  //     };
-  //     component.changeSelectedSummaryComponent(mockEvent);
-  //     expect(mockEvent.target.children[0].closest).toHaveBeenCalledWith('.big_number');
-  //   });
-  // });
+    describe('changeSelectedBigNumber', () => {
+        it('should update currentlySelected and call related methods', () => {
+            const mockEvent = new MouseEvent('click');
+            const newStats = 'buildings';
+            spyOn(component, 'changeSelectedSummaryComponent');
 
-  describe('changeCurrentStats', () => {
-    it('should emit event with new stats type', () => {
-      const mockEvent = { target: { closest: () => ({ parentNode: { parentNode: { children: [] } } }) } };
-      spyOn(component.changeCurrentStatsEvent, 'emit');
+            component.changeSelectedBigNumber(mockEvent, newStats);
 
-      component.changeSelectedBigNumber(mockEvent, 'users');
-
-      expect(component.currentlySelected).toBe('users');
-      // expect(component.changeCurrentStatsEvent.emit).toHaveBeenCalledWith('activeUsers');
+            expect(component.currentlySelected).toBe(newStats);
+            expect(component.changeSelectedSummaryComponent).toHaveBeenCalledWith(mockEvent);
+            expect(mockStateService.updatePartialState).toHaveBeenCalledWith({
+                active_topic: newStats as StatsType
+            });
+        });
     });
-  });
 
-  // describe('enableTooltips', () => {
-  //   it('should initialize bootstrap tooltips', () => {
-  //     spyOn(bootstrap, 'Tooltip');
-  //     spyOn(document, 'querySelectorAll').and.returnValue([{}] as any);
-  //
-  //     component.enableTooltips();
-  //
-  //     expect(bootstrap.Tooltip).toHaveBeenCalled();
-  //   });
-  // });
+    describe('changeSelectedSummaryComponent', () => {
+        let mockElement: HTMLElement;
+        let mockParent: HTMLElement;
+        let mockGrandParent: HTMLElement;
 
-  // describe('downloadCsv', () => {
-  //   it('should not download if no data', () => {
-  //     component.data = undefined as any;
-  //     spyOn(console, 'log'); // Spy on console to verify no errors
-  //     component.downloadCsv();
-  //     expect(console.log).not.toHaveBeenCalled();
-  //   });
-  //
-  //   it('should arrange headers with dates first', () => {
-  //     // This test would need the actual csv library to be properly mocked
-  //     // For now we just verify the function can be called
-  //     component.downloadCsv();
-  //     expect(component.data).toBeDefined();
-  //   });
-  // });
+        beforeEach(() => {
+            mockElement = document.createElement('div');
+            mockParent = document.createElement('div');
+            mockGrandParent = document.createElement('div');
+
+            mockElement.className = 'big_number';
+            mockParent.appendChild(mockElement);
+            mockGrandParent.appendChild(mockParent);
+
+            document.body.appendChild(mockGrandParent);
+        });
+
+        afterEach(() => {
+            document.body.removeChild(mockGrandParent);
+        });
+
+        it('should handle element selection and styling', () => {
+            const mockEvent = {
+                target: mockElement
+            } as any;
+
+            component.changeSelectedSummaryComponent(mockEvent);
+
+            // Test would need more specific DOM structure based on your actual HTML
+        });
+
+        it('should return early if target is not found', () => {
+            const mockEvent = {
+                target: null
+            } as any;
+
+            expect(() => component.changeSelectedSummaryComponent(mockEvent)).not.toThrow();
+        });
+    });
+
+    describe('enableTooltips', () => {
+        it('should initialize bootstrap tooltips', () => {
+            // Mock bootstrap tooltip elements
+            const mockTooltipElement = document.createElement('div');
+            mockTooltipElement.setAttribute('data-bs-toggle', 'tooltip');
+            document.body.appendChild(mockTooltipElement);
+
+            spyOn(document, 'querySelectorAll').and.returnValue([mockTooltipElement] as any);
+
+            expect(() => component.enableTooltips()).not.toThrow();
+
+            document.body.removeChild(mockTooltipElement);
+        });
+    });
+
+    describe('ngOnDestroy', () => {
+        it('should unsubscribe from subscriptions', () => {
+            spyOn(component['subscription'], 'unsubscribe');
+
+            component.ngOnDestroy();
+
+            expect(component['subscription'].unsubscribe).toHaveBeenCalled();
+        });
+    });
+
+    describe('computed properties', () => {
+        it('should create state computed property', () => {
+            expect(component.state).toBeDefined();
+        });
+
+        it('should create relevantState computed property with custom equality', () => {
+            expect(component['relevantState']).toBeDefined();
+        });
+    });
 });

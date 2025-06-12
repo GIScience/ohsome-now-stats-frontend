@@ -228,10 +228,10 @@ export class QueryComponent implements OnInit, OnDestroy {
      * Validates the form values before its being fired to API
      */
     validateForm(): boolean {
-        const dateRangeEle = document.getElementById('dateRange')
+        const dateRangeEle = document.getElementById('dateRange') as HTMLInputElement | null
 
         // check if text feild is empty
-        if (!(dateRangeEle as HTMLInputElement).value) {
+        if (!dateRangeEle || !dateRangeEle.value) {
             console.error('Date range is empty')
             // show the message on toast
             this.toastService.show({
