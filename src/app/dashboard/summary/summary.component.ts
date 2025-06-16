@@ -214,34 +214,8 @@ export class SummaryComponent implements OnDestroy {
         ).format(value)
     }
 
-    changeSelectedSummaryComponent(e: MouseEvent) {
-        // if nodeName is APP-BIG-NUMBER our actual target is a child - thus not findable with .closest
-        const target = e.target as HTMLElement;
-        if (!target) return;
-
-        const newSelected = target.nodeName !== "APP-BIG-NUMBER"
-            ? target.closest(".big_number") as HTMLElement
-            : (target.children[0] as HTMLElement)?.closest(".big_number") as HTMLElement;
-
-        if (!newSelected) return;
-
-        const parentNode = newSelected.parentNode?.parentNode;
-        if (!parentNode) return;
-
-        const siblings = Array.from(newSelected.parentNode!.parentNode!.children) as HTMLElement[];
-        siblings.forEach((element) => {
-            const firstChild = element.children[0] as HTMLElement;
-            const secondChild = firstChild?.children[0] as HTMLElement;
-            secondChild?.classList.remove("selected");
-        });
-
-        const firstChild = newSelected.children[0] as HTMLElement;
-        firstChild?.classList.add("selected");
-    }
-
     changeSelectedBigNumber(e: MouseEvent, newCurrentStats: string) {
         this.currentlySelected = newCurrentStats
-        this.changeSelectedSummaryComponent(e)
         // add selected stat to app state
         this.stateService.updatePartialState({
             active_topic: newCurrentStats as StatsType,
