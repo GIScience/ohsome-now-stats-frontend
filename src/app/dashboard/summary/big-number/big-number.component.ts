@@ -1,4 +1,5 @@
-import {Component, Input, OnChanges, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
+import {ITopicDefinitionValue} from "../../types";
 
 @Component({
     selector: 'app-big-number',
@@ -6,24 +7,18 @@ import {Component, Input, OnChanges, OnInit} from '@angular/core';
     styleUrls: ['./big-number.component.scss'],
     standalone: false
 })
-export class BigNumberComponent implements OnInit, OnChanges{
-  @Input() name: string | undefined;
-  @Input() value: string | undefined;
-  @Input() tooltip: string | undefined;
-  @Input() icon: string | undefined;
-  @Input() color: string | undefined;
-  @Input() colorLight: string | undefined;
-  @Input() startSelected: boolean | undefined;
-  numericValue: number = 0
+export class BigNumberComponent {
+    @Input() data!: ITopicDefinitionValue
+    @Input() startSelected!: boolean
 
-  ngOnInit() {
-    this.numericValue = parseFloat(this.value!)
-  }
-  ngOnChanges() {
-    this.numericValue = parseFloat(this.value!)
-  }
+    formatNumbertoNumberformatString(value: number): string {
+        return new Intl.NumberFormat('en-US', {
+                maximumFractionDigits: 0
+            }
+        ).format(value)
+    }
 
-  openHelp(event: any){
-    window.open(`/help#${event.target.closest(".app-big-number").id}`,'_blank');
-  }
+    openHelp(event: any) {
+        window.open(`/help#${event.target.closest(".app-big-number").id}`, '_blank');
+    }
 }

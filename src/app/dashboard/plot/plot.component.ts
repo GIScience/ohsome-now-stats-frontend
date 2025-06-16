@@ -11,7 +11,7 @@ import {
 } from "../query/pipes/utc-to-local-converter.pipe";
 import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
-import {IDateRange, IPlotData, ITopicPlotData, IWrappedPlotData, StatsType} from "../types";
+import {IPlotResult, IQueryParams, StatsType} from "../types";
 
 @Component({
     selector: 'app-plot',
@@ -38,10 +38,8 @@ export class PlotComponent implements AfterContentInit {
         return this.stateService.appState().active_topic;
     });
 
-    data!: IPlotData;
+    data!: IPlotResult;
     activeTopic!: StatsType;
-    selectedTopics: string | undefined;
-    selectedDateRange!: IDateRange;
     currentInterval!: string;
     layout: Layout | any;
     fitToContentIcon = {
@@ -74,72 +72,21 @@ export class PlotComponent implements AfterContentInit {
                 this.refreshPlot()
             }
         })
-
-        /*
-        let previousActiveTopic = this.activeTopicState();
-        effect(() => {
-            const currentActiveTopic = this.activeTopicState();
-
-            // Only refresh plot if active_topic changed in isolation
-            if (currentActiveTopic !== previousActiveTopic) {
-                // Use untracked to check if this is an isolated active_topic change
-                const hasOtherChanges = untracked(() => {
-                    const currentState = this.relevantState();
-                    return currentState.hashtag || currentState.start ||
-                        currentState.end || currentState.interval ||
-                        currentState.countries || currentState.topics ||
-                        currentState.fit_to_content;
-                });
-
-                this.activeTopic = currentActiveTopic;
-                this.refreshPlot();
-                console.log('Active topic only changed = ', currentActiveTopic);
-                previousActiveTopic = currentActiveTopic;
-            }
-        });*/
     }
 
     ngAfterContentInit(): void {
         this.initChart();
     }
 
-    private requestToAPI(state: { hashtag: string, start: string; end: string; countries: string; interval: string, topics: string }) {
+    private requestToAPI(state: IQueryParams) {
         this.isPlotsLoading = true;
-        // fire timeseries API to get plot data
         this.dataService.requestPlot(state).subscribe({
-            next: (res: IWrappedPlotData) => {
+            next: (res) => {
                 if (res) {
-                    // add 'hashtag' and 'country' ISO codes to plotData #82
-                    const tempPlotResponse = res.result
-                    // add Topics to PlotData to make them a part of CSV
-                    if (state['topics']) {
-                        this.dataService.requestTopicInterval(state).subscribe({
-                            next: res => {
-                                if (res) {
-                                    // add each Topic data to Plot data to make them a part of CSV
-                                    this.data = this.addTopicDataToPlot(res.result, tempPlotResponse)
-                                    this.data['hashtag'] = decodeURIComponent(state['hashtag'])
-                                    if (state['countries'] !== '')
-                                        this.data['countries'] = state['countries']
-                                    this.refreshPlot();
-                                }
-                            },
-                            error: (err) => {
-                                console.error('Error while requesting Topic data ', err)
-                            }
-                        })
-                    } else {
-                        // if non Topic is selected only countryData is sent to PlotComponent
-                        this.data = tempPlotResponse
-                        this.data['hashtag'] = decodeURIComponent(state['hashtag'])
-                        if (state['countries'] !== '')
-                            this.data['countries'] = state['countries']
-
-                        this.refreshPlot();
-                    }
+                    this.data = res.result
+                    this.refreshPlot();
                     this.isPlotsLoading = false;
 
-                    // this.refreshPlot();
                     if (this.relevantState().fit_to_content) {
                         this.fitToContent()()
                     } else {
@@ -151,15 +98,6 @@ export class PlotComponent implements AfterContentInit {
                 console.error('Error while requesting Plot data  ', err)
             }
         });
-    }
-
-    addTopicDataToPlot(res: Record<string, ITopicPlotData>, plotData: IPlotData) {
-        Object.keys(res).forEach((topic: string) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            plotData[topic] = res[topic].value
-        })
-        return plotData
     }
 
     /**
@@ -187,12 +125,8 @@ export class PlotComponent implements AfterContentInit {
     refreshPlot() {
         const plotData = [{
             x: this.data.startDate.map(e => UTCStringToLocalDateConverterFunction(e)),
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            y: this.data[this.activeTopic],
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            customdata: this.data[this.activeTopic],
+            y: this.data.topics[this.activeTopic].value,
+            customdata: this.data.topics[this.activeTopic].value,
             hovertext: this.data.startDate.map((start_date, index) => `From ${this.utcToLocalConverter.transform(start_date)}<br>To ${this.utcToLocalConverter.transform(this.data.endDate[index])}`),
             hovertemplate: `%{hovertext}<br>${topicDefinitions[this.activeTopic]["name"]}: %{customdata}<extra></extra>`,
             type: 'bar',
@@ -200,7 +134,7 @@ export class PlotComponent implements AfterContentInit {
             marker: {
                 pattern: {
                     // apply striped pattern only for current running time
-                    shape: this.data.startDate.map((start_date, index) =>
+                    shape: this.data.startDate.map((_, index) =>
                         this.stripedOrNot(index)
                     ),
                     size: 7,
@@ -240,12 +174,8 @@ export class PlotComponent implements AfterContentInit {
 
     fitToContent() {
         return () => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            const data_start = this.data[this.activeTopic].findIndex(value => value != 0)
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            const data_end = this.data[this.activeTopic].findLastIndex(value => value != 0)
+            const data_start = this.data.topics[this.activeTopic].value.findIndex(value => value != 0)
+            const data_end = this.data.topics[this.activeTopic].value.findLastIndex(value => value != 0)
             const half_an_interval = moment.duration(this.currentInterval).asMilliseconds() / 2;
             Plotly.relayout('summaryplot', {
                 xaxis: {

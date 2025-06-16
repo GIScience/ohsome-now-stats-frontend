@@ -5,7 +5,7 @@ import {DataService} from "../../data.service";
 import {StateService} from "../../state.service";
 import {signal} from "@angular/core";
 import {of} from "rxjs";
-import {IHashtags, IQueryParam} from "../types";
+import {IHashtags, IStateParams} from "../types";
 
 describe('ExportDataComponent', () => {
     let component: ExportDataComponent;
@@ -25,14 +25,14 @@ describe('ExportDataComponent', () => {
         {hashtag: 'hotosm-project-456', count: 75}
     ];
 
-    const mockAppState: IQueryParam = {
+    const mockAppState: IStateParams = {
         countries: 'USA,CAN',
         hashtag: 'missingmaps',
         start: '2024-01-01T00:00:00Z',
         end: '2024-12-31T23:59:59Z',
         interval: 'P1M',
         topics: 'roads,buildings',
-        active_topic: 'roads'
+        active_topic: 'road'
     };
 
     beforeEach(async () => {

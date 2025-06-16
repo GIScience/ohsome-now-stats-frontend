@@ -1,4 +1,4 @@
-import {Component, computed, effect, EventEmitter, Input, OnDestroy, OnInit, Output, Signal} from '@angular/core';
+import {Component, computed, effect, OnDestroy, OnInit, Signal} from '@angular/core';
 import {Subscription} from 'rxjs';
 import dayjs, {Dayjs} from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
@@ -12,7 +12,7 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IDateRange, IHashtags, IHighlightedHashtag, IQueryData, IQueryParam} from "../types";
+import {IDateRange, IHashtags, IHighlightedHashtag, IQueryParams} from "../types";
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from "@angular/router";
 import {StateService} from "../../state.service";
@@ -56,8 +56,6 @@ export class QueryComponent implements OnInit, OnDestroy {
 
     maxDateString = this.utcToLocalConverter.transform(dayjs.utc(this.maxDate()).toDate())
 
-    private _start = ''
-    private _end = ''
     currentTimeInUserTimeZone!: string;
 
     countries: string[] = [];  // only codes for url and get request
@@ -148,10 +146,10 @@ export class QueryComponent implements OnInit, OnDestroy {
         this.enableTooltips()
         this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
             // view mode is HOT
-            if(this.activatedRoute.snapshot.url.length >= 2 )
+            if (this.activatedRoute.snapshot.url.length >= 2)
                 if (this.activatedRoute.snapshot.url[0].path == 'dashboard' && this.activatedRoute.snapshot.url[1].path == 'hotosm') {
                     this.hot_controls = true
-                    this.selectedHashtagOption = { hashtag: "hotosm-project-*", highlighted: "hotosm-project-*" }
+                    this.selectedHashtagOption = {hashtag: "hotosm-project-*", highlighted: "hotosm-project-*"}
                     this.getStatistics()
                 }
             this.allHashtagOptions = hashtagsResult
@@ -230,7 +228,7 @@ export class QueryComponent implements OnInit, OnDestroy {
     validateForm(): boolean {
         const dateRangeEle = document.getElementById('dateRange') as HTMLInputElement | null
 
-        // check if text feild is empty
+        // check if text field is empty
         if (!dateRangeEle || !dateRangeEle.value) {
             console.error('Date range is empty')
             // show the message on toast
@@ -289,9 +287,9 @@ export class QueryComponent implements OnInit, OnDestroy {
         }
         return encodeURIComponent( // escape everyting but A–Z a–z 0–9 - _ . ! ~ * ' ( )
             hashtag
-                .trim() // Remove leading/trailing whitespace
+                .trim()
                 .replace(/^#/, '')
-        ) // Remove '#' symbol from hashtag if it's at the beginning
+        )
     }
 
     changeHub(hubName: string) {
@@ -352,7 +350,7 @@ export class QueryComponent implements OnInit, OnDestroy {
     dateUpdated($event: TimePeriod | null) {
         if (!$event)
             return
-        
+
         if (!$event['target'])
             return
 
@@ -375,11 +373,10 @@ export class QueryComponent implements OnInit, OnDestroy {
     toggleLiveMode() {
         this.liveMode = !this.liveMode
         if (this.liveMode) {
-            // console.log("live mode enabled")
             this.getStatistics()
             this.refreshIntervalId = setInterval(() => {
                 this.getStatistics()
-            }, 10000)
+            }, 10000) as unknown as number
 
             // change tooltip
             this.updateLiveTooltip('Stop Live')
@@ -390,12 +387,10 @@ export class QueryComponent implements OnInit, OnDestroy {
     }
 
     turnOffLiveMode() {
-        // console.log("live mode disabled")
         this.liveMode = false
         this.dataService.toggleLiveMode(false)
         this.updateLiveTooltip('Query Live')
         if (this.refreshIntervalId) {
-            // console.log("live mode disabled")
             clearInterval(this.refreshIntervalId)
             this.refreshIntervalId = null
         }
@@ -415,7 +410,7 @@ export class QueryComponent implements OnInit, OnDestroy {
      * Boostrap need to enable tooltip on every element with its attribute
      */
     enableTooltips(): void {
-        // enble tooltip
+        // enable tooltip
         const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
 
@@ -432,7 +427,7 @@ export class QueryComponent implements OnInit, OnDestroy {
      *
      * @param inputData - Current query parameters state
      */
-    private updateFormFromState(inputData: IQueryParam): void {
+    private updateFormFromState(inputData: IQueryParams): void {
         // console.log('>>> updateFormFromState >>> state ', inputData);
 
         // Set Start and end dates

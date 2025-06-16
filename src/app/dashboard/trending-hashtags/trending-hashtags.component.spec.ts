@@ -1,7 +1,7 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 import {By} from '@angular/platform-browser';
-import { Overlay } from '../../overlay.component';
+import {Overlay} from '../../overlay.component';
 
 import {TrendingHashtagsComponent} from './trending-hashtags.component';
 import {DataService} from '../../data.service';
@@ -15,10 +15,10 @@ describe('TrendingHashtagsComponent', () => {
     let mockStateService: jasmine.SpyObj<StateService>;
 
     const mockHashtags: IHashtag[] = [
-        { hashtag: 'hashtag1', number_of_users: 100 },
-        { hashtag: 'hashtag2', number_of_users: 80 },
-        { hashtag: 'verylonghashtagnamethatexceedstwentycharacters', number_of_users: 60 },
-        { hashtag: 'hashtag4', number_of_users: 40 }
+        {hashtag: 'hashtag1', number_of_users: 100},
+        {hashtag: 'hashtag2', number_of_users: 80},
+        {hashtag: 'verylonghashtagnamethatexceedstwentycharacters', number_of_users: 60},
+        {hashtag: 'hashtag4', number_of_users: 40}
     ];
 
     const mockState = {
@@ -49,8 +49,8 @@ describe('TrendingHashtagsComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [TrendingHashtagsComponent, Overlay],
             providers: [
-                { provide: DataService, useValue: dataServiceSpy },
-                { provide: StateService, useValue: stateServiceSpy }
+                {provide: DataService, useValue: dataServiceSpy},
+                {provide: StateService, useValue: stateServiceSpy}
             ]
         }).compileComponents();
 
@@ -91,16 +91,8 @@ describe('TrendingHashtagsComponent', () => {
 
     describe('requestFromAPI', () => {
         beforeEach(() => {
-            spyOn(component, 'stopHashtagReq');
             spyOn(component, 'enableTooltips');
         });
-
-        // it('should set loading state and call stopHashtagReq', () => {
-        //     component['requestFromAPI'](mockState);
-        //
-        //     expect(component.isHashtagsLoading).toBe(true);
-        //     expect(component.stopHashtagReq).toHaveBeenCalled();
-        // });
 
         it('should call getTrendingHashtags with correct parameters', () => {
             component['requestFromAPI'](mockState);
@@ -250,16 +242,6 @@ describe('TrendingHashtagsComponent', () => {
         });
     });
 
-    describe('stopHashtagReq', () => {
-        it('should stop hashtag requests and create new abort subject', () => {
-            component.stopHashtagReq();
-
-            expect(mockDataService.abortHashtagReqSub.next).toHaveBeenCalled();
-            expect(mockDataService.abortHashtagReqSub.unsubscribe).toHaveBeenCalled();
-            expect(mockDataService.getAbortHashtagReqSubject).toHaveBeenCalled();
-        });
-    });
-
     describe('relevantState computed', () => {
         it('should return correct state properties', () => {
             fixture.detectChanges();
@@ -271,22 +253,6 @@ describe('TrendingHashtagsComponent', () => {
                 countries: mockState.countries
             });
         });
-
-        // it('should have custom equality function', () => {
-        //     fixture.detectChanges();
-        //     const equalityFn = (component['relevantState'] as any).equal;
-        //
-        //     expect(equalityFn).toBeDefined();
-        //     expect(typeof equalityFn).toBe('function');
-        //
-        //     // Test equality function
-        //     const state1 = { start: '2023-01-01', end: '2023-01-31', countries: 'US' };
-        //     const state2 = { start: '2023-01-01', end: '2023-01-31', countries: 'US' };
-        //     const state3 = { start: '2023-01-02', end: '2023-01-31', countries: 'US' };
-        //
-        //     expect(equalityFn(state1, state2)).toBe(true);
-        //     expect(equalityFn(state1, state3)).toBe(false);
-        // });
     });
 
     describe('template rendering', () => {
@@ -370,7 +336,7 @@ describe('TrendingHashtagsComponent', () => {
             spyOn(component as any, 'requestFromAPI');
 
             // Simulate state change
-            const newState = { ...mockState, start: '2023-02-01' };
+            const newState = {...mockState, start: '2023-02-01'};
             mockStateService.appState.and.returnValue(newState);
 
             fixture.detectChanges();

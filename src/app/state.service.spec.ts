@@ -4,7 +4,7 @@ import {BehaviorSubject} from 'rxjs';
 
 import {StateService} from './state.service';
 import {DataService} from './data.service';
-import {IQueryParam, StatsType} from './dashboard/types';
+import {IStateParams, StatsType} from './dashboard/types';
 
 describe('StateService', () => {
     let service: StateService;
@@ -16,7 +16,7 @@ describe('StateService', () => {
         max_timestamp: '2024-01-01T00:00:00Z'
     };
 
-    const defaultState: IQueryParam = {
+    const defaultState: IStateParams = {
         hashtag: '',
         start: '2023-01-01T00:00:00Z',
         end: '2024-01-01T00:00:00Z',
@@ -24,7 +24,7 @@ describe('StateService', () => {
         countries: '',
         topics: '',
         fit_to_content: undefined,
-        active_topic: 'users' as StatsType
+        active_topic: 'contributor' as StatsType
     };
 
     beforeEach(() => {
@@ -62,7 +62,7 @@ describe('StateService', () => {
             const currentState = service.appState();
             expect(currentState.hashtag).toBe('');
             expect(currentState.interval).toBe('P1M');
-            expect(currentState.active_topic).toBe('users');
+            expect(currentState.active_topic).toBe('contributor');
         });
 
         it('should initialize from URL fragment when present', () => {
@@ -95,7 +95,7 @@ describe('StateService', () => {
 
     describe('state updates', () => {
         it('should update entire state', () => {
-            const newState: IQueryParam = {
+            const newState: IStateParams = {
                 ...defaultState,
                 hashtag: 'newhashtag',
                 interval: 'P1D'
@@ -126,7 +126,7 @@ describe('StateService', () => {
         it('should update URL when state changes', () => {
             mockRouter.navigate.calls.reset();
 
-            const testState: IQueryParam = {
+            const testState: IStateParams = {
                 hashtag: 'test-hashtag',
                 start: '2023-01-01T00:00:00Z',
                 end: '2023-12-01T00:00:00Z',
@@ -149,7 +149,7 @@ describe('StateService', () => {
             // service.updatePartialState({ fit_to_content: 'true' });
             mockRouter.navigate.calls.reset();
 
-            const testState: IQueryParam = {
+            const testState: IStateParams = {
                 hashtag: 'test-hashtag',
                 start: '2023-01-01T00:00:00Z',
                 end: '2023-12-01T00:00:00Z',
@@ -173,7 +173,7 @@ describe('StateService', () => {
         it('should return current state from BehaviorSubject', () => {
             const currentState = service.getCurrentState();
             expect(currentState).toBeDefined();
-            expect(currentState.active_topic).toBe('users');
+            expect(currentState.active_topic).toBe('contributor');
         });
     });
 
@@ -240,7 +240,7 @@ describe('StateService', () => {
 
         it('should emit values through queryParamSubject', (done) => {
             service.queryParamSubject.subscribe(state => {
-                expect(state.active_topic).toBe('users');
+                expect(state.active_topic).toBe('contributor');
                 done();
             });
         });

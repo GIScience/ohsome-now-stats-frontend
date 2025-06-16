@@ -48,8 +48,6 @@ export class TrendingHashtagsComponent {
 
     private requestFromAPI(state: { start: string; end: string; countries: string; }) {
         this.isHashtagsLoading = true;
-        // stop trending hashtag request if already fired any
-        this.stopHashtagReq()
         // fire trending hashtag API
         this.dataService.getTrendingHashtags({
             start: state.start,
@@ -61,7 +59,7 @@ export class TrendingHashtagsComponent {
                 // console.log('>>> getTrendingHashtags >>> res = ', res)
                 this.isHashtagsLoading = false;
                 this.hashtags = res;
-                if(this.hashtags) {
+                if (this.hashtags) {
                     this.numOfHashtags = this.hashtags ? this.hashtags.length : this.trendingHashtagLimit
                     // arrange the hashtags in desc order
                     this.hashtags.sort((a, b) => b.number_of_users - a.number_of_users)
@@ -118,12 +116,5 @@ export class TrendingHashtagsComponent {
         tooltips.forEach(tooltipEle => {
             tooltipEle.remove()
         })
-    }
-
-    stopHashtagReq() {
-        // stop all previous request, if waiting for its response
-        this.dataService.abortHashtagReqSub.next()
-        this.dataService.abortHashtagReqSub.unsubscribe()
-        this.dataService.getAbortHashtagReqSubject()
     }
 }
