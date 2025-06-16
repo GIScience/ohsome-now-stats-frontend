@@ -1,9 +1,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {of, throwError} from 'rxjs';
+import {of} from 'rxjs';
 import {SummaryComponent} from './summary.component';
 import {DataService} from '../../data.service';
 import {StateService} from '../../state.service';
-import {IQueryParam, ISummaryData, IWrappedSummaryData, IWrappedTopicData, StatsType} from '../types';
+import {IStateParams, IWrappedStatsResult, StatsType} from '../types';
 import {Overlay} from '../../overlay.component';
 
 describe('SummaryComponent', () => {
@@ -12,95 +12,70 @@ describe('SummaryComponent', () => {
     let mockDataService: jasmine.SpyObj<DataService>;
     let mockStateService: jasmine.SpyObj<StateService>;
 
-    const mockSummaryData: ISummaryData = {
-        changesets: 100,
-        buildings: 200,
-        users: 50,
-        edits: 300,
-        roads: 150,
-        latest: '2023-01-01',
-        hashtag: 'test',
-        startDate: '2023-01-01',
-        endDate: '2023-01-31'
-    };
-
-    const mockWrappedSummaryData: IWrappedSummaryData = {
-        result: mockSummaryData
-    };
-
-    const mockTopicData: IWrappedTopicData = {
-        result: {
-            amenity: {
-                hashtag: 'test',
-                topic: 'amenity',
-                value: 10
-            },
-            body_of_water: {
-                hashtag: 'test',
-                topic: 'body_of_water',
-                value: 20
-            },
-            commercial: {
-                hashtag: 'test',
-                topic: 'commercial',
-                value: 20
-            },
-            education: {
-                hashtag: 'test',
-                topic: 'education',
-                value: 20
-            },
-            financial: {
-                hashtag: 'test',
-                topic: 'financial',
-                value: 20
-            },
-            healthcare: {
-                hashtag: 'test',
-                topic: 'healthcare',
-                value: 20
-            },
-            lulc: {
-                hashtag: 'test',
-                topic: 'lulc',
-                value: 20
-            },
-            place: {
-                hashtag: 'test',
-                topic: 'place',
-                value: 20
-            },
-            poi: {
-                hashtag: 'test',
-                topic: 'poi',
-                value: 20
-            },
-            social_facility: {
-                hashtag: 'test',
-                topic: 'social_facility',
-                value: 20
-            },
-            wash: {
-                hashtag: 'test',
-                topic: 'wash',
-                value: 20
-            },
-            waterway: {
-                hashtag: 'test',
-                topic: 'waterway',
-                value: 20
+    const mockTopicData: IWrappedStatsResult = {
+        result:
+            {
+                topics: {
+                    amenity: {
+                        value: 10
+                    },
+                    body_of_water: {
+                        value: 20
+                    },
+                    commercial: {
+                        value: 20
+                    },
+                    education: {
+                        value: 20
+                    },
+                    financial: {
+                        value: 20
+                    },
+                    healthcare: {
+                        value: 20
+                    },
+                    lulc: {
+                        value: 20
+                    },
+                    place: {
+                        value: 20
+                    },
+                    poi: {
+                        value: 20
+                    },
+                    social_facility: {
+                        value: 20
+                    },
+                    wash: {
+                        value: 20
+                    },
+                    waterway: {
+                        value: 20
+                    },
+                    contributor: {
+                        value: 20
+                    },
+                    edit: {
+                        value: 20
+                    },
+                    building: {
+                        value: 20
+                    },
+                    road: {
+                        value: 20
+                    }
+                }
             }
-        }
     };
 
-    const mockQueryParams: IQueryParam = {
+    const mockQueryParams: IStateParams = {
         hashtag: 'test',
         start: '2023-01-01',
         end: '2023-01-31',
         countries: 'US',
         topics: 'amenity,body_of_water',
         interval: '',
-        active_topic: 'buildings'
+        active_topic: 'building'
     };
 
     beforeEach(async () => {
@@ -122,8 +97,7 @@ describe('SummaryComponent', () => {
 
         // Setup default mock returns
         mockStateService.appState.and.returnValue(mockQueryParams);
-        mockDataService.requestSummary.and.returnValue(of(mockWrappedSummaryData));
-        mockDataService.requestTopic.and.returnValue(of(mockTopicData));
+        mockDataService.requestSummary.and.returnValue(of(mockTopicData));
     });
 
     it('should create', () => {
@@ -131,7 +105,7 @@ describe('SummaryComponent', () => {
     });
 
     it('should initialize with default values', () => {
-        expect(component.currentlySelected).toBe('users');
+        expect(component.currentlySelected).toBe('contributor');
         expect(component.bignumberData).toEqual([]);
         expect(component.isSummaryLoading).toBe(false);
     });
@@ -143,7 +117,6 @@ describe('SummaryComponent', () => {
             component.requestFromAPI(mockQueryParams);
 
             expect(mockDataService.requestSummary).toHaveBeenCalledWith(mockQueryParams);
-            expect(mockDataService.requestTopic).toHaveBeenCalledWith(mockQueryParams);
             expect(component.isSummaryLoading).toBe(true);
         });
 
@@ -154,32 +127,12 @@ describe('SummaryComponent', () => {
             component.requestFromAPI(queryParamsWithoutTopics);
 
             expect(mockDataService.requestSummary).toHaveBeenCalledWith(queryParamsWithoutTopics);
-            expect(mockDataService.requestTopic).not.toHaveBeenCalled();
-        });
-
-        it('should handle error when requesting data with topics', () => {
-            spyOn(console, 'error');
-            mockDataService.requestSummary.and.returnValue(throwError('API Error'));
-
-            component.requestFromAPI(mockQueryParams);
-
-            expect(console.error).toHaveBeenCalledWith('Error while requesting data: ', 'API Error');
-        });
-
-        it('should handle error when requesting summary only', () => {
-            const queryParamsWithoutTopics = {...mockQueryParams, topics: ''};
-            spyOn(console, 'error');
-            mockDataService.requestSummary.and.returnValue(throwError('API Error'));
-
-            component.requestFromAPI(queryParamsWithoutTopics);
-
-            expect(console.error).toHaveBeenCalledWith('Error while requesting Summary data ', 'API Error');
         });
     });
 
     describe('updateBigNumber', () => {
         beforeEach(() => {
-            component['data'] = mockSummaryData;
+            component['data'] = mockTopicData.result.topics;
         });
 
         it('should return early if data is not available', () => {
@@ -196,26 +149,6 @@ describe('SummaryComponent', () => {
 
             expect(component.bignumberData.length).toBeGreaterThan(0);
             expect(component.isSummaryLoading).toBe(false);
-        });
-
-        // it('should merge topic data when available', () => {
-        //     component['topicData'] = {topic1: 10, topic2: 20};
-        //
-        //     component.updateBigNumber();
-        //
-        //     expect(component['data']).toEqual(jasmine.objectContaining({
-        //         ...mockSummaryData,
-        //         topic1: 10,
-        //         topic2: 20
-        //     }));
-        // });
-    });
-
-    describe('formatNumbertoNumberformatString', () => {
-        it('should format numbers correctly', () => {
-            expect(component.formatNumbertoNumberformatString(1000)).toBe('1,000');
-            expect(component.formatNumbertoNumberformatString(1000000)).toBe('1,000,000');
-            expect(component.formatNumbertoNumberformatString(123.456)).toBe('123');
         });
     });
 
@@ -245,16 +178,6 @@ describe('SummaryComponent', () => {
             expect(() => component.enableTooltips()).not.toThrow();
 
             document.body.removeChild(mockTooltipElement);
-        });
-    });
-
-    describe('ngOnDestroy', () => {
-        it('should unsubscribe from subscriptions', () => {
-            spyOn(component['subscription'], 'unsubscribe');
-
-            component.ngOnDestroy();
-
-            expect(component['subscription'].unsubscribe).toHaveBeenCalled();
         });
     });
 

@@ -1,6 +1,6 @@
 {
-  "users": {
-    "id": "users",
+  "contributor": {
+    "id": "contributor",
     "name": "Contributors",
     "y-title": "# of contributors",
     "dropdown_name": "Contributors",
@@ -54,8 +54,8 @@
     "formula": "",
     "icon": "fa-users"
   },
-  "edits": {
-    "id": "edits",
+  "edit": {
+    "id": "edit",
     "name": "Total Edits",
     "y-title": "# of total edits",
     "dropdown_name": "Total Edits",
@@ -109,8 +109,8 @@
     "formula": "",
     "icon": "fa-pen-to-square"
   },
-  "buildings": {
-    "id": "buildings",
+  "building": {
+    "id": "building",
     "name": "Δ Buildings",
     "y-title": "# of Δ buildings",
     "dropdown_name": "Buildings",
@@ -164,8 +164,8 @@
     "formula": "Δ Buildings = Buildings<sub>created</sub> - Buildings<sub>deleted</sub>",
     "icon": "fa-building"
   },
-  "roads": {
-    "id": "roads",
+  "road": {
+    "id": "road",
     "name": "Δ km of Roads",
     "y-title": "# of Δ km of roads",
     "dropdown_name": "Roads",
