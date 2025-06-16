@@ -432,8 +432,6 @@ export class QueryComponent implements OnInit, OnDestroy {
      * @param inputData - Current query parameters state
      */
     private updateFormFromState(inputData: IQueryParams): void {
-        // console.log('>>> updateFormFromState >>> state ', inputData);
-
         // Set Start and end dates
         if (inputData.start && inputData.end) {
             this.selectedDateRangeUTC = {
