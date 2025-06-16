@@ -148,12 +148,16 @@ export class QueryComponent implements OnInit, OnDestroy {
         this.enableTooltips()
         this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
             // view mode is HOT
-            if(this.activatedRoute.snapshot.url.length >= 2 )
+            if(this.activatedRoute.snapshot.url.length == 2 ) {
                 if (this.activatedRoute.snapshot.url[0].path == 'dashboard' && this.activatedRoute.snapshot.url[1].path == 'hotosm') {
                     this.hot_controls = true
-                    this.selectedHashtagOption = { hashtag: "hotosm-project-*", highlighted: "hotosm-project-*" }
+                    this.selectedHashtagOption = {hashtag: "hotosm-project-*", highlighted: "hotosm-project-*"}
                     this.getStatistics()
                 }
+            } else if (this.activatedRoute.snapshot.url.length == 1 && this.activatedRoute.snapshot.url[0].path == 'dashboard' ) {
+                this.getStatistics()
+            }
+
             this.allHashtagOptions = hashtagsResult
         })
     }
