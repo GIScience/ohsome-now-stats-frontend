@@ -138,10 +138,6 @@ export class StateService {
 
         // Create URLSearchParams from the fragment
         const searchParams = new URLSearchParams(this.route.snapshot.fragment);
-        // Optional: Log all parameters for debugging
-        // searchParams.forEach((value, key) => {
-        //     console.log(`${key}: ${value}`);
-        // });
 
         return searchParams;
     }

@@ -10,6 +10,13 @@ import {StateService} from "../../../state.service";
 })
 export class BigNumberComponent {
     @Input() data!: ITopicDefinitionValue
+    startSelected = false;
+
+    constructor(private stateService: StateService) {
+        effect(() => {
+            this.startSelected = this.data.id === this.activeTopicState();
+        });
+    }
 
     formatNumbertoNumberformatString(value: number): string {
         return new Intl.NumberFormat('en-US', {
@@ -22,13 +29,6 @@ export class BigNumberComponent {
         return this.stateService.appState().active_topic;
     });
 
-    startSelected = false;
-
-    constructor(private stateService: StateService) {
-        effect(() => {
-            this.startSelected = this.data.id === this.activeTopicState();
-        });
-    }
 
 
     openHelp(event: any) {
