@@ -242,7 +242,6 @@ export class SummaryComponent implements OnDestroy {
     changeSelectedBigNumber(e: MouseEvent, newCurrentStats: string) {
         this.currentlySelected = newCurrentStats
         this.changeSelectedSummaryComponent(e)
-        // this.changeCurrentStatsEvent.emit(newCurrentStats as StatsType);
         // add selected stat to app state
         this.stateService.updatePartialState({
             active_topic: newCurrentStats as StatsType,
