@@ -1,21 +1,26 @@
 <div class="big_number">
-  <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm- {{startSelected ? 'selected' : ''}}">
-    <span class="icon-holder tooltip1" data-bs-placement="bottom" data-bs-toggle="tooltip" title="{{tooltip}}" data-bs-html="true" (click)="openHelp($event)">
+    <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm- {{startSelected ? 'selected' : ''}}">
+    <span class="icon-holder tooltip1" data-bs-placement="bottom" data-bs-toggle="tooltip" title="{{data.tooltip}}"
+          data-bs-html="true" (click)="openHelp($event)">
       <i class="c-grey-800 ti-help-alt"></i>
     </span>
-    <div class="layer w-100 mB-10">
+        <div class="layer w-100 mB-10">
       <span class="icon-holder">
-        <i class="fa-solid {{icon}} fsz-xl"></i>
+        <i class="fa-solid {{data.icon}} fsz-xl"></i>
       </span>
-    </div>
-    <div class="layer w-100">
-        <span class="d-ib lh-0 va-m fw-600 fsz-lg bdrs-10em pX-15 pY-15 bgc-{{color}}-50 c-{{color}}-500 whs-nw tov-e" [ngStyle]="{'color': color, 'background-color':colorLight}">{{value}}</span>
-        <span *ngIf="numericValue < 0" class="icon-holder tooltip2" data-bs-placement="bottom" data-bs-toggle="tooltip" title="NOTE: Negative results can occur for all Δ topics if the number of deleted objects surpassed the number of newly created objects for the hashtag and the time range defined in your query. The number of modified objects is not considered. " data-bs-html="true">
+        </div>
+        <div class="layer w-100">
+            <span class="d-ib lh-0 va-m fw-600 fsz-lg bdrs-10em pX-15 pY-15 bgc-{{data['color-hex']}}-50 c-{{data['color-hex']}}-500 whs-nw tov-e"
+                  [ngStyle]="{'color': data['color-hex'], 'background-color':data['color-light']}">{{ formatNumbertoNumberformatString(data.value) }}</span>
+            <span *ngIf="data.value < 0" class="icon-holder tooltip2" data-bs-placement="bottom"
+                  data-bs-toggle="tooltip"
+                  title="NOTE: Negative results can occur for all Δ topics if the number of deleted objects surpassed the number of newly created objects for the hashtag and the time range defined in your query. The number of modified objects is not considered. "
+                  data-bs-html="true">
             <i class="c-grey-800 ti-help-alt"></i>
         </span>
+        </div>
+        <div class="layer w-100">
+            <p class="lh-1 mb-0 mt-2">{{ data.name }}</p>
+        </div>
     </div>
-    <div class="layer w-100">
-      <p class="lh-1 mb-0 mt-2">{{name}}</p>
-    </div>
-  </div>  
 </div>
