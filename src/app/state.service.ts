@@ -135,10 +135,6 @@ export class StateService {
         if (this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 1) {
             return null;
         }
-
-        // Create URLSearchParams from the fragment
-        const searchParams = new URLSearchParams(this.route.snapshot.fragment);
-
-        return searchParams;
+        return new URLSearchParams(this.route.snapshot.fragment);
     }
 }

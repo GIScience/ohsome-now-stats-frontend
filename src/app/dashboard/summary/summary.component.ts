@@ -78,7 +78,6 @@ export class SummaryComponent {
 
     changeSelectedBigNumber(e: MouseEvent, newCurrentStats: string) {
         this.currentlySelected = newCurrentStats
-        this.changeSelectedSummaryComponent(e)
         // add selected stat to app state
         this.stateService.updatePartialState({
             active_topic: newCurrentStats as StatsType,
@@ -89,10 +88,7 @@ export class SummaryComponent {
      * Boostrap need to enable tooltip on every element with its attribute
      */
     enableTooltips(): void {
-        // enable tooltip
         const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
     }
-
-
 }

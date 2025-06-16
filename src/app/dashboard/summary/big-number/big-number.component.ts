@@ -30,7 +30,6 @@ export class BigNumberComponent {
     });
 
 
-
     openHelp(event: any) {
         window.open(`/help#${event.target.closest(".app-big-number").id}`, '_blank');
     }
