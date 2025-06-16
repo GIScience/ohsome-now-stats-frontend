@@ -3,6 +3,7 @@ import * as bootstrap from 'bootstrap';
 import {ToastService} from './toast.service';
 import {DataService} from "./data.service";
 import {Router} from "@angular/router";
+import {StateService} from "./state.service";
 
 @Component({
     selector: 'app-root',
@@ -14,10 +15,10 @@ export class AppComponent implements AfterViewInit {
     title = 'ohsomeNow Stats';
     name = 'HeiGIT';
     isOpen = false
-    activeLink = ''
     live: boolean = false
 
     constructor(private toastService: ToastService,
+                private stateService: StateService,
                 private dataService: DataService,
                 private router: Router) {
         this.dataService.liveMode.subscribe(mode => {
@@ -71,59 +72,4 @@ export class AppComponent implements AfterViewInit {
         }
     }
 
-    toggleDropdown(event: Event) {
-        event.preventDefault()
-        const clickedLink = event.target as HTMLElement
-        const parentListItem = clickedLink.parentElement
-
-        if (parentListItem)
-            if (parentListItem.classList.contains('open')) {
-                parentListItem.classList.remove('open')
-            } else {
-                const openLinks = document.querySelectorAll('.sidebar .sidebar-menu li.open')
-                openLinks.forEach((openLink) => {
-                    openLink.classList.remove('open')
-                })
-
-                parentListItem.classList.add('open')
-            }
-    }
-
-    /**
-     * Redirects to the page requested for
-     * Maintains the parameter the user selected in the QueryComponent except the Hashtag as that
-     * defaults to "hotosm-project-*"
-     * Gets the fragment values directly from the getQueryParamsFromFragments
-     *
-     * @param pageName
-     */
-    redirectTo(pageName: string) {
-        const fragmentData = this.dataService.getQueryParamsFromFragments();
-        // when redirecting from 'about'/'help' page to 'Dashboard'/'hotosm' page the fragment is null‚
-        if(! fragmentData) {
-            // assumption is that individual components will fill in the default values if fragment are null
-            this.router.navigate([`/${pageName}`]);
-            return;
-        }
-        if (pageName == "dashboard") {
-            const requiredKeys = ["hashtag", "start", "end", "interval", "countries", "topics"];
-            const hasAllKeys = requiredKeys.every(key => key in fragmentData);
-            if (!hasAllKeys) {
-                console.error(`Page with Fragment data ${JSON.stringify(fragmentData)} missing required fields.`);
-                return;
-            }
-
-            let fragment = `hashtag=${fragmentData.hashtag}&start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}&countries=${fragmentData.countries}&topics=${fragmentData.topics}`;
-            if (fragmentData.fit_to_content !== undefined) {
-                fragment += "&fit_to_content=";
-            }
-            this.router.navigate(['/dashboard'], {fragment: fragment});
-        } else if (pageName == "dashboard/hotosm") {
-            let fragment = `start=${fragmentData.start}&end=${fragmentData.end}&interval=${fragmentData.interval}`;
-            if (fragmentData.fit_to_content !== undefined) {
-                fragment += "&fit_to_content=";
-            }
-            this.router.navigate(['/dashboard/hotosm'], {fragment: fragment});
-        }
-    }
 }

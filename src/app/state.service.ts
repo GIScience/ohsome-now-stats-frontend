@@ -19,21 +19,7 @@ export class StateService {
 
     // Private signal to hold the current state
     private _appState = signal<IQueryParam>(
-        this.initialState,
-        {
-            equal: (a, b) => {
-                return (
-                    a.hashtag === b.hashtag
-                    && a.start == b.start
-                    && a.end == b.end
-                    && a.interval == b.interval
-                    && a.topics == b.topics
-                    && a.countries == b.countries
-                    && a.fit_to_content == b.fit_to_content
-                    && a.active_topic == b.active_topic
-                )
-            },
-        }
+        this.initialState
     );
 
     // Public readonly signal for components to read
