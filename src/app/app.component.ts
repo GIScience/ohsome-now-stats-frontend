@@ -18,9 +18,8 @@ export class AppComponent implements AfterViewInit {
     live: boolean = false
 
     constructor(private toastService: ToastService,
-                private stateService: StateService,
-                private dataService: DataService,
-                private router: Router) {
+                private dataService: DataService
+        ) {
         this.dataService.liveMode.subscribe(mode => {
             this.live = mode
         })

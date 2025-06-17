@@ -223,45 +223,13 @@ describe('SummaryComponent', () => {
         it('should update currentlySelected and call related methods', () => {
             const mockEvent = new MouseEvent('click');
             const newStats = 'buildings';
-            spyOn(component, 'changeSelectedSummaryComponent');
 
             component.changeSelectedBigNumber(mockEvent, newStats);
 
             expect(component.currentlySelected).toBe(newStats);
-            expect(component.changeSelectedSummaryComponent).toHaveBeenCalledWith(mockEvent);
             expect(mockStateService.updatePartialState).toHaveBeenCalledWith({
                 active_topic: newStats as StatsType
             });
-        });
-    });
-
-    describe('changeSelectedSummaryComponent', () => {
-        let mockElement: HTMLElement;
-        let mockParent: HTMLElement;
-        let mockGrandParent: HTMLElement;
-
-        beforeEach(() => {
-            mockElement = document.createElement('div');
-            mockParent = document.createElement('div');
-            mockGrandParent = document.createElement('div');
-
-            mockElement.className = 'big_number';
-            mockParent.appendChild(mockElement);
-            mockGrandParent.appendChild(mockParent);
-
-            document.body.appendChild(mockGrandParent);
-        });
-
-        afterEach(() => {
-            document.body.removeChild(mockGrandParent);
-        });
-
-        it('should return early if target is not found', () => {
-            const mockEvent = {
-                target: null
-            } as any;
-
-            expect(() => component.changeSelectedSummaryComponent(mockEvent)).not.toThrow();
         });
     });
 

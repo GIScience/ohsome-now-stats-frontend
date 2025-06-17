@@ -1,29 +1,12 @@
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
 import {DataService} from './data.service';
 import {provideRouter, Router} from "@angular/router";
 import {BehaviorSubject} from "rxjs";
-import {Component, NO_ERRORS_SCHEMA} from "@angular/core";
-
-
-@Component({
-    selector: 'app-dashboard',
-    template: '<div></div>'
-})
-class MockDashboardComponent {
-}
-
-@Component({
-    selector: 'app-dashboard',
-    template: '<div></div>'
-})
-class MockHotosmComponent {
-}
+import {NO_ERRORS_SCHEMA} from "@angular/core";
 
 describe('AppComponent', () => {
     let component: AppComponent;
-    let router: Router;
-    let dataService: DataService;
 
     beforeEach(async () => {
         const dataServiceSpy = jasmine.createSpyObj<DataService>('DataService', [
@@ -37,10 +20,7 @@ describe('AppComponent', () => {
             declarations: [AppComponent],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
-                provideRouter([
-                    { path: 'dashboard', component: MockDashboardComponent },
-                    { path: 'dashboard/hotosm', component: MockHotosmComponent }
-                ]),
+                provideRouter([]),
                 {
                     provide: Router,
                     useValue: {
@@ -56,8 +36,6 @@ describe('AppComponent', () => {
 
         const fixture = TestBed.createComponent(AppComponent);
         component = fixture.componentInstance;
-        router = TestBed.inject(Router);
-        dataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
         fixture.detectChanges();
     });
 
