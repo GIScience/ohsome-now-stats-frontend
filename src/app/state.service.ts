@@ -1,10 +1,10 @@
 import {effect, Injectable, signal} from '@angular/core';
-import {IStateParams, StatsType} from "./dashboard/types";
-import {BehaviorSubject} from "rxjs";
+import {IStateParams} from "./dashboard/types";
 import {environment} from "../environments/environment";
-import dayjs from "dayjs";
 import {DataService} from "./data.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import dayjs from "dayjs";
+import {over5000IntervalBins} from "./utils";
 
 @Injectable({
     providedIn: 'root'
@@ -12,10 +12,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 export class StateService {
 
     url = environment.ohsomeStatsServiceUrl
-    // Initial default state
+
     private initialState = this.initInitialState()
-    // Private BehaviorSubject to hold the current state
-    public queryParamSubject: BehaviorSubject<IStateParams> = new BehaviorSubject<IStateParams>(this.initialState);
 
     // Private signal to hold the current state
     private _appState = signal<IStateParams>(
@@ -38,39 +36,11 @@ export class StateService {
 
     }
 
-    /**
-     * Update the entire state
-     */
-    updateState(newState: IStateParams): void {
-        this._appState.set({...newState});
-    }
-
-    /**
-     * Update partial state (merge with current state)
-     */
     updatePartialState(partialState: Partial<IStateParams>): void {
         this._appState.update(currentState => ({
             ...currentState,
             ...partialState
         }));
-    }
-
-    /**
-     * Get the current state value synchronously
-     */
-    getCurrentState(): IStateParams {
-        return this.queryParamSubject.value;
-    }
-
-    setInterval(interval: string): void {
-        this.updatePartialState({interval});
-    }
-
-    /**
-     * Reset state to initial values
-     */
-    resetState(): void {
-        this.queryParamSubject.next(this.initialState);
     }
 
     private updateURL(data: IStateParams): void {
@@ -90,39 +60,65 @@ export class StateService {
      * @return IStateParams
      */
     private initInitialState(): IStateParams {
-        let tempInitialState: IStateParams
         const queryParams = this.getQueryParamsFromFragments()
-        if (queryParams == null) {
-            tempInitialState = {
-                hashtag: '',
-                start: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
-                end: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
-                interval: 'P1M', // Default monthly interval
-                countries: '',
-                topics: '',
-                fit_to_content: undefined,
-                active_topic: 'contributor'
-            };
-            const {max_timestamp} = this.dataService.metaData()
-            tempInitialState.start = dayjs.utc(max_timestamp)
-                .subtract(1, "year")
-                .startOf("day")
-                .format('YYYY-MM-DDTHH:mm:ss') + 'Z';
-            tempInitialState.end = max_timestamp
-        } else {
-            tempInitialState = {
-                hashtag: queryParams.get('hashtag')!,
-                start: queryParams.get('start')!,
-                end: queryParams.get('end')!,
-                interval: queryParams.get('interval')!,
-                countries: queryParams.get('countries')!,
-                topics: queryParams.get('topics')!,
-                fit_to_content: queryParams.get('fit_to_content') ? queryParams.get('fit_to_content')! : undefined,
-                active_topic: queryParams.get('active_topic')! as StatsType
-            };
+        const {max_timestamp, min_timestamp} = this.getDefaultMinAndMaxTimestamp(queryParams);
+        const interval = this.getDefaultInterval(max_timestamp, min_timestamp, queryParams);
+        const {topics, active_topic} = this.getDefaultTopicConfig(queryParams)
+
+        return {
+            hashtag: this.fromUrlOrDefault(queryParams, "hashtag", ""),
+            start: min_timestamp,
+            end: max_timestamp,
+            interval: interval,
+            countries: this.fromUrlOrDefault(queryParams, "countries", ''),
+            topics: topics,
+            fit_to_content: this.fromUrlOrDefault(queryParams, 'fit_to_content', undefined),
+            active_topic: active_topic
+        }
+    }
+
+    private getDefaultInterval(max_timestamp: string, min_timestamp: string, queryParams: URLSearchParams | null) {
+        let interval = this.fromUrlOrDefault(queryParams, "interval", 'P1M')
+        if (over5000IntervalBins(min_timestamp, max_timestamp, interval)) {
+            interval = "P1M"
+        }
+        return interval
+    }
+
+
+    private getDefaultTopicConfig(queryParams: URLSearchParams | null) {
+        const topics = this.fromUrlOrDefault(queryParams, "topics", 'contributor,edit,building,road')
+
+        const urlOrDefaultSelectedTopic = this.fromUrlOrDefault(queryParams, "active_topic", 'contributor')
+
+        const active_topic = topics.includes(urlOrDefaultSelectedTopic) ? urlOrDefaultSelectedTopic : topics.split(",")[0]
+        return {topics, active_topic}
+    }
+
+    private onlyHashtagButNoDatesProvided(queryParams: URLSearchParams | null) {
+        return !queryParams?.has("start") && !queryParams?.has("end") && queryParams?.has("hashtag");
+    }
+
+    private getDefaultMinAndMaxTimestamp(queryParams: URLSearchParams | null) {
+        let {max_timestamp, min_timestamp} = this.dataService.metaData()
+
+        if (this.onlyHashtagButNoDatesProvided(queryParams)) {
+            return {max_timestamp, min_timestamp}
         }
 
-        return tempInitialState;
+        max_timestamp = this.fromUrlOrDefault(queryParams, "end", max_timestamp)
+
+        min_timestamp = dayjs.utc(max_timestamp)
+            .subtract(1, "year")
+            .startOf("day")
+            .format('YYYY-MM-DDTHH:mm:ss') + 'Z';
+        min_timestamp = this.fromUrlOrDefault(queryParams, "start", min_timestamp)
+
+        return {max_timestamp, min_timestamp};
+    }
+
+    fromUrlOrDefault(urlParams: URLSearchParams | null, key: string, fallback: any): any {
+        return urlParams?.has(key) ? urlParams.get(key) : fallback;
     }
 
     /**

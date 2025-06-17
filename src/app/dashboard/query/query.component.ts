@@ -12,12 +12,13 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IDateRange, IHashtags, IHighlightedHashtag, IQueryParams} from "../types";
+import {IDateRange, IHashtags, IHighlightedHashtag, IQueryParams, StatsType} from "../types";
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from "@angular/router";
 import {StateService} from "../../state.service";
 import {DateRanges, TimePeriod} from "ngx-daterangepicker-material/daterangepicker.component";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
+import {over5000IntervalBins} from "../../utils";
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -38,7 +39,7 @@ export class QueryComponent implements OnInit, OnDestroy {
         label: string;
         value: string;
     }> | undefined
-    interval: string | undefined // default value as 'P1M'
+    interval: string | undefined
     selectedDateRangeUTC: IDateRange | undefined
     minDate = computed(() => dayjs.utc(this.dataService.metaData().min_timestamp).add(dayjs().utcOffset(), "minute"))
     maxDate = computed(() => dayjs.utc(this.dataService.metaData().max_timestamp).add(dayjs().utcOffset(), "minute"))
@@ -105,7 +106,7 @@ export class QueryComponent implements OnInit, OnDestroy {
         displayKey: 'name',
         search: true,
         height: '20rem',
-        placeholder: 'Optionally add some Topics',
+        placeholder: 'Topics for which to generate Stats',
         limitTo: 0,
         moreText: 'item',
         noResultsFound: 'No results found',
@@ -135,7 +136,6 @@ export class QueryComponent implements OnInit, OnDestroy {
         this.buildTopicOptions()
 
         this.intervals = dataService.timeIntervals
-        this.interval = dataService.defaultIntervalValue
         this.currentTimeInUserTimeZone = this.utcToLocalConverter.transform(new Date())
         setInterval(() => {
             this.currentTimeInUserTimeZone = this.utcToLocalConverter.transform(new Date())
@@ -146,14 +146,14 @@ export class QueryComponent implements OnInit, OnDestroy {
         this.enableTooltips()
         this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
             // view mode is HOT
-            if(this.activatedRoute.snapshot.url.length == 2 ) {
+            if (this.activatedRoute.snapshot.url.length == 2) {
                 if (this.activatedRoute.snapshot.url[0].path == 'dashboard' && this.activatedRoute.snapshot.url[1].path == 'hotosm') {
                     this.hot_controls = true
                     this.selectedHashtagOption = {hashtag: "hotosm-project-*", highlighted: "hotosm-project-*"}
-                    this.getStatistics()
+                    this.updateStateToFromSelection()
                 }
-            } else if (this.activatedRoute.snapshot.url.length == 1 && this.activatedRoute.snapshot.url[0].path == 'dashboard' ) {
-                this.getStatistics()
+            } else if (this.activatedRoute.snapshot.url.length == 1 && this.activatedRoute.snapshot.url[0].path == 'dashboard') {
+                this.updateStateToFromSelection()
             }
 
             this.allHashtagOptions = hashtagsResult
@@ -166,13 +166,9 @@ export class QueryComponent implements OnInit, OnDestroy {
      */
     buildTopicOptions() {
         for (const [key, value] of Object.entries(topicDefinitions)) {
-            const value_ = value
-            if (["roads", "buildings", "edits", "users"].includes(key)) {
-                continue
-            }
 
             this.topicOptions.push({
-                "name": value_["dropdown_name"],
+                "name": value["dropdown_name"],
                 "value": key
             })
         }
@@ -182,7 +178,7 @@ export class QueryComponent implements OnInit, OnDestroy {
     /**
      * Called on Submit button click on the form
      */
-    getStatistics() {
+    updateStateToFromSelection() {
 
         if (!this.validateForm())
             return
@@ -212,14 +208,17 @@ export class QueryComponent implements OnInit, OnDestroy {
         }
 
         this.topics = this.selectedTopics.map(e => e.value)
+        let previousState = this.stateService.appState()
+        let active_topic = this.topics.includes(previousState.active_topic) ? previousState.active_topic : this.topics[0]
 
         const state = {
             countries: this.countries.toString(),
             hashtag: tempHashTag,
             start: tempStart,
             end: tempEnd,
-            interval: this.interval ? this.interval : "P1M", // Default monthly interval
-            topics: this.topics.toString()
+            interval: this.interval,
+            topics: this.topics.toString(),
+            active_topic: active_topic as StatsType
         };
 
         // update the state
@@ -240,7 +239,7 @@ export class QueryComponent implements OnInit, OnDestroy {
                 title: 'Date range is empty',
                 body: 'Please provide a valid Date range',
                 type: 'error',
-                time: 3000
+                time: 5000
             })
 
             return false
@@ -256,7 +255,7 @@ export class QueryComponent implements OnInit, OnDestroy {
                 title: 'Date range is empty',
                 body: 'Please provide a valid Date range',
                 type: 'error',
-                time: 3000
+                time: 5000
             })
 
             return false
@@ -270,7 +269,29 @@ export class QueryComponent implements OnInit, OnDestroy {
                 title: 'Invalid date',
                 body: 'Please provide a valid date for the start and end',
                 type: 'error',
-                time: 3000
+                time: 5000
+            })
+
+            return false
+        }
+
+        if (this.selectedTopics.length === 0) {
+            this.toastService.show({
+                title: 'No topic selected',
+                body: 'Please provide at least one topic.',
+                type: 'error',
+                time: 5000
+            })
+
+            return false
+        }
+
+        if (over5000IntervalBins(this.selectedDateRangeUTC.start, this.selectedDateRangeUTC.end, this.interval!)) {
+            this.toastService.show({
+                title: 'Mismatch of timespan and interval',
+                body: 'The combination would result in over 5000 interval bins, please select a shorter timespan or bigger interval.',
+                type: 'error',
+                time: 5000
             })
 
             return false
@@ -335,14 +356,8 @@ export class QueryComponent implements OnInit, OnDestroy {
             })
     }
 
-    allowedInterval(value: string) {
-        if (!this.selectedDateRangeUTC)
-            return true
-        if (this.selectedDateRangeUTC.start && this.selectedDateRangeUTC.end) {
-            const diff = (this.selectedDateRangeUTC.end).diff(this.selectedDateRangeUTC.start, 'day')
-            return (diff > 366 && dayjs.duration(value) < dayjs.duration('P1D'));
-        }
-        return false
+    isForbiddenInterval(value: string) {
+        return over5000IntervalBins(this.selectedDateRangeUTC!.start, this.selectedDateRangeUTC!.end, value)
     }
 
     /**
@@ -377,9 +392,9 @@ export class QueryComponent implements OnInit, OnDestroy {
     toggleLiveMode() {
         this.liveMode = !this.liveMode
         if (this.liveMode) {
-            this.getStatistics()
+            this.updateStateToFromSelection()
             this.refreshIntervalId = setInterval(() => {
-                this.getStatistics()
+                this.updateStateToFromSelection()
             }, 10000) as unknown as number
 
             // change tooltip

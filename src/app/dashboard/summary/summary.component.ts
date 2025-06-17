@@ -69,8 +69,6 @@ export class SummaryComponent {
         for (let [key, value] of Object.entries(this.data)) {
             this.bignumberData.push({...value, ...topicDefinitions[key as StatsType]})
         }
-        // swap edits and contributors, so contributors is first big number
-        this.bignumberData.unshift(this.bignumberData.splice(1, 1)[0])
 
         this.isSummaryLoading = false;
     }
