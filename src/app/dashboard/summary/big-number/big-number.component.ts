@@ -24,11 +24,7 @@ export class BigNumberComponent implements OnInit, OnChanges {
 
     constructor(private stateService: StateService) {
         effect(() => {
-            console.log('this.activeTopicState() ', this.activeTopicState(), this.id)
-            if (this.id === this.activeTopicState()) {
-                this.startSelected = true
-            } else
-                this.startSelected = false
+            this.startSelected = this.id === this.activeTopicState();
         });
     }
 
