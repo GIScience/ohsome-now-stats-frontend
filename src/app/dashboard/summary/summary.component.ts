@@ -13,8 +13,6 @@ import {StateService} from "../../state.service";
     standalone: false
 })
 export class SummaryComponent {
-
-    currentlySelected = 'contributor';
     bignumberData: Array<ITopicDefinitionValue> = [];
     private data!: Record<StatsType, IStatsData>;
     isSummaryLoading: boolean = false;
@@ -60,10 +58,6 @@ export class SummaryComponent {
         if (!this.data)
             return
 
-        if (!Object.keys(this.data).includes(this.currentlySelected)) {
-            document.getElementById("contributor")?.click()
-        }
-
         this.bignumberData = []
 
         for (let [key, value] of Object.entries(this.data)) {
@@ -75,8 +69,6 @@ export class SummaryComponent {
 
 
     changeSelectedBigNumber(e: MouseEvent, newCurrentStats: string) {
-        this.currentlySelected = newCurrentStats
-        // add selected stat to app state
         this.stateService.updatePartialState({
             active_topic: newCurrentStats as StatsType,
         });

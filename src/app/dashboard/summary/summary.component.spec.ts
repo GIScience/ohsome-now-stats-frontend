@@ -105,7 +105,6 @@ describe('SummaryComponent', () => {
     });
 
     it('should initialize with default values', () => {
-        expect(component.currentlySelected).toBe('contributor');
         expect(component.bignumberData).toEqual([]);
         expect(component.isSummaryLoading).toBe(false);
     });
@@ -159,7 +158,6 @@ describe('SummaryComponent', () => {
 
             component.changeSelectedBigNumber(mockEvent, newStats);
 
-            expect(component.currentlySelected).toBe(newStats);
             expect(mockStateService.updatePartialState).toHaveBeenCalledWith({
                 active_topic: newStats as StatsType
             });
