@@ -131,7 +131,6 @@ export class StateService {
      * @returns URLSearchParams object with all query params, or null if no fragment exists
      */
     getQueryParamsFromFragments(): URLSearchParams | null {
-        // Check if fragment exists and has content
         if (this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 1) {
             return null;
         }
