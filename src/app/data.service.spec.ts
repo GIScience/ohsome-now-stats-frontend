@@ -59,7 +59,6 @@ describe('DataService', () => {
     it('should initialize with default values', () => {
         expect(service.url).toBe(mockUrl);
         expect(service.trendingHashtagLimit).toBe(10);
-        expect(service.defaultIntervalValue).toBe('P1M');
         expect(service.timeIntervals).toEqual([
             {label: 'five minutes', value: 'PT5M'},
             {label: 'hourly', value: 'PT1H'},
@@ -114,29 +113,6 @@ describe('DataService', () => {
 
             const req = httpMock.expectOne(`${mockUrl}/metadata`);
             req.error(new ProgressEvent('error'), {status: 500, statusText: 'Server Error'});
-        });
-    });
-
-    describe('getQueryParamsFromFragments', () => {
-        it('should parse query params from URL fragment', () => {
-            const result = service.getQueryParamsFromFragments();
-            expect(result).toEqual({
-                hashtag: 'test',
-                start: '2023-01-01T00:00:00Z',
-                end: '2023-01-31T00:00:00Z'
-            });
-        });
-
-        it('should return null for empty fragment', () => {
-            mockActivatedRoute.snapshot.fragment = null;
-            const result = service.getQueryParamsFromFragments();
-            expect(result).toBeNull();
-        });
-
-        it('should return null for short fragment', () => {
-            mockActivatedRoute.snapshot.fragment = 'a';
-            const result = service.getQueryParamsFromFragments();
-            expect(result).toBeNull();
         });
     });
 

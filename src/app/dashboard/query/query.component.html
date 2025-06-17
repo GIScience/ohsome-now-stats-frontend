@@ -2,7 +2,7 @@
     <!-- #Total Visits ==================== -->
     <div class='col-md-12'>
         <div class="bgc-white p-20 bd">
-            <form (keyup.enter)="getStatistics()" class="needs-validation was-validated" novalidate="">
+            <form (keyup.enter)="updateStateToFromSelection()" class="needs-validation was-validated" novalidate="">
                 <div class="row">
                     <div class="mb-3 col-md-12">
                         <div class="mb-3 row">
@@ -49,29 +49,29 @@
                             </div>
                             <div>
                                 <input type="text"
-                                   class="form-control"
-                                   ngxDaterangepickerMd
-                                   [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
-                                   startKey="start"
-                                   endKey="end"
-                                   [minDate]="minDate()"
-                                   [maxDate]="maxDate()"
-                                   [(ngModel)]="selectedDateRangeUTC"
-                                   id="dateRange"
-                                   name="daterange"
-                                   [showCustomRangeLabel]="true"
-                                   [alwaysShowCalendars]="false"
-                                   [ranges]="ranges()"
-                                   [linkedCalendars]="true"
-                                   [showClearButton]="true"
-                                   [timePicker]="true"
-                                   [timePicker24Hour]="true"
-                                   (change)="dateUpdated($event); turnOffLiveMode()"
-                                   (keydown)="turnOffLiveMode()"
-                                   [autoApply]="true"
-                                   [closeOnAutoApply]="false"
-                                   placeholder="Select please..."
-                                   required=""/>
+                                       class="form-control"
+                                       ngxDaterangepickerMd
+                                       [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
+                                       startKey="start"
+                                       endKey="end"
+                                       [minDate]="minDate()"
+                                       [maxDate]="maxDate()"
+                                       [(ngModel)]="selectedDateRangeUTC"
+                                       id="dateRange"
+                                       name="daterange"
+                                       [showCustomRangeLabel]="true"
+                                       [alwaysShowCalendars]="false"
+                                       [ranges]="ranges()"
+                                       [linkedCalendars]="true"
+                                       [showClearButton]="true"
+                                       [timePicker]="true"
+                                       [timePicker24Hour]="true"
+                                       (change)="dateUpdated($event); turnOffLiveMode()"
+                                       (keydown)="turnOffLiveMode()"
+                                       [autoApply]="true"
+                                       [closeOnAutoApply]="false"
+                                       placeholder="Select please..."
+                                       required=""/>
                             </div>
                         </div>
                         <div class="mb-3 row">
@@ -81,7 +81,7 @@
                                         (change)="turnOffLiveMode()">
                                     <option *ngFor="let option of intervals; index as i; first as isFirst"
                                             [value]="option.value"
-                                            [disabled]="allowedInterval(option.value)">{{ option.label }}
+                                            [disabled]="isForbiddenInterval(option.value)">{{ option.label }}
                                     </option>
                                 </select>
                             </div>
@@ -132,7 +132,8 @@
 
                         <div class="mb-3 row">
                             <label class="form-label" for="topics-selection">OSM Data Topic</label>
-                            <ngx-select-dropdown [options]="topicOptions" name="topics-selection" [config]="configTopics"
+                            <ngx-select-dropdown [options]="topicOptions" name="topics-selection"
+                                                 [config]="configTopics"
                                                  [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"
                                                  id="topics-selection"
                                                  (change)="selectedImpactArea=undefined; turnOffLiveMode();"></ngx-select-dropdown>
@@ -176,7 +177,8 @@
                     </div>
 
                 </div>
-                <button class="btn btn-primary btn-color" (click)="getStatistics()" type="submit" id="btnGetStats"
+                <button class="btn btn-primary btn-color" (click)="updateStateToFromSelection()" type="submit"
+                        id="btnGetStats"
                         [disabled]="liveMode" data-bs-toggle="tooltip" title="Submit">Get Statistics
                 </button>
                 <button class="btn btn-primary btn-color mL-3" *ngIf="enableLiveModeButton()" id="btnLive"

@@ -9,9 +9,7 @@ describe('AppComponent', () => {
     let component: AppComponent;
 
     beforeEach(async () => {
-        const dataServiceSpy = jasmine.createSpyObj<DataService>('DataService', [
-            'getQueryParamsFromFragments'
-        ], {
+        const dataServiceSpy = jasmine.createSpyObj<DataService>('DataService', [], {
             // Properties that need to be mocked
             liveMode: new BehaviorSubject<boolean>(false).asObservable()
         });

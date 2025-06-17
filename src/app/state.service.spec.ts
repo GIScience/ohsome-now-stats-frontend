@@ -1,6 +1,5 @@
 import {TestBed} from '@angular/core/testing';
 import {ActivatedRoute, Router} from '@angular/router';
-import {BehaviorSubject} from 'rxjs';
 
 import {StateService} from './state.service';
 import {DataService} from './data.service';
@@ -66,7 +65,7 @@ describe('StateService', () => {
         });
 
         it('should initialize from URL fragment when present', () => {
-            mockActivatedRoute.snapshot.fragment = 'hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=changesets&countries=DE&topics=buildings';
+            mockActivatedRoute.snapshot.fragment = 'hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=building&countries=DE&topics=building';
 
             // Recreate the TestBed with the updated fragment
             TestBed.resetTestingModule();
@@ -87,25 +86,13 @@ describe('StateService', () => {
             expect(currentState.start).toBe('2023-06-01T00:00:00Z');
             expect(currentState.end).toBe('2023-12-01T00:00:00Z');
             expect(currentState.interval).toBe('P1D');
-            expect(currentState.active_topic).toBe('changesets');
+            expect(currentState.active_topic).toBe('building');
             expect(currentState.countries).toBe('DE');
-            expect(currentState.topics).toBe('buildings');
+            expect(currentState.topics).toBe('building');
         });
     });
 
     describe('state updates', () => {
-        it('should update entire state', () => {
-            const newState: IStateParams = {
-                ...defaultState,
-                hashtag: 'newhashtag',
-                interval: 'P1D'
-            };
-
-            service.updateState(newState);
-
-            expect(service.appState().hashtag).toBe('newhashtag');
-            expect(service.appState().interval).toBe('P1D');
-        });
 
         it('should update partial state', () => {
             service.updatePartialState({hashtag: 'partial-update'});
@@ -113,12 +100,6 @@ describe('StateService', () => {
             expect(service.appState().hashtag).toBe('partial-update');
             // Other properties should remain unchanged
             expect(service.appState().interval).toBe('P1M');
-        });
-
-        it('should update interval using setInterval method', () => {
-            service.setInterval('P1W');
-
-            expect(service.appState().interval).toBe('P1W');
         });
     });
 
@@ -169,29 +150,6 @@ describe('StateService', () => {
         });
     });
 
-    describe('getCurrentState', () => {
-        it('should return current state from BehaviorSubject', () => {
-            const currentState = service.getCurrentState();
-            expect(currentState).toBeDefined();
-            expect(currentState.active_topic).toBe('contributor');
-        });
-    });
-
-    describe('resetState', () => {
-        it('should reset state to initial values', () => {
-            // First change the state
-            service.updatePartialState({hashtag: 'changed'});
-            expect(service.appState().hashtag).toBe('changed');
-
-            // Then reset
-            service.resetState();
-
-            // Note: resetState only updates BehaviorSubject, not the signal
-            const resetState = service.getCurrentState();
-            expect(resetState.hashtag).toBe('');
-        });
-    });
-
     describe('getQueryParamsFromFragments', () => {
         it('should return null when no fragment exists', () => {
             mockActivatedRoute.snapshot.fragment = null;
@@ -227,22 +185,8 @@ describe('StateService', () => {
             expect(service.appState().hashtag).toBe('new-hashtag');
 
             // Set same values - should not trigger unnecessary updates
-            service.updateState(service.appState());
+            service.updatePartialState(service.appState());
             expect(mockRouter.navigate).toHaveBeenCalledTimes(0);
-        });
-    });
-
-    describe('BehaviorSubject integration', () => {
-        it('should have queryParamSubject initialized', () => {
-            expect(service.queryParamSubject).toBeInstanceOf(BehaviorSubject);
-            expect(service.queryParamSubject.value).toBeDefined();
-        });
-
-        it('should emit values through queryParamSubject', (done) => {
-            service.queryParamSubject.subscribe(state => {
-                expect(state.active_topic).toBe('contributor');
-                done();
-            });
         });
     });
 });

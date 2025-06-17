@@ -30,11 +30,8 @@ export class DataService {
         {label: 'quarterly', value: 'P3M'},
         {label: 'yearly', value: 'P1Y'},
     ]
-    defaultIntervalValue = 'P1M'
     bsLive = new BehaviorSubject<boolean>(false)
     liveMode = this.bsLive.asObservable()
-
-    alwaysSelectedTopics = "edit,contributor,building,road"
 
     private _metaData: WritableSignal<IMetaData> = signal<IMetaData>({
         min_timestamp: new Date().toISOString(),
@@ -82,30 +79,16 @@ export class DataService {
             )
     }
 
-    /**
-     * Creates query param from entire fragment of the URL
-     *
-     * @returns Object with all query params sepearted
-     */
-    getQueryParamsFromFragments(): any {
-        if (this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 2)
-            return null
-
-        const tempQueryParams: Array<Array<string>> | any = this.route.snapshot.fragment?.split('&')
-            .map(q => [q.split('=')[0], q.split('=')[1]])
-        return Object.fromEntries(tempQueryParams)
-    }
-
     requestSummary(params: IQueryParams): Observable<IWrappedStatsResult> {
-        return this.http.get<IWrappedStatsResult>(`${this.url}/stats?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${[this.alwaysSelectedTopics, params.topics].filter(topic => topic).join(",")}`)
+        return this.http.get<IWrappedStatsResult>(`${this.url}/stats?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`)
     }
 
     requestPlot(params: IQueryParams): Observable<IWrappedPlotResult> {
-        return this.http.get<IWrappedPlotResult>(`${this.url}/stats/interval?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${[this.alwaysSelectedTopics, params.topics].filter(topic => topic).join(",")}`)
+        return this.http.get<IWrappedPlotResult>(`${this.url}/stats/interval?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`)
     }
 
     requestCountryStats(params: any): Observable<IWrappedCountryResult> {
-        return this.http.get<IWrappedCountryResult>(`${this.url}/stats/country?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topics=${[this.alwaysSelectedTopics, params.topics].filter(topic => topic).join(",")}`)
+        return this.http.get<IWrappedCountryResult>(`${this.url}/stats/country?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topics=${params.topics}`)
     }
 
     getTrendingHashtags(params: { start?: string; end?: string; limit?: number; countries?: string; }) {

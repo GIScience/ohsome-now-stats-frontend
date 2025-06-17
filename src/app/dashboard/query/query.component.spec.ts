@@ -99,7 +99,7 @@ describe('QueryComponent', () => {
     describe('Component Initialization', () => {
         it('should initialize with default values', () => {
             expect(component.hashtag).toBe('');
-            expect(component.interval).toBe('P1M');
+            expect(component.interval).toBe(undefined);
             expect(component.liveMode).toBe(false);
             expect(component.hot_controls).toBe(false);
             expect(component.selectedCountries).toEqual([]);
@@ -150,13 +150,13 @@ describe('QueryComponent', () => {
                 {path: 'hotosm'}
             ];
             spyOn(component, 'enableTooltips');
-            spyOn(component, 'getStatistics');
+            spyOn(component, 'updateStateToFromSelection');
 
             component.ngOnInit();
 
             expect(component.hot_controls).toBe(true);
             expect(component.selectedHashtagOption.hashtag).toBe('hotosm-project-*');
-            expect(component.getStatistics).toHaveBeenCalled();
+            expect(component.updateStateToFromSelection).toHaveBeenCalled();
         });
 
         it('should not enable HOT controls for regular routes', () => {
@@ -195,18 +195,6 @@ describe('QueryComponent', () => {
             getElementByIdSpy.calls.reset();
         });
 
-        // it('should validate successfully with valid date range', () => {
-        //     component.selectedDateRangeUTC = {
-        //         start: dayjs('2024-01-01'),
-        //         end: dayjs('2024-12-31')
-        //     };
-        //
-        //     // Spy on dayjs to return formatted dates
-        //     spyOn(dayjs.prototype, 'isValid').and.returnValue(true);
-        //
-        //     const result = component.validateForm();
-        //     expect(result).toBe(true);
-        // });
 
         it('should fail validation when date range input is empty', () => {
             const result = component.validateForm();
@@ -216,7 +204,7 @@ describe('QueryComponent', () => {
                 title: 'Date range is empty',
                 body: 'Please provide a valid Date range',
                 type: 'error',
-                time: 3000
+                time: 5000
             });
         });
 
@@ -257,7 +245,7 @@ describe('QueryComponent', () => {
         it('should not proceed if validation fails', () => {
             spyOn(component, 'validateForm').and.returnValue(false);
 
-            component.getStatistics();
+            component.updateStateToFromSelection();
 
             expect(mockStateService.updatePartialState).not.toHaveBeenCalled();
         });
@@ -265,8 +253,8 @@ describe('QueryComponent', () => {
         it('should update state with form values when validation passes', () => {
             spyOn(component, 'validateForm').and.returnValue(true);
             spyOn(component, 'cleanHashTag').and.returnValue('missingmaps');
-
-            component.getStatistics();
+            component.interval = "P1M"
+            component.updateStateToFromSelection();
 
             expect(mockStateService.updatePartialState).toHaveBeenCalledWith(jasmine.objectContaining({
                 hashtag: 'missingmaps',
@@ -280,7 +268,7 @@ describe('QueryComponent', () => {
 
             component.selectedCountries = component.dropdownOptions;
 
-            component.getStatistics();
+            component.updateStateToFromSelection();
 
             expect(component.countries).toEqual(['']);
         });
@@ -290,7 +278,7 @@ describe('QueryComponent', () => {
             spyOn(component, 'cleanHashTag').and.returnValue('test');
             component.liveMode = true;
 
-            component.getStatistics();
+            component.updateStateToFromSelection();
             tick(2000);
 
             expect(component.selectedDateRangeUTC?.start.diff(component.maxDate(), 'hours')).toBe(-3);
@@ -425,15 +413,8 @@ describe('QueryComponent', () => {
                 end: dayjs('2024-01-02') // 1 day difference
             };
 
-            const result = component.allowedInterval('P1D');
+            const result = component.isForbiddenInterval('P1D');
             expect(result).toBe(false);
-        });
-
-        it('should return true when selectedDateRangeUTC is undefined', () => {
-            component.selectedDateRangeUTC = undefined;
-
-            const result = component.allowedInterval('P1D');
-            expect(result).toBe(true);
         });
     });
 
@@ -496,15 +477,13 @@ describe('QueryComponent', () => {
         });
 
         it('should toggle live mode on', fakeAsync(() => {
-            spyOn(component, 'getStatistics');
-            spyOn(window, 'setInterval').and.returnValue(123 as any);
+            spyOn(component, 'updateStateToFromSelection');
 
             component.toggleLiveMode();
 
             expect(component.liveMode).toBe(true);
-            expect(component.getStatistics).toHaveBeenCalled();
+            expect(component.updateStateToFromSelection).toHaveBeenCalled();
             expect(mockDataService.toggleLiveMode).toHaveBeenCalledWith(true);
-            expect(component.refreshIntervalId).toBe(123);
         }));
 
         it('should toggle live mode off', () => {
