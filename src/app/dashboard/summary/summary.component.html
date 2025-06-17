@@ -1,9 +1,7 @@
-<div class="row pos-r" id="big-number_container" style="padding-right: 0px !important;" #overlayContainer>
-    <overlay [isLoading]="isSummaryLoading"  [containerElement]="overlayContainer"></overlay>
-    <app-big-number *ngFor="let data of bignumberData" id="{{data.id}}"
-                    class="col-md-3 app-big-number" name="{{data.name}}" icon="{{data.icon}}" value="{{data.value}}"
-                    tooltip="{{data.tooltip}}" color="{{data['color-hex']}}" colorLight="{{data['color-light']}}"
-                    (click)="changeSelectedBigNumber($event, data.id)"
-                    style="padding-right: 0px !important;"
+<div class="row pos-r" id="big-number_container" style="padding-right: 0 !important;" #overlayContainer>
+    <overlay [isLoading]="isSummaryLoading" [containerElement]="overlayContainer"></overlay>
+    <app-big-number *ngFor="let data of bignumberData" [data]="data"
+                    class="col-md-3 app-big-number" (click)="changeSelectedBigNumber($event, data.id)"
+                    style="padding-right: 0 !important;"
     ></app-big-number>
 </div>

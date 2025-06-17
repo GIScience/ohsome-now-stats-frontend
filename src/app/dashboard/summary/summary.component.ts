@@ -1,19 +1,9 @@
-import {Component, computed, effect, EventEmitter, OnDestroy, Output} from '@angular/core';
+import {Component, computed, effect} from '@angular/core';
 import * as bootstrap from 'bootstrap';
-import {download, generateCsv, mkConfig} from "export-to-csv";
 
-import {
-    IQueryParam,
-    ISummaryData,
-    IWrappedSummaryData,
-    IWrappedTopicData,
-    StatsType,
-    TopicDefinitionValue,
-    TopicValues
-} from '../types';
+import {IQueryParams, IStatsData, ITopicDefinitionValue, StatsType} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from "../../data.service";
-import {forkJoin, Observable, Subscription} from "rxjs";
 import {StateService} from "../../state.service";
 
 @Component({
@@ -22,31 +12,29 @@ import {StateService} from "../../state.service";
     styleUrls: ['./summary.component.scss'],
     standalone: false
 })
-export class SummaryComponent implements OnDestroy {
+export class SummaryComponent {
 
-    private subscription: Subscription = new Subscription();
-    currentlySelected = 'users';
-    bignumberData: Array<TopicDefinitionValue> = [];
-    private data!: ISummaryData;
+    currentlySelected = 'contributor';
+    bignumberData: Array<ITopicDefinitionValue> = [];
+    private data!: Record<StatsType, IStatsData>;
     isSummaryLoading: boolean = false;
-    private topicData: { [p: string]: number } | null = null;
+
     state = computed(() => this.stateService.appState());
     private relevantState = computed(() => {
-            return this.state()
-        }, {
-            equal: (a, b) => {
-                return a.hashtag === b.hashtag
-                    && a.start === b.start
-                    && a.end === b.end
-                    && a.countries === b.countries
-                    // && a.interval === b.interval // summary doesnt need to reflect on intervals
-                    && a.topics === b.topics
-            }
-        });
+        return this.state()
+    }, {
+        equal: (a, b) => {
+            return a.hashtag === b.hashtag
+                && a.start === b.start
+                && a.end === b.end
+                && a.countries === b.countries
+                && a.topics === b.topics
+        }
+    });
 
     constructor(
-            private stateService: StateService,
-            private dataService: DataService
+        private stateService: StateService,
+        private dataService: DataService
     ) {
         this.enableTooltips()
         effect(() => {
@@ -54,87 +42,18 @@ export class SummaryComponent implements OnDestroy {
         });
     }
 
-    ngOnDestroy(): void {
-        this.subscription.unsubscribe()
-    }
-
-    requestFromAPI(queryParams: IQueryParam) {
+    requestFromAPI(queryParams: IQueryParams) {
         this.isSummaryLoading = true
-        if (queryParams['topics']) {
-            // if topics are requested then wait for both the observable
-            forkJoin({
-                summary: this.dataService.requestSummary(queryParams) as Observable<IWrappedSummaryData>,
-                topic: this.dataService.requestTopic(queryParams) as Observable<IWrappedTopicData>
-            }).subscribe({
-                next: (responses) => {
-                    // Handle summary response
-                    const tempSummaryData = responses.summary.result;
+        this.dataService.requestSummary(queryParams).subscribe({
+            next: (data) => {
+                this.data = data.result.topics
 
-                    this.data = {
-                        changesets: tempSummaryData.changesets,
-                        buildings: tempSummaryData.buildings,
-                        users: tempSummaryData.users,
-                        edits: tempSummaryData.edits,
-                        roads: tempSummaryData.roads,
-                        latest: tempSummaryData.latest,
-                        hashtag: queryParams.hashtag,
-                        startDate: queryParams.start,
-                        endDate: queryParams.end
-                    };
-
-                    if (queryParams.countries !== '') {
-                        this.data['countries'] = queryParams.countries;
-                    }
-
-                    // Handle topic response
-                    const input: { [key: string]: TopicValues } = responses.topic.result;
-                    const topicValue: { [key: string]: number } = {};
-
-                    for (const key in input) {
-                        if (Object.prototype.hasOwnProperty.call(input, key)) {
-                            topicValue[key] = input[key].value;
-                        }
-                    }
-
-                    this.topicData = { ...topicValue }
-
-                    this.updateBigNumber();
-                },
-                error: (err) => {
-                    console.error('Error while requesting data: ', err)
-                }
-            });
-        } else {
-            // Only summary request needed
-            this.dataService.requestSummary(queryParams).subscribe({
-                next: (res: IWrappedSummaryData) => {
-                    const tempSummaryData = res.result;
-
-                    this.data = {
-                        changesets: tempSummaryData.changesets,
-                        buildings: tempSummaryData.buildings,
-                        users: tempSummaryData.users,
-                        edits: tempSummaryData.edits,
-                        roads: tempSummaryData.roads,
-                        latest: tempSummaryData.latest,
-                        hashtag: queryParams.hashtag,
-                        startDate: queryParams.start,
-                        endDate: queryParams.end
-                    };
-
-                    if (queryParams.countries !== '') {
-                        this.data['countries'] = queryParams.countries;
-                    }
-
-                    this.topicData = null;
-
-                    this.updateBigNumber()
-                },
-                error: (err) => {
-                    console.error('Error while requesting Summary data ', err)
-                }
-            });
-        }
+                this.updateBigNumber();
+            },
+            error: (err) => {
+                console.error('Error while requesting data: ', err)
+            }
+        })
     }
 
     updateBigNumber(): void {
@@ -142,77 +61,20 @@ export class SummaryComponent implements OnDestroy {
             return
 
         if (!Object.keys(this.data).includes(this.currentlySelected)) {
-            document.getElementById("users")?.click()
+            document.getElementById("contributor")?.click()
         }
 
-        // append this.topicData to this.data
-        if(this.topicData)
-            this.data = {...this.data, ...this.topicData}
-        else
-            this.data = {...this.data}
-
-        // remove the loading mask
-        this.isSummaryLoading = false;
         this.bignumberData = []
-        for (const summaryEntry of Object.entries(this.data)) {
-            if (['latest', 'hashtag', 'changesets', 'countries', 'startDate', 'endDate'].includes(summaryEntry[0]))
-                continue;
 
-            // merge the 'value' with other static data from topicDefinitions
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const id = topicDefinitions[summaryEntry[0]].id
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const tooltip = topicDefinitions[summaryEntry[0]].tooltip
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const icon = topicDefinitions[summaryEntry[0]].icon
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const hex = topicDefinitions[summaryEntry[0]]['color-hex']
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const light = topicDefinitions[summaryEntry[0]]['color-light']
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const yTitle = topicDefinitions[summaryEntry[0]]['y-title']
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const name = topicDefinitions[summaryEntry[0]].name
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            this.bignumberData.push({
-                id: id,
-                name: name,
-                value: this.formatNumbertoNumberformatString(summaryEntry[1]),
-                tooltip: tooltip,
-                icon: icon,
-                "color-hex": hex,
-                "color-light": light,
-                "y-title": yTitle,
-            })
+        for (let [key, value] of Object.entries(this.data)) {
+            this.bignumberData.push({...value, ...topicDefinitions[key as StatsType]})
         }
+        // swap edits and contributors, so contributors is first big number
+        this.bignumberData.unshift(this.bignumberData.splice(1, 1)[0])
 
-        // always have "Contributors" as the first object in the array
-        this.bignumberData = this.bignumberData.sort((a, b) => {
-            if (a.name === "Contributors" || a.name === "Total Edits") {
-                return -1;
-            } else if (b.name === "Contributors"  || b.name === "Total Edits") {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-
+        this.isSummaryLoading = false;
     }
 
-    formatNumbertoNumberformatString(value: number): string {
-        return new Intl.NumberFormat('en-US', {
-                maximumFractionDigits: 0
-            }
-        ).format(value)
-    }
 
     changeSelectedBigNumber(e: MouseEvent, newCurrentStats: string) {
         this.currentlySelected = newCurrentStats
@@ -226,12 +88,7 @@ export class SummaryComponent implements OnDestroy {
      * Boostrap need to enable tooltip on every element with its attribute
      */
     enableTooltips(): void {
-        // enble tooltip
         const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        // console.log('tooltipTriggerList =', tooltipTriggerList)
         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
     }
-
-
-
 }

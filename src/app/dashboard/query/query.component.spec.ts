@@ -9,7 +9,7 @@ import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from '@angular/router';
 import {NO_ERRORS_SCHEMA, signal} from '@angular/core';
 import dayjs from 'dayjs';
-import {IHashtags, IQueryParam} from '../types';
+import {IHashtags, IStateParams} from '../types';
 import {AutoCompleteCompleteEvent} from 'primeng/autocomplete';
 
 describe('QueryComponent', () => {
@@ -33,14 +33,14 @@ describe('QueryComponent', () => {
         {hashtag: 'hotosm-project-456', count: 75}
     ];
 
-    const mockAppState: IQueryParam = {
+    const mockAppState: IStateParams = {
         countries: 'USA,CAN',
         hashtag: 'missingmaps',
         start: '2024-01-01T00:00:00Z',
         end: '2024-12-31T23:59:59Z',
         interval: 'P1M',
-        topics: 'roads,buildings',
-        active_topic: 'roads'
+        topics: 'road,building',
+        active_topic: 'road'
     };
 
     beforeEach(async () => {
@@ -429,16 +429,6 @@ describe('QueryComponent', () => {
             expect(result).toBe(false);
         });
 
-        // it('should disallow small intervals for large date ranges', () => {
-        //     component.selectedDateRangeUTC = {
-        //         start: dayjs('2023-01-01'),
-        //         end: dayjs('2024-01-01') // More than 366 days
-        //     };
-        //
-        //     const result = component.allowedInterval('PT1H');
-        //     expect(result).toBe(true);
-        // });
-
         it('should return true when selectedDateRangeUTC is undefined', () => {
             component.selectedDateRangeUTC = undefined;
 
@@ -508,7 +498,6 @@ describe('QueryComponent', () => {
         it('should toggle live mode on', fakeAsync(() => {
             spyOn(component, 'getStatistics');
             spyOn(window, 'setInterval').and.returnValue(123 as any);
-            // spyOn(component, 'updateLiveTooltip');
 
             component.toggleLiveMode();
 
@@ -516,7 +505,6 @@ describe('QueryComponent', () => {
             expect(component.getStatistics).toHaveBeenCalled();
             expect(mockDataService.toggleLiveMode).toHaveBeenCalledWith(true);
             expect(component.refreshIntervalId).toBe(123);
-            // expect(component.updateLiveTooltip).toHaveBeenCalledWith('Stop Live');
         }));
 
         it('should toggle live mode off', () => {
@@ -532,15 +520,12 @@ describe('QueryComponent', () => {
             component.liveMode = true;
             component.refreshIntervalId = 123;
             spyOn(window, 'clearInterval');
-            // spyOn(component, 'updateLiveTooltip');
 
             component.turnOffLiveMode();
 
             expect(component.liveMode).toBe(false);
             expect(mockDataService.toggleLiveMode).toHaveBeenCalledWith(false);
-            // expect(component.updateLiveTooltip).toHaveBeenCalledWith('Query Live');
             expect(clearInterval).toHaveBeenCalledWith(123);
-            // expect(component.refreshIntervalId).toBe(null);
         });
     });
 
@@ -573,14 +558,14 @@ describe('QueryComponent', () => {
 
     describe('State Updates', () => {
         it('should update form from state correctly', () => {
-            const inputData: IQueryParam = {
+            const inputData: IStateParams = {
                 start: '2024-01-01T00:00:00Z',
                 end: '2024-12-31T23:59:59Z',
                 hashtag: 'test%20hashtag',
                 interval: 'P1W',
                 countries: 'USA,CAN',
                 topics: 'roads,buildings',
-                active_topic: 'roads'
+                active_topic: 'road'
             };
 
             component.dropdownOptions = [

@@ -1,5 +1,5 @@
 import {effect, Injectable, signal} from '@angular/core';
-import {IQueryParam, StatsType} from "./dashboard/types";
+import {IStateParams, StatsType} from "./dashboard/types";
 import {BehaviorSubject} from "rxjs";
 import {environment} from "../environments/environment";
 import dayjs from "dayjs";
@@ -15,10 +15,10 @@ export class StateService {
     // Initial default state
     private initialState = this.initInitialState()
     // Private BehaviorSubject to hold the current state
-    public queryParamSubject: BehaviorSubject<IQueryParam> = new BehaviorSubject<IQueryParam>(this.initialState);
+    public queryParamSubject: BehaviorSubject<IStateParams> = new BehaviorSubject<IStateParams>(this.initialState);
 
     // Private signal to hold the current state
-    private _appState = signal<IQueryParam>(
+    private _appState = signal<IStateParams>(
         this.initialState
     );
 
@@ -41,14 +41,14 @@ export class StateService {
     /**
      * Update the entire state
      */
-    updateState(newState: IQueryParam): void {
-        this._appState.set({ ...newState });
+    updateState(newState: IStateParams): void {
+        this._appState.set({...newState});
     }
 
     /**
      * Update partial state (merge with current state)
      */
-    updatePartialState(partialState: Partial<IQueryParam>): void {
+    updatePartialState(partialState: Partial<IStateParams>): void {
         this._appState.update(currentState => ({
             ...currentState,
             ...partialState
@@ -58,12 +58,12 @@ export class StateService {
     /**
      * Get the current state value synchronously
      */
-    getCurrentState(): IQueryParam {
+    getCurrentState(): IStateParams {
         return this.queryParamSubject.value;
     }
 
     setInterval(interval: string): void {
-        this.updatePartialState({ interval });
+        this.updatePartialState({interval});
     }
 
     /**
@@ -73,7 +73,7 @@ export class StateService {
         this.queryParamSubject.next(this.initialState);
     }
 
-    private updateURL(data: IQueryParam): void {
+    private updateURL(data: IStateParams): void {
         let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&active_topic=${data.active_topic}&countries=${data.countries}&topics=${data.topics}`
         if (data.fit_to_content !== undefined) {
             fragment += "&fit_to_content="
@@ -87,12 +87,12 @@ export class StateService {
      * Initialize the initialState, either we get values from URL or we set it to default values
      *
      * @private
-     * @return IQueryParam
+     * @return IStateParams
      */
-    private initInitialState(): IQueryParam {
-        let tempInitialState: IQueryParam
+    private initInitialState(): IStateParams {
+        let tempInitialState: IStateParams
         const queryParams = this.getQueryParamsFromFragments()
-        if(queryParams == null) {
+        if (queryParams == null) {
             tempInitialState = {
                 hashtag: '',
                 start: new Date().toISOString().split('.')[0] + 'Z', // Current date with 0 milliseconds
@@ -101,7 +101,7 @@ export class StateService {
                 countries: '',
                 topics: '',
                 fit_to_content: undefined,
-                active_topic: 'users'
+                active_topic: 'contributor'
             };
             const {max_timestamp} = this.dataService.metaData()
             tempInitialState.start = dayjs.utc(max_timestamp)
@@ -131,18 +131,9 @@ export class StateService {
      * @returns URLSearchParams object with all query params, or null if no fragment exists
      */
     getQueryParamsFromFragments(): URLSearchParams | null {
-        // Check if fragment exists and has content
         if (this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 1) {
             return null;
         }
-
-        // Create URLSearchParams from the fragment
-        const searchParams = new URLSearchParams(this.route.snapshot.fragment);
-        // Optional: Log all parameters for debugging
-        // searchParams.forEach((value, key) => {
-        //     console.log(`${key}: ${value}`);
-        // });
-
-        return searchParams;
+        return new URLSearchParams(this.route.snapshot.fragment);
     }
 }
