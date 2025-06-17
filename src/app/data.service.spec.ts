@@ -1,705 +1,467 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import {TestBed} from '@angular/core/testing';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {ActivatedRoute} from '@angular/router';
 
-import { DataService } from './data.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
-import { BigNumberComponent } from './dashboard/summary/big-number/big-number.component';
+import {DataService} from './data.service';
+import {environment} from '../environments/environment';
+import {
+    IHashtag,
+    IMetaData,
+    IMetadataResponse,
+    ISummaryData,
+    ITrendingHashtagResponse,
+    IWrappedCountryStatsData,
+    IWrappedPlotData,
+    IWrappedSummaryData,
+    IWrappedTopicCountryData,
+    IWrappedTopicData,
+    IWrappedTopicPlotData,
+    TopicResponse
+} from './dashboard/types';
 
 describe('DataService', () => {
-  let httpClientSpy: jasmine.SpyObj<HttpClient>;
-//   let activatedRouteSpy : jasmine.SpyObj<ActivatedRoute>;
-//   let routerSpy : jasmine.SpyObj<Router>;
-  let service: DataService;
-  let httpTestingController: HttpTestingController;
+    let service: DataService;
+    let httpMock: HttpTestingController;
+    let mockActivatedRoute: jasmine.SpyObj<ActivatedRoute>;
 
-
-  const summaryResponse = { 
-    result: {
-        changesets: 248932,
-        users: 12529,
-        roads: 34908.842,
-        buildings: 3555884,
-        edits: 6041567,
-        latest: "2023-08-15T23:45:06Z"
-    }}
-  const plotResponse = { 
-    "result": {
-        "changesets": [
-            7981,
-            19511,
-            17696,
-            28455,
-            20493,
-            16331,
-            28725,
-            32751,
-            19542,
-            21531,
-            17877,
-            12061,
-            6140
-        ],
-        "users": [
-            348,
-            926,
-            944,
-            1746,
-            1050,
-            1028,
-            2388,
-            2766,
-            1700,
-            1422,
-            1209,
-            795,
-            366
-        ],
-        "roads": [
-            1806.682,
-            4703.66,
-            5762.056,
-            7137.748,
-            5186.577,
-            2490.931,
-            3557.867,
-            3840.707,
-            1209.167,
-            6250.944,
-            1148.684,
-            1850.827,
-            350.268
-        ],
-        "buildings": [
-            91974,
-            318981,
-            299781,
-            332963,
-            245761,
-            270123,
-            436225,
-            476306,
-            283482,
-            368828,
-            176580,
-            179328,
-            105144
-        ],
-        "edits": [
-            171449,
-            515592,
-            534133,
-            635019,
-            410787,
-            433573,
-            687302,
-            798496,
-            463884,
-            570754,
-            343400,
-            308874,
-            170214
-        ],
-        "startDate": [
-            "2022-08-01T00:00:00",
-            "2022-09-01T00:00:00",
-            "2022-10-01T00:00:00",
-            "2022-11-01T00:00:00",
-            "2022-12-01T00:00:00",
-            "2023-01-01T00:00:00",
-            "2023-02-01T00:00:00",
-            "2023-03-01T00:00:00",
-            "2023-04-01T00:00:00",
-            "2023-05-01T00:00:00",
-            "2023-06-01T00:00:00",
-            "2023-07-01T00:00:00",
-            "2023-08-01T00:00:00"
-        ],
-        "endDate": [
-            "2022-09-01T00:00:00",
-            "2022-10-01T00:00:00",
-            "2022-11-01T00:00:00",
-            "2022-12-01T00:00:00",
-            "2023-01-01T00:00:00",
-            "2023-02-01T00:00:00",
-            "2023-03-01T00:00:00",
-            "2023-04-01T00:00:00",
-            "2023-05-01T00:00:00",
-            "2023-06-01T00:00:00",
-            "2023-07-01T00:00:00",
-            "2023-08-01T00:00:00",
-            "2023-09-01T00:00:00"
-        ]
-    }
-  }
-
-  const trendingHashtagsResponse = { result: [
-    {
-        "hashtag": "missingmaps",
-        "number_of_users": 12506
-    },
-    {
-        "hashtag": "opencitieslac",
-        "number_of_users": 11707
-    },
-    {
-        "hashtag": "türkiyeeq060223",
-        "number_of_users": 9231
-    },
-    {
-        "hashtag": "msf",
-        "number_of_users": 5670
-    },
-    {
-        "hashtag": "yercizenler",
-        "number_of_users": 5371
-    },
-    {
-        "hashtag": "omhap",
-        "number_of_users": 4975
-    },
-    {
-        "hashtag": "turkiye",
-        "number_of_users": 4802
-    },
-    {
-        "hashtag": "turkey",
-        "number_of_users": 4802
-    },
-    {
-        "hashtag": "syria",
-        "number_of_users": 4519
-    },
-    {
-        "hashtag": "youthmappers",
-        "number_of_users": 3589
-    }
-  ] }
-  const statsByCountryResponse = {
-    result: [
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 6,
-        "edits": 51,
-        "latest": "2023-03-28T10:54:23Z",
-        "country": "COD"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 139,
-        "edits": 142,
-        "latest": "2023-03-15T13:58:33Z",
-        "country": "HUN"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 1,
-        "edits": 1,
-        "latest": "2023-03-01T13:27:58Z",
-        "country": "TUN"
-    },
-    {
-        "changesets": 19,
-        "users": 19,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 19,
-        "latest": "2023-03-01T14:43:13Z",
-        "country": "ISR"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 2,
-        "latest": "2023-02-23T15:44:18Z",
-        "country": "SVK"
-    },
-    {
-        "changesets": 3,
-        "users": 2,
-        "roads": -0.276,
-        "buildings": 0,
-        "edits": 12,
-        "latest": "2023-02-25T23:26:35Z",
-        "country": "TGO"
-    },
-    {
-        "changesets": 20,
-        "users": 20,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 64,
-        "latest": "2023-03-01T14:43:13Z",
-        "country": "IRQ"
-    },
-    {
-        "changesets": 19,
-        "users": 19,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 33,
-        "latest": "2023-03-01T14:43:13Z",
-        "country": "GRC"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 2,
-        "latest": "2023-02-26T20:59:17Z",
-        "country": "SWE"
-    },
-    {
-        "changesets": 1071,
-        "users": 332,
-        "roads": 359.686,
-        "buildings": 6308,
-        "edits": 17169,
-        "latest": "2023-06-27T11:48:02Z",
-        "country": "TUR"
-    },
-    {
-        "changesets": 2,
-        "users": 2,
-        "roads": 7.262,
-        "buildings": 94,
-        "edits": 100,
-        "latest": "2023-03-29T17:27:46Z",
-        "country": "IND"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 2,
-        "latest": "2023-02-20T06:33:38Z",
-        "country": "IDN"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 9,
-        "edits": 10,
-        "latest": "2023-03-30T09:36:59Z",
-        "country": "PHL"
-    },
-    {
-        "changesets": 27,
-        "users": 23,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 27,
-        "latest": "2023-03-13T19:07:25Z",
-        "country": "LBN"
-    },
-    {
-        "changesets": 19,
-        "users": 19,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 19,
-        "latest": "2023-03-01T14:43:13Z",
-        "country": "JOR"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 11,
-        "edits": 11,
-        "latest": "2023-02-27T14:47:04Z",
-        "country": "BGD"
-    },
-    {
-        "changesets": 41,
-        "users": 2,
-        "roads": -0.545,
-        "buildings": 34,
-        "edits": 254,
-        "latest": "2023-03-14T14:24:47Z",
-        "country": "TLS"
-    },
-    {
-        "changesets": 2,
-        "users": 2,
-        "roads": 0.0,
-        "buildings": 2,
-        "edits": 2,
-        "latest": "2023-03-04T02:04:42Z",
-        "country": "PAK"
-    },
-    {
-        "changesets": 6,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 303,
-        "edits": 390,
-        "latest": "2023-03-18T16:25:57Z",
-        "country": "MWI"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 1,
-        "edits": 1,
-        "latest": "2023-02-13T12:29:45Z",
-        "country": "TZA"
-    },
-    {
-        "changesets": 19,
-        "users": 19,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 38,
-        "latest": "2023-03-01T14:43:13Z",
-        "country": "GEO"
-    },
-    {
-        "changesets": 2,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 2,
-        "edits": 5,
-        "latest": "2023-04-28T10:26:05Z",
-        "country": "ZMB"
-    },
-    {
-        "changesets": 2,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 7,
-        "edits": 7,
-        "latest": "2023-02-17T09:17:09Z",
-        "country": "SAU"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 2,
-        "edits": 2,
-        "latest": "2023-07-15T01:36:28Z",
-        "country": "ECU"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 9,
-        "latest": "2023-02-11T21:13:25Z",
-        "country": "GHA"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 2,
-        "latest": "2023-02-10T02:31:44Z",
-        "country": "MYS"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 42,
-        "latest": "2023-03-15T13:56:44Z",
-        "country": "AUS"
-    },
-    {
-        "changesets": 19,
-        "users": 19,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 38,
-        "latest": "2023-03-01T14:43:13Z",
-        "country": "IRN"
-    },
-    {
-        "changesets": 19,
-        "users": 19,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 38,
-        "latest": "2023-03-01T14:43:13Z",
-        "country": "ARM"
-    },
-    {
-        "changesets": 2,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 4,
-        "edits": 9,
-        "latest": "2023-03-03T13:20:54Z",
-        "country": "UGA"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 1,
-        "edits": 1,
-        "latest": "2023-02-24T11:18:40Z",
-        "country": "SEN"
-    },
-    {
-        "changesets": 2,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 355,
-        "edits": 355,
-        "latest": "2023-02-11T15:36:33Z",
-        "country": "ZWE"
-    },
-    {
-        "changesets": 5,
-        "users": 4,
-        "roads": 0.001,
-        "buildings": 196,
-        "edits": 214,
-        "latest": "2023-03-15T13:58:33Z",
-        "country": "GBR"
-    },
-    {
-        "changesets": 17,
-        "users": 3,
-        "roads": 8.148,
-        "buildings": 4005,
-        "edits": 4200,
-        "latest": "2023-04-07T14:56:18Z",
-        "country": "NGA"
-    },
-    {
-        "changesets": 5,
-        "users": 3,
-        "roads": 0.017,
-        "buildings": 56,
-        "edits": 60,
-        "latest": "2023-03-11T18:56:38Z",
-        "country": "LBY"
-    },
-    {
-        "changesets": 47055,
-        "users": 4501,
-        "roads": 15124.886,
-        "buildings": 687311,
-        "edits": 1168207,
-        "latest": "2023-08-04T11:18Z",
-        "country": "SYR"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 1,
-        "latest": "2023-02-10T12:23:54Z",
-        "country": "NER"
-    },
-    {
-        "changesets": 2,
-        "users": 2,
-        "roads": 0.169,
-        "buildings": 0,
-        "edits": 5,
-        "latest": "2023-03-13T16:54:11Z",
-        "country": "USA"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 1,
-        "edits": 1,
-        "latest": "2023-02-10T14:23:08Z",
-        "country": "NLD"
-    },
-    {
-        "changesets": 2,
-        "users": 2,
-        "roads": 0.071,
-        "buildings": 1,
-        "edits": 19,
-        "latest": "2023-02-19T17:00Z",
-        "country": "FRA"
-    },
-    {
-        "changesets": 1,
-        "users": 1,
-        "roads": 0.0,
-        "buildings": 130,
-        "edits": 137,
-        "latest": "2023-02-13T15:02:03Z",
-        "country": "UKR"
-    },
-    {
-        "changesets": 13,
-        "users": 2,
-        "roads": -0.002,
-        "buildings": 487,
-        "edits": 514,
-        "latest": "2023-02-23T16:28:50Z",
-        "country": "NPL"
-    },
-    {
-        "changesets": 19,
-        "users": 19,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 19,
-        "latest": "2023-03-01T14:43:13Z",
-        "country": "BGR"
-    },
-    {
-        "changesets": 19,
-        "users": 19,
-        "roads": 0.0,
-        "buildings": 0,
-        "edits": 38,
-        "latest": "2023-03-01T14:43:13Z",
-        "country": "AZE"
-    }
-  ],
-  query: {
-    "timespan": {
-        "startDate": "2022-08-16T00:52:40.000Z",
-        "endDate": "2023-08-16T00:52:40.000Z"
-    },
-    "hashtag": "syria"
-  }}
-
-  beforeEach(() => {
-    httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    TestBed.configureTestingModule({
-    declarations: [BigNumberComponent],
-    imports: [],
-    providers: [
-        DataService,
-        { provide: ActivatedRoute, useValue: { fragment: of('hashtag=missingmaps&interval=P1M') } },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-    ]
-});
-    service = TestBed.inject(DataService)
-    httpTestingController = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpTestingController.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should fetch summary data', (done: DoneFn) => {
-    const queryParams = {
-      start: '2022-08-16T00:52:40.000Z',
-      end: '2023-08-16T00:52:40.000Z',
-      hashtag: 'missingmaps',
-      countries: ''
-    };
-  
-    service.requestSummary( queryParams ).subscribe({
-      next: res => { 
-        console.log('>>> should fetch plot data >>> ', queryParams, res)
-        expect(res).toEqual(summaryResponse); 
-        done()
-      },
-      error: done.fail
-    });  
-
-    const req = httpTestingController.expectOne(
-        `${service.url}/stats?hashtag=${queryParams['hashtag']}&startdate=${queryParams['start']}&enddate=${queryParams['end']}&countries=`
-    );
-    expect(req.request.method).toBe('GET');
-    req.flush(summaryResponse);
-  });
-
-  it('should fetch plot data', (done: DoneFn) => {
-    const queryParams = {
-      start: "2022-08-16T00:52:40.000Z",
-      end: "2023-08-16T00:52:40.000Z",
-      interval: "P1M",
-      hashtag: 'missingmaps',
-      countries: ''
-    };
-  
-    service.requestPlot( queryParams ).subscribe({
-      next: result => { 
-        expect(result).toEqual(plotResponse); 
-        done()
-      },
-      error: done.fail
-    });  
-    
-    const req = httpTestingController.expectOne(
-        `${service.url}/stats/interval?hashtag=${queryParams['hashtag']}&startdate=${queryParams['start']}&enddate=${queryParams['end']}&interval=${queryParams['interval']}&countries=`
-    );
-    expect(req.request.method).toBe('GET');
-    req.flush(plotResponse);
-  });
-
-  it('should fetch trending hashtags ', (done: DoneFn) => {
-    const queryParams = {
-      start: '2022-08-16T00:52:40.000Z',
-      end: '2023-08-16T00:52:40.000Z',
-      limit: 10,
-      countries: ''
-    };
-  
-    service.getTrendingHashtags( queryParams ).subscribe({
-      next: result => { 
-        expect(result).toEqual(trendingHashtagsResponse); 
-        done()
-      },
-      error: done.fail
-    });  
-    
-    const req = httpTestingController.expectOne(
-        `${service.url}/most-used-hashtags?startdate=${queryParams['start']}&enddate=${queryParams['end']}&limit=${queryParams['limit']}&countries=${queryParams['countries']}`
-      );
-      expect(req.request.method).toBe('GET');
-      req.flush(trendingHashtagsResponse);
-  });
-
-  it('should fetch stats by country ', (done: DoneFn) => {
-    const queryParams = {
-      start: '2022-08-16T00:52:40.000Z',
-      end: '2023-08-16T00:52:40.000Z',
-      hashtag: 'syria'
+    const mockUrl = 'https://int-stats.now.ohsome.org/api';
+    const mockMetaData: IMetaData = {
+        min_timestamp: '2023-01-01T00:00:00.000Z',
+        max_timestamp: '2023-12-31T23:59:59.000Z'
     };
 
-    service.requestCountryStats( queryParams ).subscribe({
-      next: result => { 
-        expect(result)
-          .withContext('expected stats grouped by countries')
-          .toEqual(statsByCountryResponse); 
-        done()
-      },
-      error: done.fail
-    });  
+    const mockMetadataResponse: IMetadataResponse = {
+        result: mockMetaData,
+        attribution: { url: 'test' },
+        query: { timespan: { startDate: '2023-01-01', endDate: '2023-12-31' }, hashtag: 'test' },
+        metadata: { executionTime: 100, requestUrl: 'test' }
+    };
 
-    const req = httpTestingController.expectOne(
-        `${service.url}/stats/country?hashtag=${queryParams['hashtag']}&startdate=${queryParams['start']}&enddate=${queryParams['end']}`
-    );
-    expect(req.request.method).toBe('GET');
-    req.flush(statsByCountryResponse);
-}); 
+    const mockSummaryData: ISummaryData = {
+        users: 100,
+        edits: 500,
+        buildings: 200,
+        roads: 150,
+        changesets: 50,
+        latest: '2023-01-01T00:00:00.000Z',
+        hashtag: 'test',
+        countries: 'US',
+        startDate: '2023-01-01',
+        endDate: '2023-01-31'
+    };
 
+    const mockWrappedSummaryData: IWrappedSummaryData = {
+        result: mockSummaryData
+    };
+
+    const mockTopicResponse: TopicResponse = {
+        amenity: { hashtag: 'test', topic: 'amenity', value: 10 },
+        body_of_water: { hashtag: 'test', topic: 'body_of_water', value: 20 },
+        commercial: { hashtag: 'test', topic: 'commercial', value: 30 },
+        education: { hashtag: 'test', topic: 'education', value: 40 },
+        financial: { hashtag: 'test', topic: 'financial', value: 50 },
+        healthcare: { hashtag: 'test', topic: 'healthcare', value: 60 },
+        lulc: { hashtag: 'test', topic: 'lulc', value: 70 },
+        place: { hashtag: 'test', topic: 'place', value: 80 },
+        poi: { hashtag: 'test', topic: 'poi', value: 90 },
+        social_facility: { hashtag: 'test', topic: 'social_facility', value: 100 },
+        wash: { hashtag: 'test', topic: 'wash', value: 110 },
+        waterway: { hashtag: 'test', topic: 'waterway', value: 120 }
+    };
+
+    const mockWrappedTopicData: IWrappedTopicData = {
+        result: mockTopicResponse
+    };
+
+    const mockQueryParams = {
+        hashtag: 'test',
+        start: '2023-01-01',
+        end: '2023-01-31',
+        countries: 'US',
+        interval: 'P1M',
+        topics: 'amenity,buildings'
+    };
+
+    beforeEach(() => {
+        const activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', [], {
+            snapshot: {
+                fragment: 'hashtag=test&start=2023-01-01T00:00:00Z&end=2023-01-31T00:00:00Z'
+            }
+        });
+
+        // Mock environment
+        // spyOnProperty(environment, 'ohsomeStatsServiceUrl', 'get').and.returnValue(mockUrl); // OLD INCORRECT WAY
+        environment.ohsomeStatsServiceUrl = mockUrl; // Correct way to mock a simple variable
+
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+            providers: [
+                DataService,
+                { provide: ActivatedRoute, useValue: activatedRouteSpy }
+            ]
+        });
+
+        service = TestBed.inject(DataService);
+        httpMock = TestBed.inject(HttpTestingController);
+        mockActivatedRoute = TestBed.inject(ActivatedRoute) as jasmine.SpyObj<ActivatedRoute>;
+    });
+
+    afterEach(() => {
+        httpMock.verify();
+    });
+
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
+
+    it('should initialize with default values', () => {
+        expect(service.url).toBe(mockUrl);
+        expect(service.trendingHashtagLimit).toBe(10);
+        expect(service.defaultIntervalValue).toBe('P1M');
+        expect(service.timeIntervals).toEqual([
+            {label: 'five minutes', value: 'PT5M'},
+            {label: 'hourly', value: 'PT1H'},
+            {label: 'daily', value: 'P1D'},
+            {label: 'weekly', value: 'P1W'},
+            {label: 'monthly', value: 'P1M'},
+            {label: 'quarterly', value: 'P3M'},
+            {label: 'yearly', value: 'P1Y'},
+        ]);
+    });
+
+    describe('requestMetadata', () => {
+        it('should fetch metadata and update signal', () => {
+            service.requestMetadata().subscribe(metadata => {
+                expect(metadata).toEqual(mockMetaData);
+                expect(service.metaData()).toEqual(mockMetaData);
+            });
+
+            const req = httpMock.expectOne(`${mockUrl}/metadata`);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockMetadataResponse);
+        });
+
+        it('should handle client-side errors', () => {
+            spyOn(console, 'error');
+
+            service.requestMetadata().subscribe({
+                next: () => fail('should have failed'),
+                error: (error) => {
+                    expect(error.message).toBe('ohsomeNow Stats Service did not respond with a metadata response.');
+                    expect(console.error).toHaveBeenCalledWith('An error occurred:', jasmine.any(Object));
+                }
+            });
+
+            const req = httpMock.expectOne(`${mockUrl}/metadata`);
+            req.error(new ProgressEvent('error'), { status: 0 });
+        });
+
+        it('should handle server errors', () => {
+            spyOn(console, 'error');
+
+            service.requestMetadata().subscribe({
+                next: () => fail('should have failed'),
+                error: (error) => {
+                    expect(error.message).toBe('ohsomeNow Stats Service did not respond with a metadata response.');
+                    expect(console.error).toHaveBeenCalledWith(
+                        'Backend returned code 500, body was: ',
+                        'Server Error'
+                    );
+                }
+            });
+
+            const req = httpMock.expectOne(`${mockUrl}/metadata`);
+            req.error(new ProgressEvent('error'), { status: 500, statusText: 'Server Error' });
+        });
+    });
+
+    describe('requestAllHashtags', () => {
+        it('should fetch all hashtags', () => {
+            const mockHashtags = [{ hashtag: 'test1' }, { hashtag: 'test2' }];
+            const mockResponse = { result: mockHashtags };
+
+            service.requestAllHashtags().subscribe(hashtags => {
+                expect(hashtags).toEqual(mockHashtags);
+            });
+
+            const req = httpMock.expectOne(`${mockUrl}/hashtags`);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockResponse);
+        });
+    });
+
+    describe('getQueryParamsFromFragments', () => {
+        it('should parse query params from URL fragment', () => {
+            const result = service.getQueryParamsFromFragments();
+            expect(result).toEqual({
+                hashtag: 'test',
+                start: '2023-01-01T00:00:00Z',
+                end: '2023-01-31T00:00:00Z'
+            });
+        });
+
+        it('should return null for empty fragment', () => {
+            mockActivatedRoute.snapshot.fragment = null;
+            const result = service.getQueryParamsFromFragments();
+            expect(result).toBeNull();
+        });
+
+        it('should return null for short fragment', () => {
+            mockActivatedRoute.snapshot.fragment = 'a';
+            const result = service.getQueryParamsFromFragments();
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('requestSummary', () => {
+        it('should fetch summary data', () => {
+            service.requestSummary(mockQueryParams).subscribe(data => {
+                expect(data).toEqual(mockWrappedSummaryData);
+            });
+
+            const expectedUrl = `${mockUrl}/stats?hashtag=${mockQueryParams.hashtag}&startdate=${mockQueryParams.start}&enddate=${mockQueryParams.end}&countries=${mockQueryParams.countries}`;
+            const req = httpMock.expectOne(expectedUrl);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockWrappedSummaryData);
+        });
+
+        // it('should be cancellable via abort subject', () => {
+        //     const subscription = service.requestSummary(mockQueryParams).subscribe();
+        //
+        //     service.abortSummaryReqSub.next();
+        //
+        //     expect(subscription.closed).toBe(true);
+        // });
+    });
+
+    describe('requestTopic', () => {
+        it('should fetch topic data', () => {
+            service.requestTopic(mockQueryParams).subscribe(data => {
+                expect(data).toEqual(mockWrappedTopicData);
+            });
+
+            const expectedUrl = `${mockUrl}/topic/${mockQueryParams.topics}?hashtag=${mockQueryParams.hashtag}&startdate=${mockQueryParams.start}&enddate=${mockQueryParams.end}&countries=${mockQueryParams.countries}`;
+            const req = httpMock.expectOne(expectedUrl);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockWrappedTopicData);
+        });
+    });
+
+    describe('requestTopicInterval', () => {
+        it('should fetch topic interval data', () => {
+            const mockTopicPlotData: IWrappedTopicPlotData = {
+                result: {
+                    amenity: {
+                        value: [10, 20, 30],
+                        topic: 'amenity',
+                        startDate: ['2023-01-01', '2023-01-02', '2023-01-03'],
+                        endDate: ['2023-01-01', '2023-01-02', '2023-01-03']
+                    }
+                }
+            };
+
+            service.requestTopicInterval(mockQueryParams).subscribe(data => {
+                expect(data).toEqual(mockTopicPlotData);
+            });
+
+            const expectedUrl = `${mockUrl}/topic/${mockQueryParams.topics}/interval?hashtag=${mockQueryParams.hashtag}&startdate=${mockQueryParams.start}&enddate=${mockQueryParams.end}&countries=${mockQueryParams.countries}&interval=${mockQueryParams.interval}`;
+            const req = httpMock.expectOne(expectedUrl);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockTopicPlotData);
+        });
+    });
+
+    describe('requestTopicCountryStats', () => {
+        it('should fetch topic country stats', () => {
+            const mockTopicCountryData: IWrappedTopicCountryData = {
+                query: { timespan: { startDate: '2023-01-01', endDate: '2023-01-31' }, hashtag: 'test' },
+                result: {
+                    amenity: [{ topic: 'amenity', country: 'US', value: 100 }],
+                    body_of_water: [{ topic: 'body_of_water', country: 'US', value: 200 }],
+                    commercial: [{ topic: 'commercial', country: 'US', value: 300 }],
+                    education: [{ topic: 'education', country: 'US', value: 400 }],
+                    financial: [{ topic: 'financial', country: 'US', value: 500 }],
+                    healthcare: [{ topic: 'healthcare', country: 'US', value: 600 }],
+                    lulc: [{ topic: 'lulc', country: 'US', value: 700 }],
+                    place: [{ topic: 'place', country: 'US', value: 800 }],
+                    poi: [{ topic: 'poi', country: 'US', value: 900 }],
+                    social_facility: [{ topic: 'social_facility', country: 'US', value: 1000 }],
+                    wash: [{ topic: 'wash', country: 'US', value: 1100 }],
+                    waterway: [{ topic: 'waterway', country: 'US', value: 1200 }],
+                    users: [{ topic: 'users', country: 'US', value: 50 }],
+                    edits: [{ topic: 'edits', country: 'US', value: 500 }],
+                    buildings: [{ topic: 'buildings', country: 'US', value: 200 }],
+                    roads: [{ topic: 'roads', country: 'US', value: 150 }]
+                }
+            };
+
+            service.requestTopicCountryStats(mockQueryParams).subscribe(data => {
+                expect(data).toEqual(mockTopicCountryData);
+            });
+
+            const expectedUrl = `${mockUrl}/topic/${mockQueryParams.topics}/country?hashtag=${mockQueryParams.hashtag}&startdate=${mockQueryParams.start}&enddate=${mockQueryParams.end}`;
+            const req = httpMock.expectOne(expectedUrl);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockTopicCountryData);
+        });
+    });
+
+    describe('requestPlot', () => {
+        it('should fetch plot data', () => {
+            const mockPlotData: IWrappedPlotData = {
+                result: {
+                    users: [10, 20, 30],
+                    roads: [100, 200, 300],
+                    buildings: [50, 100, 150],
+                    edits: [500, 1000, 1500],
+                    changesets: [5, 10, 15],
+                    latest: '2023-01-31T00:00:00.000Z',
+                    hashtag: ['test'],
+                    startDate: ['2023-01-01', '2023-01-02', '2023-01-03'],
+                    endDate: ['2023-01-01', '2023-01-02', '2023-01-03'],
+                    countries: ['US']
+                }
+            };
+
+            service.requestPlot(mockQueryParams).subscribe(data => {
+                expect(data).toEqual(mockPlotData);
+            });
+
+            const expectedUrl = `${mockUrl}/stats/interval?hashtag=${mockQueryParams.hashtag}&startdate=${mockQueryParams.start}&enddate=${mockQueryParams.end}&interval=${mockQueryParams.interval}&countries=${mockQueryParams.countries}`;
+            const req = httpMock.expectOne(expectedUrl);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPlotData);
+        });
+    });
+
+    describe('requestCountryStats', () => {
+        it('should fetch country stats', () => {
+            const mockCountryStatsData: IWrappedCountryStatsData = {
+                query: { timespan: { startDate: '2023-01-01', endDate: '2023-01-31' }, hashtag: 'test' },
+                result: [{
+                    users: 100,
+                    roads: 200,
+                    buildings: 150,
+                    edits: 500,
+                    amenity: 10,
+                    body_of_water: 20,
+                    commercial: 30,
+                    education: 40,
+                    financial: 50,
+                    healthcare: 60,
+                    lulc: 70,
+                    place: 80,
+                    poi: 90,
+                    social_facility: 100,
+                    wash: 110,
+                    waterway: 120,
+                    latest: '2023-01-31T00:00:00.000Z',
+                    country: 'US'
+                }]
+            };
+
+            service.requestCountryStats(mockQueryParams).subscribe(data => {
+                expect(data).toEqual(mockCountryStatsData);
+            });
+
+            const expectedUrl = `${mockUrl}/stats/country?hashtag=${mockQueryParams.hashtag}&startdate=${mockQueryParams.start}&enddate=${mockQueryParams.end}`;
+            const req = httpMock.expectOne(expectedUrl);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockCountryStatsData);
+        });
+    });
+
+    describe('getTrendingHashtags', () => {
+        it('should fetch trending hashtags', () => {
+            const mockHashtags: IHashtag[] = [
+                { hashtag: 'trending1', number_of_users: 100 },
+                { hashtag: 'trending2', number_of_users: 200 }
+            ];
+
+            const mockTrendingResponse: ITrendingHashtagResponse = {
+                result: mockHashtags,
+                attribution: { url: 'test' },
+                query: { timespan: { startDate: '2023-01-01', endDate: '2023-01-31' }, hashtag: 'test' },
+                metadata: { executionTime: 100, requestUrl: 'test' }
+            };
+
+            const params = {
+                start: '2023-01-01',
+                end: '2023-01-31',
+                limit: 10,
+                countries: 'US'
+            };
+
+            service.getTrendingHashtags(params).subscribe(hashtags => {
+                expect(hashtags).toEqual(mockHashtags);
+            });
+
+            const expectedUrl = `${mockUrl}/most-used-hashtags?startdate=${params.start}&enddate=${params.end}&limit=${params.limit}&countries=${params.countries}`;
+            const req = httpMock.expectOne(expectedUrl);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockTrendingResponse);
+        });
+
+        // it('should be cancellable via abort subject', () => {
+        //     const params = { start: '2023-01-01', end: '2023-01-31', limit: 10, countries: 'US' };
+        //     const subscription = service.getTrendingHashtags(params).subscribe();
+        //
+        //     service.abortHashtagReqSub.next();
+        //
+        //     expect(subscription.closed).toBe(true);
+        // });
+    });
+
+    describe('abort subjects', () => {
+        it('should create new abort subjects', () => {
+            const initialHashtagSub = service.abortHashtagReqSub;
+            const initialSummarySub = service.abortSummaryReqSub;
+            const initialTopicSub = service.abortTopicReqSub;
+            const initialIntervalSub = service.abortIntervalReqSub;
+
+            service.getAbortHashtagReqSubject();
+            service.getAbortSummaryReqSubject();
+            service.getAbortTopicReqSubject();
+            service.getAbortIntervalReqSubject();
+
+            expect(service.abortHashtagReqSub).not.toBe(initialHashtagSub);
+            expect(service.abortSummaryReqSub).not.toBe(initialSummarySub);
+            expect(service.abortTopicReqSub).not.toBe(initialTopicSub);
+            expect(service.abortIntervalReqSub).not.toBe(initialIntervalSub);
+        });
+    });
+
+    describe('live mode', () => {
+        it('should toggle live mode', () => {
+            let currentMode: boolean | undefined;
+            service.liveMode.subscribe(mode => currentMode = mode);
+
+            expect(currentMode).toBe(false);
+
+            service.toggleLiveMode(true);
+            expect(currentMode).toBe(true);
+
+            service.toggleLiveMode(false);
+            expect(currentMode).toBe(false);
+        });
+    });
+
+    describe('metadata signal', () => {
+        it('should provide readonly access to metadata', () => {
+            const initialMetadata = service.metaData();
+            expect(initialMetadata).toBeDefined();
+
+            // Test that the signal is readonly (should not have set method)
+            expect((service.metaData as any).set).toBeUndefined();
+        });
+
+        it('should update metadata signal when requestMetadata is called', () => {
+            service.requestMetadata().subscribe();
+
+            const req = httpMock.expectOne(`${mockUrl}/metadata`);
+            req.flush(mockMetadataResponse);
+
+            expect(service.metaData()).toEqual(mockMetaData);
+        });
+    });
 });

@@ -1,17 +1,20 @@
-import {
-    ApplicationRef,
-    Component,
-    EnvironmentInjector,
-    EventEmitter,
-    Input,
-    OnChanges,
-    Output
-} from '@angular/core';
+import {Component, computed, effect, EventEmitter, OnDestroy, Output} from '@angular/core';
 import * as bootstrap from 'bootstrap';
-import {mkConfig, generateCsv, download} from "export-to-csv";
+import {download, generateCsv, mkConfig} from "export-to-csv";
 
-import {StatsType, ISummaryData, TopicDefinitionValue} from '../types';
+import {
+    IQueryParam,
+    ISummaryData,
+    IWrappedSummaryData,
+    IWrappedTopicData,
+    StatsType,
+    TopicDefinitionValue,
+    TopicValues
+} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
+import {DataService} from "../../data.service";
+import {forkJoin, Observable, Subscription} from "rxjs";
+import {StateService} from "../../state.service";
 
 @Component({
     selector: 'app-summary',
@@ -19,21 +22,122 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
     styleUrls: ['./summary.component.scss'],
     standalone: false
 })
-export class SummaryComponent implements OnChanges {
-    @Input() data!: ISummaryData;
-    @Input() topicData!: { [p: string]: number } | null;
-    @Input() isSummaryLoading!: boolean;
+export class SummaryComponent implements OnDestroy {
 
-    @Output() changeCurrentStatsEvent = new EventEmitter<StatsType>();
-
+    private subscription: Subscription = new Subscription();
     currentlySelected = 'users';
-    bignumberData: Array<TopicDefinitionValue> = []
+    bignumberData: Array<TopicDefinitionValue> = [];
+    private data!: ISummaryData;
+    isSummaryLoading: boolean = false;
+    private topicData: { [p: string]: number } | null = null;
+    state = computed(() => this.stateService.appState());
+    private relevantState = computed(() => {
+            return this.state()
+        }, {
+            equal: (a, b) => {
+                return a.hashtag === b.hashtag
+                    && a.start === b.start
+                    && a.end === b.end
+                    && a.countries === b.countries
+                    // && a.interval === b.interval // summary doesnt need to reflect on intervals
+                    && a.topics === b.topics
+            }
+        });
 
-    constructor(private injector: EnvironmentInjector, private appRef: ApplicationRef) {
+    constructor(
+            private stateService: StateService,
+            private dataService: DataService
+    ) {
         this.enableTooltips()
+        effect(() => {
+            this.requestFromAPI(this.relevantState())
+        });
     }
 
-    ngOnChanges(): void {
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe()
+    }
+
+    requestFromAPI(queryParams: IQueryParam) {
+        this.isSummaryLoading = true
+        if (queryParams['topics']) {
+            // if topics are requested then wait for both the observable
+            forkJoin({
+                summary: this.dataService.requestSummary(queryParams) as Observable<IWrappedSummaryData>,
+                topic: this.dataService.requestTopic(queryParams) as Observable<IWrappedTopicData>
+            }).subscribe({
+                next: (responses) => {
+                    // Handle summary response
+                    const tempSummaryData = responses.summary.result;
+
+                    this.data = {
+                        changesets: tempSummaryData.changesets,
+                        buildings: tempSummaryData.buildings,
+                        users: tempSummaryData.users,
+                        edits: tempSummaryData.edits,
+                        roads: tempSummaryData.roads,
+                        latest: tempSummaryData.latest,
+                        hashtag: queryParams.hashtag,
+                        startDate: queryParams.start,
+                        endDate: queryParams.end
+                    };
+
+                    if (queryParams.countries !== '') {
+                        this.data['countries'] = queryParams.countries;
+                    }
+
+                    // Handle topic response
+                    const input: { [key: string]: TopicValues } = responses.topic.result;
+                    const topicValue: { [key: string]: number } = {};
+
+                    for (const key in input) {
+                        if (Object.prototype.hasOwnProperty.call(input, key)) {
+                            topicValue[key] = input[key].value;
+                        }
+                    }
+
+                    this.topicData = { ...topicValue }
+
+                    this.updateBigNumber();
+                },
+                error: (err) => {
+                    console.error('Error while requesting data: ', err)
+                }
+            });
+        } else {
+            // Only summary request needed
+            this.dataService.requestSummary(queryParams).subscribe({
+                next: (res: IWrappedSummaryData) => {
+                    const tempSummaryData = res.result;
+
+                    this.data = {
+                        changesets: tempSummaryData.changesets,
+                        buildings: tempSummaryData.buildings,
+                        users: tempSummaryData.users,
+                        edits: tempSummaryData.edits,
+                        roads: tempSummaryData.roads,
+                        latest: tempSummaryData.latest,
+                        hashtag: queryParams.hashtag,
+                        startDate: queryParams.start,
+                        endDate: queryParams.end
+                    };
+
+                    if (queryParams.countries !== '') {
+                        this.data['countries'] = queryParams.countries;
+                    }
+
+                    this.topicData = null;
+
+                    this.updateBigNumber()
+                },
+                error: (err) => {
+                    console.error('Error while requesting Summary data ', err)
+                }
+            });
+        }
+    }
+
+    updateBigNumber(): void {
         if (!this.data)
             return
 
@@ -46,6 +150,9 @@ export class SummaryComponent implements OnChanges {
             this.data = {...this.data, ...this.topicData}
         else
             this.data = {...this.data}
+
+        // remove the loading mask
+        this.isSummaryLoading = false;
         this.bignumberData = []
         for (const summaryEntry of Object.entries(this.data)) {
             if (['latest', 'hashtag', 'changesets', 'countries', 'startDate', 'endDate'].includes(summaryEntry[0]))
@@ -107,19 +214,12 @@ export class SummaryComponent implements OnChanges {
         ).format(value)
     }
 
-    changeSelectedSummaryComponent(e: any) {
-        // if nodeName is APP-BIG-NUMBER our actual target is a child - thus not findable with .closest
-        const newSelected = e.target.nodeName != "APP-BIG-NUMBER" ? e.target.closest(".big_number") : e.target.children[0].closest(".big_number")
-        const siblings = [...newSelected.parentNode.parentNode.children];
-        siblings.forEach((e) => e.children[0].children[0].classList.remove("selected"))
-        if(newSelected.children)
-            newSelected.children[0].classList.add("selected")
-    }
-
-    changeCurrentStats(e: any, newCurrentStats: string) {
+    changeSelectedBigNumber(e: MouseEvent, newCurrentStats: string) {
         this.currentlySelected = newCurrentStats
-        this.changeSelectedSummaryComponent(e)
-        this.changeCurrentStatsEvent.emit(newCurrentStats as StatsType);
+        // add selected stat to app state
+        this.stateService.updatePartialState({
+            active_topic: newCurrentStats as StatsType,
+        });
     }
 
     /**
@@ -132,33 +232,6 @@ export class SummaryComponent implements OnChanges {
         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
     }
 
-    downloadCsv() {
-        // Converts your Array<Object> to a CsvOutput string based on the configs
-        if (this.data && [this.data].length > 0) {
-            // console.log('this.data ', this.data)
 
-            // Extract keys from the input object
-            const keys = Object.keys(this.data)
-            // Filter out 'startDate' and 'endDate' keys
-            const dateKeys = keys.filter((key) => key === 'startDate' || key === 'endDate')
-            // Filter out non-date keys
-            const otherKeys = keys.filter((key) => key !== 'startDate' && key !== 'endDate')
-            // Place the date keys at the start and then the other keys
-            const arrangedHeaders = [
-                ...dateKeys,
-                ...otherKeys
-            ]
-
-            const csvConfig = mkConfig({
-                filename: `ohsome-now-stats_${this.data['hashtag']}_${this.data['startDate']!.substring(0, 10)}_${this.data['endDate']!.substring(0, 10)}_summary`,
-                columnHeaders: arrangedHeaders
-            });
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const csv = generateCsv(csvConfig)([this.data]);
-            download(csvConfig)(csv)
-        }
-    }
 
 }

@@ -2,41 +2,33 @@
     <div class="col-md-3">
         <div class="w-100">
             <!-- #User input ==================== -->
-            <app-query [data]="queryParams" (dateRangeEmitter)="selectedDateRange=$event"></app-query>
+            <app-query></app-query>
         </div>
         <div class="w-100 mT-10">
             <!-- #Treanding hashtags ==================== -->
-            <app-trending-hashtags [hashtags]="hashtagsData"
-                                   [isHashtagsLoading]="isHashtagsLoading"></app-trending-hashtags>
+            <app-trending-hashtags></app-trending-hashtags>
         </div>
         <div class="w-100 mT-10">
             <!-- #Export data as CSV ==================== -->
-            <app-export-data [summaryData]="summaryData" [plotData]="plotData" [mapData]="countryWithTopic"
-                             [selectedCountries]="queryParams?.countries"></app-export-data>
+            <app-export-data></app-export-data>
         </div>
     </div>
     <div class="col-md-9">
         <div class="row">
             <div class='col-md-12'>
-                <app-summary class=row [data]="summaryData" [topicData]="topicData" [isSummaryLoading]="isSummaryLoading"
-                             (changeCurrentStatsEvent)="currentStats = $event"></app-summary>
+                <app-summary class=row></app-summary>
             </div>
         </div>
         <div class="row">
             <!-- #Common graph for Summary ==================== -->
             <div class="pT-10">
-                <app-plot [data]="plotData" [currentStats]="currentStats" [selectedTopics]="selectedTopics"
-                          [isPlotsLoading]="isPlotsLoading" [selectedDateRange]="selectedDateRange"
-                          [currentInterval]="queryParams?.interval"
-                ></app-plot>
+                <app-plot></app-plot>
             </div>
         </div>
         <div class="row">
             <!-- #Map View ==================== -->
             <div class="pT-10">
-                <app-map [data]="countryWithTopic" [currentStats]="currentStats"
-                         [selectedCountries]="queryParams?.countries" [selectedTopics]="selectedTopics"
-                         [isCountriesLoading]="isCountriesLoading"></app-map>
+                <app-map></app-map>
             </div>
         </div>
     </div>

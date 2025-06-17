@@ -1,13 +1,14 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Signal, signal, WritableSignal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, map, Observable, retry, Subject, takeUntil, tap} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, retry, Subject, takeUntil, tap, throwError} from 'rxjs';
 
 import {environment} from '../environments/environment';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {
+    IHashtag,
     IMetaData,
-    IQueryParam,
-    ISummaryData,
+    IMetadataResponse,
+    ITrendingHashtagResponse,
     IWrappedCountryStatsData,
     IWrappedPlotData,
     IWrappedSummaryData,
@@ -15,22 +16,16 @@ import {
     IWrappedTopicData,
     IWrappedTopicPlotData
 } from "./dashboard/types";
-import dayjs from "dayjs";
 
 @Injectable()
 export class DataService {
 
     url = environment.ohsomeStatsServiceUrl
-    private bsMetaData = new BehaviorSubject<IMetaData | null>(null)
-    private metadata = this.bsMetaData.asObservable()
-    private bsSummaryData = new BehaviorSubject<ISummaryData | null>(null)
-    summaryData = this.bsSummaryData.asObservable()
     abortHashtagReqSub!: Subject<void>
     abortTopicReqSub!: Subject<void>
     abortSummaryReqSub!: Subject<void>
     abortIntervalReqSub!: Subject<void>
 
-    defaultHashtag = ''
     trendingHashtagLimit = 10
     timeIntervals = [
         {label: 'five minutes', value: 'PT5M'},
@@ -42,15 +37,18 @@ export class DataService {
         {label: 'yearly', value: 'P1Y'},
     ]
     defaultIntervalValue = 'P1M'
-    minDate!: string // min date in our DB
-    maxDate!: string // max date in our DB
     bsLive = new BehaviorSubject<boolean>(false)
     liveMode = this.bsLive.asObservable()
+    private _metaData:  WritableSignal<IMetaData> = signal<IMetaData>({
+        min_timestamp: new Date().toISOString(),
+        max_timestamp: new Date().toISOString()
+    })
+    public metaData: Signal<IMetaData> = this._metaData.asReadonly();
 
     constructor(
         private http: HttpClient,
-        private route: ActivatedRoute,
-        private router: Router) {
+        private route: ActivatedRoute
+        ) {
         this.getAbortHashtagReqSubject()
         this.getAbortSummaryReqSubject()
         this.getAbortTopicReqSubject()
@@ -58,18 +56,28 @@ export class DataService {
     }
 
     // will be called by APP_INITIALIZER provider in app.module.ts on the start of the application
-    requestMetadata() {
-        return this.http.get(`${this.url}/metadata`)
+    requestMetadata(): Observable<IMetaData> {
+        return this.http.get<IMetadataResponse>(`${this.url}/metadata`)
             .pipe(
                 retry({count: 2, delay: 2000, resetOnSuccess: true}),
-                tap((meta: any) => {
-                    this.maxDate = dayjs(meta.result.max_timestamp).toISOString()
-                    this.minDate = dayjs(meta.result.min_timestamp).toISOString()
-
-                    this.bsMetaData.next({
-                        start: this.minDate,
-                        end: this.maxDate
-                    })
+                map((response: IMetadataResponse) => {
+                    return response!.result as IMetaData
+                }),
+                tap((meta: IMetaData) => {
+                    this._metaData.set(meta)
+                }),
+                catchError( error => {
+                    if (error.status === 0) {
+                        // A client-side or network error occurred. Handle it accordingly.
+                        console.error('An error occurred:', error.error);
+                    } else {
+                        // The backend returned an unsuccessful response code.
+                        // The response body may contain clues as to what went wrong.
+                        console.error(
+                            `Backend returned code ${error.status}, body was: `, error.error);
+                    }
+                    // Return an observable with a user-facing error message.
+                    return throwError(() => new Error('ohsomeNow Stats Service did not respond with a metadata response.'));
                 })
             )
     }
@@ -95,10 +103,6 @@ export class DataService {
         return Object.fromEntries(tempQueryParams)
     }
 
-    getMetaData(): Observable<IMetaData | null> {
-        return this.metadata
-    }
-
     requestSummary(params: any): Observable<IWrappedSummaryData> {
         return this.http.get<IWrappedSummaryData>(`${this.url}/stats?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}`)
             .pipe(
@@ -113,7 +117,7 @@ export class DataService {
             )
     }
 
-    requestTopicInterval(params: any): Observable<IWrappedTopicPlotData> {
+    requestTopicInterval(params: { [x: string]: any; hashtag: string; start: string; end: string; countries: string; interval: string; topics: string; }): Observable<IWrappedTopicPlotData> {
         return this.http.get<IWrappedTopicPlotData>(`${this.url}/topic/${params['topics']}/interval?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&countries=${params['countries']}&interval=${params['interval']}`)
             .pipe(
                 takeUntil(this.abortTopicReqSub)
@@ -127,7 +131,7 @@ export class DataService {
             )
     }
 
-    requestPlot(params: any): Observable<IWrappedPlotData> {
+    requestPlot(params: { [x: string]: any; hashtag: string; start: string; end: string; countries: string; interval: string; topics: string; }): Observable<IWrappedPlotData> {
         return this.http.get<IWrappedPlotData>(`${this.url}/stats/interval?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&interval=${params['interval']}&countries=${params['countries']}`)
             .pipe(
                 takeUntil(this.abortIntervalReqSub)
@@ -139,15 +143,6 @@ export class DataService {
             .pipe(
                 takeUntil(this.abortIntervalReqSub)
             )
-    }
-
-    getSummary() {
-        return this.bsSummaryData.getValue()
-        // return this.summaryData
-    }
-
-    setSummary(data: ISummaryData) {
-        this.bsSummaryData.next(data)
     }
 
     getAbortHashtagReqSubject() {
@@ -166,47 +161,15 @@ export class DataService {
         this.abortTopicReqSub = new Subject<void>();
     }
 
-    getTrendingHashtags(params: any) {
+    getTrendingHashtags(params: { start?: string; end?: string; limit?: number; countries?: string; }) {
         // console.log('>>> getTrendingHashtags >>> ', params)
-        return this.http.get(`${this.url}/most-used-hashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}&countries=${params['countries']}`)
+        return this.http.get<ITrendingHashtagResponse>(`${this.url}/most-used-hashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}&countries=${params['countries']}`)
             .pipe(
-                takeUntil(this.abortHashtagReqSub)
+                takeUntil(this.abortHashtagReqSub),
+                map((response: ITrendingHashtagResponse) => {
+                    return response!.result as Array<IHashtag>
+                }),
             )
-    }
-
-    /**
-     * Gives the default values for application
-     *
-     * @returns IQueryParam
-     */
-    getDefaultValues(): IQueryParam | null {
-        if (!(this.minDate && this.maxDate))
-            return null
-
-        const queryParams = this.getQueryParamsFromFragments()
-        const tempStart = queryParams ? dayjs(this.minDate).format('YYYY-MM-DDTHH:mm:ss') + 'Z' : dayjs(this.maxDate)
-            .subtract(1, "year")
-            .startOf("day")
-            .subtract(dayjs().utcOffset(), "minute")
-            .format('YYYY-MM-DDTHH:mm:ss') + 'Z'
-        return {
-            start: tempStart,
-            end: this.maxDate,
-            hashtag: this.defaultHashtag,
-            interval: this.defaultIntervalValue,
-            countries: '',
-            topics: ''
-        }
-    }
-
-    updateURL(data: IQueryParam): void {
-        let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&countries=${data.countries}&topics=${data.topics}`
-        if (data.fit_to_content !== undefined) {
-            fragment += "&fit_to_content="
-        }
-        this.router.navigate([], {
-            fragment: fragment
-        })
     }
 
     toggleLiveMode(mode: boolean) {

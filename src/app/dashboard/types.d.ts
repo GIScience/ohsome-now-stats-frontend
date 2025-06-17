@@ -130,7 +130,7 @@ export interface ITopicCountryData {
  * Response JSON returned by /stats/{hashtag}/country endoint
  */
 export interface IWrappedCountryStatsData {
-    query: { timespan: { startDate: string, endDate: string }, hashtag: string }
+    query: IQuery
     result: ICountryStatsData[]
 }
 
@@ -163,19 +163,20 @@ export interface IQueryParam {
     interval: string // eg:'P1D' default value: 'P1M'
     topics: string
     fit_to_content?: string
+    active_topic: StatsType
 }
 
 export interface IHashtag {
-    hashtagTitle: string
+    hashtagTitle?: string
     hashtag: string
     number_of_users: number
-    tooltip: string
-    percent: number
+    tooltip?: string
+    percent?: number
 }
 
 export interface IMetaData {
-    start: string // date in ISO format, ensure to keep milliseconds as 0
-    end: string // date in ISO format, ensure to keep milliseconds as 0
+    min_timestamp: string // date in ISO format, ensure to keep milliseconds as 0
+    max_timestamp: string // date in ISO format, ensure to keep milliseconds as 0
 }
 
 interface IHashtags {
@@ -213,4 +214,31 @@ export interface ICountryStatsDataAsArrays {
     'waterway': number[],
     edits: number[],
     latest: string[]
+}
+
+export interface IBaseResponse {
+    attribution: IAttribution,
+    query: IQuery,
+    metadata: {
+        executionTime: number,
+        requestUrl: string
+    },
+}
+
+interface IQuery {
+    timespan: { startDate: string, endDate: string },
+    hashtag: string
+}
+
+interface IAttribution {
+    url: string;
+    text?: string;
+}
+
+export interface IMetadataResponse extends IBaseResponse {
+    result: IMetaData
+}
+
+export interface ITrendingHashtagResponse extends IBaseResponse {
+    result: Array<IHashtag>
 }

@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, computed, effect, EventEmitter, Input, OnDestroy, OnInit, Output, Signal} from '@angular/core';
 import {Subscription} from 'rxjs';
-import dayjs from "dayjs";
+import dayjs, {Dayjs} from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
@@ -12,9 +12,12 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IDateRange, IHashtags, IHighlightedHashtag, IQueryData} from "../types";
+import {IDateRange, IHashtags, IHighlightedHashtag, IQueryData, IQueryParam} from "../types";
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from "@angular/router";
+import {StateService} from "../../state.service";
+import {DateRanges, TimePeriod} from "ngx-daterangepicker-material/daterangepicker.component";
+import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -28,25 +31,30 @@ dayjs.extend(customParseFormat)
     styleUrls: ['./query.component.scss'],
     standalone: false
 })
-export class QueryComponent implements OnChanges, OnInit, OnDestroy {
+export class QueryComponent implements OnInit, OnDestroy {
 
-    @Input() data: IQueryData | undefined
-    metaSub!: Subscription
     hashtag = ''
-
     intervals: Array<{
         label: string;
         value: string;
     }> | undefined
     interval: string | undefined // default value as 'P1M'
     selectedDateRangeUTC: IDateRange | undefined
-    ranges: any
-    minDate!: dayjs.Dayjs
-    maxDate!: dayjs.Dayjs
+    minDate = computed(() => dayjs.utc(this.dataService.metaData().min_timestamp).add(dayjs().utcOffset(), "minute"))
+    maxDate = computed(() => dayjs.utc(this.dataService.metaData().max_timestamp).add(dayjs().utcOffset(), "minute"))
+    ranges: Signal<DateRanges> = computed(() => {
+        return {
+            'Today': [dayjs().startOf('day'), this.maxDate()],
+            'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
+            'Last 3 Hours': [dayjs().subtract(3, 'hours').startOf('hour'), dayjs().endOf('day')],
+            'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
+            'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
+            'Last Year': [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
+            'Entire Duration': [dayjs(this.minDate()), dayjs(this.maxDate())]
+        }
+    })
 
-    @Output() dateRangeEmitter = new EventEmitter<IDateRange>()
-    maxDateString!: string
-
+    maxDateString = this.utcToLocalConverter.transform(dayjs.utc(this.maxDate()).toDate())
 
     private _start = ''
     private _end = ''
@@ -57,21 +65,74 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
     selectedCountries: countryDataClass[] = []  // selected countries with name and code
 
     topics: string[] = [];  // only codes for url and get request
-    topicOptions: any[] = []
+    topicOptions: Array<{ name: string; value: string; }> = []
     selectedTopics: topicDataClass[] = []  // selected countries with name and code
     hot_controls: boolean = false;
     allHashtagOptions: IHashtags[] = []
     filteredHashtagOptions: IHighlightedHashtag[] = []
     selectedHashtagOption: IHighlightedHashtag = {hashtag: "", highlighted: ""}
     liveMode: boolean = false
-    refreshIntervalId: any = null
+    refreshIntervalId: number | null = null
+    hubs: { [hubName: string]: string } = {
+        "asia-pacific": "AFG,BGD,BTN,BRN,KHM,TLS,FSM,FJI,IND,IDN,KIR,LAO,MYS,MMR,NPL,PAK,PNG,PHL,SLB,LKA,TON,UZB,VUT,VNM,YEM",
+        "la-carribean": "ATG,BLZ,BOL,BRA,CHL,CRI,DMA,DOM,ECU,SLV,GTM,GUY,HTI,HND,JAM,MEX,NIC,PAN,PER,TTO,URY,VEN",
+        "wna": "DZA,BEN,BFA,CMR,CPV,CAF,TCD,CIV,GNQ,GHA,GIN,GNB,LBR,MLI,MRT,MAR,NER,NGA,STP,SEN,SLE,GMB,TGO",
+        "esa": "AGO,BDI,COM,COD,DJI,EGY,SWZ,ETH,KEN,LSO,MDG,MWI,MUS,MOZ,NAM,RWA,SOM,SSD,SDN,TZA,UGA,ZMB,ZWE"
+    }
+    selectedHub: string | undefined
+    impactAreas: { [id: string]: string } = {
+        "disaster": "wash,waterway,social_facility,place,lulc",
+        "sus_cities": "wash,waterway,social_facility,lulc,amenity,education,commercial,financial",
+        "pub_health": "wash,waterway,social_facility,place,healthcare",
+        "migration": "waterway,social_facility,lulc,amenity,education,commercial,healthcare",
+        "g_equality": "wash,social_facility,education"
+    }
+    selectedImpactArea: string | undefined
+    configCountry: NgxDropdownConfig = {
+        displayKey: 'name',
+        search: true,
+        height: '20rem',
+        placeholder: 'Optionally filter by Country',
+        limitTo: 0,
+        moreText: 'item',
+        noResultsFound: 'No results found',
+        searchPlaceholder: 'Search',
+        searchOnKey: 'name',
+        customComparator: customComparator,
+        clearOnSelection: true,
+        inputDirection: "up",
+        enableSelectAll: true
+    }
+    configTopics: NgxDropdownConfig = {
+        displayKey: 'name',
+        search: true,
+        height: '20rem',
+        placeholder: 'Optionally add some Topics',
+        limitTo: 0,
+        moreText: 'item',
+        noResultsFound: 'No results found',
+        searchPlaceholder: 'Search',
+        searchOnKey: 'name',
+        customComparator: customComparator,
+        clearOnSelection: true,
+        inputDirection: "up",
+        enableSelectAll: true
+    }
+    private subscription = new Subscription();
+    state = computed(() => this.stateService.appState())
 
     constructor(
+        private stateService: StateService,
         private dataService: DataService,
         private utcToLocalConverter: UTCToLocalConverterPipe,
         private toastService: ToastService,
         private activatedRoute: ActivatedRoute
     ) {
+
+        effect(() => {
+            // TODO: check if the values differ
+            this.updateFormFromState(this.state());
+        });
 
         this.buildTopicOptions()
 
@@ -87,72 +148,18 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
         this.enableTooltips()
         this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
             // view mode is HOT
-            if(this.activatedRoute.snapshot.url.length >= 2 )
-            if (this.activatedRoute.snapshot.url[0].path == 'dashboard' && this.activatedRoute.snapshot.url[1].path == 'hotosm') {
-                this.hot_controls = true
-                this.selectedHashtagOption = { hashtag: "hotosm-project-*", highlighted: "hotosm-project-*" }
+            if(this.activatedRoute.snapshot.url.length == 2 ) {
+                if (this.activatedRoute.snapshot.url[0].path == 'dashboard' && this.activatedRoute.snapshot.url[1].path == 'hotosm') {
+                    this.hot_controls = true
+                    this.selectedHashtagOption = {hashtag: "hotosm-project-*", highlighted: "hotosm-project-*"}
+                    this.getStatistics()
+                }
+            } else if (this.activatedRoute.snapshot.url.length == 1 && this.activatedRoute.snapshot.url[0].path == 'dashboard' ) {
                 this.getStatistics()
             }
+
             this.allHashtagOptions = hashtagsResult
         })
-    }
-
-    ngOnChanges(): void {
-        // listener to metaData request,
-        // theoretically should be called only once as metaData request
-        // is fired only at the start of application
-        // but it is called twice since first time it is due to its assignment to null
-        if (this.metaSub)
-            this.metaSub.unsubscribe()
-
-        this.metaSub = this.dataService.getMetaData().subscribe(metaData => {
-            if (metaData && metaData.start && metaData.end) {
-                this.minDate = dayjs.utc(metaData?.start)
-                this.maxDate = dayjs.utc(metaData?.end).add(dayjs().utcOffset(), "minute")
-
-                this.maxDateString = this.utcToLocalConverter.transform(dayjs.utc(metaData?.end).toDate())
-
-                this.ranges = {
-                    'Today': [dayjs().startOf('day'), this.maxDate],
-                    'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
-                    'Last 3 Hours': [dayjs().subtract(3, 'hours').startOf('hour'), dayjs().endOf('day')],
-                    'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
-                    'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
-                    'Last Year': [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
-                    'Entire Duration': [dayjs(this.minDate), dayjs(this.maxDate)]
-                }
-            }
-        })
-
-        if (this.data) {
-            this.initFormValues(this.data)
-        }
-    }
-
-    // start date
-    get start(): string {
-        return this._start
-    }
-
-    /**
-     *
-     * @param val An ISO8601 UTC Date/Time String eg. 2010-03 or 2010-03-15 or 2010-03-15T14:20:00Z
-     */
-    set start(val: string) {
-        this._start = val
-    }
-
-    // end date
-    get end(): string {
-        return this._end
-    }
-
-    /**
-     *
-     * @param val An ISO8601 UTC Date/Time String eg. 2010-03 or 2010-03-15 or 2010-03-15T14:20:00Z
-     */
-    set end(val: string) {
-        this._end = val
     }
 
     /**
@@ -175,54 +182,12 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     /**
-     * Initializes form values which are passes from parent component
-     *
-     * @param data
-     */
-    initFormValues(data: IQueryData) {
-        // console.log('>>> initFormValues >>> data ', data)
-        if (data && Object.keys(data).length !== 0) {
-            if (!(data.start && data.end)) {
-                console.log('date range is null')
-            }
-            // set Start and end dates
-            if (data.start && data.end) {
-                this.selectedDateRangeUTC = {
-                    start: dayjs.utc(data.start).add(dayjs(data.start).utcOffset(), "minute"),
-                    end: dayjs.utc(data.end).add(dayjs(data.end).utcOffset(), "minute")
-                }
-                this.dateRangeEmitter.emit(this.selectedDateRangeUTC);
-            }
-
-            // set hashtag textarea
-            this.hashtag = decodeURIComponent(data.hashtag.toString())
-            this.selectedHashtagOption = {hashtag: this.hashtag, highlighted: ""}
-
-            // set interval
-            this.interval = data.interval
-
-            //set countries
-            this.countries = data.countries.split(",")
-            this.selectedCountries = this.dropdownOptions.filter((option: countryDataClass) => {
-                return this.countries.includes(option.value)
-            })
-            this.topics = data.topics.split(",")
-            this.selectedTopics = this.topicOptions.filter((option: topicDataClass) => {
-                return this.topics.includes(option.value)
-            })
-        }
-    }
-
-    /**
      * Called on Submit button click on the form
      */
     getStatistics() {
 
         if (!this.validateForm())
             return
-
-        if(this.dataService.requestMetadata())
-            this.dataService.requestMetadata().subscribe();
 
         // get all values from form
         if (!this.selectedDateRangeUTC)
@@ -231,8 +196,8 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
         if (this.liveMode) {
             setTimeout(() => {
                 this.selectedDateRangeUTC = {
-                    start: dayjs(this.maxDate).subtract(3, 'hours'),
-                    end: this.maxDate
+                    start: dayjs(this.maxDate()).subtract(3, 'hours'),
+                    end: this.maxDate()
                 }
             }, 1500);
         }
@@ -250,28 +215,27 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
 
         this.topics = this.selectedTopics.map(e => e.value)
 
-        this.dateRangeEmitter.emit(this.selectedDateRangeUTC)
+        const state = {
+            countries: this.countries.toString(),
+            hashtag: tempHashTag,
+            start: tempStart,
+            end: tempEnd,
+            interval: this.interval ? this.interval : "P1M", // Default monthly interval
+            topics: this.topics.toString()
+        };
 
-        this.dataService.updateURL(
-            {
-                hashtag: tempHashTag,
-                interval: this.interval ? this.interval : "",
-                start: tempStart,
-                end: tempEnd,
-                countries: this.countries.toString(),
-                topics: this.topics.toString()
-            }
-        )
+        // update the state
+        this.stateService.updatePartialState(state)
     }
 
     /**
      * Validates the form values before its being fired to API
      */
     validateForm(): boolean {
-        const dateRangeEle = document.getElementById('dateRange')
+        const dateRangeEle = document.getElementById('dateRange') as HTMLInputElement | null
 
         // check if text feild is empty
-        if (!(dateRangeEle as HTMLInputElement).value) {
+        if (!dateRangeEle || !dateRangeEle.value) {
             console.error('Date range is empty')
             // show the message on toast
             this.toastService.show({
@@ -334,31 +298,12 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
         ) // Remove '#' symbol from hashtag if it's at the beginning
     }
 
-    hubs: { [hubName: string]: string } = {
-        "asia-pacific": "AFG,BGD,BTN,BRN,KHM,TLS,FSM,FJI,IND,IDN,KIR,LAO,MYS,MMR,NPL,PAK,PNG,PHL,SLB,LKA,TON,UZB,VUT,VNM,YEM",
-        "la-carribean": "ATG,BLZ,BOL,BRA,CHL,CRI,DMA,DOM,ECU,SLV,GTM,GUY,HTI,HND,JAM,MEX,NIC,PAN,PER,TTO,URY,VEN",
-        "wna": "DZA,BEN,BFA,CMR,CPV,CAF,TCD,CIV,GNQ,GHA,GIN,GNB,LBR,MLI,MRT,MAR,NER,NGA,STP,SEN,SLE,GMB,TGO",
-        "esa": "AGO,BDI,COM,COD,DJI,EGY,SWZ,ETH,KEN,LSO,MDG,MWI,MUS,MOZ,NAM,RWA,SOM,SSD,SDN,TZA,UGA,ZMB,ZWE"
-    }
-
-    selectedHub: string | undefined
-
     changeHub(hubName: string) {
         this.selectedCountries = this.dropdownOptions.filter((option: countryDataClass) => {
             return this.hubs[hubName].includes(option.value)
         })
         this.selectedHub = hubName
     }
-
-    impactAreas: { [id: string]: string } = {
-        "disaster": "wash,waterway,social_facility,place,lulc",
-        "sus_cities": "wash,waterway,social_facility,lulc,amenity,education,commercial,financial",
-        "pub_health": "wash,waterway,social_facility,place,healthcare",
-        "migration": "waterway,social_facility,lulc,amenity,education,commercial,healthcare",
-        "g_equality": "wash,social_facility,education"
-    }
-
-    selectedImpactArea: string | undefined
 
     changeImpactArea(impactAreaName: string) {
         this.selectedTopics = this.topicOptions.filter((option) => {
@@ -367,7 +312,7 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
         this.selectedImpactArea = impactAreaName
     }
 
-    searchChange(event: any) {
+    searchChange(event: AutoCompleteCompleteEvent) {
         const searchedHashtag = event.query.toString().toLocaleLowerCase()
         this.filteredHashtagOptions = this.allHashtagOptions.filter((hashtagResult) => {
             return hashtagResult.hashtag.length > 1 && hashtagResult.hashtag.includes(searchedHashtag)
@@ -392,39 +337,6 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
             })
     }
 
-
-    configCountry: NgxDropdownConfig = {
-        displayKey: 'name',
-        search: true,
-        height: '20rem',
-        placeholder: 'Optionally filter by Country',
-        limitTo: 0,
-        moreText: 'item',
-        noResultsFound: 'No results found',
-        searchPlaceholder: 'Search',
-        searchOnKey: 'name',
-        customComparator: customComparator,
-        clearOnSelection: true,
-        inputDirection: "up",
-        enableSelectAll: true
-    };
-
-    configTopics: NgxDropdownConfig = {
-        displayKey: 'name',
-        search: true,
-        height: '20rem',
-        placeholder: 'Optionally add some Topics',
-        limitTo: 0,
-        moreText: 'item',
-        noResultsFound: 'No results found',
-        searchPlaceholder: 'Search',
-        searchOnKey: 'name',
-        customComparator: customComparator,
-        clearOnSelection: true,
-        inputDirection: "up",
-        enableSelectAll: true
-    };
-
     allowedInterval(value: string) {
         if (!this.selectedDateRangeUTC)
             return true
@@ -441,24 +353,27 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
      *
      * @param $event
      */
-    dateUpdated($event: any) {
-        if (!$event.target)
+    dateUpdated($event: TimePeriod | null) {
+        if (!$event)
+            return
+        
+        if (!$event['target'])
             return
 
         if (!this.validateForm())
             return
 
-        const dateRange = ($event.target.value).split(' - ')
         this.selectedDateRangeUTC = {
-            start: dayjs.utc((dateRange[0]), 'DD-MM-YYYY'),
-            end: dayjs.utc((dateRange[1]), 'DD-MM-YYYY').endOf('day')
+            start: $event.startDate as Dayjs,
+            end: ($event.endDate as Dayjs).endOf('day')
         }
-        // console.log('>>> dateUpdated ', $event.target.value, this.selectedDateRange)
+
+        this.onDateRangeChange(this.selectedDateRangeUTC)
     }
 
     enableLiveModeButton() {
         return this.interval === 'PT5M'
-            && Math.abs(this.selectedDateRangeUTC!!.end.diff(this.selectedDateRangeUTC!!.start, 'hours')) < 4
+            && Math.abs(this.selectedDateRangeUTC!.end.diff(this.selectedDateRangeUTC!.start, 'hours')) < 4
     }
 
     toggleLiveMode() {
@@ -515,7 +430,64 @@ export class QueryComponent implements OnChanges, OnInit, OnDestroy {
         })
     }
 
+    /**
+     * Updates form fields based on current state
+     * This is called automatically when state changes
+     *
+     * @param inputData - Current query parameters state
+     */
+    private updateFormFromState(inputData: IQueryParam): void {
+        // console.log('>>> updateFormFromState >>> state ', inputData);
+
+        // Set Start and end dates
+        if (inputData.start && inputData.end) {
+            this.selectedDateRangeUTC = {
+                start: dayjs.utc(inputData.start).add(dayjs(inputData.start).utcOffset(), "minute"),
+                end: dayjs.utc(inputData.end).add(dayjs(inputData.end).utcOffset(), "minute")
+            };
+        }
+
+        // Set hashtag textarea
+        this.hashtag = decodeURIComponent(inputData.hashtag || '');
+        this.selectedHashtagOption = {
+            hashtag: this.hashtag,
+            highlighted: ""
+        };
+
+        // Set interval
+        this.interval = inputData.interval;
+
+        // Set countries
+        this.countries = inputData.countries ? inputData.countries.split(",").filter(c => c.trim()) : [];
+        this.selectedCountries = this.dropdownOptions.filter((option) => {
+            return this.countries.includes(option.value);
+        });
+
+        // Set topics
+        this.topics = inputData.topics ? inputData.topics.split(",").filter(t => t.trim()) : [];
+        this.selectedTopics = this.topicOptions.filter((option) => {
+            return this.topics.includes(option.value);
+        });
+    }
+
+    /**
+     * Handle date range changes from date picker
+     */
+    onDateRangeChange(dateRange: IDateRange): void {
+        if (dateRange.start && dateRange.end) {
+            // console.log('>>> onDateRangeChange >>> ', dateRange.start);
+            const startISO = dayjs(dateRange.start).format('YYYY-MM-DDTHH:mm:ss') + 'Z';
+            const endISO = dayjs(dateRange.end).format('YYYY-MM-DDTHH:mm:ss') + 'Z';
+
+            this.stateService.updatePartialState({
+                start: startISO,
+                end: endISO
+            });
+        }
+    }
+
     ngOnDestroy(): void {
+        this.subscription.unsubscribe();
         this.turnOffLiveMode()
     }
 }
