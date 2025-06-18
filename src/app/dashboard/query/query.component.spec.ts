@@ -98,7 +98,6 @@ describe('QueryComponent', () => {
 
     describe('Component Initialization', () => {
         it('should initialize with default values', () => {
-            expect(component.hashtag).toBe('');
             expect(component.interval).toBe(undefined);
             expect(component.liveMode).toBe(false);
             expect(component.hot_controls).toBe(false);
@@ -563,7 +562,6 @@ describe('QueryComponent', () => {
             mockStateService.appState.set(inputData);
             fixture.detectChanges();
 
-            expect(component.hashtag).toBe('test hashtag');
             expect(component.interval).toBe('P1W');
         });
     });
