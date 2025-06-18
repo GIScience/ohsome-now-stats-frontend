@@ -33,8 +33,6 @@ dayjs.extend(customParseFormat)
     standalone: false
 })
 export class QueryComponent implements OnInit, OnDestroy {
-
-    hashtag = ''
     intervals: Array<{
         label: string;
         value: string;
@@ -56,9 +54,7 @@ export class QueryComponent implements OnInit, OnDestroy {
     })
 
     maxDateString = this.utcToLocalConverter.transform(dayjs.utc(this.maxDate()).toDate())
-
-    currentTimeInUserTimeZone!: string;
-
+    
     countries: string[] = [];  // only codes for url and get request
     dropdownOptions = dropdownOptions;  // all possible countries with name and code
     selectedCountries: countryDataClass[] = []  // selected countries with name and code
@@ -136,10 +132,6 @@ export class QueryComponent implements OnInit, OnDestroy {
         this.buildTopicOptions()
 
         this.intervals = dataService.timeIntervals
-        this.currentTimeInUserTimeZone = this.utcToLocalConverter.transform(new Date())
-        setInterval(() => {
-            this.currentTimeInUserTimeZone = this.utcToLocalConverter.transform(new Date())
-        }, 1000)
     }
 
     ngOnInit(): void {
@@ -456,9 +448,8 @@ export class QueryComponent implements OnInit, OnDestroy {
         }
 
         // Set hashtag textarea
-        this.hashtag = decodeURIComponent(inputData.hashtag || '');
         this.selectedHashtagOption = {
-            hashtag: this.hashtag,
+            hashtag: decodeURIComponent(inputData.hashtag || ''),
             highlighted: ""
         };
 
