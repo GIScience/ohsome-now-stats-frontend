@@ -164,3 +164,33 @@ export interface IMetadataResponse extends IBaseResponse {
 export interface ITrendingHashtagResponse extends IBaseResponse {
     result: Array<IHashtag>
 }
+
+export interface HexDataType {
+    result: number;
+    hex_cell: string;
+}
+
+export interface HexPropertiesType {
+    layerName: string;
+    admin_level?: number;
+    [key: string]: any;
+}
+
+export type AttributeCode = keyof Omit<HexDataType, 'hex'>;
+
+export type ScaleFunction = (
+    d: HexDataType,
+    attrCode: AttributeCode,
+    maxStats: Omit<HexDataType, 'hex'>,
+    scaleFactor: number
+) => number;
+
+export interface ScaleFunctions {
+    LINEAR: ScaleFunction;
+    ROOT: ScaleFunction;
+}
+
+export interface H3Row {
+    result: number;
+    hex_cell: string;
+}
