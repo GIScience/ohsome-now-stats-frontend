@@ -1,14 +1,12 @@
-<div class="bd bgc-white pos-r">
-<!--&lt;!&ndash;    <overlay [isLoading]="isCountriesLoading" [containerElement]="overlayContainer"></overlay>&ndash;&gt;-->
+<div class="bd bgc-white pos-r" #overlayContainer>
+    <overlay [isLoading]="isH3Loading" [containerElement]="overlayContainer"></overlay>
     <div class="peers fxw-nw@lg+ ai-s">
         <div class="peer peer-greed w-70p@lg+ w-100@lg- p-20">
             <div class="layers">
                 <div class="layer w-100 mB-10">
                 </div>
                 <div class="w-100" style="aspect-ratio: 2/1;position: relative;">
-<!--                    <div class="map-container">-->
-                        <div #deckContainer class="deck-container"></div>
-<!--                    </div>-->
+                    <div #deckContainer class="deck-container"></div>
                 </div>
             </div>
         </div>
