@@ -5,6 +5,7 @@ import {BitmapLayer} from '@deck.gl/layers';
 import {HexDataType, StatsType} from '../types'
 import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
+import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 
 @Component({
     selector: 'app-hex-map',
@@ -129,24 +130,45 @@ export class HexMapComponent implements OnInit, OnDestroy {
             );
         }
 
+        // Get the base color from topic definitions
+        const topicColor = topicDefinitions[this.selectedTopic]?.["color-hex"] || "#9c27b0";
+        const baseRgb = this.hexToRgb(topicColor);
+
         // Build the layer
         let layer = new H3HexagonLayer<HexDataType>({
             id: 'H3HexagonLayer',
             data: result,
             extruded: false,
             getHexagon: (d: any) => d.hex_cell,
-            getFillColor: (d: any) => [
-                255,
-                (1 - Math.log(d.result + 1) / Math.log(this.maxStats.result + 1)) * 255,
-                0,
-            ],
+            getFillColor: (d: any) => {
+                const intensity = Math.log(d.result + 1) / Math.log(this.maxStats.result + 1);
+                return [
+                    baseRgb.r * intensity,
+                    baseRgb.g * intensity,
+                    baseRgb.b * intensity,
+                ];
+            },
             pickable: true,
-            opacity: 0.4,
+            opacity: 0.3,
         });
 
         if (options) {
             layer = layer.clone(options);
         }
         return layer;
+    }
+
+    /**
+     * Helper method to convert hex to RGB
+     * @return r g b
+     * @param hex
+     */
+    private hexToRgb(hex: string): { r: number, g: number, b: number } {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : { r: 156, g: 39, b: 176 }; // fallback to purple if parsing fails
     }
 }
