@@ -139,17 +139,29 @@ export class HexMapComponent implements OnInit, OnDestroy {
             data: result,
             extruded: false,
             getHexagon: (d: HexDataType) => d.hex_cell,
-            getFillColor: (d: HexDataType) => {
-                // Calculate normalized value (0-1)
-                const normalizedValue = Math.log(d.result + 1) / Math.log(this.maxStats.result + 1);
+            getFillColor: (d: any) => {
+                if (d.result === 0) {
+                    // Neutral color for zero values (middle of the scale or white)
+                    return [255, 255, 255];
+                }
+
+                // Calculate normalized value (0-1) based on absolute value
+                const normalizedValue = Math.abs(d.result) / this.maxStats.result;
 
                 // Map to color scale index
                 const colorIndex = Math.floor(normalizedValue * (colorScale.length - 1));
                 const clampedIndex = Math.max(0, Math.min(colorIndex, colorScale.length - 1));
 
-                // Convert hex color to RGB
-                const selectedColor = colorScale[clampedIndex];
-                return this.hexToRgbArray(selectedColor);
+                if (d.result > 0) {
+                    // Positive values: use original color scale
+                    const selectedColor = colorScale[clampedIndex];
+                    return this.hexToRgbArray(selectedColor);
+                } else {
+                    // Negative values: use complementary/opposite colors
+                    const selectedColor = colorScale[clampedIndex];
+                    return this.getComplementaryColor(selectedColor);
+                    // return this.getOppositeHueColor(selectedColor);
+                }
             },
             pickable: true,
             opacity: 0.4,
@@ -159,6 +171,87 @@ export class HexMapComponent implements OnInit, OnDestroy {
             layer = layer.clone(options);
         }
         return layer;
+    }
+
+    // Helper method to get complementary color
+    private getComplementaryColor(hex: string): [number, number, number] {
+        const rgb = this.hexToRgbArray(hex);
+        // Create complementary color by inverting RGB values
+        return [
+            255 - rgb[0],
+            255 - rgb[1],
+            255 - rgb[2]
+        ];
+    }
+
+    // Alternative: Get opposite hue color (more sophisticated)
+    private getOppositeHueColor(hex: string): [number, number, number] {
+        const rgb = this.hexToRgbArray(hex);
+        const hsl = this.rgbToHsl(rgb[0], rgb[1], rgb[2]);
+
+        // Shift hue by 180 degrees for opposite color
+        const oppositeHue = (hsl.h + 180) % 360;
+        const oppositeRgb = this.hslToRgb(oppositeHue, hsl.s, hsl.l);
+
+        return [oppositeRgb.r, oppositeRgb.g, oppositeRgb.b];
+    }
+
+    // Helper methods for HSL conversion
+    private rgbToHsl(r: number, g: number, b: number): { h: number, s: number, l: number } {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h = 0, s = 0;
+        const l = (max + min) / 2;
+
+        if (max !== min) {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+            switch (max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+
+        return { h: h * 360, s: s * 100, l: l * 100 };
+    }
+
+    private hslToRgb(h: number, s: number, l: number): { r: number, g: number, b: number } {
+        h /= 360;
+        s /= 100;
+        l /= 100;
+
+        const hue2rgb = (p: number, q: number, t: number) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        };
+
+        let r, g, b;
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+
+        return {
+            r: Math.round(r * 255),
+            g: Math.round(g * 255),
+            b: Math.round(b * 255)
+        };
     }
 
     // Helper method to convert hex to RGB array for deck.gl
