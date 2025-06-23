@@ -130,26 +130,29 @@ export class HexMapComponent implements OnInit, OnDestroy {
             );
         }
 
-        // Get the base color from topic definitions
-        const topicColor = topicDefinitions[this.selectedTopic]?.["color-hex"] || "#9c27b0";
-        const baseRgb = this.hexToRgb(topicColor);
+        // Get the color scale from topic definitions
+        const colorScale = topicDefinitions[this.selectedTopic]?.["color-scale"] || [];
 
         // Build the layer
         let layer = new H3HexagonLayer<HexDataType>({
             id: 'H3HexagonLayer',
             data: result,
             extruded: false,
-            getHexagon: (d: any) => d.hex_cell,
-            getFillColor: (d: any) => {
-                const intensity = Math.log(d.result + 1) / Math.log(this.maxStats.result + 1);
-                return [
-                    baseRgb.r * intensity,
-                    baseRgb.g * intensity,
-                    baseRgb.b * intensity,
-                ];
+            getHexagon: (d: HexDataType) => d.hex_cell,
+            getFillColor: (d: HexDataType) => {
+                // Calculate normalized value (0-1)
+                const normalizedValue = Math.log(d.result + 1) / Math.log(this.maxStats.result + 1);
+
+                // Map to color scale index
+                const colorIndex = Math.floor(normalizedValue * (colorScale.length - 1));
+                const clampedIndex = Math.max(0, Math.min(colorIndex, colorScale.length - 1));
+
+                // Convert hex color to RGB
+                const selectedColor = colorScale[clampedIndex];
+                return this.hexToRgbArray(selectedColor);
             },
             pickable: true,
-            opacity: 0.3,
+            opacity: 0.4,
         });
 
         if (options) {
@@ -158,17 +161,13 @@ export class HexMapComponent implements OnInit, OnDestroy {
         return layer;
     }
 
-    /**
-     * Helper method to convert hex to RGB
-     * @return r g b
-     * @param hex
-     */
-    private hexToRgb(hex: string): { r: number, g: number, b: number } {
+    // Helper method to convert hex to RGB array for deck.gl
+    private hexToRgbArray(hex: string): [number, number, number] {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : { r: 156, g: 39, b: 176 }; // fallback to purple if parsing fails
+        return result ? [
+            parseInt(result[1], 16),
+            parseInt(result[2], 16),
+            parseInt(result[3], 16)
+        ] : [156, 39, 176]; // fallback to purple if parsing fails
     }
 }
