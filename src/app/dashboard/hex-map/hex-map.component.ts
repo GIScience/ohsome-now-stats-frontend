@@ -1,5 +1,5 @@
 import {Component, computed, effect, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {Color, Deck} from '@deck.gl/core';
+import {Color, Deck, PickingInfo} from '@deck.gl/core';
 import {H3HexagonLayer, H3HexagonLayerProps, TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
 import {lch, rgb} from 'd3-color';
@@ -9,6 +9,7 @@ import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {interpolateHcl} from "d3-interpolate";
+import {DataType} from "@loaders.gl/core";
 
 @Component({
     selector: 'app-hex-map',
@@ -108,7 +109,11 @@ export class HexMapComponent implements OnInit, OnDestroy {
             resolution: 3
         }
         this.layer = await this.createCountryLayer(reqParams);
-        this.deck.setProps({layers: [this.osmLayer, this.layer]});
+        this.deck.setProps({
+            layers: [this.osmLayer, this.layer],
+            getTooltip: ({object}: PickingInfo<HexDataType>) =>
+                object ? { text: `Value: ${object.result} ${topicDefinitions[this.selectedTopic]?.["y-title"]}` } : null
+        });
     }
 
     private async createCountryLayer(
@@ -146,6 +151,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
             getFillColor: this.getColorFn(),
             pickable: true,
             opacity: 1,
+            // onHover: this.updateTooltip
         });
 
         if (options) {
@@ -192,5 +198,17 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
             return [color.r, color.g, color.b, opacity];
         }
+    }
+
+    updateTooltip({object, x, y}: PickingInfo<HexDataType>) {
+        // if (object) {
+        //     // tooltip.style.display = 'block';
+        //     // tooltip.style.left = `${x}px`;
+        //     // tooltip.style.top = `${y}px`;
+        //     tooltip.innerText = object.result;
+        // } else {
+        //     tooltip.style.display = 'none';
+        // }
+        return object!.result
     }
 }
