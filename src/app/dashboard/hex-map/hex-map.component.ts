@@ -1,11 +1,14 @@
 import {Component, computed, effect, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {Deck} from '@deck.gl/core';
+import {Color, Deck} from '@deck.gl/core';
 import {H3HexagonLayer, H3HexagonLayerProps, TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
+import {lch, rgb} from 'd3-color';
+import {scalePow} from 'd3-scale';
 import {HexDataType, StatsType} from '../types'
 import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
+import {interpolateHcl} from "d3-interpolate";
 
 @Component({
     selector: 'app-hex-map',
@@ -20,14 +23,13 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
     selectedTopic!: StatsType;
     private deck!: Deck;
-    private result: any;
-    private maxStats!: { result: number };
+    private minMaxStats!: { result: { max: number; min: number } };
     private layer!: H3HexagonLayer<HexDataType>;
 
     // Fixed TileLayer configuration
     private readonly osmLayer = new TileLayer({
         id: 'osm-tiles',
-        data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        data: 'https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.png',
         minZoom: 0,
         maxZoom: 19,
         tileSize: 256,
@@ -42,7 +44,8 @@ export class HexMapComponent implements OnInit, OnDestroy {
                 image: props.data,
                 bounds: [west, south, east, north]
             });
-        }
+        },
+        opacity: 0.7
     });
     isH3Loading: boolean = false;
 
@@ -76,10 +79,6 @@ export class HexMapComponent implements OnInit, OnDestroy {
     }
 
     private initializeDeck() {
-        // this.deck = new Deck({
-        //   container: this.deckContainer.nativeElement,
-
-        // Create canvas manually
         const canvas = document.createElement('canvas');
         canvas.style.width = '100%';
         canvas.style.height = '100%';
@@ -122,16 +121,21 @@ export class HexMapComponent implements OnInit, OnDestroy {
         if (result) {
             this.isH3Loading = false;
             // Calculate maxStats
-            this.maxStats = result.reduce(
+            this.minMaxStats = result.reduce(
                 (prev, curr) => ({
-                    result: Math.max(prev.result, curr.result)
+                    result: {
+                        max: Math.max(prev.result.max, curr.result),
+                        min: Math.min(prev.result.min, curr.result)
+                    }
                 }),
-                {result: 0}
+                {
+                    result: {
+                        min: 0,
+                        max: 0
+                    }
+                }
             );
         }
-
-        // Get the color scale from topic definitions
-        const colorScale = topicDefinitions[this.selectedTopic]?.["color-scale"] || [];
 
         // Build the layer
         let layer = new H3HexagonLayer<HexDataType>({
@@ -139,32 +143,9 @@ export class HexMapComponent implements OnInit, OnDestroy {
             data: result,
             extruded: false,
             getHexagon: (d: HexDataType) => d.hex_cell,
-            getFillColor: (d: any) => {
-                if (d.result === 0) {
-                    // Neutral color for zero values (middle of the scale or white)
-                    return [255, 255, 255];
-                }
-
-                // Calculate normalized value (0-1) based on absolute value
-                const normalizedValue = Math.abs(d.result) / this.maxStats.result;
-
-                // Map to color scale index
-                const colorIndex = Math.floor(normalizedValue * (colorScale.length - 1));
-                const clampedIndex = Math.max(0, Math.min(colorIndex, colorScale.length - 1));
-
-                if (d.result > 0) {
-                    // Positive values: use original color scale
-                    const selectedColor = colorScale[clampedIndex];
-                    return this.hexToRgbArray(selectedColor);
-                } else {
-                    // Negative values: use complementary/opposite colors
-                    const selectedColor = colorScale[clampedIndex];
-                    return this.getComplementaryColor(selectedColor);
-                    // return this.getOppositeHueColor(selectedColor);
-                }
-            },
+            getFillColor: this.getColorFn(),
             pickable: true,
-            opacity: 0.4,
+            opacity: 1,
         });
 
         if (options) {
@@ -173,94 +154,43 @@ export class HexMapComponent implements OnInit, OnDestroy {
         return layer;
     }
 
-    // Helper method to get complementary color
-    private getComplementaryColor(hex: string): [number, number, number] {
-        const rgb = this.hexToRgbArray(hex);
-        // Create complementary color by inverting RGB values
-        return [
-            255 - rgb[0],
-            255 - rgb[1],
-            255 - rgb[2]
-        ];
-    }
+    getColorFn() {
+        const topicColorHex = topicDefinitions[this.selectedTopic]?.["color-hex"]
 
-    // Alternative: Get opposite hue color (more sophisticated)
-    private getOppositeHueColor(hex: string): [number, number, number] {
-        const rgb = this.hexToRgbArray(hex);
-        const hsl = this.rgbToHsl(rgb[0], rgb[1], rgb[2]);
+        const tempTopicColorLch = lch(topicColorHex);
+        const topicLiteColorLch = lch(
+            90, // common lightness for all topic colors to start off
+            tempTopicColorLch.c * 0.7,
+            tempTopicColorLch.h
+        );
 
-        // Shift hue by 180 degrees for opposite color
-        const oppositeHue = (hsl.h + 180) % 360;
-        const oppositeRgb = this.hslToRgb(oppositeHue, hsl.s, hsl.l);
+        // Interpolator
+        // Negative color ranges from red to topicColor
+        const negativeInterpolator = interpolateHcl("#a50026", topicLiteColorLch);
+        // Positive color ranges from topicColor to blue
+        const positiveInterpolator = interpolateHcl(topicLiteColorLch, "#313695");
 
-        return [oppositeRgb.r, oppositeRgb.g, oppositeRgb.b];
-    }
+        const { min, max } = this.minMaxStats.result;
+        const abMax = Math.max(Math.abs(min), Math.abs(max));
+        const negativeScale = scalePow([-abMax, 0], [0, 1]).exponent(1/4);
+        const transparencyScale = scalePow([0, abMax], [0.3 * 255, 0.7 * 255]).exponent(1/4);
+        const positiveScale = scalePow([0, abMax], [0, 1]).exponent(1/4);
 
-    // Helper methods for HSL conversion
-    private rgbToHsl(r: number, g: number, b: number): { h: number, s: number, l: number } {
-        r /= 255;
-        g /= 255;
-        b /= 255;
+        return (value: HexDataType): Color => {
+            const result = value.result;
 
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        let h = 0, s = 0;
-        const l = (max + min) / 2;
-
-        if (max !== min) {
-            const d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
+            let color, opacity;
+            if (result < 0) {
+                // Use negative interpolator (from red to topicColor)
+                color = rgb(negativeInterpolator(negativeScale(result)));
+                opacity = transparencyScale(Math.abs(result));
+            } else {
+                // Use positive interpolator (from topicColor to blue)
+                color = rgb(positiveInterpolator(positiveScale(result)));
+                opacity = transparencyScale(Math.abs(result));
             }
-            h /= 6;
+
+            return [color.r, color.g, color.b, opacity];
         }
-
-        return { h: h * 360, s: s * 100, l: l * 100 };
-    }
-
-    private hslToRgb(h: number, s: number, l: number): { r: number, g: number, b: number } {
-        h /= 360;
-        s /= 100;
-        l /= 100;
-
-        const hue2rgb = (p: number, q: number, t: number) => {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1/6) return p + (q - p) * 6 * t;
-            if (t < 1/2) return q;
-            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-        };
-
-        let r, g, b;
-        if (s === 0) {
-            r = g = b = l;
-        } else {
-            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-            const p = 2 * l - q;
-            r = hue2rgb(p, q, h + 1/3);
-            g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1/3);
-        }
-
-        return {
-            r: Math.round(r * 255),
-            g: Math.round(g * 255),
-            b: Math.round(b * 255)
-        };
-    }
-
-    // Helper method to convert hex to RGB array for deck.gl
-    private hexToRgbArray(hex: string): [number, number, number] {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? [
-            parseInt(result[1], 16),
-            parseInt(result[2], 16),
-            parseInt(result[3], 16)
-        ] : [156, 39, 176]; // fallback to purple if parsing fails
     }
 }
