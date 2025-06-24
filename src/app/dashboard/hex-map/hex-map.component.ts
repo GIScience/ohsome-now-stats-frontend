@@ -151,7 +151,6 @@ export class HexMapComponent implements OnInit, OnDestroy {
             getFillColor: this.getColorFn(),
             pickable: true,
             opacity: 1,
-            // onHover: this.updateTooltip
         });
 
         if (options) {
@@ -198,17 +197,5 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
             return [color.r, color.g, color.b, opacity];
         }
-    }
-
-    updateTooltip({object, x, y}: PickingInfo<HexDataType>) {
-        // if (object) {
-        //     // tooltip.style.display = 'block';
-        //     // tooltip.style.left = `${x}px`;
-        //     // tooltip.style.top = `${y}px`;
-        //     tooltip.innerText = object.result;
-        // } else {
-        //     tooltip.style.display = 'none';
-        // }
-        return object!.result
     }
 }
