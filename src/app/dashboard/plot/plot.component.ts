@@ -40,7 +40,7 @@ export class PlotComponent implements AfterContentInit {
 
     data!: IPlotResult;
     activeTopic!: StatsType;
-    currentInterval!: string;
+
     layout: Layout | any;
     fitToContentIcon = {
         'width': 600,
@@ -176,7 +176,7 @@ export class PlotComponent implements AfterContentInit {
         return () => {
             const data_start = this.data.topics[this.activeTopic].value.findIndex(value => value != 0)
             const data_end = this.data.topics[this.activeTopic].value.findLastIndex(value => value != 0)
-            const half_an_interval = moment.duration(this.currentInterval).asMilliseconds() / 2;
+            const half_an_interval = moment.duration(this.relevantState().interval).asMilliseconds() / 2;
             Plotly.relayout('summaryplot', {
                 xaxis: {
                     range: [
