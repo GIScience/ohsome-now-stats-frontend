@@ -19,7 +19,7 @@ export type StatsType =
     | 'waterway';
 
 
-export interface ITopicDefinitionValue {
+export interface ITopicDefinitionValue extends IStatsData {
     id: string
     name: string
     "color-hex": string
@@ -28,7 +28,6 @@ export interface ITopicDefinitionValue {
     dropdown_name: string
     tooltip: string
     icon: string
-    value: number
 }
 
 

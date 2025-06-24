@@ -10,11 +10,13 @@ import {StateService} from "../../../state.service";
 })
 export class BigNumberComponent {
     @Input() data!: ITopicDefinitionValue
-    startSelected = false;
+    isSelected = false;
+    alternativeSelectedLayout = false;
 
     constructor(private stateService: StateService) {
         effect(() => {
-            this.startSelected = this.data.id === this.activeTopicState();
+            this.isSelected = this.data.id === this.activeTopicState();
+            this.alternativeSelectedLayout = <boolean>(this.isSelected && this.data.added);
         });
     }
 
@@ -31,6 +33,6 @@ export class BigNumberComponent {
 
 
     openHelp(event: any) {
-        window.open(`/help#${event.target.closest(".app-big-number").id}`, '_blank');
+        window.open(`/help#${this.data.id}`, '_blank');
     }
 }

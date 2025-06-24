@@ -1,38 +1,49 @@
 .tooltip1 {
-    position:absolute; 
-    top: 5px; 
-    right: 8px;
+  position: absolute;
+  top: 5px;
+  right: 8px;
 }
 
-.tooltip1:active{
-    filter: contrast(5%);
+.tooltip1:active {
+  filter: contrast(5%);
 }
 
 .tooltip2 {
-    position:absolute;
+  position: absolute;
 }
 
 .icon-holder:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
+
 
 .layers {
-    text-align: center; 
-    position: relative;
-    pointer-events: auto;
-    transition: all 0.25s ease-in-out;
-    :hover{
-        box-shadow: 0 0px 0px white !important;
-    }
-    &.selected {
-        box-shadow: 0 0 20px rgba(158, 158, 158, 0.5) !important;
-    }
+  text-align: center;
+  position: relative;
+  pointer-events: auto;
+  transition: box-shadow 0.25s ease-in-out;
+  min-height: 136px;
+
+  :hover {
+    box-shadow: 0 0px 0px white !important;
+  }
+
+  &.selected {
+    box-shadow: 0 0 20px rgba(158, 158, 158, 0.5) !important;
+    padding-bottom: 10px !important;
+  }
 }
 
-.big_number  {
-    pointer-events: none;
-    :hover  {
-        box-shadow: 0 0 20px rgba(158, 158, 158, 0.3);
-        cursor: pointer;
-    }
-}   
+.big_number {
+  pointer-events: none;
+
+  :hover {
+    box-shadow: 0 0 20px rgba(158, 158, 158, 0.3);
+    cursor: pointer;
+  }
+}
+
+.absoluteIcon {
+  position: absolute;
+  left: -40px;
+}
