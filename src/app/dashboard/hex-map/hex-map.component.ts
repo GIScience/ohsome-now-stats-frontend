@@ -125,7 +125,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
                 }),
                 {
                     result: {
-                        min: 0,
+                        min: 1,
                         max: 0
                     }
                 }
