@@ -4,12 +4,11 @@ import {H3HexagonLayer, H3HexagonLayerProps, TileLayer} from '@deck.gl/geo-layer
 import {BitmapLayer} from '@deck.gl/layers';
 import {lch, rgb} from 'd3-color';
 import {scalePow} from 'd3-scale';
+import {interpolateHcl} from "d3-interpolate";
 import {HexDataType, StatsType} from '../types'
 import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-import {interpolateHcl} from "d3-interpolate";
-import {DataType} from "@loaders.gl/core";
 
 @Component({
     selector: 'app-hex-map',
@@ -61,15 +60,6 @@ export class HexMapComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        const reqParams = {
-            hashtag: this.relevantState().hashtag,
-            start: this.relevantState().start,
-            end: this.relevantState().end,
-            countries: this.relevantState().countries,
-            topic: this.relevantState().active_topic,
-            resolution: 3
-        }
-        this.layer = await this.createCountryLayer(reqParams);
         this.initializeDeck();
     }
 
@@ -112,7 +102,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
         this.deck.setProps({
             layers: [this.osmLayer, this.layer],
             getTooltip: ({object}: PickingInfo<HexDataType>) =>
-                object ? { text: `Value: ${object.result} ${topicDefinitions[this.selectedTopic]?.["y-title"]}` } : null
+                object ? { text: `${object.result} ${topicDefinitions[this.selectedTopic]?.["y-title"]}` } : null
         });
     }
 
