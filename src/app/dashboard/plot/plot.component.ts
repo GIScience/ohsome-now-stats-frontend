@@ -158,13 +158,15 @@ export class PlotComponent implements AfterContentInit {
      * Return striped if first or last element are not fully contained in timeline.
      */
     stripedOrNot(index: number) {
-        if (index !== 0 && index !== this.data.startDate.length - 1) {
+        // only check first and last 2 indexes - otherwise performance will suffer
+        if (![0, this.data.startDate.length - 1, this.data.startDate.length - 2].includes(index)) {
             return ''
         }
 
         if (
-            dayjs.utc(this.relevantState().end).subtract(dayjs().utcOffset(), "minute").toDate() < UTCStringToLocalDateConverterFunction(this.data.endDate[index])
-            || dayjs.utc(this.relevantState().start).subtract(dayjs().utcOffset(), "minute").toDate() > UTCStringToLocalDateConverterFunction(this.data.startDate[index])
+            dayjs.utc(this.relevantState().end).isBefore(dayjs.utc(this.data.endDate[index]))
+            || dayjs.utc(this.dataService.metaData().max_timestamp).isBefore(dayjs.utc(this.data.endDate[index]))
+            || dayjs.utc(this.relevantState().start).isAfter(dayjs.utc(this.data.startDate[index]))
         ) {
             return '/'
         }
