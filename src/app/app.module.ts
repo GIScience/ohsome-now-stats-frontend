@@ -31,6 +31,7 @@ import {ExportDataComponent} from "./dashboard/export-data/export-data.component
 import {AutoCompleteModule} from 'primeng/autocomplete';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
+import {CountryMapComponent} from './dashboard/country-map/country-map.component';
 import {HexMapComponent} from "./dashboard/hex-map/hex-map.component";
 import {LegendComponent} from "./dashboard/hex-map/legend/legend.component";
 
@@ -68,7 +69,7 @@ const routes = [{path: 'help', component: HelpComponent}];
         AutoCompleteModule,
         RouterModule.forRoot(routes, {
             scrollOffset: [0, 80]
-        })],
+        }), CountryMapComponent],
     providers: [
         DataService,
         UTCToLocalConverterPipe,
