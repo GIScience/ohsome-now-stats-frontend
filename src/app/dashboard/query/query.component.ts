@@ -393,6 +393,7 @@ export class QueryComponent implements OnInit, OnDestroy {
     toggleLiveMode() {
         this.liveMode = !this.liveMode
         if (this.liveMode) {
+            this.triggerMetaDataRetrieval()
             this.refreshIntervalId = setInterval(() => {
                 this.triggerMetaDataRetrieval()
             }, 10000) as unknown as number
