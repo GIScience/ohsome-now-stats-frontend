@@ -208,14 +208,14 @@ describe('QueryComponent', () => {
         });
 
         it('should fail validation when selectedDateRangeUTC is undefined', () => {
-            component.selectedDateRangeUTC = undefined;
+            component.selectedDateRange = undefined;
 
             const result = component.validateForm();
             expect(result).toBe(false);
         });
 
         it('should fail validation when start or end date is missing', () => {
-            component.selectedDateRangeUTC = {
+            component.selectedDateRange = {
                 start: dayjs('2024-01-01'),
                 end: undefined as any
             };
@@ -228,7 +228,7 @@ describe('QueryComponent', () => {
 
     describe('getStatistics', () => {
         beforeEach(() => {
-            component.selectedDateRangeUTC = {
+            component.selectedDateRange = {
                 start: dayjs('2024-01-01'),
                 end: dayjs('2024-12-31')
             };
@@ -280,7 +280,7 @@ describe('QueryComponent', () => {
             component.updateStateToFromSelection();
             tick(2000);
 
-            expect(component.selectedDateRangeUTC?.start.diff(component.maxDate(), 'hours')).toBe(-3);
+            expect(component.selectedDateRange?.start.diff(component.maxDate(), 'hours')).toBe(-3);
         }));
     });
 
@@ -407,7 +407,7 @@ describe('QueryComponent', () => {
 
     describe('Interval Validation', () => {
         it('should allow interval when date range is within limits', () => {
-            component.selectedDateRangeUTC = {
+            component.selectedDateRange = {
                 start: dayjs('2024-01-01'),
                 end: dayjs('2024-01-02') // 1 day difference
             };
@@ -417,46 +417,10 @@ describe('QueryComponent', () => {
         });
     });
 
-    describe('Date Updates', () => {
-        it('should handle manual date updates', () => {
-            const mockEvent = {
-                startDate: dayjs('2024-01-01'),
-                endDate: dayjs('2024-12-31'),
-                target: {}
-            };
-            spyOn(component, 'validateForm').and.returnValue(true);
-            spyOn(component, 'onDateRangeChange');
-
-            component.dateUpdated(mockEvent as any);
-
-            expect(component.selectedDateRangeUTC?.start.format('YYYY-MM-DD')).toBe('2024-01-01');
-            expect(component.selectedDateRangeUTC?.end.format('YYYY-MM-DD')).toBe('2024-12-31');
-            expect(component.onDateRangeChange).toHaveBeenCalled();
-        });
-
-        it('should not update dates if event is null', () => {
-            component.dateUpdated(null);
-            // Should not throw error
-            expect(component.selectedDateRangeUTC).toBeUndefined();
-        });
-
-        it('should not update dates if validation fails', () => {
-            const mockEvent = {
-                startDate: dayjs('2024-01-01'),
-                endDate: dayjs('2024-12-31'),
-                target: {}
-            };
-            spyOn(component, 'validateForm').and.returnValue(false);
-
-            component.dateUpdated(mockEvent as any);
-
-            expect(component.selectedDateRangeUTC).toBeUndefined();
-        });
-    });
 
     describe('Live Mode', () => {
         beforeEach(() => {
-            component.selectedDateRangeUTC = {
+            component.selectedDateRange = {
                 start: dayjs().subtract(2, 'hours'),
                 end: dayjs()
             };
@@ -507,32 +471,6 @@ describe('QueryComponent', () => {
         });
     });
 
-    describe('Date Range Changes', () => {
-        it('should handle date range changes and update state', () => {
-            const dateRange = {
-                start: dayjs('2024-01-01'),
-                end: dayjs('2024-12-31')
-            };
-
-            component.onDateRangeChange(dateRange);
-
-            expect(mockStateService.updatePartialState).toHaveBeenCalledWith({
-                start: '2024-01-01T00:00:00Z',
-                end: '2024-12-31T00:00:00Z'
-            });
-        });
-
-        it('should not update state if dates are missing', () => {
-            const dateRange = {
-                start: null,
-                end: dayjs('2024-12-31')
-            };
-
-            component.onDateRangeChange(dateRange as any);
-
-            expect(mockStateService.updatePartialState).not.toHaveBeenCalled();
-        });
-    });
 
     describe('State Updates', () => {
         it('should update form from state correctly', () => {

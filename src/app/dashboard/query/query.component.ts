@@ -12,11 +12,10 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IDateRange, IHashtags, IHighlightedHashtag, IQueryParams, StatsType} from "../types";
-import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
+import {IDateRange, IHashtags, IHighlightedHashtag, IStateParams, StatsType} from "../types";
 import {ActivatedRoute} from "@angular/router";
 import {StateService} from "../../state.service";
-import {DateRanges, TimePeriod} from "ngx-daterangepicker-material/daterangepicker.component";
+import {DateRanges, EndDate, StartDate} from "ngx-daterangepicker-material/daterangepicker.component";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
 import {over5000IntervalBins} from "../../utils";
 
@@ -38,23 +37,25 @@ export class QueryComponent implements OnInit, OnDestroy {
         value: string;
     }> | undefined
     interval: string | undefined
-    selectedDateRangeUTC: IDateRange | undefined
-    minDate = computed(() => dayjs.utc(this.dataService.metaData().min_timestamp).add(dayjs().utcOffset(), "minute"))
-    maxDate = computed(() => dayjs.utc(this.dataService.metaData().max_timestamp).add(dayjs().utcOffset(), "minute"))
+    selectedDateRange: IDateRange | undefined
+
+    minDate = computed(() => dayjs(this.dataService.metaData().min_timestamp))
+    maxDate = computed(() => dayjs(this.dataService.metaData().max_timestamp))
+
+    dateRangeShiftedMaxDate = this.maxDate().add(dayjs().utcOffset(), "minute")
+
     ranges: Signal<DateRanges> = computed(() => {
         return {
-            'Today': [dayjs().startOf('day'), this.maxDate()],
+            'Today': [dayjs().startOf('day'), this.dateRangeShiftedMaxDate],
             'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
-            'Last 3 Hours': [dayjs().subtract(3, 'hours').startOf('hour'), dayjs().endOf('day')],
+            'Last 3 Hours': [dayjs().subtract(3, 'hours').startOf('hour'), dayjs()],
             'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
             'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
             'Last Year': [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
-            'Entire Duration': [dayjs(this.minDate()), dayjs(this.maxDate())]
+            'Entire Duration': [this.minDate(), this.dateRangeShiftedMaxDate]
         }
     })
 
-    maxDateString = this.utcToLocalConverter.transform(dayjs.utc(this.maxDate()).toDate())
-    
     countries: string[] = [];  // only codes for url and get request
     dropdownOptions = dropdownOptions;  // all possible countries with name and code
     selectedCountries: countryDataClass[] = []  // selected countries with name and code
@@ -119,11 +120,9 @@ export class QueryComponent implements OnInit, OnDestroy {
     constructor(
         private stateService: StateService,
         private dataService: DataService,
-        private utcToLocalConverter: UTCToLocalConverterPipe,
         private toastService: ToastService,
         private activatedRoute: ActivatedRoute
     ) {
-
         effect(() => {
             // TODO: check if the values differ
             this.updateFormFromState(this.state());
@@ -142,10 +141,7 @@ export class QueryComponent implements OnInit, OnDestroy {
                 if (this.activatedRoute.snapshot.url[0].path == 'dashboard' && this.activatedRoute.snapshot.url[1].path == 'hotosm') {
                     this.hot_controls = true
                     this.selectedHashtagOption = {hashtag: "hotosm-project-*", highlighted: "hotosm-project-*"}
-                    this.updateStateToFromSelection()
                 }
-            } else if (this.activatedRoute.snapshot.url.length == 1 && this.activatedRoute.snapshot.url[0].path == 'dashboard') {
-                this.updateStateToFromSelection()
             }
 
             this.allHashtagOptions = hashtagsResult
@@ -171,25 +167,11 @@ export class QueryComponent implements OnInit, OnDestroy {
      * Called on Submit button click on the form
      */
     updateStateToFromSelection() {
-
-        if (!this.validateForm())
+        if (!this.validateForm() || !this.selectedDateRange)
             return
 
-        // get all values from form
-        if (!this.selectedDateRangeUTC)
-            return
-
-        if (this.liveMode) {
-            setTimeout(() => {
-                this.selectedDateRangeUTC = {
-                    start: dayjs(this.maxDate()).subtract(3, 'hours'),
-                    end: this.maxDate()
-                }
-            }, 1500);
-        }
-
-        const tempStart = this.selectedDateRangeUTC.start.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"//.format('YYYY-MM-DDTHH:mm:ss')
-        const tempEnd = this.selectedDateRangeUTC.end.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"//.format('YYYY-MM-DDTHH:mm:ss')
+        const tempStart = this.selectedDateRange.start.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"
+        const tempEnd = this.selectedDateRange.end.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"
 
         const tempHashTag = this.cleanHashTag(this.selectedHashtagOption)
 
@@ -238,9 +220,9 @@ export class QueryComponent implements OnInit, OnDestroy {
         }
 
         // check for actual values
-        if (!this.selectedDateRangeUTC)
+        if (!this.selectedDateRange)
             return false
-        if (!(this.selectedDateRangeUTC.start && this.selectedDateRangeUTC.end)) {
+        if (!(this.selectedDateRange.start && this.selectedDateRange.end)) {
             console.error('Date range is empty')
             // show the message on toast
             this.toastService.show({
@@ -252,14 +234,26 @@ export class QueryComponent implements OnInit, OnDestroy {
 
             return false
         }
-        if (!(dayjs(this.selectedDateRangeUTC.start, 'DD-MM-YYYY', true).isValid()
-            && dayjs(this.selectedDateRangeUTC.end, 'DD-MM-YYYY', true).isValid())) {
+
+        if (!(dayjs(this.selectedDateRange.start, 'DD-MM-YYYY', true).isValid()
+            && dayjs(this.selectedDateRange.end, 'DD-MM-YYYY', true).isValid())) {
 
             console.error('Either the start date or end is invalid')
             // show the message on toast
             this.toastService.show({
                 title: 'Invalid date',
                 body: 'Please provide a valid date for the start and end',
+                type: 'error',
+                time: 5000
+            })
+
+            return false
+        }
+
+        if (this.selectedDateRange.start.isAfter(this.selectedDateRange.end) || this.selectedDateRange.start.isSame(this.selectedDateRange.end)) {
+            this.toastService.show({
+                title: 'Invalid date',
+                body: 'End date needs to be after start date',
                 type: 'error',
                 time: 5000
             })
@@ -278,7 +272,7 @@ export class QueryComponent implements OnInit, OnDestroy {
             return false
         }
 
-        if (over5000IntervalBins(this.selectedDateRangeUTC.start, this.selectedDateRangeUTC.end, this.interval!)) {
+        if (over5000IntervalBins(this.selectedDateRange.start, this.selectedDateRange.end, this.interval!)) {
             this.toastService.show({
                 title: 'Mismatch of timespan and interval',
                 body: 'The combination would result in over 5000 interval bins, please select a shorter timespan or bigger interval.',
@@ -349,44 +343,58 @@ export class QueryComponent implements OnInit, OnDestroy {
     }
 
     isForbiddenInterval(value: string) {
-        return over5000IntervalBins(this.selectedDateRangeUTC!.start, this.selectedDateRangeUTC!.end, value)
+        return over5000IntervalBins(this.selectedDateRange!.start, this.selectedDateRange!.end, value)
     }
 
-    /**
-     * Function used if user manually writes in the date range. Currently, users can only
-     * write the date part and not the time part manually
-     *
-     * @param $event
-     */
-    dateUpdated($event: TimePeriod | null) {
-        if (!$event)
-            return
+    firstTimeStart = true
+    firstTimeEnd = true
 
-        if (!$event['target'])
+    updateEndDate(event: EndDate | null) {
+        if (this.firstTimeEnd) {
+            this.firstTimeEnd = false
             return
-
-        if (!this.validateForm())
-            return
-
-        this.selectedDateRangeUTC = {
-            start: $event.startDate as Dayjs,
-            end: ($event.endDate as Dayjs).endOf('day')
         }
 
-        this.onDateRangeChange(this.selectedDateRangeUTC)
+        if (!event) return;
+        this.selectedDateRange!.end = event.endDate as Dayjs
+    }
+
+    updateStartDate(event: StartDate | null) {
+        if (this.firstTimeStart) {
+            this.firstTimeStart = false
+            return
+        }
+
+        if (!event) return;
+        this.selectedDateRange!.start = event.startDate as Dayjs
     }
 
     enableLiveModeButton() {
         return this.interval === 'PT5M'
-            && Math.abs(this.selectedDateRangeUTC!.end.diff(this.selectedDateRangeUTC!.start, 'hours')) < 4
+            && Math.abs(this.selectedDateRange!.end.diff(this.selectedDateRange!.start, 'hours')) < 4
+    }
+
+    triggerMetaDataRetrieval() {
+        const previousEndDate = this.maxDate()
+        this.dataService.requestMetadata().subscribe(
+            (metadata) => {
+                if (!dayjs(metadata.max_timestamp).isSame(previousEndDate)) {
+                    this.selectedDateRange = {
+                        start: (this.ranges()["Last 3 Hours"][0] as Dayjs).add(dayjs().utcOffset(), "minutes"),
+                        end: (this.ranges()["Last 3 Hours"][1] as Dayjs).add(dayjs().utcOffset(), "minutes")
+                    }
+                    this.updateStateToFromSelection()
+                }
+            }
+        )
+
     }
 
     toggleLiveMode() {
         this.liveMode = !this.liveMode
         if (this.liveMode) {
-            this.updateStateToFromSelection()
             this.refreshIntervalId = setInterval(() => {
-                this.updateStateToFromSelection()
+                this.triggerMetaDataRetrieval()
             }, 10000) as unknown as number
 
             // change tooltip
@@ -438,12 +446,11 @@ export class QueryComponent implements OnInit, OnDestroy {
      *
      * @param inputData - Current query parameters state
      */
-    private updateFormFromState(inputData: IQueryParams): void {
-        // Set Start and end dates
+    private updateFormFromState(inputData: IStateParams): void {
         if (inputData.start && inputData.end) {
-            this.selectedDateRangeUTC = {
-                start: dayjs.utc(inputData.start).add(dayjs(inputData.start).utcOffset(), "minute"),
-                end: dayjs.utc(inputData.end).add(dayjs(inputData.end).utcOffset(), "minute")
+            this.selectedDateRange = {
+                start: dayjs(inputData.start),
+                end: dayjs(inputData.end)
             };
         }
 
@@ -453,7 +460,6 @@ export class QueryComponent implements OnInit, OnDestroy {
             highlighted: ""
         };
 
-        // Set interval
         this.interval = inputData.interval;
 
         // Set countries
@@ -467,22 +473,6 @@ export class QueryComponent implements OnInit, OnDestroy {
         this.selectedTopics = this.topicOptions.filter((option) => {
             return this.topics.includes(option.value);
         });
-    }
-
-    /**
-     * Handle date range changes from date picker
-     */
-    onDateRangeChange(dateRange: IDateRange): void {
-        if (dateRange.start && dateRange.end) {
-            // console.log('>>> onDateRangeChange >>> ', dateRange.start);
-            const startISO = dayjs(dateRange.start).format('YYYY-MM-DDTHH:mm:ss') + 'Z';
-            const endISO = dayjs(dateRange.end).format('YYYY-MM-DDTHH:mm:ss') + 'Z';
-
-            this.stateService.updatePartialState({
-                start: startISO,
-                end: endISO
-            });
-        }
     }
 
     ngOnDestroy(): void {

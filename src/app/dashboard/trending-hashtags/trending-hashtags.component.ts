@@ -95,12 +95,9 @@ export class TrendingHashtagsComponent {
      * @param hashtag
      */
     clickHashtag(hashtag: string) {
-        // console.log('>>> clickHashtag ', hashtag)
-        const state = {
+        this.stateService.updatePartialState({
             hashtag: hashtag
-        }
-        // update the state
-        this.stateService.updatePartialState(state)
+        })
     }
 
     /**
