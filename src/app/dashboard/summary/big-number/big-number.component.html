@@ -29,7 +29,7 @@
             <p class="lh-1 mb-0 mt-2">{{ data.name }}</p>
         </div>
         @if (alternativeSelectedLayout) {
-            <span class="mT-5 mB-5" style="border-bottom: 2px solid {{data['color-hex']}}; width: 75%;"></span>
+            <span class="mT-5 mB-5 detailDivider" style="border-bottom-color: {{data['color-hex']}}"></span>
             <div class="flex-row" style="line-height: 14px;">
                 <div class="flex-col">
                     <span style="color: {{data['color-hex']}}; font-weight: bold;">{{ formatNumbertoNumberformatString(data.added!) }}</span>
