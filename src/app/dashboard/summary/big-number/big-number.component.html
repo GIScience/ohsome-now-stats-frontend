@@ -36,7 +36,7 @@
                     <p class="lh-1 mb-0 mt-1">Created</p>
                 </div>
                 <div class="flex-col mR-10 mL-10 mT-1">
-                    @if (data.modified && data.modified.unit_less) {
+                    @if (data.modified && data.modified.unit_less !== undefined) {
                         <span style="color: {{data['color-hex']}}; font-weight: bold;">+{{ formatNumbertoNumberformatString(data.modified.unit_more!) }}
                             | -{{ formatNumbertoNumberformatString(data.modified.unit_less) }}</span>
                     } @else {

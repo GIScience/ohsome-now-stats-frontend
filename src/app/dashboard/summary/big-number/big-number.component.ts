@@ -16,7 +16,7 @@ export class BigNumberComponent {
     constructor(private stateService: StateService) {
         effect(() => {
             this.isSelected = this.data.id === this.activeTopicState();
-            this.alternativeSelectedLayout = <boolean>(this.isSelected && this.data.added);
+            this.alternativeSelectedLayout = <boolean>(this.isSelected && this.data.added !== undefined);
         });
     }
 
