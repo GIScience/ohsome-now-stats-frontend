@@ -42,7 +42,7 @@
                             <div class="col-md-2">
                                 <span class="icon-holder tooltip1" data-bs-placement="bottom"
                                       data-bs-toggle="tooltip"
-                                      title="Latest database entry: {{ maxDateString }}. You can't query for data later then this."
+                                      title="Latest database entry: {{ maxDate().toDate() | UTCToLocalConverter }}. You can't query for data later then this."
                                       data-bs-html="true">
                                     <i class="c-grey-800 ti-help-alt"></i>
                                 </span>
@@ -55,8 +55,8 @@
                                        startKey="start"
                                        endKey="end"
                                        [minDate]="minDate()"
-                                       [maxDate]="maxDate()"
-                                       [(ngModel)]="selectedDateRangeUTC"
+                                       [maxDate]="dateRangeShiftedMaxDate"
+                                       [(ngModel)]="selectedDateRange"
                                        id="dateRange"
                                        name="daterange"
                                        [showCustomRangeLabel]="true"
@@ -66,7 +66,8 @@
                                        [showClearButton]="true"
                                        [timePicker]="true"
                                        [timePicker24Hour]="true"
-                                       (change)="dateUpdated($event); turnOffLiveMode()"
+                                       (endDateChanged)="updateEndDate($event)"
+                                       (startDateChanged)="updateStartDate($event)"
                                        (keydown)="turnOffLiveMode()"
                                        [autoApply]="true"
                                        [closeOnAutoApply]="false"

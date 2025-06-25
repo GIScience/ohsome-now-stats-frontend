@@ -34,8 +34,8 @@ export class DataService {
     liveMode = this.bsLive.asObservable()
 
     private _metaData: WritableSignal<IMetaData> = signal<IMetaData>({
-        min_timestamp: new Date().toISOString(),
-        max_timestamp: new Date().toISOString()
+        min_timestamp: "",
+        max_timestamp: ""
     })
     public metaData: Signal<IMetaData> = this._metaData.asReadonly();
 
