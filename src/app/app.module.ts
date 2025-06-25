@@ -32,6 +32,7 @@ import {AutoCompleteModule} from 'primeng/autocomplete';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
 import {HexMapComponent} from "./dashboard/hex-map/hex-map.component";
+import {LegendComponent} from "./dashboard/hex-map/legend/legend.component";
 
 const routes = [{path: 'help', component: HelpComponent}];
 
@@ -51,6 +52,7 @@ const routes = [{path: 'help', component: HelpComponent}];
         BigNumberComponent,
         ExportDataComponent,
         HexMapComponent,
+        LegendComponent,
         UTCToLocalConverterPipe,
         Overlay,
         StatusBannerComponent

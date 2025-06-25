@@ -23,7 +23,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
     selectedTopic!: StatsType;
     private deck!: Deck;
-    private minMaxStats!: { result: { max: number; min: number } };
+    minMaxStats!: { result: { max: number; min: number } };
     private layer!: H3HexagonLayer<HexDataType>;
 
     // Fixed TileLayer configuration
@@ -187,5 +187,9 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
             return [color.r, color.g, color.b, opacity];
         }
+    }
+
+    getTopicUnit(): string {
+        return topicDefinitions[this.selectedTopic]?.["y-title"] || '';
     }
 }

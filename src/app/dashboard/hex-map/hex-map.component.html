@@ -7,6 +7,14 @@
                 </div>
                 <div class="w-100" style="aspect-ratio: 2/1;position: relative;">
                     <div #deckContainer class="deck-container"></div>
+                    <div class="legend-container" *ngIf="!isH3Loading && minMaxStats">
+                        <app-legend
+                                [minValue]="minMaxStats.result.min"
+                                [maxValue]="minMaxStats.result.max"
+                                [colorFunction]="getColorFn()"
+                                [unit]="getTopicUnit()">
+                        </app-legend>
+                    </div>
                 </div>
             </div>
         </div>
