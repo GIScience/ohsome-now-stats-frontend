@@ -33,7 +33,8 @@
             <!-- ### $Sidebar Menu ### -->
             <ul class="sidebar-menu scrollable pos-r">
                 <li class="nav-item mT-30 actived">
-                    <a class="sidebar-link" [routerLink]="['/dashboard']">
+                    <a class="sidebar-link"
+                       (click)="router.navigate(['/dashboard'], { queryParamsHandling: 'preserve'})">
                         <span class="icon-holder">
                           <i class="c-blue-500 ti-home"></i>
                         </span>
@@ -42,13 +43,24 @@
                 </li>
                 <li class="nav-item">
                     <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-                       [routerLink]="['/dashboard/hotosm']">
+                       (click)="router.navigate(['/dashboard/hotosm'], { queryParamsHandling: 'preserve'})">
                         <div class="logo" style="cursor: pointer">
                             <img alt="HOT"
                                  src="assets/images/hot_logo.png"
                                  style="height: 20px; margin-right: 14px;">
                         </div>
                         <span class="title">HOT View</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="sidebar-link flex-row" style="display:flex; height: 45px"
+                       (click)="router.navigate(['/dashboard/live'], { queryParamsHandling: 'preserve' })">
+                        <div class="logo" style="cursor: pointer">
+                            <img alt="Live Mode"
+                                 src="assets/images/live.png"
+                                 style="height: 20px; margin-right: 14px;">
+                        </div>
+                        <span class="title">Live View</span>
                     </a>
                 </li>
                 <li class="nav-item">

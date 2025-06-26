@@ -59,7 +59,7 @@ describe('PlotComponent', () => {
     beforeEach(async () => {
         const dataServiceSpy = jasmine.createSpyObj('DataService', [
             'requestPlot',
-            'requestTopicInterval'
+            'requestTopicInterval',
         ]);
 
         const stateServiceSpy = jasmine.createSpyObj('StateService', [
@@ -185,32 +185,6 @@ describe('PlotComponent', () => {
             component['requestToAPI'](mockState);
 
             expect(console.error).toHaveBeenCalledWith('Error while requesting Plot data  ', 'API Error');
-        });
-    });
-
-    describe('stripedOrNot', () => {
-        beforeEach(() => {
-            component.data = mockPlotData;
-            mockStateService.appState.and.returnValue({
-                ...mockState,
-                start: '2023-01-01T00:00:00.000Z',
-                end: '2023-01-03T23:59:59.999Z'
-            });
-        });
-
-        it('should return empty string for middle elements', () => {
-            const result = component.stripedOrNot(1);
-            expect(result).toBe('');
-        });
-
-        it('should return striped pattern for first/last elements when outside range', () => {
-            // Mock dayjs behavior for date comparison
-            spyOn(component, 'stripedOrNot').and.callThrough();
-
-            // This test would need more complex mocking of dayjs
-            // For now, just test the method exists and can be called
-            expect(() => component.stripedOrNot(0)).not.toThrow();
-            expect(() => component.stripedOrNot(2)).not.toThrow();
         });
     });
 

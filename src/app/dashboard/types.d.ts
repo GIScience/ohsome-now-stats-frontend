@@ -163,3 +163,8 @@ export interface IMetadataResponse extends IBaseResponse {
 export interface ITrendingHashtagResponse extends IBaseResponse {
     result: Array<IHashtag>
 }
+
+export interface ISelectionItem {
+    name: string;
+    value: string;
+}

@@ -3,7 +3,6 @@ import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, catchError, map, Observable, retry, tap, throwError} from 'rxjs';
 
 import {environment} from '../environments/environment';
-import {ActivatedRoute} from '@angular/router';
 import {
     IHashtag,
     IMetaData,
@@ -41,7 +40,6 @@ export class DataService {
 
     constructor(
         private http: HttpClient,
-        private route: ActivatedRoute
     ) {
     }
 
@@ -103,5 +101,4 @@ export class DataService {
     toggleLiveMode(mode: boolean) {
         this.bsLive.next(mode)
     }
-
 }

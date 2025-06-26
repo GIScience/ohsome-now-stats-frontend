@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DashboardComponent } from './dashboard.component';
+import {DashboardComponent} from './dashboard.component';
 import {Component} from "@angular/core";
 
 // Mock child components
 @Component({
-    selector: 'app-query',
+    selector: 'default-query',
     template: '<div></div>'
 })
 class MockQueryComponent {

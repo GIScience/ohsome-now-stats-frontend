@@ -15,12 +15,15 @@ const routes: Routes = [
     {
         path: 'dashboard',
         component: DashboardComponent,
-        pathMatch: 'full',
-    },
-    {
-        path: 'dashboard/hotosm',
-        component: DashboardComponent,
-        pathMatch: 'full',
+        children: [
+            {
+                path: 'hotosm',
+                component: DashboardComponent,
+            }, {
+                path: 'live',
+                component: DashboardComponent,
+            }
+        ]
     },
     {
         path: 'about',
