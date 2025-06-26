@@ -22,7 +22,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
     private relevantState = computed(() => this.stateService.appState())
 
     selectedTopic!: StatsType;
-    private deck!: Deck;
+    deck!: Deck;
     minMaxStats!: { result: { max: number; min: number } };
     private layer!: H3HexagonLayer<HexDataType>;
 
@@ -59,7 +59,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
         })
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.initializeDeck();
     }
 
@@ -106,7 +106,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
         });
     }
 
-    private async createCountryLayer(
+    async createCountryLayer(
         params: { hashtag: string, start: string, end: string, topic: string, resolution: number, countries: string },
         options?: Partial<H3HexagonLayerProps<HexDataType>>,
     ): Promise<H3HexagonLayer<HexDataType>> {
