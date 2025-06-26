@@ -1,5 +1,4 @@
-import {Component, computed, effect, OnDestroy, OnInit, Signal} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Component, computed, effect, inject, OnInit, Signal} from '@angular/core';
 import dayjs, {Dayjs} from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
 import duration from 'dayjs/plugin/duration'
@@ -12,8 +11,7 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IDateRange, IHashtags, IHighlightedHashtag, IStateParams, StatsType} from "../types";
-import {ActivatedRoute} from "@angular/router";
+import {IDateRange, IHashtags, IHighlightedHashtag, ISelectionItem, IStateParams, StatsType} from "../types";
 import {StateService} from "../../state.service";
 import {DateRanges, EndDate, StartDate} from "ngx-daterangepicker-material/daterangepicker.component";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
@@ -31,7 +29,11 @@ dayjs.extend(customParseFormat)
     styleUrls: ['./query.component.scss'],
     standalone: false
 })
-export class QueryComponent implements OnInit, OnDestroy {
+export class QueryComponent implements OnInit {
+    stateService = inject(StateService);
+    dataService = inject(DataService);
+    toastService = inject(ToastService);
+
     intervals: Array<{
         label: string;
         value: string;
@@ -58,32 +60,15 @@ export class QueryComponent implements OnInit, OnDestroy {
 
     countries: string[] = [];  // only codes for url and get request
     dropdownOptions = dropdownOptions;  // all possible countries with name and code
-    selectedCountries: countryDataClass[] = []  // selected countries with name and code
+    selectedCountries: ISelectionItem[] = []  // selected countries with name and code
 
     topics: string[] = [];  // only codes for url and get request
     topicOptions: Array<{ name: string; value: string; }> = []
-    selectedTopics: topicDataClass[] = []  // selected countries with name and code
-    hot_controls: boolean = false;
+    selectedTopics: ISelectionItem[] = []  // selected countries with name and code
     allHashtagOptions: IHashtags[] = []
     filteredHashtagOptions: IHighlightedHashtag[] = []
     selectedHashtagOption: IHighlightedHashtag = {hashtag: "", highlighted: ""}
-    liveMode: boolean = false
-    refreshIntervalId: number | null = null
-    hubs: { [hubName: string]: string } = {
-        "asia-pacific": "AFG,BGD,BTN,BRN,KHM,TLS,FSM,FJI,IND,IDN,KIR,LAO,MYS,MMR,NPL,PAK,PNG,PHL,SLB,LKA,TON,UZB,VUT,VNM,YEM",
-        "la-carribean": "ATG,BLZ,BOL,BRA,CHL,CRI,DMA,DOM,ECU,SLV,GTM,GUY,HTI,HND,JAM,MEX,NIC,PAN,PER,TTO,URY,VEN",
-        "wna": "DZA,BEN,BFA,CMR,CPV,CAF,TCD,CIV,GNQ,GHA,GIN,GNB,LBR,MLI,MRT,MAR,NER,NGA,STP,SEN,SLE,GMB,TGO",
-        "esa": "AGO,BDI,COM,COD,DJI,EGY,SWZ,ETH,KEN,LSO,MDG,MWI,MUS,MOZ,NAM,RWA,SOM,SSD,SDN,TZA,UGA,ZMB,ZWE"
-    }
-    selectedHub: string | undefined
-    impactAreas: { [id: string]: string } = {
-        "disaster": "wash,waterway,social_facility,place,lulc",
-        "sus_cities": "wash,waterway,social_facility,lulc,amenity,education,commercial,financial",
-        "pub_health": "wash,waterway,social_facility,place,healthcare",
-        "migration": "waterway,social_facility,lulc,amenity,education,commercial,healthcare",
-        "g_equality": "wash,social_facility,education"
-    }
-    selectedImpactArea: string | undefined
+
     configCountry: NgxDropdownConfig = {
         displayKey: 'name',
         search: true,
@@ -99,6 +84,7 @@ export class QueryComponent implements OnInit, OnDestroy {
         inputDirection: "up",
         enableSelectAll: true
     }
+
     configTopics: NgxDropdownConfig = {
         displayKey: 'name',
         search: true,
@@ -114,36 +100,22 @@ export class QueryComponent implements OnInit, OnDestroy {
         inputDirection: "up",
         enableSelectAll: true
     }
-    private subscription = new Subscription();
     state = computed(() => this.stateService.appState())
 
-    constructor(
-        private stateService: StateService,
-        private dataService: DataService,
-        private toastService: ToastService,
-        private activatedRoute: ActivatedRoute
-    ) {
+    constructor() {
         effect(() => {
             // TODO: check if the values differ
-            this.updateFormFromState(this.state());
+            this.updateSelectionFromState(this.state());
         });
 
         this.buildTopicOptions()
 
-        this.intervals = dataService.timeIntervals
+        this.intervals = this.dataService.timeIntervals
     }
 
     ngOnInit(): void {
         this.enableTooltips()
         this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
-            // view mode is HOT
-            if (this.activatedRoute.snapshot.url.length == 2) {
-                if (this.activatedRoute.snapshot.url[0].path == 'dashboard' && this.activatedRoute.snapshot.url[1].path == 'hotosm') {
-                    this.hot_controls = true
-                    this.selectedHashtagOption = {hashtag: "hotosm-project-*", highlighted: "hotosm-project-*"}
-                }
-            }
-
             this.allHashtagOptions = hashtagsResult
         })
     }
@@ -166,7 +138,7 @@ export class QueryComponent implements OnInit, OnDestroy {
     /**
      * Called on Submit button click on the form
      */
-    updateStateToFromSelection() {
+    updateStateFromSelection() {
         if (!this.validateForm() || !this.selectedDateRange)
             return
 
@@ -203,22 +175,6 @@ export class QueryComponent implements OnInit, OnDestroy {
      * Validates the form values before its being fired to API
      */
     validateForm(): boolean {
-        const dateRangeEle = document.getElementById('dateRange') as HTMLInputElement | null
-
-        // check if text field is empty
-        if (!dateRangeEle || !dateRangeEle.value) {
-            console.error('Date range is empty')
-            // show the message on toast
-            this.toastService.show({
-                title: 'Date range is empty',
-                body: 'Please provide a valid Date range',
-                type: 'error',
-                time: 5000
-            })
-
-            return false
-        }
-
         // check for actual values
         if (!this.selectedDateRange)
             return false
@@ -303,20 +259,6 @@ export class QueryComponent implements OnInit, OnDestroy {
         )
     }
 
-    changeHub(hubName: string) {
-        this.selectedCountries = this.dropdownOptions.filter((option: countryDataClass) => {
-            return this.hubs[hubName].includes(option.value)
-        })
-        this.selectedHub = hubName
-    }
-
-    changeImpactArea(impactAreaName: string) {
-        this.selectedTopics = this.topicOptions.filter((option) => {
-            return this.impactAreas[impactAreaName].includes(option.value)
-        })
-        this.selectedImpactArea = impactAreaName
-    }
-
     searchChange(event: AutoCompleteCompleteEvent) {
         const searchedHashtag = event.query.toString().toLocaleLowerCase()
         this.filteredHashtagOptions = this.allHashtagOptions.filter((hashtagResult) => {
@@ -369,63 +311,6 @@ export class QueryComponent implements OnInit, OnDestroy {
         this.selectedDateRange!.start = event.startDate as Dayjs
     }
 
-    enableLiveModeButton() {
-        return this.interval === 'PT5M'
-            && Math.abs(this.selectedDateRange!.end.diff(this.selectedDateRange!.start, 'hours')) < 4
-    }
-
-    triggerMetaDataRetrieval() {
-        const previousEndDate = this.maxDate()
-        this.dataService.requestMetadata().subscribe(
-            (metadata) => {
-                if (!dayjs(metadata.max_timestamp).isSame(previousEndDate)) {
-                    this.selectedDateRange = {
-                        start: (this.ranges()["Last 3 Hours"][0] as Dayjs).add(dayjs().utcOffset(), "minutes"),
-                        end: (this.ranges()["Last 3 Hours"][1] as Dayjs).add(dayjs().utcOffset(), "minutes")
-                    }
-                    this.updateStateToFromSelection()
-                }
-            }
-        )
-
-    }
-
-    toggleLiveMode() {
-        this.liveMode = !this.liveMode
-        if (this.liveMode) {
-            this.triggerMetaDataRetrieval()
-            this.refreshIntervalId = setInterval(() => {
-                this.triggerMetaDataRetrieval()
-            }, 10000) as unknown as number
-
-            // change tooltip
-            this.updateLiveTooltip('Stop Live')
-        } else {
-            this.turnOffLiveMode()
-        }
-        this.dataService.toggleLiveMode(this.liveMode)
-    }
-
-    turnOffLiveMode() {
-        this.liveMode = false
-        this.dataService.toggleLiveMode(false)
-        this.updateLiveTooltip('Query Live')
-        if (this.refreshIntervalId) {
-            clearInterval(this.refreshIntervalId)
-            this.refreshIntervalId = null
-        }
-    }
-
-    updateLiveTooltip(msg: string) {
-        const tooltipElement = <HTMLElement>document.getElementById('btnLive')
-        if (!tooltipElement)
-            return
-        tooltipElement.setAttribute('data-bs-title', msg)
-        setTimeout(() => {
-            this.enableTooltips()
-        }, 300)
-    }
-
     /**
      * Boostrap need to enable tooltip on every element with its attribute
      */
@@ -447,7 +332,7 @@ export class QueryComponent implements OnInit, OnDestroy {
      *
      * @param inputData - Current query parameters state
      */
-    private updateFormFromState(inputData: IStateParams): void {
+    protected updateSelectionFromState(inputData: IStateParams): void {
         if (inputData.start && inputData.end) {
             this.selectedDateRange = {
                 start: dayjs(inputData.start),
@@ -475,33 +360,8 @@ export class QueryComponent implements OnInit, OnDestroy {
             return this.topics.includes(option.value);
         });
     }
-
-    ngOnDestroy(): void {
-        this.subscription.unsubscribe();
-        this.turnOffLiveMode()
-    }
 }
 
 function customComparator(a: any, b: any) {
     return a.name.localeCompare(b.name)
-}
-
-class countryDataClass {
-    name: string;
-    value: string;
-
-    constructor(name: string, value: string) {
-        this.name = name;
-        this.value = value;
-    }
-}
-
-class topicDataClass {
-    name: string;
-    value: string;
-
-    constructor(name: string, value: string) {
-        this.name = name;
-        this.value = value;
-    }
 }

@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import {QueryComponent} from './query.component';
 import {DataService} from '../../data.service';
@@ -99,8 +99,6 @@ describe('QueryComponent', () => {
     describe('Component Initialization', () => {
         it('should initialize with default values', () => {
             expect(component.interval).toBe(undefined);
-            expect(component.liveMode).toBe(false);
-            expect(component.hot_controls).toBe(false);
             expect(component.selectedCountries).toEqual([]);
             expect(component.selectedTopics).toEqual([]);
         });
@@ -142,30 +140,6 @@ describe('QueryComponent', () => {
             expect(mockDataService.requestAllHashtags).toHaveBeenCalled();
             expect(component.allHashtagOptions).toEqual(mockHashtags);
         });
-
-        it('should enable HOT controls when on hotosm route', () => {
-            mockActivatedRoute.snapshot.url = [
-                {path: 'dashboard'},
-                {path: 'hotosm'}
-            ];
-            spyOn(component, 'enableTooltips');
-            spyOn(component, 'updateStateToFromSelection');
-
-            component.ngOnInit();
-
-            expect(component.hot_controls).toBe(true);
-            expect(component.selectedHashtagOption.hashtag).toBe('hotosm-project-*');
-            expect(component.updateStateToFromSelection).toHaveBeenCalled();
-        });
-
-        it('should not enable HOT controls for regular routes', () => {
-            mockActivatedRoute.snapshot.url = [{path: 'dashboard'}];
-            spyOn(component, 'enableTooltips');
-
-            component.ngOnInit();
-
-            expect(component.hot_controls).toBe(false);
-        });
     });
 
     describe('buildTopicOptions', () => {
@@ -192,19 +166,6 @@ describe('QueryComponent', () => {
         afterEach(() => {
             // Reset the spy after each test
             getElementByIdSpy.calls.reset();
-        });
-
-
-        it('should fail validation when date range input is empty', () => {
-            const result = component.validateForm();
-
-            expect(result).toBe(false);
-            expect(mockToastService.show).toHaveBeenCalledWith({
-                title: 'Date range is empty',
-                body: 'Please provide a valid Date range',
-                type: 'error',
-                time: 5000
-            });
         });
 
         it('should fail validation when selectedDateRangeUTC is undefined', () => {
@@ -244,7 +205,7 @@ describe('QueryComponent', () => {
         it('should not proceed if validation fails', () => {
             spyOn(component, 'validateForm').and.returnValue(false);
 
-            component.updateStateToFromSelection();
+            component.updateStateFromSelection();
 
             expect(mockStateService.updatePartialState).not.toHaveBeenCalled();
         });
@@ -253,7 +214,7 @@ describe('QueryComponent', () => {
             spyOn(component, 'validateForm').and.returnValue(true);
             spyOn(component, 'cleanHashTag').and.returnValue('missingmaps');
             component.interval = "P1M"
-            component.updateStateToFromSelection();
+            component.updateStateFromSelection();
 
             expect(mockStateService.updatePartialState).toHaveBeenCalledWith(jasmine.objectContaining({
                 hashtag: 'missingmaps',
@@ -267,21 +228,10 @@ describe('QueryComponent', () => {
 
             component.selectedCountries = component.dropdownOptions;
 
-            component.updateStateToFromSelection();
+            component.updateStateFromSelection();
 
             expect(component.countries).toEqual(['']);
         });
-
-        it('should handle live mode date adjustment', fakeAsync(() => {
-            spyOn(component, 'validateForm').and.returnValue(true);
-            spyOn(component, 'cleanHashTag').and.returnValue('test');
-            component.liveMode = true;
-
-            component.updateStateToFromSelection();
-            tick(2000);
-
-            expect(component.selectedDateRange?.start.diff(component.maxDate(), 'hours')).toBe(-3);
-        }));
     });
 
     describe('cleanHashTag', () => {
@@ -302,66 +252,6 @@ describe('QueryComponent', () => {
             const hashtagObj = {hashtag: '#test-hashtag', highlighted: ''};
             const result = component.cleanHashTag(hashtagObj);
             expect(decodeURIComponent(result)).toBe('test-hashtag');
-        });
-    });
-
-    describe('Hub Selection', () => {
-        beforeEach(() => {
-            component.dropdownOptions = [
-                {name: 'Afghanistan', value: 'AFG'},
-                {name: 'Bangladesh', value: 'BGD'},
-                {name: 'Brunei', value: 'BRN'},
-                {name: 'United States', value: 'USA'}
-            ];
-        });
-
-        it('should select countries for asia-pacific hub', () => {
-            component.changeHub('asia-pacific');
-
-            expect(component.selectedHub).toBe('asia-pacific');
-            expect(component.selectedCountries.length).toBeGreaterThan(0);
-            expect(component.selectedCountries.some(c => c.value === 'AFG')).toBe(true);
-            expect(component.selectedCountries.some(c => c.value === 'BGD')).toBe(true);
-        });
-
-        it('should select countries for other hubs', () => {
-            const hubs = ['la-carribean', 'wna', 'esa'];
-
-            hubs.forEach(hub => {
-                component.changeHub(hub);
-                expect(component.selectedHub).toBe(hub);
-                expect(Array.isArray(component.selectedCountries)).toBe(true);
-            });
-        });
-    });
-
-    describe('Impact Area Selection', () => {
-        beforeEach(() => {
-            component.topicOptions = [
-                {name: 'Water & Sanitation', value: 'wash'},
-                {name: 'Waterways', value: 'waterway'},
-                {name: 'Social Facilities', value: 'social_facility'},
-                {name: 'Places', value: 'place'},
-                {name: 'Land Use', value: 'lulc'}
-            ];
-        });
-
-        it('should select topics for disaster impact area', () => {
-            component.changeImpactArea('disaster');
-
-            expect(component.selectedImpactArea).toBe('disaster');
-            expect(component.selectedTopics.length).toBeGreaterThan(0);
-            expect(component.selectedTopics.some(t => t.value === 'wash')).toBe(true);
-        });
-
-        it('should select topics for all impact areas', () => {
-            const impactAreas = ['disaster', 'sus_cities', 'pub_health', 'migration', 'g_equality'];
-
-            impactAreas.forEach(area => {
-                component.changeImpactArea(area);
-                expect(component.selectedImpactArea).toBe(area);
-                expect(Array.isArray(component.selectedTopics)).toBe(true);
-            });
         });
     });
 
@@ -418,60 +308,6 @@ describe('QueryComponent', () => {
     });
 
 
-    describe('Live Mode', () => {
-        beforeEach(() => {
-            component.selectedDateRange = {
-                start: dayjs().subtract(2, 'hours'),
-                end: dayjs()
-            };
-            component.interval = 'PT5M';
-        });
-
-        it('should enable live mode button when conditions are met', () => {
-            const canEnable = component.enableLiveModeButton();
-            expect(canEnable).toBe(true);
-        });
-
-        it('should not enable live mode button when interval is not PT5M', () => {
-            component.interval = 'P1D';
-
-            const canEnable = component.enableLiveModeButton();
-            expect(canEnable).toBe(false);
-        });
-
-        it('should toggle live mode on', fakeAsync(() => {
-            spyOn(component, 'updateStateToFromSelection');
-
-            component.toggleLiveMode();
-
-            expect(component.liveMode).toBe(true);
-            expect(component.updateStateToFromSelection).toHaveBeenCalled();
-            expect(mockDataService.toggleLiveMode).toHaveBeenCalledWith(true);
-        }));
-
-        it('should toggle live mode off', () => {
-            component.liveMode = true;
-            spyOn(component, 'turnOffLiveMode');
-
-            component.toggleLiveMode();
-
-            expect(component.turnOffLiveMode).toHaveBeenCalled();
-        });
-
-        it('should turn off live mode completely', () => {
-            component.liveMode = true;
-            component.refreshIntervalId = 123;
-            spyOn(window, 'clearInterval');
-
-            component.turnOffLiveMode();
-
-            expect(component.liveMode).toBe(false);
-            expect(mockDataService.toggleLiveMode).toHaveBeenCalledWith(false);
-            expect(clearInterval).toHaveBeenCalledWith(123);
-        });
-    });
-
-
     describe('State Updates', () => {
         it('should update form from state correctly', () => {
             const inputData: IStateParams = {
@@ -501,18 +337,6 @@ describe('QueryComponent', () => {
             fixture.detectChanges();
 
             expect(component.interval).toBe('P1W');
-        });
-    });
-
-    describe('Component Cleanup', () => {
-        it('should cleanup on destroy', () => {
-            spyOn(component, 'turnOffLiveMode');
-            component['subscription'] = jasmine.createSpyObj('Subscription', ['unsubscribe']);
-
-            component.ngOnDestroy();
-
-            expect(component['subscription'].unsubscribe).toHaveBeenCalled();
-            expect(component.turnOffLiveMode).toHaveBeenCalled();
         });
     });
 });

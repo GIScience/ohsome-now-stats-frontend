@@ -1,0 +1,59 @@
+@import url(../query.component.scss);
+
+.hub-icon {
+  height: 50px;
+  width: 50px;
+  background-size: 100% 100% !important;
+  margin: 5px 5px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 1px solid #d1d2d3;
+  box-shadow: 1px 1px 1px rgb(78, 78, 78);
+}
+
+.hub-icon-wrapper {
+  :hover {
+    filter: brightness(90%);
+    transition: 0.3s;
+  }
+
+  :active {
+    filter: brightness(80%);
+    transition: 0.3s;
+  }
+
+  width: auto;
+  --bs-gutter-x: 0;
+}
+
+.hot-toggle {
+  height: 30px;
+  border-width: 0px;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  border-radius: 10px;
+}
+
+.hot-toggle-wrapper {
+  top: 5px;
+  right: 15px;
+  position: absolute;
+  padding: 0px !important;
+}
+
+.inline-p {
+  width: auto;
+  margin: 0;
+  color: #72777a !important;
+
+  :hover {
+    color: #383a3b !important;
+  }
+}
+
+.custom-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}

@@ -1,10 +1,10 @@
-import { NgModule, inject, provideAppInitializer } from '@angular/core';
+import {inject, NgModule, provideAppInitializer} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import {providePrimeNG} from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -31,6 +31,9 @@ import {ExportDataComponent} from "./dashboard/export-data/export-data.component
 import {AutoCompleteModule} from 'primeng/autocomplete';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
+import {DefaultQueryComponent} from "./dashboard/query/default-query/default-query.component";
+import {HotQueryComponent} from "./dashboard/query/hot-query/hot-query.component";
+import {LiveQueryComponent} from "./dashboard/query/live-query/live-query.component";
 
 const routes = [{path: 'help', component: HelpComponent}];
 
@@ -51,7 +54,10 @@ const routes = [{path: 'help', component: HelpComponent}];
         ExportDataComponent,
         UTCToLocalConverterPipe,
         Overlay,
-        StatusBannerComponent
+        StatusBannerComponent,
+        DefaultQueryComponent,
+        HotQueryComponent,
+        LiveQueryComponent
     ],
     bootstrap: [AppComponent],
     imports: [BrowserModule,
@@ -83,7 +89,8 @@ const routes = [{path: 'help', component: HelpComponent}];
             return initializerFn();
         }),
         provideHttpClient(withInterceptorsFromDi())
-    ] })
+    ]
+})
 export class AppModule {
 }
 

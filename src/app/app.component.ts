@@ -3,7 +3,6 @@ import * as bootstrap from 'bootstrap';
 import {ToastService} from './toast.service';
 import {DataService} from "./data.service";
 import {Router} from "@angular/router";
-import {StateService} from "./state.service";
 
 @Component({
     selector: 'app-root',
@@ -18,8 +17,9 @@ export class AppComponent implements AfterViewInit {
     live: boolean = false
 
     constructor(private toastService: ToastService,
-                private dataService: DataService
-        ) {
+                private dataService: DataService,
+                protected router: Router,
+    ) {
         this.dataService.liveMode.subscribe(mode => {
             this.live = mode
         })
