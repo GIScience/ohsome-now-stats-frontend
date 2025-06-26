@@ -5,7 +5,7 @@ import {BehaviorSubject, catchError, map, Observable, retry, tap, throwError} fr
 import {environment} from '../environments/environment';
 import {ActivatedRoute} from '@angular/router';
 import {
-    H3Row,
+    HexDataType,
     IHashtag,
     IMetaData,
     IMetadataResponse,
@@ -102,13 +102,20 @@ export class DataService {
             )
     }
 
-    getH3Map(params: { hashtag: string, start: string, end: string, topic: string, resolution: number, countries: string }): Observable<H3Row[]> {
+    getH3Map(params: {
+        hashtag: string,
+        start: string,
+        end: string,
+        topic: string,
+        resolution: number,
+        countries: string
+    }): Observable<HexDataType[]> {
         return this.http.get(
             `${this.url}/stats/h3?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topic=${params['topic']}&resolution=${params['resolution']}&countries=${params['countries']}`,
-            { responseType: 'text' }
+            {responseType: 'text'}
         ).pipe(
             map(csv => {
-                const parsed = Papa.parse(csv, { header: true, skipEmptyLines: true });
+                const parsed = Papa.parse(csv, {header: true, skipEmptyLines: true});
                 // parsed is of type ParseResult<any>
                 // parsed.data is the array of rows
                 return (parsed.data as any[]).map(row => ({
