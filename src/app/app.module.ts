@@ -31,6 +31,9 @@ import {ExportDataComponent} from "./dashboard/export-data/export-data.component
 import {AutoCompleteModule} from 'primeng/autocomplete';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
+import {DefaultQueryComponent} from "./dashboard/query/default-query/default-query.component";
+import {HotQueryComponent} from "./dashboard/query/hot-query/hot-query.component";
+import {LiveQueryComponent} from "./dashboard/query/live-query/live-query.component";
 import {CountryMapComponent} from './dashboard/country-map/country-map.component';
 import {HexMapComponent} from "./dashboard/hex-map/hex-map.component";
 import {LegendComponent} from "./dashboard/legend/legend.component";
@@ -54,7 +57,10 @@ const routes = [{path: 'help', component: HelpComponent}];
         ExportDataComponent,
         HexMapComponent,
         UTCToLocalConverterPipe,
-        StatusBannerComponent
+        StatusBannerComponent,
+        DefaultQueryComponent,
+        HotQueryComponent,
+        LiveQueryComponent
     ],
     bootstrap: [AppComponent],
     imports: [BrowserModule,

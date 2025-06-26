@@ -5,7 +5,7 @@ import {Component} from "@angular/core";
 
 // Mock child components
 @Component({
-    selector: 'app-query',
+    selector: 'default-query',
     template: '<div></div>'
 })
 class MockQueryComponent {

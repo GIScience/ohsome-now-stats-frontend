@@ -1,0 +1,65 @@
+<div class="row gap-20" style="overflow: visible !important;">
+    <!-- #Total Visits ==================== -->
+    <div class='col-md-12'>
+        <div class="bgc-white p-20 bd">
+            <form (keyup.enter)="updateStateFromSelection()" class="needs-validation was-validated" novalidate="">
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <div class="mb-3 row">
+                            <div class="col-md-10">
+                                <label class="form-label" for="hashtag"> Hashtag</label>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="icon-holder tooltip1" data-bs-placement="bottom"
+                                      data-bs-toggle="tooltip"
+                                      title="Filter stats by hashtag used in changesets comments eg: missingmaps. Keep it blank for statistics of all edits with or without hashtags"
+                                      data-bs-html="true">
+                                    <i class="c-grey-800 ti-help-alt"></i>
+                                </span>
+                            </div>
+                            <p-autoComplete
+                                    id="hashtag"
+                                    [(ngModel)]="selectedHashtagOption"
+                                    name="hashtag"
+                                    [suggestions]="filteredHashtagOptions"
+                                    (completeMethod)="searchChange($event)"
+                                    [minLength]=1
+                                    [delay]="150"
+                                    placeholder="Keep blank or Enter a hashtag"
+                                    (keydown)="turnOffLiveMode()"
+                                    optionLabel="hashtag"
+                            >
+                                <ng-template let-value pTemplate="item">
+                                    <span [innerHTML]="value.highlighted"></span>
+                                </ng-template>
+                            </p-autoComplete>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-md-12">
+                                <label class="form-label" for="countries">Country</label>
+                                <ngx-select-dropdown [options]="dropdownOptions" id="countries" name="countries"
+                                                     [config]="configCountry"
+                                                     [(ngModel)]="selectedCountries" [multiple]="true"
+                                                     class="customDropdown"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label class="form-label" for="topics-selection">OSM Data Topic</label>
+                            <ngx-select-dropdown [options]="topicOptions" name="topics-selection"
+                                                 [config]="configTopics"
+                                                 [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"
+                                                 id="topics-selection"
+                            />
+                        </div>
+                    </div>
+
+                </div>
+                <button class="btn btn-primary btn-color mL-3" id="btnLive"
+                        (click)="toggleLiveMode()" data-bs-toggle="tooltip" [attr.data-bs-title]="'Query Live'">
+                    <i [ngClass]="liveMode ? 'ti-control-pause': 'ti-control-play'"></i></button>
+            </form>
+        </div>
+    </div>
+</div>

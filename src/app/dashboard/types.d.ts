@@ -172,3 +172,9 @@ export interface HexDataType {
     result: number;
     hex_cell: string;
 }
+
+
+export interface ISelectionItem {
+    name: string;
+    value: string;
+}

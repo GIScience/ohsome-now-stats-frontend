@@ -1,15 +1,18 @@
 <div class="row gap-20 pos-r">
     <div class="col-md-3">
         <div class="w-100">
-            <!-- #User input ==================== -->
-            <app-query></app-query>
+            @if (mode === "hotosm") {
+                <hot-query/>
+            } @else if (mode === "live") {
+                <live-query/>
+            } @else {
+                <default-query/>
+            }
         </div>
         <div class="w-100 mT-10">
-            <!-- #Treanding hashtags ==================== -->
             <app-trending-hashtags></app-trending-hashtags>
         </div>
         <div class="w-100 mT-10">
-            <!-- #Export data as CSV ==================== -->
             <app-export-data></app-export-data>
         </div>
     </div>
@@ -20,13 +23,11 @@
             </div>
         </div>
         <div class="row">
-            <!-- #Common graph for Summary ==================== -->
             <div class="pT-10">
                 <app-plot></app-plot>
             </div>
         </div>
         <div class="row">
-            <!-- # New Map View ==================== -->
             <div class="pT-10">
                 <app-country-map></app-country-map>
             </div>
