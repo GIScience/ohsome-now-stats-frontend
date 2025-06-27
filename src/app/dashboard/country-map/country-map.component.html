@@ -1,2 +1,23 @@
-<p>Should load data: {{activeTopic}}</p>
-<p>Should update stylye: {{selectedCountries}}</p>
+<div class="bd bgc-white pos-r" #overlayContainer>
+    <overlay [isLoading]="isLoading" [containerElement]="overlayContainer"></overlay>
+    <div class="peers fxw-nw@lg+ ai-s">
+        <div class="peer peer-greed w-70p@lg+ w-100@lg- p-20">
+            <div class="layers">
+                <div class="w-100" style="aspect-ratio: 2/1;position: relative;">
+                    <div #deckContainer class="deck-container">
+                        <div class="osm-attribution"><a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        </div>
+                    </div>
+                </div>
+<!--                <div class="legend-container" *ngIf="!isH3Loading && minMaxStats">-->
+<!--                    <app-legend-->
+<!--                            [minValue]="minMaxStats.result.min"-->
+<!--                            [maxValue]="minMaxStats.result.max"-->
+<!--                            [colorFunction]="getColorFn()"-->
+<!--                            [unit]="getTopicUnit()">-->
+<!--                    </app-legend>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
