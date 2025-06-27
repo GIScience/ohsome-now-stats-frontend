@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DashboardComponent } from './dashboard.component';
+import {DashboardComponent} from './dashboard.component';
 import {Component} from "@angular/core";
 
 // Mock child components
@@ -46,14 +46,31 @@ class MockPlotComponent {
 class MockMapComponent {
 }
 
+@Component({
+    selector: 'app-hex-map',
+    template: '<div></div>'
+})
+class MockHexMapComponent {
+}
+
 describe('DashboardComponent', () => {
     let component: DashboardComponent;
     let fixture: ComponentFixture<DashboardComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [MockQueryComponent, MockTrendingHashtagsComponent, MockExportDataComponent, MockSummaryComponent, MockPlotComponent, MockMapComponent],
-            declarations: [DashboardComponent]
+            imports: [
+                MockQueryComponent,
+                MockTrendingHashtagsComponent,
+                MockExportDataComponent,
+                MockSummaryComponent,
+                MockPlotComponent,
+                MockMapComponent,
+                MockHexMapComponent
+            ],
+            declarations: [
+                DashboardComponent
+            ]
         })
             .compileComponents();
 
