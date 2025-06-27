@@ -1,10 +1,10 @@
-import { NgModule, inject, provideAppInitializer } from '@angular/core';
+import {NgModule, inject, provideAppInitializer} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import {providePrimeNG} from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -55,7 +55,6 @@ const routes = [{path: 'help', component: HelpComponent}];
         HexMapComponent,
         LegendComponent,
         UTCToLocalConverterPipe,
-        Overlay,
         StatusBannerComponent
     ],
     bootstrap: [AppComponent],
@@ -69,7 +68,12 @@ const routes = [{path: 'help', component: HelpComponent}];
         AutoCompleteModule,
         RouterModule.forRoot(routes, {
             scrollOffset: [0, 80]
-        }), CountryMapComponent],
+        }),
+        CountryMapComponent,
+        Overlay],
+    exports: [
+        Overlay
+    ],
     providers: [
         DataService,
         UTCToLocalConverterPipe,
@@ -88,7 +92,8 @@ const routes = [{path: 'help', component: HelpComponent}];
             return initializerFn();
         }),
         provideHttpClient(withInterceptorsFromDi())
-    ] })
+    ]
+})
 export class AppModule {
 }
 
