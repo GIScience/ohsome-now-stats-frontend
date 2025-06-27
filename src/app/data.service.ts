@@ -89,7 +89,7 @@ export class DataService {
         return this.http.get<IWrappedPlotResult>(`${this.url}/stats/interval?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`)
     }
 
-    requestCountryStats(params: any): Observable<IWrappedCountryResult> {
+    requestCountryStats(params: Omit<IQueryParams, "interval" | "countries">): Observable<IWrappedCountryResult> {
         return this.http.get<IWrappedCountryResult>(`${this.url}/stats/country?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topics=${params.topics}`)
     }
 
