@@ -76,7 +76,7 @@ describe('QueryComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [QueryComponent],
+            declarations: [QueryComponent, UTCToLocalConverterPipe],
             imports: [FormsModule],
             providers: [
                 {provide: DataService, useValue: mockDataService},
