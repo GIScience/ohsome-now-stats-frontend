@@ -7,6 +7,7 @@ import {StateService} from '../../state.service';
 import {UTCToLocalConverterPipe} from '../query/pipes/utc-to-local-converter.pipe';
 import {IPlotResult, StatsType} from '../types';
 import {Overlay} from '../../overlay.component';
+import dayjs from "dayjs";
 
 // Mock Plotly
 const mockPlotly = {
@@ -59,7 +60,8 @@ describe('PlotComponent', () => {
     beforeEach(async () => {
         const dataServiceSpy = jasmine.createSpyObj('DataService', [
             'requestPlot',
-            'requestTopicInterval'
+            'requestTopicInterval',
+            'metaData'
         ]);
 
         const stateServiceSpy = jasmine.createSpyObj('StateService', [
@@ -91,6 +93,10 @@ describe('PlotComponent', () => {
         // Setup default mock returns
         mockStateService.appState.and.returnValue(mockState);
         mockDataService.requestPlot.and.returnValue(of({result: mockPlotData}));
+        mockDataService.metaData.and.returnValue({
+            min_timestamp: dayjs().toISOString(),
+            max_timestamp: dayjs().toISOString()
+        });
         mockUtcToLocalConverter.transform.and.returnValue('2023-01-01 00:00:00');
     });
 

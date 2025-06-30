@@ -163,3 +163,8 @@ export interface IMetadataResponse extends IBaseResponse {
 export interface ITrendingHashtagResponse extends IBaseResponse {
     result: Array<IHashtag>
 }
+
+export interface HexDataType {
+    result: number;
+    hex_cell: string;
+}
