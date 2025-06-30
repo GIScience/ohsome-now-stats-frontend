@@ -1,13 +1,16 @@
 import {Component, computed, effect, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {StateService} from 'src/app/state.service';
 import {Overlay} from '../../overlay.component';
-import {Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
+import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer, ScatterplotLayer} from '@deck.gl/layers';
 import {DataService} from '../../data.service';
 import {ICountryData, ICountryLocationData, IWrappedCountryResult, StatsType} from '../types';
 import countryPlotPositions from '../../../assets/static/json/countryLabelpoint.json';
-import {scaleSqrt} from 'd3-scale';
+import topicDefinitions from "../../../assets/static/json/topicDefinitions.json";
+import {scalePow, scaleSqrt} from 'd3-scale';
+import {interpolateHcl} from 'd3-interpolate';
+import {lch, rgb} from 'd3-color';
 
 const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryCode: string]: [number, number] | null };
 
@@ -41,6 +44,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     selectedCountries: string = this.countryState();
     isLoading: boolean = false;
     deck!: Deck<MapView>;
+    minMaxStats: {minValue: number; maxValue: number;} = {minValue:0, maxValue:0};
 
     constructor(
         private stateService: StateService,
@@ -93,7 +97,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         const drawNewCountryDataLayer = (response: IWrappedCountryResult) => {
             const countryData: ICountryData[] = response.result.topics[this.activeTopic];
             const enrichedCountryData: ICountryLocationData[] = this.enrichCountryDataWithPlotPositions(countryData);
-            const minMaxStats: {minValue: number; maxValue: number;} = enrichedCountryData.reduce(
+            this.minMaxStats = enrichedCountryData.reduce(
                 (previousValue:{minValue: number; maxValue: number;}, currentValue: ICountryLocationData)=> {
                     return {
                         minValue: Math.min(previousValue.minValue, currentValue.value),
@@ -106,15 +110,12 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 id: 'countryLayer',
                 data: enrichedCountryData,
                 getPosition: (d: ICountryLocationData) => d.lonLat,
-                getFillColor: (d: ICountryLocationData) =>
-            {
-                return (d.value<0)?[255, 0, 0, 100]:[0, 0, 255, 100]
-            },
+                getFillColor: this.getColorFn(),
                 getRadius: (d: ICountryLocationData) => getAreaProportionalRadius({
                     minRadiusPx: 3,
                     maxRadiusPx: 40,
-                    minValue: minMaxStats.minValue,
-                    maxValue: minMaxStats.maxValue,
+                    minValue: this.minMaxStats.minValue,
+                    maxValue: this.minMaxStats.maxValue,
                     value: d.value
                 }),
                 radiusUnits: 'pixels',
@@ -161,7 +162,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             // remove all data where we do not have a location
             .filter(enrichedCountryData => enrichedCountryData.lonLat !== null) as ICountryLocationData[])
             // draw small values on top of lage ones
-            .sort((a: ICountryLocationData, b: ICountryLocationData) => b.value - a.value);
+            .sort((a: ICountryLocationData, b: ICountryLocationData) => Math.abs(b.value) - Math.abs(a.value));
     }
 
     updateCountryFilterStyle(selectedCountries: string) {
@@ -169,6 +170,43 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         (selectedCountries === "") ?
             console.log("use no filter style") :
             console.log("use filter style");
+    }
+
+    getColorFn() {
+        const topicColorHex = topicDefinitions[this.activeTopic]?.["color-hex"]
+
+        // Interpolator
+        // Negative color ranges from pale to strong red
+        const negativeColorStrong = lch("#a50026");
+        negativeColorStrong.opacity = 1;
+        const negativeColorPale = lch(70,negativeColorStrong.c, negativeColorStrong.h, 0.7);
+        const negativeInterpolator = interpolateHcl(negativeColorPale, negativeColorStrong);
+
+        // Positive color ranges from strong to pale topicColor
+        const positiveColorStrong = lch(topicColorHex);
+        positiveColorStrong.opacity = 0.7;
+        const positiveColorPale = lch(70, positiveColorStrong.c, positiveColorStrong.h, 0.3);
+        const positiveInterpolator = interpolateHcl(positiveColorStrong, positiveColorPale);
+
+        const { minValue, maxValue } = this.minMaxStats;
+        const abMax = Math.max(Math.abs(minValue), Math.abs(maxValue));
+        const negativeScale = scalePow([-abMax, 0], [0, 1]).exponent(1/4);
+        const positiveScale = scalePow([0, abMax], [0, 1]).exponent(2);
+
+        return (d: ICountryLocationData): Color => {
+            const value = d.value;
+
+            let color;
+            if (value < 0) {
+                // Use negative interpolator
+                color = rgb(negativeInterpolator(negativeScale(value)));
+            } else {
+                // Use positive interpolator
+                color = rgb(positiveInterpolator(positiveScale(value)));
+            }
+
+            return [color.r, color.g, color.b, color.opacity * 255];
+        }
     }
 
     private initializeDeck() {
