@@ -55,6 +55,7 @@
                                        [minDate]="minDate()"
                                        [maxDate]="dateRangeShiftedMaxDate"
                                        [(ngModel)]="selectedDateRange"
+                                       (datesUpdated)="updateDateRange($event)"
                                        id="dateRange"
                                        name="daterange"
                                        [showCustomRangeLabel]="true"

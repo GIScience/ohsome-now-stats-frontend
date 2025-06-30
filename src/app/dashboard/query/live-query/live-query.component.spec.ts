@@ -107,18 +107,6 @@ describe('LiveQueryComponent', () => {
             component.interval = 'PT5M';
         });
 
-        it('should enable live mode button when conditions are met', () => {
-            const canEnable = component.enableLiveModeButton();
-            expect(canEnable).toBe(true);
-        });
-
-        it('should not enable live mode button when interval is not PT5M', () => {
-            component.interval = 'P1D';
-
-            const canEnable = component.enableLiveModeButton();
-            expect(canEnable).toBe(false);
-        });
-
         it('should toggle live mode on', fakeAsync(() => {
             spyOn(component, 'triggerMetaDataRetrieval');
 

@@ -13,7 +13,7 @@ import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
 import {IDateRange, IHashtags, IHighlightedHashtag, ISelectionItem, IStateParams, StatsType} from "../types";
 import {StateService} from "../../state.service";
-import {DateRanges, EndDate, StartDate} from "ngx-daterangepicker-material/daterangepicker.component";
+import {DateRanges, EndDate, StartDate, TimePeriod} from "ngx-daterangepicker-material/daterangepicker.component";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
 import {over5000IntervalBins} from "../../utils";
 
@@ -41,10 +41,10 @@ export class QueryComponent implements OnInit {
     interval: string | undefined
     selectedDateRange: IDateRange | undefined
 
-    minDate = computed(() => dayjs(this.dataService.metaData().min_timestamp))
-    maxDate = computed(() => dayjs(this.dataService.metaData().max_timestamp))
+    minDate = computed(() => dayjs.utc(this.dataService.metaData().min_timestamp))
+    maxDate = computed(() => dayjs.utc(this.dataService.metaData().max_timestamp))
 
-    dateRangeShiftedMaxDate = this.maxDate().add(dayjs().utcOffset(), "minute")
+    dateRangeShiftedMaxDate = this.maxDate().local().add(dayjs().utcOffset(), "minute")
 
     ranges: Signal<DateRanges> = computed(() => {
         return {
@@ -54,7 +54,7 @@ export class QueryComponent implements OnInit {
             'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
             'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
             'Last Year': [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
-            'Entire Duration': [this.minDate(), this.dateRangeShiftedMaxDate]
+            'Entire Duration': [this.minDate().local(), this.dateRangeShiftedMaxDate]
         }
     })
 
@@ -142,8 +142,8 @@ export class QueryComponent implements OnInit {
         if (!this.validateForm() || !this.selectedDateRange)
             return
 
-        const tempStart = this.selectedDateRange.start.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"
-        const tempEnd = this.selectedDateRange.end.subtract(dayjs().utcOffset(), "minute").toISOString().split(".")[0] + "Z"
+        const tempStart = this.selectedDateRange.start.utc().format()
+        const tempEnd = this.selectedDateRange.end.utc().format()
 
         const tempHashTag = this.cleanHashTag(this.selectedHashtagOption)
 
@@ -298,8 +298,16 @@ export class QueryComponent implements OnInit {
         }
 
         if (!event) return;
-        this.selectedDateRange!.end = event.endDate as Dayjs
+        this.selectedDateRange!.end = event.endDate.subtract(dayjs().utcOffset(), "minute") as Dayjs
     }
+
+    updateDateRange(event: TimePeriod) {
+        this.selectedDateRange = {
+            start: event.startDate as Dayjs,
+            end: event.endDate as Dayjs
+        }
+    }
+
 
     updateStartDate(event: StartDate | null) {
         if (this.firstTimeStart) {
@@ -308,7 +316,7 @@ export class QueryComponent implements OnInit {
         }
 
         if (!event) return;
-        this.selectedDateRange!.start = event.startDate as Dayjs
+        this.selectedDateRange!.start = event.startDate.subtract(dayjs().utcOffset(), "minute") as Dayjs
     }
 
     /**
@@ -335,8 +343,8 @@ export class QueryComponent implements OnInit {
     protected updateSelectionFromState(inputData: IStateParams): void {
         if (inputData.start && inputData.end) {
             this.selectedDateRange = {
-                start: dayjs(inputData.start),
-                end: dayjs(inputData.end)
+                start: dayjs.utc(inputData.start).local(),
+                end: dayjs.utc(inputData.end).local()
             };
         }
 
