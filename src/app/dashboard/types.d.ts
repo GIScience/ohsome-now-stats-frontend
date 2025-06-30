@@ -88,6 +88,10 @@ export interface ICountryData extends IStatsData {
     country: string
 }
 
+export interface ICountryLocationData extends ICountryData{
+    lonLat: [number, number]
+}
+
 export interface ICountryDataAsArrays {
     countries: string[]
     values: number[]

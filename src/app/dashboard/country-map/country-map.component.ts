@@ -1,13 +1,15 @@
 import {Component, computed, effect, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {StateService} from 'src/app/state.service';
 import {Overlay} from '../../overlay.component';
-import {Deck, DeckProps} from '@deck.gl/core';
-import {TileLayer, TileLayerProps} from '@deck.gl/geo-layers';
-import {BitmapLayer, BitmapLayerProps} from '@deck.gl/layers';
+import {Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
+import {TileLayer} from '@deck.gl/geo-layers';
+import {BitmapLayer, ScatterplotLayer} from '@deck.gl/layers';
 import {DataService} from '../../data.service';
-import {ICountryData, IWrappedCountryResult, StatsType} from '../types';
-import {SubLayersProps} from '@deck.gl/layers/dist/geojson-layer/geojson-layer-props';
-import {Tile2DHeader, TileBoundingBox, TileLoadProps} from '@deck.gl/geo-layers/dist/tileset-2d';
+import {ICountryData, ICountryLocationData, IWrappedCountryResult, StatsType} from '../types';
+import countryPlotPositions from '../../../assets/static/json/countryLabelpoint.json';
+import {scaleSqrt} from 'd3-scale';
+
+const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryCode: string]: [number, number] | null };
 
 @Component({
     selector: 'app-country-map',
@@ -38,7 +40,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     activeTopic: StatsType = this.relevantState().active_topic;
     selectedCountries: string = this.countryState();
     isLoading: boolean = false;
-    deck!: Deck;
+    deck!: Deck<MapView>;
 
     constructor(
         private stateService: StateService,
@@ -79,14 +81,55 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             topics: this.relevantState().active_topic,
         }
 
-        const handleResponse = (response: IWrappedCountryResult) => {
+        function getAreaProportionalRadius(options: { minRadiusPx: number, maxRadiusPx:number, minValue: number, maxValue: number, value: number }) {
+            const {minRadiusPx, maxRadiusPx, minValue, maxValue, value} = options;
+
+            const absoluteMaxValue = Math.max(Math.abs(minValue),Math.abs(maxValue));
+            const scalePowFn = scaleSqrt([0,absoluteMaxValue], [0,maxRadiusPx]);
+
+            return (value !== 0)? Math.max((scalePowFn(Math.abs(value))), minRadiusPx) : 0;
+        }
+
+        const drawNewCountryDataLayer = (response: IWrappedCountryResult) => {
             const countryData: ICountryData[] = response.result.topics[this.activeTopic];
-            console.log(countryData[0]);
+            const enrichedCountryData: ICountryLocationData[] = this.enrichCountryDataWithPlotPositions(countryData);
+            const minMaxStats: {minValue: number; maxValue: number;} = enrichedCountryData.reduce(
+                (previousValue:{minValue: number; maxValue: number;}, currentValue: ICountryLocationData)=> {
+                    return {
+                        minValue: Math.min(previousValue.minValue, currentValue.value),
+                        maxValue: Math.max(previousValue.maxValue, currentValue.value)
+                    }
+                }, {minValue: Infinity, maxValue: -Infinity}
+            );
+
+            const countryLayer = new ScatterplotLayer<ICountryLocationData>({
+                id: 'countryLayer',
+                data: enrichedCountryData,
+                getPosition: (d: ICountryLocationData) => d.lonLat,
+                getFillColor: (d: ICountryLocationData) =>
+            {
+                return (d.value<0)?[255, 0, 0, 100]:[0, 0, 255, 100]
+            },
+                getRadius: (d: ICountryLocationData) => getAreaProportionalRadius({
+                    minRadiusPx: 3,
+                    maxRadiusPx: 40,
+                    minValue: minMaxStats.minValue,
+                    maxValue: minMaxStats.maxValue,
+                    value: d.value
+                }),
+                radiusUnits: 'pixels',
+                stroked: true,
+                getLineWidth: 0.6,
+                lineWidthUnits: 'pixels',
+                pickable: true
+            });
+
+            this.deck.setProps({layers: [this.deck.props.layers[0], countryLayer]})
         }
 
         this.isLoading = true;
         this.dataService.requestCountryStats(reqParams).subscribe({
-            next: handleResponse,
+            next: drawNewCountryDataLayer,
             error: (err) => {
                 console.log(err);
                 this.isLoading = false;
@@ -97,6 +140,28 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         })
 
 
+    }
+
+    /**
+     * Country codes, which are defined as null in the countryPlotPositions will be filtered out and therefore not rendered.
+     * If we get data with unknown (undefined) country codes an error will be logged in the console such that we can update our location file
+     */
+    enrichCountryDataWithPlotPositions(countryData: ICountryData[]): ICountryLocationData[] {
+        return (countryData.map(countryData => {
+            const plotPosition = typedCountryPlotPositions[countryData.country];
+            if (plotPosition !== undefined) {
+                const enrichedCountryData: Omit<ICountryLocationData, 'lonLat'> & { lonLat: [number, number] | null } =
+                    {...structuredClone(countryData), lonLat: plotPosition};
+                return enrichedCountryData;
+            } else {
+                console.error(`CountryMapComponent: No plot position available for country: ${countryData.country}`);
+                return {...countryData, lonLat: null};
+            }
+        })
+            // remove all data where we do not have a location
+            .filter(enrichedCountryData => enrichedCountryData.lonLat !== null) as ICountryLocationData[])
+            // draw small values on top of lage ones
+            .sort((a: ICountryLocationData, b: ICountryLocationData) => b.value - a.value);
     }
 
     updateCountryFilterStyle(selectedCountries: string) {
@@ -122,7 +187,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                     bounds: [west, south, east, north]
                 });
             },
-            opacity: 0.7,
+            opacity: 0.6,
             pickable: false
         });
 
@@ -134,9 +199,13 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 longitude: 6.129799,
                 zoom: 1,
             },
-            controller: true,
+            views: new MapView({
+                repeat: true,
+                controller: true,
+            }),
+            getTooltip: ({object: countryData}: PickingInfo<ICountryLocationData>) => countryData && `${countryData.country}: ${countryData.value}`,
             layers: [osmLayer],
-        } as DeckProps);
+        } as DeckProps<MapView>);
     };
 
 
