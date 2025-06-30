@@ -56,9 +56,10 @@
                     </div>
 
                 </div>
-                <button class="btn btn-primary btn-color mL-3" id="btnLive"
-                        (click)="toggleLiveMode()" data-bs-toggle="tooltip" [attr.data-bs-title]="'Query Live'">
-                    <i [ngClass]="liveMode ? 'ti-control-pause': 'ti-control-play'"></i></button>
+                <button class="btn btn-primary btn-color mL-3" id="btnLive" (click)="toggleLiveMode()">
+                    <i [ngClass]="liveMode ? 'ti-control-pause': 'ti-control-play'" class="mR-5"></i>
+                    {{ liveMode ? 'Stop' : 'Start' }}
+                </button>
             </form>
         </div>
     </div>

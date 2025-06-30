@@ -59,9 +59,6 @@ export class LiveQueryComponent extends QueryComponent implements OnDestroy {
             this.refreshIntervalId = setInterval(() => {
                 this.triggerMetaDataRetrieval()
             }, 10000) as unknown as number
-
-            // change tooltip
-            this.updateLiveTooltip('Stop Live')
         } else {
             this.turnOffLiveMode()
         }
@@ -71,20 +68,9 @@ export class LiveQueryComponent extends QueryComponent implements OnDestroy {
     turnOffLiveMode() {
         this.liveMode = false
         this.dataService.toggleLiveMode(false)
-        this.updateLiveTooltip('Query Live')
         if (this.refreshIntervalId) {
             clearInterval(this.refreshIntervalId)
             this.refreshIntervalId = null
         }
-    }
-
-    updateLiveTooltip(msg: string) {
-        const tooltipElement = <HTMLElement>document.getElementById('btnLive')
-        if (!tooltipElement)
-            return
-        tooltipElement.setAttribute('data-bs-title', msg)
-        setTimeout(() => {
-            this.enableTooltips()
-        }, 300)
     }
 }
