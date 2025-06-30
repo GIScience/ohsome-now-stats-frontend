@@ -60,6 +60,7 @@
                                        name="daterange"
                                        [showCustomRangeLabel]="true"
                                        [alwaysShowCalendars]="false"
+                                       (datesUpdated)="updateDateRange($event)"
                                        [ranges]="ranges()"
                                        [linkedCalendars]="true"
                                        [showClearButton]="true"

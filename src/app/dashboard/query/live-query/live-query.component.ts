@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import dayjs, {Dayjs} from "dayjs";
 import {QueryComponent} from "../query.component";
 
@@ -9,7 +9,7 @@ import {QueryComponent} from "../query.component";
     styleUrls: ['./live-query.component.scss'],
     standalone: false
 })
-export class LiveQueryComponent extends QueryComponent {
+export class LiveQueryComponent extends QueryComponent implements OnDestroy {
     liveMode: boolean = false
     refreshIntervalId: number | null = null
 
@@ -28,9 +28,11 @@ export class LiveQueryComponent extends QueryComponent {
         this.updateStateFromSelection()
     }
 
-    enableLiveModeButton() {
-        return this.interval === 'PT5M'
-            && Math.abs(this.selectedDateRange!.end.diff(this.selectedDateRange!.start, 'hours')) < 4
+    ngOnDestroy(): void {
+        if (this.refreshIntervalId) {
+            clearInterval(this.refreshIntervalId)
+            this.refreshIntervalId = null
+        }
     }
 
     triggerMetaDataRetrieval() {
@@ -39,8 +41,8 @@ export class LiveQueryComponent extends QueryComponent {
             (metadata) => {
                 if (!dayjs(metadata.max_timestamp).isSame(previousEndDate)) {
                     this.selectedDateRange = {
-                        start: (this.ranges()["Last 3 Hours"][0] as Dayjs).add(dayjs().utcOffset(), "minutes"),
-                        end: (this.ranges()["Last 3 Hours"][1] as Dayjs).add(dayjs().utcOffset(), "minutes")
+                        start: (this.ranges()["Last 3 Hours"][0] as Dayjs),
+                        end: (this.ranges()["Last 3 Hours"][1] as Dayjs)
                     }
                     this.updateStateFromSelection()
                 }
@@ -52,6 +54,7 @@ export class LiveQueryComponent extends QueryComponent {
     toggleLiveMode() {
         this.liveMode = !this.liveMode
         if (this.liveMode) {
+            this.updateStateFromSelection()
             this.triggerMetaDataRetrieval()
             this.refreshIntervalId = setInterval(() => {
                 this.triggerMetaDataRetrieval()
