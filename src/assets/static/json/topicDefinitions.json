@@ -59,8 +59,8 @@
     "name": "Total Edits",
     "y-title": "# of total edits",
     "dropdown_name": "Total Edits",
-    "color-hex": "#f44336",
-    "color-light": "#ffebee",
+    "color-hex": "#ff9800",
+    "color-light": "#fff3e0",
     "color-scale": [
       "#8a0900",
       "#8e1306",
@@ -114,7 +114,7 @@
     "name": "Δ Buildings",
     "y-title": "# of Δ buildings",
     "dropdown_name": "Buildings",
-    "color-hex": "#9c27b0",
+    "color-hex": "#9c27f0",
     "color-light": "#f3e5f5",
     "color-scale": [
       "#600270",
@@ -609,8 +609,8 @@
     "name": "Δ Places",
     "y-title": "# of Δ places",
     "dropdown_name": "Places",
-    "color-hex": "#ff9800",
-    "color-light": "#fff3e0",
+    "color-hex": "#87256a",
+    "color-light": "#ffebee",
     "color-scale": [
       "#f49100",
       "#f4930c",
@@ -719,8 +719,8 @@
     "name": "Δ Social Facilities",
     "y-title": "# of Δ social facilities",
     "dropdown_name": "Social Facilities",
-    "color-hex": "#7F0101",
-    "color-light": "#FFC3C3",
+    "color-hex": "#ec6600",
+    "color-light": "#ffca9b",
     "color-scale": [
       "#7f0101",
       "#830a08",
@@ -829,8 +829,8 @@
     "name": "Δ km of Waterways",
     "y-title": "# of Δ km waterways",
     "dropdown_name": "Waterways",
-    "color-hex": "#e91e63",
-    "color-light": "#fce4ec",
+    "color-hex": "#0091ce",
+    "color-light": "#9af0ff",
     "color-scale": [
       "#78052c",
       "#7c0f30",
