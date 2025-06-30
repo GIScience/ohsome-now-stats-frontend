@@ -270,6 +270,17 @@ describe('QueryComponent', () => {
 
             expect(component.countries).toEqual(['']);
         });
+
+        it('should handle live mode date adjustment', fakeAsync(() => {
+            spyOn(component, 'validateForm').and.returnValue(true);
+            spyOn(component, 'cleanHashTag').and.returnValue('test');
+            component.liveMode = true;
+
+            component.updateStateToFromSelection();
+            tick(2000);
+
+            expect(component.selectedDateRange?.start.diff(component.maxDate(), 'hours')).toBe(-3);
+        }));
     });
 
     describe('cleanHashTag', () => {
@@ -428,6 +439,7 @@ describe('QueryComponent', () => {
         });
 
         it('should toggle live mode on', fakeAsync(() => {
+
             spyOn(component, 'triggerMetaDataRetrieval');
 
             component.toggleLiveMode();
