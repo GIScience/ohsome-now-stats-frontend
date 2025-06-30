@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import {QueryComponent} from './query.component';
 import {DataService} from '../../data.service';
@@ -53,7 +53,8 @@ describe('QueryComponent', () => {
                 {label: '1 Month', value: 'P1M'},
                 {label: '5 Minutes', value: 'PT5M'}
             ],
-            defaultIntervalValue: 'P1M'
+            defaultIntervalValue: 'P1M',
+            requestMetadata: jasmine.createSpy('requestMetadata').and.returnValue(of(mockMetaData))
         };
 
         mockToastService = {
@@ -149,13 +150,11 @@ describe('QueryComponent', () => {
                 {path: 'hotosm'}
             ];
             spyOn(component, 'enableTooltips');
-            spyOn(component, 'updateStateToFromSelection');
 
             component.ngOnInit();
 
             expect(component.hot_controls).toBe(true);
             expect(component.selectedHashtagOption.hashtag).toBe('hotosm-project-*');
-            expect(component.updateStateToFromSelection).toHaveBeenCalled();
         });
 
         it('should not enable HOT controls for regular routes', () => {
@@ -271,17 +270,6 @@ describe('QueryComponent', () => {
 
             expect(component.countries).toEqual(['']);
         });
-
-        it('should handle live mode date adjustment', fakeAsync(() => {
-            spyOn(component, 'validateForm').and.returnValue(true);
-            spyOn(component, 'cleanHashTag').and.returnValue('test');
-            component.liveMode = true;
-
-            component.updateStateToFromSelection();
-            tick(2000);
-
-            expect(component.selectedDateRange?.start.diff(component.maxDate(), 'hours')).toBe(-3);
-        }));
     });
 
     describe('cleanHashTag', () => {
@@ -440,12 +428,12 @@ describe('QueryComponent', () => {
         });
 
         it('should toggle live mode on', fakeAsync(() => {
-            spyOn(component, 'updateStateToFromSelection');
+            spyOn(component, 'triggerMetaDataRetrieval');
 
             component.toggleLiveMode();
 
             expect(component.liveMode).toBe(true);
-            expect(component.updateStateToFromSelection).toHaveBeenCalled();
+            expect(component.triggerMetaDataRetrieval).toHaveBeenCalled();
             expect(mockDataService.toggleLiveMode).toHaveBeenCalledWith(true);
         }));
 
