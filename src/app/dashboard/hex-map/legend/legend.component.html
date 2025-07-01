@@ -1,0 +1,20 @@
+<div class="color-legend">
+    <div class="legend-title">{{ unit }}</div>
+    <div class="legend-bar-container">
+        <div class="legend-bar" #legendBar>
+            <canvas
+                #legendCanvas
+                class="legend-canvas">
+            </canvas>
+        </div>
+        <div class="legend-labels">
+            <span class="legend-label min-label">{{ formatValue(minValue) }}</span>
+            <span
+                    *ngIf="showZeroLabel"
+                    class="legend-label zero-label"
+                    [style.left.%]="zeroPosition * 100"
+            >0</span>
+            <span class="legend-label max-label">{{ formatValue(maxValue) }}</span>
+        </div>
+    </div>
+</div>

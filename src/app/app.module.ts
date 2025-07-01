@@ -34,6 +34,8 @@ import {StatusBannerComponent} from "./status-banner/status-banner.component";
 import {DefaultQueryComponent} from "./dashboard/query/default-query/default-query.component";
 import {HotQueryComponent} from "./dashboard/query/hot-query/hot-query.component";
 import {LiveQueryComponent} from "./dashboard/query/live-query/live-query.component";
+import {HexMapComponent} from "./dashboard/hex-map/hex-map.component";
+import {LegendComponent} from "./dashboard/hex-map/legend/legend.component";
 
 const routes = [{path: 'help', component: HelpComponent}];
 
@@ -52,6 +54,8 @@ const routes = [{path: 'help', component: HelpComponent}];
         HelpComponent,
         BigNumberComponent,
         ExportDataComponent,
+        HexMapComponent,
+        LegendComponent,
         UTCToLocalConverterPipe,
         Overlay,
         StatusBannerComponent,

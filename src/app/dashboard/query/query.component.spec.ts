@@ -53,7 +53,8 @@ describe('QueryComponent', () => {
                 {label: '1 Month', value: 'P1M'},
                 {label: '5 Minutes', value: 'PT5M'}
             ],
-            defaultIntervalValue: 'P1M'
+            defaultIntervalValue: 'P1M',
+            requestMetadata: jasmine.createSpy('requestMetadata').and.returnValue(of(mockMetaData))
         };
 
         mockToastService = {
@@ -76,7 +77,7 @@ describe('QueryComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [QueryComponent],
+            declarations: [QueryComponent, UTCToLocalConverterPipe],
             imports: [FormsModule],
             providers: [
                 {provide: DataService, useValue: mockDataService},
