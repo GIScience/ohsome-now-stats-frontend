@@ -47,3 +47,8 @@
 :host ::ng-deep p-overlay > div {
   width: 100%;
 }
+
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
