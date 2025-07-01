@@ -49,12 +49,18 @@ export class AppComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         setTimeout(() => {
-            this.checkForSmallScreen()
+            this.checkForSmallScreen();
+
+            // Re-initialize tooltips after navigation
+            const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(tooltipTriggerEl => {
+                new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' });
+            });
         }, 1000);
 
         // enble tooltip
-        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
+        // const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        // [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
 
     }
 
