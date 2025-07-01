@@ -164,6 +164,12 @@ export interface ITrendingHashtagResponse extends IBaseResponse {
     result: Array<IHashtag>
 }
 
+export interface ISelectionItem {
+    name: string;
+    value: string;
+}
+
+
 export interface HexDataType {
     result: number;
     hex_cell: string;
