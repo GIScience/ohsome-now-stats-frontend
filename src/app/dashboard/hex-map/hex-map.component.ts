@@ -36,6 +36,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
     deck!: Deck;
     minMaxStats!: { result: { max: number; min: number } };
     private layer!: H3HexagonLayer<HexDataType>;
+    private currentResolution = 3;
     private MAX_HEX_CELL = 314000;
 
     // Fixed TileLayer configuration
@@ -68,6 +69,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
         effect(() => {
             this.selectedTopic = this.relevantState().active_topic
+            this.currentResolution = 3
             const reqParams = {
                 hashtag: this.relevantState().hashtag,
                 start: this.relevantState().start,
@@ -169,7 +171,8 @@ export class HexMapComponent implements OnInit, OnDestroy {
             const num_of_cells = result.length - 1 // first row is the CSV header
             // console.log('num_of_cells', num_of_cells)
             // 7 times for each + 1 resolution
-            if(num_of_cells * (7 * 7 * 7) < this.MAX_HEX_CELL) {
+            if (this.currentResolution === 3 && num_of_cells * (7 * 7 * 7) < this.MAX_HEX_CELL) {
+                this.currentResolution = 6;
                 const reqParams = {
                     hashtag: this.relevantState().hashtag,
                     start: this.relevantState().start,
