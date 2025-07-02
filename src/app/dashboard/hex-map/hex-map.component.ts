@@ -9,6 +9,7 @@ import {HexDataType, IStateParams, StatsType} from '../types'
 import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
+import {ToastService} from "../../toast.service";
 
 @Component({
     selector: 'app-hex-map',
@@ -62,7 +63,8 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
     constructor(
         private stateService: StateService,
-        private dataService: DataService) {
+        private dataService: DataService,
+        private toastService: ToastService) {
 
         effect(() => {
             this.selectedTopic = this.relevantState().active_topic
@@ -122,7 +124,28 @@ export class HexMapComponent implements OnInit, OnDestroy {
         options?: Partial<H3HexagonLayerProps<HexDataType>>,
     ): Promise<H3HexagonLayer<HexDataType>> {
         this.isH3Loading = true;
-        const result = await this.dataService.getH3Map(params).toPromise();
+        let result;
+        try {
+            result = await this.dataService.getH3Map(params).toPromise();
+        } catch (e: any) {
+            console.error('Error getting HexMap data from API ', e);
+            console.info('Request params: ', params);
+            if(e.error && e.error[0]) {
+                const errMessage = JSON.parse(e.error);
+                this.toastService.show({
+                    title: 'Error while getting Hex Map data from API',
+                    body: 'Something went wrong while requesting data for Map with Hexagonal info. \n' + errMessage[0].message,
+                    type: 'error'
+                })
+            } else {
+                this.toastService.show({
+                    title: 'Error while getting Hex Map data from API',
+                    body: 'Something went wrong while requesting data for Map with Hexagonal info. Please try again with modify request.',
+                    type: 'error'
+                })
+            }
+            this.isH3Loading = false;
+        }
 
         if (result) {
             this.isH3Loading = false;
@@ -144,7 +167,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
             // count the number ot hex-cells
             const num_of_cells = result.length - 1 // first row is the CSV header
-            console.log('num_of_cells', num_of_cells)
+            // console.log('num_of_cells', num_of_cells)
             // 7 times for each + 1 resolution
             if(num_of_cells * (7 * 7 * 7) < this.MAX_HEX_CELL) {
                 const reqParams = {
@@ -157,9 +180,6 @@ export class HexMapComponent implements OnInit, OnDestroy {
                 }
                 this.updateLayer(reqParams)
             }
-        } else {
-            console.error('Error getting HexMap data from API')
-            // return;
         }
 
         // Build the layer
