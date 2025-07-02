@@ -25,6 +25,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
     deck!: Deck<MapView>;
     minMaxStats!: { result: { max: number; min: number } };
     private layer!: H3HexagonLayer<HexDataType>;
+    private MAX_HEX_CELL = 314000;
 
     // Fixed TileLayer configuration
     private readonly osmLayer = new TileLayer({
@@ -55,7 +56,15 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
         effect(() => {
             this.selectedTopic = this.relevantState().active_topic
-            this.updateLayer()
+            const reqParams = {
+                hashtag: this.relevantState().hashtag,
+                start: this.relevantState().start,
+                end: this.relevantState().end,
+                countries: this.relevantState().countries,
+                topic: this.relevantState().active_topic,
+                resolution: 3
+            }
+            this.updateLayer(reqParams)
         })
     }
 
@@ -92,15 +101,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
         }  as DeckProps<MapView>);
     }
 
-    async updateLayer() {
-        const reqParams = {
-            hashtag: this.relevantState().hashtag,
-            start: this.relevantState().start,
-            end: this.relevantState().end,
-            countries: this.relevantState().countries,
-            topic: this.relevantState().active_topic,
-            resolution: 3
-        }
+    async updateLayer(reqParams: { hashtag: string; start: string; end: string; countries: string; topic: string; resolution: number; }) {
         this.layer = await this.createCountryLayer(reqParams);
         this.deck.setProps({
             layers: [this.osmLayer, this.layer],
@@ -133,6 +134,25 @@ export class HexMapComponent implements OnInit, OnDestroy {
                     }
                 }
             );
+
+            // count the number ot hex-cells
+            const num_of_cells = result.length - 1 // first row is the CSV header
+            console.log('num_of_cells', num_of_cells)
+            // 7 times for each + 1 resolution
+            if(num_of_cells * (7 * 7 * 7) < this.MAX_HEX_CELL) {
+                const reqParams = {
+                    hashtag: this.relevantState().hashtag,
+                    start: this.relevantState().start,
+                    end: this.relevantState().end,
+                    countries: this.relevantState().countries,
+                    topic: this.relevantState().active_topic,
+                    resolution: 6
+                }
+                this.updateLayer(reqParams)
+            }
+        } else {
+            console.error('Error getting HexMap data from API')
+            // return;
         }
 
         // Build the layer
