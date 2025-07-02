@@ -1,14 +1,4 @@
 // ---------------------------------------------------------
-// @TOC
-// ---------------------------------------------------------
-
-// + @Sidebar
-// + @Sidebar Inner
-// + @Sidebar Header
-// + @Sidebar Menu
-// + @Sidebar Collapsed
-
-// ---------------------------------------------------------
 // @Sidebar
 // ---------------------------------------------------------
 
@@ -18,99 +8,27 @@
   overflow: hidden;
   position: fixed;
   top: 0;
-  transition: all 0.2s ease;
   width: $offscreen-size;
   z-index: 1000;
 
   ul {
     list-style-type: none;
+
+    li {
+      &.active {
+        background-color: rgba(225, 225, 225);
+        border-bottom-left-radius: 25%;
+        border-top-left-radius: 25%;
+      }
+
+      &:not(.active) {
+        :hover {
+          background-color: rgb(241, 241, 241);
+          transition: background-color .3s ease-in
+        }
+      }
+    }
   }
-
-  // @include between($breakpoint-md, $breakpoint-xl) {
-  //   width: $collapsed-size;
-
-  //   .sidebar-inner {
-  //     .sidebar-logo {
-  //       border-bottom: 1px solid transparent;
-  //       padding: 0;
-
-  //       a {
-  //         .logo {
-  //           background-position: center center;
-  //           width: $collapsed-size;
-  //         }
-  //       }
-  //     }
-
-  //     .sidebar-menu {
-  //       overflow-x: hidden;
-
-  //       > li {
-  //         > a {
-  //           .title {
-  //             display: none;
-  //           }
-  //         }
-  //       }
-
-  //       li {
-  //         &.dropdown {
-  //           .arrow {
-  //             opacity: 0;
-  //           }
-
-  //           &.open {
-  //             ul.dropdown-menu {
-  //               display: none !important;
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   &:not(:hover) .sidebar-logo .logo img {
-  //     width: 32px;
-  //     height: 32px;
-  //     margin: 0 20px;
-  //     content: url("/favicon.ico");
-  //   }
-
-  //   &:hover {
-  //     width: $offscreen-size;
-
-  //     .sidebar-inner {
-  //       .sidebar-logo {
-  //         border-bottom: 1px solid $border-color;
-  //         padding: 0 20px;
-  //       }
-
-  //       .sidebar-menu {
-  //         > li {
-  //           > a {
-  //             .title {
-  //               display: inline-block;
-  //             }
-  //           }
-  //         }
-
-  //         li {
-  //           &.dropdown {
-  //             .arrow {
-  //               opacity: 1;
-  //             }
-  //           }
-
-  //           &.open {
-  //             > ul.dropdown-menu {
-  //               display: block !important;
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
 
   @include to($breakpoint-md) {
     width: calc(#{$offscreen-size} - 30px);
@@ -194,7 +112,7 @@
   }
 
   .sidebar-link {
-    &.actived::before {
+    &.activated::before {
       background: $md-blue-500;
       border-radius: 50%;
       content: '';
@@ -292,7 +210,7 @@
               }
             }
 
-            &.actived {
+            &.activated {
               a {
                 color: $default-dark;
               }
@@ -376,83 +294,7 @@
         }
       }
 
-      //&:hover {
-      //  width: $offscreen-size;
-      //
-      //  .sidebar-inner {
-      //    .sidebar-logo {
-      //      border-bottom: 1px solid $border-color;
-      //      padding: 0 20px;
-      //    }
-      //
-      //    .sidebar-menu {
-      //      > li {
-      //        > a {
-      //          .title {
-      //            display: inline-block;
-      //          }
-      //        }
-      //      }
-      //
-      //      li {
-      //        &.dropdown {
-      //          .arrow {
-      //            opacity: 1;
-      //          }
-      //        }
-      //
-      //        &.open {
-      //          > ul.dropdown-menu {
-      //            display: block !important;
-      //          }
-      //        }
-      //      }
-      //    }
-      //  }
-      //}
     }
-
-    // @include between($breakpoint-md, $breakpoint-xl) {
-    //   width: $offscreen-size;
-
-    //   .sidebar-inner {
-    //     .sidebar-logo {
-    //       border-bottom: 1px solid $border-color;
-    //       padding: 0 20px;
-
-    //       > a {
-    //         .logo {
-    //           background-position: center left;
-    //           width: 150px;
-    //         }
-    //       }
-    //     }
-
-    //     .sidebar-menu {
-    //       > li {
-    //         > a {
-    //           .title {
-    //             display: inline-block;
-    //           }
-    //         }
-    //       }
-
-    //       li {
-    //         &.dropdown {
-    //           .arrow {
-    //             opacity: 1;
-    //           }
-    //         }
-
-    //         &.open {
-    //           > ul.dropdown-menu {
-    //             display: block !important;
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
 
     @include to($breakpoint-md) {
       left: 0;

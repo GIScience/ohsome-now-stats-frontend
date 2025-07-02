@@ -2,9 +2,10 @@ import {effect, Injectable, signal} from '@angular/core';
 import {IStateParams} from "./dashboard/types";
 import {environment} from "../environments/environment";
 import {DataService} from "./data.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import dayjs from "dayjs";
 import {over5000IntervalBins} from "./utils";
+import {BehaviorSubject, filter} from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -23,6 +24,9 @@ export class StateService {
     // Public readonly signal for components to read
     public readonly appState = this._appState.asReadonly();
 
+    bsActivePage = new BehaviorSubject<string | undefined>(undefined);
+    activePage = this.bsActivePage.asObservable();
+
     constructor(
         private dataService: DataService,
         private router: Router,
@@ -34,7 +38,18 @@ export class StateService {
             this.updateURL(this.appState())
         });
 
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd)
+        ).subscribe((_) => {
+            this.bsActivePage.next(this.getLastUrlRoute())
+        });
+        this.bsActivePage.next(this.getLastUrlRoute())
     }
+
+    getLastUrlRoute() {
+        return this.router.url.split('#')[0].split('/').pop()
+    }
+
 
     updatePartialState(partialState: Partial<IStateParams>): void {
         this._appState.update(currentState => ({
