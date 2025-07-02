@@ -32,7 +32,7 @@
 
             <!-- ### $Sidebar Menu ### -->
             <ul class="sidebar-menu scrollable pos-r">
-                <li class="nav-item mT-30 actived">
+                <li class="nav-item mT-30 activated" [ngClass]="page === 'dashboard' ? 'active' : ''">
                     <a class="sidebar-link" [routerLink]="['/dashboard']" data-bs-toggle="tooltip"
                        data-bs-placement="right" [attr.data-bs-title]="'Dashboard'">
                         <span class="icon-holder">
@@ -41,31 +41,31 @@
                         <span class="title">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" [ngClass]="page === 'hotosm' ? 'active' : ''">
                     <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-                       [routerLink]="['/dashboard/hotosm']" data-bs-toggle="tooltip" [attr.data-bs-title]="'HOT View'"
+                       [routerLink]="['/dashboard/hotosm']" data-bs-toggle="tooltip" [attr.data-bs-title]="'HOT Mode'"
                        data-bs-placement="right">
-                        <div class="logo" style="cursor: pointer">
+                        <div class="icon-holder" style="cursor: pointer">
                             <img alt="HOT"
                                  src="assets/images/hot_logo.png"
-                                 style="height: 20px; margin-right: 14px;">
+                                 style="height: 20px">
                         </div>
                         <span class="title">HOT View</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" [ngClass]="page === 'live' ? 'active' : ''">
                     <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-                       [routerLink]="['/dashboard/live']" data-bs-toggle="tooltip" [attr.data-bs-title]="'Live View'"
+                       [routerLink]="['/dashboard/live']" data-bs-toggle="tooltip" [attr.data-bs-title]="'Live Mode'"
                        data-bs-placement="right">
-                        <div class="logo" style="cursor: pointer">
+                        <div class="icon-holder" style="cursor: pointer">
                             <img alt="Live Mode"
                                  src="assets/images/live.png"
-                                 style="height: 20px; margin-right: 14px;">
+                                 style="height: 20px">
                         </div>
                         <span class="title">Live View</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" [ngClass]="page === 'about' ? 'active' : ''">
                     <a class='sidebar-link' [routerLink]="['/about']" data-bs-toggle="tooltip" data-bs-placement="right"
                        [attr.data-bs-title]="'About'">
                         <span class="icon-holder">
@@ -74,7 +74,7 @@
                         <span class="title">About</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" [ngClass]="page === 'help' ? 'active' : ''">
                     <a class='sidebar-link' [routerLink]="['/help']" data-bs-toggle="tooltip" data-bs-placement="right"
                        [attr.data-bs-title]="'Help'">
                         <span class="icon-holder">

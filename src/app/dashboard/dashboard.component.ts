@@ -1,6 +1,5 @@
-import {Component, inject} from '@angular/core';
-import {filter} from "rxjs";
-import {NavigationEnd, Router} from "@angular/router";
+import {Component} from '@angular/core';
+import {StateService} from "../state.service";
 
 @Component({
     selector: 'app-dashboard',
@@ -9,19 +8,9 @@ import {NavigationEnd, Router} from "@angular/router";
     standalone: false
 })
 export class DashboardComponent {
-    mode: string;
-    router = inject(Router);
+    mode: string = '';
 
-    constructor() {
-        this.router.events.pipe(
-            filter(event => event instanceof NavigationEnd)
-        ).subscribe((_) => {
-            this.mode = this.getLastUrlRoute()!
-        });
-        this.mode = this.getLastUrlRoute()!
-    }
-
-    getLastUrlRoute() {
-        return this.router.url.split('#')[0].split('/').pop()
+    constructor(stateService: StateService) {
+        stateService.activePage.subscribe(page => this.mode = page!)
     }
 }

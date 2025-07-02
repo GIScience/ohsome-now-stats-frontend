@@ -2,7 +2,7 @@ import {AfterViewInit, Component, HostListener} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {ToastService} from './toast.service';
 import {DataService} from "./data.service";
-import {Router} from "@angular/router";
+import {StateService} from "./state.service";
 
 @Component({
     selector: 'app-root',
@@ -15,13 +15,17 @@ export class AppComponent implements AfterViewInit {
     name = 'HeiGIT';
     isOpen = false
     live: boolean = false
+    page: string = ''
 
     constructor(private toastService: ToastService,
                 private dataService: DataService,
-                protected router: Router,
+                stateService: StateService,
     ) {
         this.dataService.liveMode.subscribe(mode => {
             this.live = mode
+        })
+        stateService.activePage.subscribe(page => {
+            this.page = page!
         })
     }
 
@@ -50,13 +54,12 @@ export class AppComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.checkForSmallScreen();
-
-            // Re-initialize tooltips after navigation
-            const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.forEach(tooltipTriggerEl => {
-                new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'});
-            });
         }, 1000);
+        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(tooltipTriggerEl => {
+            new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'});
+        });
+
     }
 
     toggleSidebar() {
