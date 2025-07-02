@@ -37,13 +37,14 @@ export class StateService {
             // This is THE ONLY PLACE WE WANT URL TO BE UPDATED
             this.updateURL(this.appState())
         });
-
-        this.router.events.pipe(
-            filter(event => event instanceof NavigationEnd)
-        ).subscribe((_) => {
+        if (router.events) {
+            this.router.events.pipe(
+                filter(event => event instanceof NavigationEnd)
+            ).subscribe((_) => {
+                this.bsActivePage.next(this.getLastUrlRoute())
+            });
             this.bsActivePage.next(this.getLastUrlRoute())
-        });
-        this.bsActivePage.next(this.getLastUrlRoute())
+        }
     }
 
     getLastUrlRoute() {

@@ -2,6 +2,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {DashboardComponent} from './dashboard.component';
 import {Component} from "@angular/core";
+import {StateService} from "../state.service";
+import {of} from "rxjs";
 
 // Mock child components
 @Component({
@@ -70,7 +72,8 @@ describe('DashboardComponent', () => {
             ],
             declarations: [
                 DashboardComponent
-            ]
+            ],
+            providers: [{provide: StateService, useValue: {activePage: of(null)}}]
         })
             .compileComponents();
 
