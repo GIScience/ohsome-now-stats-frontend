@@ -5,7 +5,7 @@ import {BitmapLayer} from '@deck.gl/layers';
 import {lch, rgb} from 'd3-color';
 import {scalePow} from 'd3-scale';
 import {interpolateHcl} from "d3-interpolate";
-import {HexDataType, StatsType} from '../types'
+import {HexDataType, IStateParams, StatsType} from '../types'
 import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
@@ -19,7 +19,17 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 export class HexMapComponent implements OnInit, OnDestroy {
     @ViewChild('deckContainer', {static: true}) deckContainer!: ElementRef;
 
-    private relevantState = computed(() => this.stateService.appState())
+    private relevantState = computed((): IStateParams => {
+        return this.stateService.appState()
+    }, {
+        equal: (a, b) => {
+            return a.hashtag === b.hashtag
+                && a.start === b.start
+                && a.end === b.end
+                && a.topics == b.topics
+                && a.countries == b.countries
+        }
+    })
 
     selectedTopic!: StatsType;
     deck!: Deck<MapView>;
