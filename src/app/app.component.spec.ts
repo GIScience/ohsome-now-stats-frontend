@@ -2,8 +2,9 @@ import {TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
 import {DataService} from './data.service';
 import {provideRouter, Router} from "@angular/router";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, of} from "rxjs";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {StateService} from "./state.service";
 
 describe('AppComponent', () => {
     let component: AppComponent;
@@ -28,6 +29,10 @@ describe('AppComponent', () => {
                 {
                     provide: DataService,
                     useValue: dataServiceSpy
+                },
+                {
+                    provide: StateService,
+                    useValue: {activePage: of(null)}
                 }
             ]
         }).compileComponents();
