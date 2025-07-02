@@ -11,12 +11,14 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {scalePow, scaleSqrt} from 'd3-scale';
 import {interpolateHcl} from 'd3-interpolate';
 import {lch, rgb} from 'd3-color';
+import {LegendComponent} from '../legend/legend.component';
+import {NgIf} from '@angular/common';
 
 const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryCode: string]: [number, number] | null };
 
 @Component({
     selector: 'app-country-map',
-    imports: [Overlay],
+    imports: [Overlay, LegendComponent, NgIf],
     templateUrl: './country-map.component.html',
     styleUrl: './country-map.component.scss'
 })
@@ -45,6 +47,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     deck!: Deck<MapView>;
     minMaxStats: {minValue: number; maxValue: number;} = {minValue:0, maxValue:0};
+    enrichedCountryData: ICountryLocationData[] = [];
 
     constructor(
         private stateService: StateService,
@@ -58,7 +61,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
 
         effect(() => {
             this.selectedCountries = this.countryState();
-            this.updateCountryFilterStyle(this.selectedCountries);
+            this.createOrReplaceCountryDataLayer(this.enrichedCountryData);
         });
     }
 
@@ -85,19 +88,10 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             topics: this.relevantState().active_topic,
         }
 
-        function getAreaProportionalRadius(options: { minRadiusPx: number, maxRadiusPx:number, minValue: number, maxValue: number, value: number }) {
-            const {minRadiusPx, maxRadiusPx, minValue, maxValue, value} = options;
-
-            const absoluteMaxValue = Math.max(Math.abs(minValue),Math.abs(maxValue));
-            const scalePowFn = scaleSqrt([0,absoluteMaxValue], [0,maxRadiusPx]);
-
-            return (value !== 0)? Math.max((scalePowFn(Math.abs(value))), minRadiusPx) : 0;
-        }
-
-        const drawNewCountryDataLayer = (response: IWrappedCountryResult) => {
+        const handleResponse = (response: IWrappedCountryResult) => {
             const countryData: ICountryData[] = response.result.topics[this.activeTopic];
-            const enrichedCountryData: ICountryLocationData[] = this.enrichCountryDataWithPlotPositions(countryData);
-            this.minMaxStats = enrichedCountryData.reduce(
+            this.enrichedCountryData = this.enrichCountryDataWithPlotPositions(countryData);
+            this.minMaxStats = this.enrichedCountryData.reduce(
                 (previousValue:{minValue: number; maxValue: number;}, currentValue: ICountryLocationData)=> {
                     return {
                         minValue: Math.min(previousValue.minValue, currentValue.value),
@@ -105,32 +99,12 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                     }
                 }, {minValue: Infinity, maxValue: -Infinity}
             );
-
-            const countryLayer = new ScatterplotLayer<ICountryLocationData>({
-                id: 'countryLayer',
-                data: enrichedCountryData,
-                getPosition: (d: ICountryLocationData) => d.lonLat,
-                getFillColor: this.getColorFn(),
-                getRadius: (d: ICountryLocationData) => getAreaProportionalRadius({
-                    minRadiusPx: 3,
-                    maxRadiusPx: 40,
-                    minValue: this.minMaxStats.minValue,
-                    maxValue: this.minMaxStats.maxValue,
-                    value: d.value
-                }),
-                radiusUnits: 'pixels',
-                stroked: true,
-                getLineWidth: 0.6,
-                lineWidthUnits: 'pixels',
-                pickable: true
-            });
-
-            this.deck.setProps({layers: [this.deck.props.layers[0], countryLayer]})
+            this.createOrReplaceCountryDataLayer(this.enrichedCountryData);
         }
 
         this.isLoading = true;
         this.dataService.requestCountryStats(reqParams).subscribe({
-            next: drawNewCountryDataLayer,
+            next: handleResponse,
             error: (err) => {
                 console.log(err);
                 this.isLoading = false;
@@ -165,13 +139,6 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             .sort((a: ICountryLocationData, b: ICountryLocationData) => Math.abs(b.value) - Math.abs(a.value));
     }
 
-    updateCountryFilterStyle(selectedCountries: string) {
-        console.log("updateCountryFilterStyle", selectedCountries);
-        (selectedCountries === "") ?
-            console.log("use no filter style") :
-            console.log("use filter style");
-    }
-
     getColorFn() {
         const topicColorHex = topicDefinitions[this.activeTopic]?.["color-hex"]
 
@@ -193,17 +160,23 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         const negativeScale = scalePow([-abMax, 0], [0, 1]).exponent(1/4);
         const positiveScale = scalePow([0, abMax], [0, 1]).exponent(2);
 
-        return (d: ICountryLocationData): Color => {
+        return (d: Pick<ICountryLocationData,"value" | "country">): Color => {
             const value = d.value;
 
             let color;
             if (value < 0) {
                 // Use negative interpolator
-                color = rgb(negativeInterpolator(negativeScale(value)));
+                color = lch(negativeInterpolator(negativeScale(value)));
             } else {
                 // Use positive interpolator
-                color = rgb(positiveInterpolator(positiveScale(value)));
+                color = lch(positiveInterpolator(positiveScale(value)));
             }
+
+            if (this.selectedCountries !== "" && !this.selectedCountries.split(",").includes(d.country)){
+                color.c = 0;
+            }
+
+            color = rgb(color)
 
             return [color.r, color.g, color.b, color.opacity * 255];
         }
@@ -246,5 +219,44 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         } as DeckProps<MapView>);
     };
 
+    createOrReplaceCountryDataLayer = (enrichedCountryData: ICountryLocationData[]) => {
 
+        function getAreaProportionalRadius(options: { minRadiusPx: number, maxRadiusPx:number, minValue: number, maxValue: number, value: number }) {
+            const {minRadiusPx, maxRadiusPx, minValue, maxValue, value} = options;
+
+            const absoluteMaxValue = Math.max(Math.abs(minValue),Math.abs(maxValue));
+            const scalePowFn = scaleSqrt([0,absoluteMaxValue], [0,maxRadiusPx]);
+
+            return (value !== 0)? Math.max((scalePowFn(Math.abs(value))), minRadiusPx) : 0;
+        }
+
+        const countryLayer = new ScatterplotLayer<ICountryLocationData>({
+            id: 'countryLayer',
+            data: enrichedCountryData,
+            getPosition: (d: ICountryLocationData) => d.lonLat,
+            getFillColor: this.getColorFn(),
+            updateTriggers: {
+                getFillColor: this.selectedCountries
+            },
+            getRadius: (d: ICountryLocationData) => getAreaProportionalRadius({
+                minRadiusPx: 3,
+                maxRadiusPx: 40,
+                minValue: this.minMaxStats.minValue,
+                maxValue: this.minMaxStats.maxValue,
+                value: d.value
+            }),
+            radiusUnits: 'pixels',
+            stroked: true,
+            getLineWidth: 0.6,
+            lineWidthUnits: 'pixels',
+            pickable: true
+        });
+        this.deck.setProps({layers: [this.deck.props.layers[0], countryLayer]})
+    }
+
+    transFormFn(value: number): Pick<ICountryLocationData, "value" | "country"> {
+        return {value, country: ""};
+    }
+
+    protected readonly topicDefinitions = topicDefinitions;
 }

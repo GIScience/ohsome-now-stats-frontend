@@ -33,7 +33,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
 import {CountryMapComponent} from './dashboard/country-map/country-map.component';
 import {HexMapComponent} from "./dashboard/hex-map/hex-map.component";
-import {LegendComponent} from "./dashboard/hex-map/legend/legend.component";
+import {LegendComponent} from "./dashboard/legend/legend.component";
 
 const routes = [{path: 'help', component: HelpComponent}];
 
@@ -53,7 +53,6 @@ const routes = [{path: 'help', component: HelpComponent}];
         BigNumberComponent,
         ExportDataComponent,
         HexMapComponent,
-        LegendComponent,
         UTCToLocalConverterPipe,
         StatusBannerComponent
     ],
@@ -70,6 +69,7 @@ const routes = [{path: 'help', component: HelpComponent}];
             scrollOffset: [0, 80]
         }),
         CountryMapComponent,
+        LegendComponent,
         Overlay],
     exports: [
         Overlay

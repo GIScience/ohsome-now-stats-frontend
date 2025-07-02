@@ -13,6 +13,7 @@
         <div *ngIf="!isH3Loading && minMaxStats" class="legend-container">
             <app-legend
                     [colorFunction]="getColorFn()"
+                    [transformFn]="transFormFn"
                     [maxValue]="minMaxStats.result.max"
                     [minValue]="minMaxStats.result.min"
                     [unit]="getTopicUnit()">

@@ -9,14 +9,15 @@
                         </div>
                     </div>
                 </div>
-<!--                <div class="legend-container" *ngIf="!isH3Loading && minMaxStats">-->
-<!--                    <app-legend-->
-<!--                            [minValue]="minMaxStats.result.min"-->
-<!--                            [maxValue]="minMaxStats.result.max"-->
-<!--                            [colorFunction]="getColorFn()"-->
-<!--                            [unit]="getTopicUnit()">-->
-<!--                    </app-legend>-->
-<!--                </div>-->
+                <div class="legend-container" *ngIf="!isLoading && minMaxStats">
+                    <app-legend
+                            [minValue]="minMaxStats.minValue"
+                            [maxValue]="minMaxStats.maxValue"
+                            [colorFunction]="getColorFn()"
+                            [transformFn]="transFormFn"
+                            [unit]="topicDefinitions[activeTopic]['y-title']">
+                    </app-legend>
+                </div>
             </div>
         </div>
     </div>
