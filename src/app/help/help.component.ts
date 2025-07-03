@@ -1,5 +1,5 @@
-import { ViewportScroller } from '@angular/common';
-import { AfterViewChecked, Component} from '@angular/core';
+import {ViewportScroller} from '@angular/common';
+import {AfterViewInit, Component} from '@angular/core';
 import {dashboard} from 'src/app/dashboard/tooltip-data'
 import topicDefinitions from "../../assets/static/json/topicDefinitions.json"
 
@@ -9,19 +9,22 @@ import topicDefinitions from "../../assets/static/json/topicDefinitions.json"
     styleUrls: ['./help.component.scss'],
     standalone: false
 })
-export class HelpComponent implements AfterViewChecked{
+export class HelpComponent implements AfterViewInit {
     topicDefinitions = topicDefinitions
     protected readonly dashboard = dashboard;
     hash: string
-    constructor(private scroller: ViewportScroller){
+
+    constructor(private scroller: ViewportScroller) {
         this.hash = window.location.hash
     }
-    returnZero(){
+
+    returnZero() {
         return 0
     }
-    ngAfterViewChecked() {
-        if(window.location.hash != ""){
-            this.scroller.scrollToAnchor(this.hash.split("#")[1])
+
+    ngAfterViewInit() {
+        if (window.location.hash != "") {
+            setTimeout(() => this.scroller.scrollToAnchor(this.hash.split("#")[1]), 100)
         }
     }
 

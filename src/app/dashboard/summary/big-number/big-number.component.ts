@@ -1,6 +1,7 @@
 import {Component, computed, effect, Input} from '@angular/core';
 import {ITopicDefinitionValue} from "../../types";
 import {StateService} from "../../../state.service";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-big-number',
@@ -13,7 +14,7 @@ export class BigNumberComponent {
     isSelected = false;
     alternativeSelectedLayout = false;
 
-    constructor(private stateService: StateService) {
+    constructor(private stateService: StateService, private router: Router) {
         effect(() => {
             this.isSelected = this.data.id === this.activeTopicState();
             this.alternativeSelectedLayout = <boolean>(this.isSelected && this.data.added !== undefined);
@@ -32,7 +33,7 @@ export class BigNumberComponent {
     });
 
 
-    openHelp(event: any) {
-        window.open(`/help#${this.data.id}`, '_blank');
+    openHelp() {
+        this.router.navigate([`help`], {fragment: this.data.id, queryParams: this.stateService.appState()});
     }
 }

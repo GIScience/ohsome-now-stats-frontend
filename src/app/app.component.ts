@@ -25,7 +25,7 @@ export class AppComponent implements AfterViewInit {
             this.live = mode
         })
         stateService.activePage.subscribe(page => {
-            this.page = page!
+            this.page = page!.split('?')[0]
         })
     }
 

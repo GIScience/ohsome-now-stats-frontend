@@ -1,7 +1,7 @@
 <div class="big_number">
     <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm-" [ngClass]="isSelected ? 'selected' : ''">
         <span class="icon-holder tooltip1" data-bs-placement="bottom" data-bs-toggle="tooltip" title="{{data.tooltip}}"
-              data-bs-html="true" (click)="openHelp($event)">
+              data-bs-html="true" (click)="openHelp()">
               <i class="c-grey-800 ti-help-alt"></i>
         </span>
         <div [ngClass]="alternativeSelectedLayout ? '': 'flex-col'" style="position: relative;">
