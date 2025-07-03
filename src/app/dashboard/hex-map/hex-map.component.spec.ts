@@ -73,7 +73,15 @@ describe('HexMapComponent', () => {
 
   it('should call createCountryLayer with correct params in updateLayer', async () => {
     spyOn(component, 'createCountryLayer').and.returnValue(Promise.resolve({} as any));
-    await component.updateLayer();
+    const reqParams = {
+      hashtag: 'test',
+      start: '2023-01-01',
+      end: '2023-01-31',
+      countries: '',
+      topic: 'building',
+      resolution: 3
+    }
+    await component.updateLayer(reqParams);
     expect(component.createCountryLayer).toHaveBeenCalledWith(jasmine.objectContaining({
       hashtag: mockQueryParams.hashtag,
       topic: mockQueryParams.active_topic
