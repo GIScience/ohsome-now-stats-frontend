@@ -1,5 +1,20 @@
 <div #overlayContainer class="bd bgc-white pos-r">
     <overlay [containerElement]="overlayContainer" [isLoading]="isH3Loading"></overlay>
+    <!-- Resolution Toggle Slider -->
+    <div *ngIf="showResolutionToggle" class="resolution-toggle-container">
+        <div class="resolution-toggle">
+            <span class="resolution-label" [class.active]="!isHighResolution">Low</span>
+            <label class="toggle-switch">
+                <input
+                        type="checkbox"
+                        [checked]="isHighResolution"
+                        (change)="toggleResolution()">
+                <span class="slider"></span>
+            </label>
+            <span class="resolution-label" [class.active]="isHighResolution">High</span>
+        </div>
+        <div class="resolution-subtitle">Resolution</div>
+    </div>
     <div class="layers">
         <div class="layer w-100 pX-20 pT-20" style="position: relative;">
             <div #deckContainer class="deck-container">
