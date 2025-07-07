@@ -33,7 +33,6 @@ export class LegendComponent implements OnChanges, AfterViewInit {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        console.log("yeet")
         if ((changes['minValue'] || changes['maxValue'] || changes['colorFunction'])
             && this.isCanvasReady) {
             this.drawLegend();
