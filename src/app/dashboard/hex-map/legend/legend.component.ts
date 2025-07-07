@@ -11,7 +11,7 @@ import {HexDataType} from '../../types';
 export class LegendComponent implements OnChanges, AfterViewInit {
     @Input() minValue!: number;
     @Input() maxValue!: number;
-    @Input() colorFunction!: (value: HexDataType) => Color;
+    @Input() colorFunction!: ((value: HexDataType) => Color) | undefined;
     @Input() unit: string = '';
     @ViewChild('legendCanvas', {static: true}) canvasRef!: ElementRef<HTMLCanvasElement>;
 
@@ -33,6 +33,7 @@ export class LegendComponent implements OnChanges, AfterViewInit {
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        console.log("yeet")
         if ((changes['minValue'] || changes['maxValue'] || changes['colorFunction'])
             && this.isCanvasReady) {
             this.drawLegend();
