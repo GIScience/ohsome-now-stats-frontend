@@ -143,9 +143,9 @@ export class StateService {
      * @returns URLSearchParams object with all query params, or null if no fragment exists
      */
     getQueryParamsFromFragments(): URLSearchParams | null {
-        if (this.route.snapshot.fragment == null || this.route.snapshot.fragment.length < 1) {
+        if (window.location.href.split('#').length < 2) {
             return null;
         }
-        return new URLSearchParams(this.route.snapshot.fragment);
+        return new URLSearchParams(window.location.href.split('#')[1]);
     }
 }
