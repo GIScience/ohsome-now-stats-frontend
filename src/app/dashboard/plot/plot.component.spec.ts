@@ -54,7 +54,7 @@ describe('PlotComponent', () => {
         interval: 'P1D',
         topics: '',
         active_topic: 'users' as StatsType,
-        fit_to_content: ''
+        fit_to_content: undefined
     };
 
     beforeEach(async () => {
