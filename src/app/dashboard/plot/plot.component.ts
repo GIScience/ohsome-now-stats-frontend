@@ -87,7 +87,7 @@ export class PlotComponent implements AfterContentInit {
                     this.refreshPlot();
                     this.isPlotsLoading = false;
 
-                    if (this.relevantState().fit_to_content) {
+                    if (this.relevantState().fit_to_content !== undefined) {
                         this.fitToContent()()
                     } else {
                         this.resetZoom()
