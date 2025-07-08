@@ -2,7 +2,7 @@ import {effect, Injectable, signal} from '@angular/core';
 import {IStateParams} from "./dashboard/types";
 import {environment} from "../environments/environment";
 import {DataService} from "./data.service";
-import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import dayjs from "dayjs";
 import {over5000IntervalBins} from "./utils";
 import {BehaviorSubject, filter} from "rxjs";
@@ -11,7 +11,8 @@ import {BehaviorSubject, filter} from "rxjs";
     providedIn: 'root'
 })
 export class StateService {
-
+    // doing this to be able to mock window easily in tests
+    window = window;
     url = environment.ohsomeStatsServiceUrl
 
     private initialState = this.initInitialState()
@@ -30,7 +31,6 @@ export class StateService {
     constructor(
         private dataService: DataService,
         private router: Router,
-        private route: ActivatedRoute
     ) {
         effect(() => {
             console.info('Query state changed:', this.appState());
@@ -75,7 +75,7 @@ export class StateService {
      * @private
      * @return IStateParams
      */
-    private initInitialState(): IStateParams {
+    initInitialState(): IStateParams {
         const queryParams = this.getQueryParamsFromFragments()
         const {max_timestamp, min_timestamp} = this.getDefaultMinAndMaxTimestamp(queryParams);
         const interval = this.getDefaultInterval(max_timestamp, min_timestamp, queryParams);
@@ -143,9 +143,9 @@ export class StateService {
      * @returns URLSearchParams object with all query params, or null if no fragment exists
      */
     getQueryParamsFromFragments(): URLSearchParams | null {
-        if (window.location.href.split('#').length < 2) {
+        if (this.window.location.href.split('#').length < 2) {
             return null;
         }
-        return new URLSearchParams(window.location.href.split('#')[1]);
+        return new URLSearchParams(this.window.location.href.split('#')[1]);
     }
 }
