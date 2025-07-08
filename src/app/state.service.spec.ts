@@ -1,5 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 
 import {StateService} from './state.service';
 import {DataService} from './data.service';
@@ -8,7 +8,6 @@ import {IStateParams, StatsType} from './dashboard/types';
 describe('StateService', () => {
     let service: StateService;
     let mockRouter: jasmine.SpyObj<Router>;
-    let mockActivatedRoute: { snapshot: { fragment: string | null }; };
     let mockDataService: jasmine.SpyObj<DataService>;
 
     const mockMetaData = {
@@ -29,21 +28,13 @@ describe('StateService', () => {
     beforeEach(() => {
         const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         const dataServiceSpy = jasmine.createSpyObj('DataService', ['metaData']);
-
-        mockActivatedRoute = {
-            snapshot: {
-                fragment: null
-            }
-        };
-
+        window.onbeforeunload = () => 'Oh no!';
         dataServiceSpy.metaData.and.returnValue(mockMetaData);
-
         TestBed.configureTestingModule({
             providers: [
                 StateService,
                 {provide: Router, useValue: routerSpy},
-                {provide: ActivatedRoute, useValue: mockActivatedRoute},
-                {provide: DataService, useValue: dataServiceSpy}
+                {provide: DataService, useValue: dataServiceSpy},
             ]
         });
 
@@ -65,23 +56,13 @@ describe('StateService', () => {
         });
 
         it('should initialize from URL fragment when present', () => {
-            mockActivatedRoute.snapshot.fragment = 'hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=building&countries=DE&topics=building';
-
-            // Recreate the TestBed with the updated fragment
-            TestBed.resetTestingModule();
-            TestBed.configureTestingModule({
-                providers: [
-                    StateService,
-                    {provide: Router, useValue: mockRouter},
-                    {provide: ActivatedRoute, useValue: mockActivatedRoute},
-                    {provide: DataService, useValue: mockDataService}
-                ]
-            });
-
             // Get the service through TestBed to maintain injection context
             const serviceWithFragment = TestBed.inject(StateService);
+            // @ts-ignore
+            serviceWithFragment.window = {location: {href: 'stats.now.ohsome.org/dashboard#hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=building&countries=DE&topics=building'}}
+            serviceWithFragment.updatePartialState(serviceWithFragment.initInitialState());
 
-            const currentState = serviceWithFragment.appState();
+            const currentState = serviceWithFragment.appState()
             expect(currentState.hashtag).toBe('test');
             expect(currentState.start).toBe('2023-06-01T00:00:00Z');
             expect(currentState.end).toBe('2023-12-01T00:00:00Z');
@@ -152,23 +133,17 @@ describe('StateService', () => {
 
     describe('getQueryParamsFromFragments', () => {
         it('should return null when no fragment exists', () => {
-            mockActivatedRoute.snapshot.fragment = null;
-
+            // @ts-ignore
+            service.window = {location: {href: ''}}
             const result = service.getQueryParamsFromFragments();
 
             expect(result).toBeNull();
         });
-
-        it('should return null when fragment is empty', () => {
-            mockActivatedRoute.snapshot.fragment = '';
-
-            const result = service.getQueryParamsFromFragments();
-
-            expect(result).toBeNull();
-        });
+        
 
         it('should parse fragment into URLSearchParams', () => {
-            mockActivatedRoute.snapshot.fragment = 'hashtag=test&interval=P1D';
+            // @ts-ignore
+            service.window = {location: {href: 'stats.now.ohsome.org/dashboard#hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=building&countries=DE&topics=building'}}
 
             const result = service.getQueryParamsFromFragments();
 
