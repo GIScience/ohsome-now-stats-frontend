@@ -34,7 +34,8 @@ describe('HexMapComponent', () => {
     dataServiceSpy.getH3Map.and.returnValue(of(mockH3Data));
 
     await TestBed.configureTestingModule({
-      declarations: [HexMapComponent, Overlay],
+      declarations: [HexMapComponent],
+      imports: [Overlay],
       providers: [
         { provide: DataService, useValue: dataServiceSpy },
         { provide: StateService, useValue: stateServiceSpy }

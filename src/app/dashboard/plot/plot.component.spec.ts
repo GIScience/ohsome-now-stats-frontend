@@ -76,7 +76,8 @@ describe('PlotComponent', () => {
         (window as any).Plotly = mockPlotly;
 
         await TestBed.configureTestingModule({
-            declarations: [PlotComponent, Overlay],
+            declarations: [PlotComponent],
+            imports: [Overlay],
             providers: [
                 {provide: DataService, useValue: dataServiceSpy},
                 {provide: StateService, useValue: stateServiceSpy},

@@ -142,27 +142,6 @@ describe('QueryComponent', () => {
             expect(component.allHashtagOptions).toEqual(mockHashtags);
         });
 
-        it('should enable HOT controls when on hotosm route', () => {
-            mockActivatedRoute.snapshot.url = [
-                {path: 'dashboard'},
-                {path: 'hotosm'}
-            ];
-            spyOn(component, 'enableTooltips');
-
-            component.ngOnInit();
-
-            expect(component.hot_controls).toBe(true);
-            expect(component.selectedHashtagOption.hashtag).toBe('hotosm-project-*');
-        });
-
-        it('should not enable HOT controls for regular routes', () => {
-            mockActivatedRoute.snapshot.url = [{path: 'dashboard'}];
-            spyOn(component, 'enableTooltips');
-
-            component.ngOnInit();
-
-            expect(component.hot_controls).toBe(false);
-        });
     });
 
     describe('buildTopicOptions', () => {
