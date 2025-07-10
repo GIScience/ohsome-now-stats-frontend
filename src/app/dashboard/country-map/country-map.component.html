@@ -10,13 +10,14 @@
                     </div>
                 </div>
                 <div class="legend-container" *ngIf="!isLoading && minMaxStats">
-                    <app-legend
+                    <app-country-map-legend
+                            [radiusFunction]="getAreaProportionalRadiusForLegend()"
                             [minValue]="minMaxStats.minValue"
                             [maxValue]="minMaxStats.maxValue"
                             [colorFunction]="getColorFn()"
                             [transformFn]="transFormFn"
                             [unit]="topicDefinitions[activeTopic]['y-title']">
-                    </app-legend>
+                    </app-country-map-legend>
                 </div>
             </div>
         </div>

@@ -11,14 +11,14 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {scalePow, scaleSqrt} from 'd3-scale';
 import {interpolateHcl} from 'd3-interpolate';
 import {lch, rgb} from 'd3-color';
-import {LegendComponent} from '../legend/legend.component';
 import {NgIf} from '@angular/common';
+import {CountryMapLegendComponent} from "./country-map-legend/country-map-legend.component";
 
 const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryCode: string]: [number, number] | null };
 
 @Component({
     selector: 'app-country-map',
-    imports: [Overlay, LegendComponent, NgIf],
+    imports: [Overlay, NgIf, CountryMapLegendComponent],
     templateUrl: './country-map.component.html',
     styleUrl: './country-map.component.scss'
 })
@@ -256,6 +256,21 @@ export class CountryMapComponent implements OnInit, OnDestroy {
 
     transFormFn(value: number): Pick<ICountryLocationData, "value" | "country"> {
         return {value, country: ""};
+    }
+
+    getAreaProportionalRadiusForLegend() {
+        const minValue = this.minMaxStats.minValue;
+        const maxValue = this.minMaxStats.maxValue;
+        const minRadiusPx = 3;
+        const maxRadiusPx = 40;
+        const absoluteMaxValue = Math.max(Math.abs(minValue), Math.abs(maxValue));
+        const scalePowFn = scaleSqrt([0, absoluteMaxValue], [0, maxRadiusPx]);
+
+        return (value: number) => {
+            if (value === 0) return 3; // Zero values have no radius
+            // Use Math.abs to match the map's behavior - radius is based on magnitude
+            return Math.max(scalePowFn(Math.abs(value)), minRadiusPx);
+        };
     }
 
     protected readonly topicDefinitions = topicDefinitions;
