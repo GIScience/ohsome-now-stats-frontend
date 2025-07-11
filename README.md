@@ -20,8 +20,7 @@ The numbers you obtain from ohsomeNow stats get updated in near-realtime.
 This means that every change to OSM will be considered by the dashboard a few minutes after the edit has happened in
 OSM.
 
-![image](https://github.com/user-attachments/assets/75afc115-0880-48d2-a066-345583f2b401)
-
+![image](https://github.com/user-attachments/assets/d25671d6-0949-43fc-8caa-7c0480af516f)
 
 The core features are:
 
