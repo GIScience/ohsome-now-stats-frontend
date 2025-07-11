@@ -1,4 +1,4 @@
-import {inject, NgModule, provideAppInitializer} from '@angular/core';
+import {NgModule, inject, provideAppInitializer} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
@@ -34,8 +34,10 @@ import {StatusBannerComponent} from "./status-banner/status-banner.component";
 import {DefaultQueryComponent} from "./dashboard/query/default-query/default-query.component";
 import {HotQueryComponent} from "./dashboard/query/hot-query/hot-query.component";
 import {LiveQueryComponent} from "./dashboard/query/live-query/live-query.component";
+import {CountryMapComponent} from './dashboard/country-map/country-map.component';
 import {HexMapComponent} from "./dashboard/hex-map/hex-map.component";
-import {LegendComponent} from "./dashboard/hex-map/legend/legend.component";
+import {LegendComponent} from "./dashboard/legend/legend.component";
+import {CountryMapLegendComponent} from "./dashboard/country-map/country-map-legend/country-map-legend.component";
 
 const routes = [{path: 'help', component: HelpComponent}];
 
@@ -55,9 +57,7 @@ const routes = [{path: 'help', component: HelpComponent}];
         BigNumberComponent,
         ExportDataComponent,
         HexMapComponent,
-        LegendComponent,
         UTCToLocalConverterPipe,
-        Overlay,
         StatusBannerComponent,
         DefaultQueryComponent,
         HotQueryComponent,
@@ -74,7 +74,14 @@ const routes = [{path: 'help', component: HelpComponent}];
         AutoCompleteModule,
         RouterModule.forRoot(routes, {
             scrollOffset: [0, 80]
-        })],
+        }),
+        CountryMapComponent,
+        LegendComponent,
+        CountryMapLegendComponent,
+        Overlay],
+    exports: [
+        Overlay
+    ],
     providers: [
         DataService,
         UTCToLocalConverterPipe,

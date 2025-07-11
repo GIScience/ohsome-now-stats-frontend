@@ -1,17 +1,17 @@
 import {AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
 import {Color} from '@deck.gl/core';
-import {HexDataType} from '../../types';
 
 @Component({
     selector: 'app-legend',
     templateUrl: './legend.component.html',
     styleUrls: ['./legend.component.scss'],
-    standalone: false
+    imports: []
 })
-export class LegendComponent implements OnChanges, AfterViewInit {
+export class LegendComponent<T,K extends keyof T> implements OnChanges, AfterViewInit {
     @Input() minValue!: number;
     @Input() maxValue!: number;
-    @Input() colorFunction!: ((value: HexDataType) => Color) | undefined;
+    @Input() colorFunction!: (value: Pick<T, K>) => Color;
+    @Input() transformFn!: (value: number) => Pick<T, K>;
     @Input() unit: string = '';
     @ViewChild('legendCanvas', {static: true}) canvasRef!: ElementRef<HTMLCanvasElement>;
 
@@ -70,13 +70,16 @@ export class LegendComponent implements OnChanges, AfterViewInit {
             const normalizedX = x / (width - 1);
             const value = this.minValue + normalizedX * (this.maxValue - this.minValue);
 
-            // Create mock HexDataType object for color function
-            const tempHexData: HexDataType = {
-                result: value,
-                hex_cell: '' // This won't be used by the color function
-            };
+            // // Create mock HexDataType object for color function
+            // const tempHexData: HexDataType = {
+            //     result: value,
+            //     hex_cell: '' // This won't be used by the color function
+            // };
 
-            const color = this.colorFunction(tempHexData);
+            const tempTData = this.transformFn(value);
+
+
+            const color = this.colorFunction(tempTData);
 
             // Convert RGBA to CSS color string
             const rgbaColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]! / 255})`;
