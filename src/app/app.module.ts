@@ -16,7 +16,6 @@ import {DataService} from './data.service';
 import {PlotComponent} from './dashboard/plot/plot.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
-import {MapComponent} from './dashboard/map/map.component';
 import {TrendingHashtagsComponent} from './dashboard/trending-hashtags/trending-hashtags.component';
 import {ToastComponent} from './toast/toast.component';
 import {ToastService} from './toast.service';
@@ -49,7 +48,6 @@ const routes = [{path: 'help', component: HelpComponent}];
         PlotComponent,
         DashboardComponent,
         PageNotFoundComponent,
-        MapComponent,
         TrendingHashtagsComponent,
         ToastComponent,
         AboutComponent,
