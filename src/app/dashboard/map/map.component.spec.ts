@@ -47,7 +47,8 @@ describe('MapComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [MapComponent, Overlay],
+            declarations: [MapComponent],
+            imports: [Overlay],
             providers: [
                 {provide: DataService, useValue: mockDataService},
                 {provide: StateService, useValue: mockStateService}

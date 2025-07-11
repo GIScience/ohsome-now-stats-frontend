@@ -83,7 +83,8 @@ describe('SummaryComponent', () => {
         const stateServiceSpy = jasmine.createSpyObj('StateService', ['appState', 'updatePartialState']);
 
         await TestBed.configureTestingModule({
-            declarations: [SummaryComponent, Overlay],
+            declarations: [SummaryComponent],
+            imports: [Overlay],
             providers: [
                 {provide: DataService, useValue: dataServiceSpy},
                 {provide: StateService, useValue: stateServiceSpy}
