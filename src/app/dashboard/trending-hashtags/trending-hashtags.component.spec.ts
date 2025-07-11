@@ -47,7 +47,8 @@ describe('TrendingHashtagsComponent', () => {
         ]);
 
         await TestBed.configureTestingModule({
-            declarations: [TrendingHashtagsComponent, Overlay],
+            declarations: [TrendingHashtagsComponent],
+            imports: [Overlay],
             providers: [
                 {provide: DataService, useValue: dataServiceSpy},
                 {provide: StateService, useValue: stateServiceSpy}

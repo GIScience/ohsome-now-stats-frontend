@@ -1,4 +1,4 @@
-import {inject, NgModule, provideAppInitializer} from '@angular/core';
+import {NgModule, inject, provideAppInitializer} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
@@ -16,7 +16,6 @@ import {DataService} from './data.service';
 import {PlotComponent} from './dashboard/plot/plot.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
-import {MapComponent} from './dashboard/map/map.component';
 import {TrendingHashtagsComponent} from './dashboard/trending-hashtags/trending-hashtags.component';
 import {ToastComponent} from './toast/toast.component';
 import {ToastService} from './toast.service';
@@ -34,8 +33,10 @@ import {StatusBannerComponent} from "./status-banner/status-banner.component";
 import {DefaultQueryComponent} from "./dashboard/query/default-query/default-query.component";
 import {HotQueryComponent} from "./dashboard/query/hot-query/hot-query.component";
 import {LiveQueryComponent} from "./dashboard/query/live-query/live-query.component";
+import {CountryMapComponent} from './dashboard/country-map/country-map.component';
 import {HexMapComponent} from "./dashboard/hex-map/hex-map.component";
 import {LegendComponent} from "./dashboard/hex-map/legend/legend.component";
+import {CountryMapLegendComponent} from "./dashboard/country-map/country-map-legend/country-map-legend.component";
 
 const routes = [{path: 'help', component: HelpComponent}];
 
@@ -47,7 +48,6 @@ const routes = [{path: 'help', component: HelpComponent}];
         PlotComponent,
         DashboardComponent,
         PageNotFoundComponent,
-        MapComponent,
         TrendingHashtagsComponent,
         ToastComponent,
         AboutComponent,
@@ -55,9 +55,7 @@ const routes = [{path: 'help', component: HelpComponent}];
         BigNumberComponent,
         ExportDataComponent,
         HexMapComponent,
-        LegendComponent,
         UTCToLocalConverterPipe,
-        Overlay,
         StatusBannerComponent,
         DefaultQueryComponent,
         HotQueryComponent,
@@ -74,7 +72,14 @@ const routes = [{path: 'help', component: HelpComponent}];
         AutoCompleteModule,
         RouterModule.forRoot(routes, {
             scrollOffset: [0, 80]
-        })],
+        }),
+        CountryMapComponent,
+        LegendComponent,
+        CountryMapLegendComponent,
+        Overlay],
+    exports: [
+        Overlay
+    ],
     providers: [
         DataService,
         UTCToLocalConverterPipe,

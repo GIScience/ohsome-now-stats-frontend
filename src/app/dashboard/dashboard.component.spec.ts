@@ -4,6 +4,7 @@ import {DashboardComponent} from './dashboard.component';
 import {Component} from "@angular/core";
 import {StateService} from "../state.service";
 import {of} from "rxjs";
+import {CountryMapComponent} from "./country-map/country-map.component";
 
 // Mock child components
 @Component({
@@ -55,6 +56,13 @@ class MockMapComponent {
 class MockHexMapComponent {
 }
 
+@Component({
+    selector: 'app-country-map',
+    template: '<div></div>'
+})
+class MockCountryMapComponent {
+}
+
 describe('DashboardComponent', () => {
     let component: DashboardComponent;
     let fixture: ComponentFixture<DashboardComponent>;
@@ -68,7 +76,8 @@ describe('DashboardComponent', () => {
                 MockSummaryComponent,
                 MockPlotComponent,
                 MockMapComponent,
-                MockHexMapComponent
+                MockHexMapComponent,
+                MockCountryMapComponent
             ],
             declarations: [
                 DashboardComponent

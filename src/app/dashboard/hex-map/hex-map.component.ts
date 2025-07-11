@@ -1,5 +1,5 @@
 import {Component, computed, effect, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {Color, Deck, PickingInfo} from '@deck.gl/core';
+import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {H3HexagonLayer, H3HexagonLayerProps, TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
 import {lch, rgb} from 'd3-color';
@@ -34,7 +34,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
     })
     colorFunc: ((value: HexDataType) => Color) | undefined = undefined;
     selectedTopic!: StatsType;
-    deck!: Deck;
+    deck!: Deck<MapView>;
     minMaxStats!: { result: { max: number; min: number } };
     private layer!: H3HexagonLayer<HexDataType>;
     currentResolution = 3;
@@ -98,23 +98,19 @@ export class HexMapComponent implements OnInit, OnDestroy {
     }
 
     private initializeDeck() {
-        const canvas = document.createElement('canvas');
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-        this.deckContainer.nativeElement.appendChild(canvas);
-
         this.deck = new Deck({
-            canvas: canvas,
-            width: this.deckContainer.nativeElement.clientWidth,
-            height: this.deckContainer.nativeElement.clientHeight,
+            parent: this.deckContainer.nativeElement,
             initialViewState: {
                 latitude: 49.6112768,
                 longitude: 6.129799,
                 zoom: 1,
             },
-            controller: true,
+            views: new MapView({
+                repeat: true,
+                controller: true,
+            }),
             layers: [this.osmLayer, this.layer],
-        } as any);
+        }  as DeckProps<MapView>);
     }
 
     async updateLayer(reqParams: {
@@ -273,7 +269,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
         const transparencyScale = scalePow([0, abMax], [0.3 * 255, 0.7 * 255]).exponent(1 / 4);
         const positiveScale = scalePow([0, abMax], [0, 1]).exponent(1 / 4);
 
-        return (value: HexDataType): Color => {
+        return (value: Pick<HexDataType, "result">): Color => {
             const result = value.result;
 
             let color, opacity;
@@ -293,5 +289,9 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
     getTopicUnit(): string {
         return topicDefinitions[this.selectedTopic]?.["y-title"] || '';
+    }
+
+    transFormFn(value: number): Pick<HexDataType, "result"> {
+        return {result: value};
     }
 }

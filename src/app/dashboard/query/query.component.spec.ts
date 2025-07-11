@@ -141,6 +141,7 @@ describe('QueryComponent', () => {
             expect(mockDataService.requestAllHashtags).toHaveBeenCalled();
             expect(component.allHashtagOptions).toEqual(mockHashtags);
         });
+
     });
 
     describe('buildTopicOptions', () => {

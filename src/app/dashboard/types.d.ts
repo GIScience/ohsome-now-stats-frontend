@@ -88,6 +88,10 @@ export interface ICountryData extends IStatsData {
     country: string
 }
 
+export interface ICountryLocationData extends ICountryData{
+    lonLat: [number, number]
+}
+
 export interface ICountryDataAsArrays {
     countries: string[]
     values: number[]
@@ -164,13 +168,13 @@ export interface ITrendingHashtagResponse extends IBaseResponse {
     result: Array<IHashtag>
 }
 
-export interface ISelectionItem {
-    name: string;
-    value: string;
-}
-
-
 export interface HexDataType {
     result: number;
     hex_cell: string;
+}
+
+
+export interface ISelectionItem {
+    name: string;
+    value: string;
 }

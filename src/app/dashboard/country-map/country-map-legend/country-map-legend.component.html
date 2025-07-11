@@ -1,0 +1,46 @@
+<div class="color-legend">
+    <div class="legend-title">{{ unit }}</div>
+    <div class="legend-bar-container">
+        <div class="legend-circles">
+            <!-- Negative value circle -->
+            <div class="circle-item">
+                <div [ngStyle]="getLegendCircleStyle(minValue)"></div>
+                <div class="circle-label">{{ formatValue(minValue) }}</div>
+            </div>
+
+            <!-- Negative gradient steps (if applicable) -->
+            <div class="gradient-container negative" *ngIf="minValue < 0">
+                <div class="gradient-line">
+                    <div
+                            *ngFor="let step of negativeGradientSteps; let i = index"
+                            class="gradient-step negative-step"
+                            [ngStyle]="getNegativeGradientStepStyle(step, i)"
+                    ></div>
+                </div>
+            </div>
+
+            <!-- Zero value circle (if applicable) -->
+            <div class="circle-item zero-circle" *ngIf="minValue < 0 && maxValue > 0">
+                <div [ngStyle]="getLegendCircleStyle(0)"></div>
+                <div class="circle-label">0</div>
+            </div>
+
+            <!-- Positive gradient steps (if applicable) -->
+            <div class="gradient-container positive" *ngIf="maxValue > 0">
+                <div class="gradient-line">
+                    <div
+                            *ngFor="let step of positiveGradientSteps; let i = index"
+                            class="gradient-step positive-step"
+                            [ngStyle]="getPositiveGradientStepStyle(step, i)"
+                    ></div>
+                </div>
+            </div>
+
+            <!-- Positive value circle -->
+            <div class="circle-item" *ngIf="maxValue > 0">
+                <div [ngStyle]="getLegendCircleStyle(maxValue)"></div>
+                <div class="circle-label">{{ formatValue(maxValue) }}</div>
+            </div>
+        </div>
+    </div>
+</div>
