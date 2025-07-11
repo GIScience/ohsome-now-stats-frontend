@@ -3,7 +3,7 @@ import * as bootstrap from 'bootstrap';
 import {ToastService} from './toast.service';
 import {DataService} from "./data.service";
 import {StateService} from "./state.service";
-import { version } from '../../package.json';
+import packageJson from '../../package.json';
 
 @Component({
     selector: 'app-root',
@@ -12,13 +12,13 @@ import { version } from '../../package.json';
     standalone: false
 })
 export class AppComponent implements AfterViewInit {
-    title = 'ohsomeNow Stats';
+    title = 'ohsomeNow Stats'
     name = 'HeiGIT';
     isOpen = false
     live: boolean = false
     page: string = ''
-    protected readonly version: string = version;
-    protected currentYear: string = new Date().getFullYear().toString();
+    protected readonly appVersion: string = packageJson.version
+    protected currentYear: string = new Date().getFullYear().toString()
 
     constructor(private toastService: ToastService,
                 private dataService: DataService,
