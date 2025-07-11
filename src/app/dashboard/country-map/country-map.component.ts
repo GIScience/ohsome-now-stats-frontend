@@ -46,7 +46,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     selectedCountries: string = this.countryState();
     isLoading: boolean = false;
     deck!: Deck<MapView>;
-    minMaxStats: {minValue: number; maxValue: number;} = {minValue:0, maxValue:0};
+    minMaxStats: { minValue: number; maxValue: number; } = {minValue: 0, maxValue: 0};
     enrichedCountryData: ICountryLocationData[] = [];
 
     constructor(
@@ -92,7 +92,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             const countryData: ICountryData[] = response.result.topics[this.activeTopic];
             this.enrichedCountryData = this.enrichCountryDataWithPlotPositions(countryData);
             this.minMaxStats = this.enrichedCountryData.reduce(
-                (previousValue:{minValue: number; maxValue: number;}, currentValue: ICountryLocationData)=> {
+                (previousValue: { minValue: number; maxValue: number; }, currentValue: ICountryLocationData) => {
                     return {
                         minValue: Math.min(previousValue.minValue, currentValue.value),
                         maxValue: Math.max(previousValue.maxValue, currentValue.value)
@@ -146,7 +146,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         // Negative color ranges from pale to strong red
         const negativeColorStrong = lch("#a50026");
         negativeColorStrong.opacity = 1;
-        const negativeColorPale = lch(70,negativeColorStrong.c, negativeColorStrong.h, 0.7);
+        const negativeColorPale = lch(70, negativeColorStrong.c, negativeColorStrong.h, 0.7);
         const negativeInterpolator = interpolateHcl(negativeColorPale, negativeColorStrong);
 
         // Positive color ranges from strong to pale topicColor
@@ -155,12 +155,12 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         const positiveColorPale = lch(70, positiveColorStrong.c, positiveColorStrong.h, 0.3);
         const positiveInterpolator = interpolateHcl(positiveColorStrong, positiveColorPale);
 
-        const { minValue, maxValue } = this.minMaxStats;
+        const {minValue, maxValue} = this.minMaxStats;
         const abMax = Math.max(Math.abs(minValue), Math.abs(maxValue));
-        const negativeScale = scalePow([-abMax, 0], [0, 1]).exponent(1/4);
+        const negativeScale = scalePow([-abMax, 0], [0, 1]).exponent(1 / 4);
         const positiveScale = scalePow([0, abMax], [0, 1]).exponent(2);
 
-        return (d: Pick<ICountryLocationData,"value" | "country">): Color => {
+        return (d: Pick<ICountryLocationData, "value" | "country">): Color => {
             const value = d.value;
 
             let color;
@@ -172,7 +172,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 color = lch(positiveInterpolator(positiveScale(value)));
             }
 
-            if (this.selectedCountries !== "" && !this.selectedCountries.split(",").includes(d.country)){
+            if (this.selectedCountries !== "" && !this.selectedCountries.split(",").includes(d.country)) {
                 color.c = 0;
             }
 
@@ -221,13 +221,19 @@ export class CountryMapComponent implements OnInit, OnDestroy {
 
     createOrReplaceCountryDataLayer = (enrichedCountryData: ICountryLocationData[]) => {
 
-        function getAreaProportionalRadius(options: { minRadiusPx: number, maxRadiusPx:number, minValue: number, maxValue: number, value: number }) {
+        function getAreaProportionalRadius(options: {
+            minRadiusPx: number,
+            maxRadiusPx: number,
+            minValue: number,
+            maxValue: number,
+            value: number
+        }) {
             const {minRadiusPx, maxRadiusPx, minValue, maxValue, value} = options;
 
-            const absoluteMaxValue = Math.max(Math.abs(minValue),Math.abs(maxValue));
-            const scalePowFn = scaleSqrt([0,absoluteMaxValue], [0,maxRadiusPx]);
+            const absoluteMaxValue = Math.max(Math.abs(minValue), Math.abs(maxValue));
+            const scalePowFn = scaleSqrt([0, absoluteMaxValue], [0, maxRadiusPx]);
 
-            return (value !== 0)? Math.max((scalePowFn(Math.abs(value))), minRadiusPx) : 0;
+            return (value !== 0) ? Math.max((scalePowFn(Math.abs(value))), minRadiusPx) : 0;
         }
 
         const countryLayer = new ScatterplotLayer<ICountryLocationData>({

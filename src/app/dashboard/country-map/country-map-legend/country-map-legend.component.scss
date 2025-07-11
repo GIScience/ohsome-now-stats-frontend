@@ -23,7 +23,7 @@
     gap: 8px;
     z-index: 2;
     position: relative;
-    flex-shrink: 0; // Prevent circles from shrinking
+    flex-shrink: 0;
 
     &.zero-circle {
       flex-shrink: 0;
@@ -45,7 +45,6 @@
     position: relative;
     z-index: 1;
     top: -15px;
-    // Remove fixed margins - now controlled by flex-grow
 
     .gradient-line {
       display: flex;
