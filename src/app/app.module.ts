@@ -36,7 +36,7 @@ import {HotQueryComponent} from "./dashboard/query/hot-query/hot-query.component
 import {LiveQueryComponent} from "./dashboard/query/live-query/live-query.component";
 import {CountryMapComponent} from './dashboard/country-map/country-map.component';
 import {HexMapComponent} from "./dashboard/hex-map/hex-map.component";
-import {LegendComponent} from "./dashboard/legend/legend.component";
+import {LegendComponent} from "./dashboard/hex-map/legend/legend.component";
 import {CountryMapLegendComponent} from "./dashboard/country-map/country-map-legend/country-map-legend.component";
 
 const routes = [{path: 'help', component: HelpComponent}];
