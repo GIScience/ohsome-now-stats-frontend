@@ -64,13 +64,39 @@ export class CountryMapLegendComponent<T,K extends keyof T> implements OnInit, O
   }
 
   private generateGradientSteps() {
-    const numberOfSteps = 15;
+    const baseNumberOfSteps = 15;
+    const minSteps = 3; // Minimum steps to maintain visual continuity
+    const maxSteps = 25; // Maximum steps to prevent overcrowding
+
+    // Calculate absolute distances from zero
+    const negativeDistance = Math.abs(this.minValue);
+    const positiveDistance = Math.abs(this.maxValue);
+    const totalDistance = negativeDistance + positiveDistance;
+
+    // Calculate proportional step counts based on relative distances
+    let negativeSteps = 0;
+    let positiveSteps = 0;
+
+    if (totalDistance > 0) {
+      // Calculate proportional steps
+      const negativeRatio = negativeDistance / totalDistance;
+      const positiveRatio = positiveDistance / totalDistance;
+
+      // Distribute total steps proportionally
+      const totalStepsToDistribute = baseNumberOfSteps * 2; // Total steps for both sides
+      negativeSteps = Math.round(totalStepsToDistribute * negativeRatio);
+      positiveSteps = Math.round(totalStepsToDistribute * positiveRatio);
+
+      // Ensure minimum and maximum bounds
+      negativeSteps = Math.max(minSteps, Math.min(maxSteps, negativeSteps));
+      positiveSteps = Math.max(minSteps, Math.min(maxSteps, positiveSteps));
+    }
 
     // Generate positive gradient steps
     if (this.maxValue > 0) {
       const newPositiveSteps: number[] = [];
-      for (let i = 1; i <= numberOfSteps; i++) {
-        const value = (i / numberOfSteps) * this.maxValue;
+      for (let i = 1; i <= positiveSteps; i++) {
+        const value = (i / positiveSteps) * this.maxValue;
         newPositiveSteps.push(value);
       }
       this._positiveGradientSteps = newPositiveSteps;
@@ -81,8 +107,8 @@ export class CountryMapLegendComponent<T,K extends keyof T> implements OnInit, O
     // Generate negative gradient steps
     if (this.minValue < 0) {
       const newNegativeSteps: number[] = [];
-      for (let i = 1; i <= numberOfSteps; i++) {
-        const value = (i / numberOfSteps) * this.minValue;
+      for (let i = 1; i <= negativeSteps; i++) {
+        const value = (i / negativeSteps) * this.minValue;
         newNegativeSteps.push(value);
       }
       newNegativeSteps.reverse();
@@ -90,6 +116,12 @@ export class CountryMapLegendComponent<T,K extends keyof T> implements OnInit, O
     } else {
       this._negativeGradientSteps = [];
     }
+
+    // Debug logging to see the step distribution
+    console.log(`Negative distance: ${negativeDistance}, Positive distance: ${positiveDistance}`);
+    console.log(`Negative steps: ${negativeSteps}, Positive steps: ${positiveSteps}`);
+    console.log(`Generated negative gradient steps:`, this._negativeGradientSteps.length);
+    console.log(`Generated positive gradient steps:`, this._positiveGradientSteps.length);
   }
 
   // Create a memoized version of the style calculation
@@ -131,11 +163,6 @@ export class CountryMapLegendComponent<T,K extends keyof T> implements OnInit, O
     const colorArr = this.colorFunction(this.transformFn(value));
     const color = `rgba(${colorArr[0]},${colorArr[1]},${colorArr[2]},${colorArr[3]! / 255})`;
 
-    // Use index-based calculation to ensure consistent heights
-    // const totalSteps = this._negativeGradientSteps.length;
-    // const normalizedIndex = index / Math.max(1, totalSteps - 1);
-    // const height = Math.max(3, 3 + (normalizedIndex * 67));
-
     const radius = this.radiusFunction ? this.radiusFunction(Math.abs(value)) : 10;
 
     // Get the radius ranges - use absolute values for comparison
@@ -145,7 +172,6 @@ export class CountryMapLegendComponent<T,K extends keyof T> implements OnInit, O
     // Normalize the radius properly
     const normalizedRadius = (radius - minRadius) / (maxNegativeRadius - minRadius);
     const height = Math.max(3, normalizedRadius * 70);
-    console.log('normalizedRadius ', normalizedRadius, height)
 
     const style = {
       'background-color': color,
@@ -204,7 +230,6 @@ export class CountryMapLegendComponent<T,K extends keyof T> implements OnInit, O
       return value.toFixed(1);
     }
   }
-
 
   getLegendCircleStyle(value: number) {
     const radius = value === 0 ? 2 : (this.radiusFunction ? this.radiusFunction(Math.abs(value)) : 10);
