@@ -98,15 +98,8 @@ export class HexMapComponent implements OnInit, OnDestroy {
     }
 
     private initializeDeck() {
-        const canvas = document.createElement('canvas');
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-        this.deckContainer.nativeElement.appendChild(canvas);
-
         this.deck = new Deck({
-            canvas: canvas,
-            width: this.deckContainer.nativeElement.clientWidth,
-            height: this.deckContainer.nativeElement.clientHeight,
+            parent: this.deckContainer.nativeElement,
             initialViewState: {
                 latitude: 49.6112768,
                 longitude: 6.129799,
