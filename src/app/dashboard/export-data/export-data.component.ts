@@ -114,11 +114,16 @@ export class ExportDataComponent {
     }
 
     private prepareMapDataAndDownload(mapData: ICountryResult, state: IStateParams) {
-        const selectedCountryList = state.countries.split(",")
+        const selectedCountryList = state.countries.split(",").filter(val => val !== "")
         const hashtag = decodeURIComponent(state.hashtag)
 
-        let countries = mapData.topics.edit.map(entry => entry.country)
-            .filter(country => selectedCountryList.length > 0 ? selectedCountryList.includes(country) : true)
+        const countries = [...new Set(
+            Object.values(mapData.topics).flatMap(
+                countryValues => countryValues.map(val => val.country)
+            )
+        )].filter(country =>
+            selectedCountryList.length === 0 || selectedCountryList.includes(country as string)
+        )
 
         let countryData = countries.map(country => {
             return {
@@ -136,6 +141,8 @@ export class ExportDataComponent {
                 )
             }
         })
+        console.log("countryData")
+        console.log(countryData)
 
         if (countryData.length > 0) {
             const arrangedHeaders = [
