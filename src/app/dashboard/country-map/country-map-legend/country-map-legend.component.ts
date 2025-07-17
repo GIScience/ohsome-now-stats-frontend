@@ -21,15 +21,6 @@ export class CountryMapLegendComponent<T, K extends keyof T> implements OnInit {
     public positiveGradientSteps: number[] = [];
     public negativeGradientSteps: number[] = [];
 
-    // // Use getters to return cached arrays
-    // get positiveGradientSteps(): number[] {
-    //     return this._positiveGradientSteps;
-    // }
-    //
-    // get negativeGradientSteps(): number[] {
-    //     return this._negativeGradientSteps;
-    // }
-
     ngOnInit() {
         this.generateGradientSteps();
     }
@@ -127,9 +118,9 @@ export class CountryMapLegendComponent<T, K extends keyof T> implements OnInit {
 
     formatValue(value: number): string {
         if (Math.abs(value) >= 1_000_000) {
-            return (value / 1_000_000).toFixed(1) + 'M';
+            return (value / 1_000_000).toFixed(1) + '\u00A0M';
         } else if (Math.abs(value) >= 1000) {
-            return (value / 1000).toFixed(1) + 'K';
+            return (value / 1000).toFixed(1) + '\u00A0k';
         } else if (Math.abs(value) < 1 && Math.abs(value) > 0) {
             return value.toFixed(3);
         } else {
