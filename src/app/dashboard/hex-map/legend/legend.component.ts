@@ -75,20 +75,17 @@ export class LegendComponent<T,K extends keyof T> implements OnChanges, AfterVie
 
             const color = this.colorFunction(tempTData);
 
-            // Convert RGBA to CSS color string
-            const rgbaColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]! / 255})`;
-
-            // Draw vertical line
-            ctx.fillStyle = rgbaColor;
+            // Draw vertical line using CSS color string
+            ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]! / 255})`;
             ctx.fillRect(x, 0, 1, height);
         }
     }
 
     formatValue(value: number): string {
         if (Math.abs(value) >= 1_000_000) {
-            return (value / 1_000_000).toFixed(1) + 'M';
+            return (value / 1_000_000).toFixed(1) + '\u00A0M';
         } else if (Math.abs(value) >= 1000) {
-            return (value / 1000).toFixed(1) + 'K';
+            return (value / 1000).toFixed(1) + '\u00A0k';
         } else if (Math.abs(value) < 1 && Math.abs(value) > 0) {
             return value.toFixed(3);
         } else {
