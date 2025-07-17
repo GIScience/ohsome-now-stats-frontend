@@ -70,12 +70,6 @@ export class LegendComponent<T,K extends keyof T> implements OnChanges, AfterVie
             const normalizedX = x / (width - 1);
             const value = this.minValue + normalizedX * (this.maxValue - this.minValue);
 
-            // // Create mock HexDataType object for color function
-            // const tempHexData: HexDataType = {
-            //     result: value,
-            //     hex_cell: '' // This won't be used by the color function
-            // };
-
             const tempTData = this.transformFn(value);
 
 
@@ -91,8 +85,8 @@ export class LegendComponent<T,K extends keyof T> implements OnChanges, AfterVie
     }
 
     formatValue(value: number): string {
-        if (Math.abs(value) >= 1000000) {
-            return (value / 1000000).toFixed(1) + 'M';
+        if (Math.abs(value) >= 1_000_000) {
+            return (value / 1_000_000).toFixed(1) + 'M';
         } else if (Math.abs(value) >= 1000) {
             return (value / 1000).toFixed(1) + 'K';
         } else if (Math.abs(value) < 1 && Math.abs(value) > 0) {

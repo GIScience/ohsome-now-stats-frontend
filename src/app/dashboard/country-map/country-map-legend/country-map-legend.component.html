@@ -1,5 +1,5 @@
 <div class="color-legend">
-    <div class="legend-title">{{ unit }}</div>
+    <div class="legend-title">{{ legendTitle }}</div>
     <div class="legend-bar-container">
         <div class="legend-circles">
             <!-- Negative value circle -->
@@ -12,9 +12,9 @@
             <div class="gradient-container negative" *ngIf="minValue < 0">
                 <div class="gradient-line">
                     <div
-                            *ngFor="let step of negativeGradientSteps; let i = index"
+                            *ngFor="let step of negativeGradientSteps"
                             class="gradient-step negative-step"
-                            [ngStyle]="getNegativeGradientStepStyle(step, i)"
+                            [ngStyle]="getNegativeGradientStepStyle(step)"
                     ></div>
                 </div>
             </div>
@@ -29,9 +29,9 @@
             <div class="gradient-container positive" *ngIf="maxValue > 0">
                 <div class="gradient-line">
                     <div
-                            *ngFor="let step of positiveGradientSteps; let i = index"
+                            *ngFor="let step of positiveGradientSteps"
                             class="gradient-step positive-step"
-                            [ngStyle]="getPositiveGradientStepStyle(step, i)"
+                            [ngStyle]="getPositiveGradientStepStyle(step)"
                     ></div>
                 </div>
             </div>

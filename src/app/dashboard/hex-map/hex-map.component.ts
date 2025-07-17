@@ -1,4 +1,4 @@
-import {Component, computed, effect, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, computed, effect, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {H3HexagonLayer, H3HexagonLayerProps, TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
@@ -49,9 +49,9 @@ export class HexMapComponent implements OnInit, OnDestroy {
         minZoom: 0,
         maxZoom: 19,
         tileSize: 256,
-        renderSubLayers: (props: any) => {
+        renderSubLayers: (props) => {
             const {
-                bbox: {west, south, east, north}
+                boundingBox: [[west, south], [east, north]]
             } = props.tile;
 
             return new BitmapLayer({
@@ -68,7 +68,8 @@ export class HexMapComponent implements OnInit, OnDestroy {
     constructor(
         private stateService: StateService,
         private dataService: DataService,
-        private toastService: ToastService) {
+        private toastService: ToastService,
+        private readonly ngZone: NgZone) {
 
         effect(() => {
             this.selectedTopic = this.relevantState().active_topic
@@ -88,7 +89,9 @@ export class HexMapComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.initializeDeck();
+        this.ngZone.runOutsideAngular(() => {
+            this.initializeDeck();
+        })
     }
 
     ngOnDestroy() {
