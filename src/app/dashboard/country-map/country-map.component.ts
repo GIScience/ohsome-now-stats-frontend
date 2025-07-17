@@ -1,4 +1,4 @@
-import {Component, computed, effect, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, computed, effect, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {StateService} from 'src/app/state.service';
 import {Overlay} from '../../overlay.component';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
@@ -51,7 +51,8 @@ export class CountryMapComponent implements OnInit, OnDestroy {
 
     constructor(
         private stateService: StateService,
-        private dataService: DataService
+        private dataService: DataService,
+        private readonly ngZone: NgZone
     ) {
         effect(() => {
             this.activeTopic = this.relevantState().active_topic;
@@ -66,7 +67,10 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.initializeDeck();
+        this.ngZone.runOutsideAngular(() => {
+            this.initializeDeck();
+        })
+
     }
 
     ngOnDestroy() {
@@ -139,7 +143,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             .sort((a: ICountryLocationData, b: ICountryLocationData) => Math.abs(b.value) - Math.abs(a.value));
     }
 
-    getColorFn() {
+        getColorFn() {
         const topicColorHex = topicDefinitions[this.activeTopic]?.["color-hex"]
 
         // Interpolator
@@ -160,8 +164,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         const negativeScale = scalePow([-abMax, 0], [0, 1]).exponent(1 / 4);
         const positiveScale = scalePow([0, abMax], [0, 1]).exponent(2);
 
-        return (d: Pick<ICountryLocationData, "value" | "country">): Color => {
-            const value = d.value;
+        return function (value: number, country: string, selectedCountries = ""): Color {
 
             let color;
             if (value < 0) {
@@ -172,7 +175,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 color = lch(positiveInterpolator(positiveScale(value)));
             }
 
-            if (this.selectedCountries !== "" && !this.selectedCountries.split(",").includes(d.country)) {
+            if (selectedCountries !== "" && !selectedCountries.split(",").includes(country)) {
                 color.c = 0;
             }
 
@@ -189,8 +192,8 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             maxZoom: 19,
             minZoom: 0,
             tileSize: 256,
-            renderSubLayers: (props: any) => {
-                const {bbox: {west, south, east, north}} = props.tile;
+            renderSubLayers: (props)  => {
+                const {boundingBox: [[west, south], [east, north]]} = props.tile;
                 return new BitmapLayer({
                     ...props,
                     data: undefined, // Changed from null to undefined
@@ -202,7 +205,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             pickable: false
         });
 
-
+        const numberFormat = new Intl.NumberFormat();
         this.deck = new Deck({
             parent: this.deckContainer.nativeElement,
             initialViewState: {
@@ -214,43 +217,22 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 repeat: true,
                 controller: true,
             }),
-            getTooltip: ({object: countryData}: PickingInfo<ICountryLocationData>) => countryData && `${countryData.country}: ${countryData.value}`,
+            getTooltip: ({object: countryData}: PickingInfo<ICountryLocationData>) => countryData && `${countryData.country}: ${numberFormat.format(countryData.value)}`,
             layers: [osmLayer],
         } as DeckProps<MapView>);
     };
 
     createOrReplaceCountryDataLayer = (enrichedCountryData: ICountryLocationData[]) => {
 
-        function getAreaProportionalRadius(options: {
-            minRadiusPx: number,
-            maxRadiusPx: number,
-            minValue: number,
-            maxValue: number,
-            value: number
-        }) {
-            const {minRadiusPx, maxRadiusPx, minValue, maxValue, value} = options;
-
-            const absoluteMaxValue = Math.max(Math.abs(minValue), Math.abs(maxValue));
-            const scalePowFn = scaleSqrt([0, absoluteMaxValue], [0, maxRadiusPx]);
-
-            return (value !== 0) ? Math.max((scalePowFn(Math.abs(value))), minRadiusPx) : 0;
-        }
-
         const countryLayer = new ScatterplotLayer<ICountryLocationData>({
             id: 'countryLayer',
             data: enrichedCountryData,
             getPosition: (d: ICountryLocationData) => d.lonLat,
-            getFillColor: this.getColorFn(),
+            getFillColor: (d: ICountryLocationData)=> this.getColorFn().call(null, d.value, d.country, this.selectedCountries),
             updateTriggers: {
                 getFillColor: this.selectedCountries
             },
-            getRadius: (d: ICountryLocationData) => getAreaProportionalRadius({
-                minRadiusPx: 3,
-                maxRadiusPx: 40,
-                minValue: this.minMaxStats.minValue,
-                maxValue: this.minMaxStats.maxValue,
-                value: d.value
-            }),
+            getRadius: this.getRadiusFn(),
             radiusUnits: 'pixels',
             stroked: true,
             getLineWidth: 0.6,
@@ -260,23 +242,20 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         this.deck.setProps({layers: [this.deck.props.layers[0], countryLayer]})
     }
 
-    transFormFn(value: number): Pick<ICountryLocationData, "value" | "country"> {
-        return {value, country: ""};
-    }
-
-    getAreaProportionalRadiusForLegend() {
+    getRadiusFn(){
         const minValue = this.minMaxStats.minValue;
         const maxValue = this.minMaxStats.maxValue;
         const minRadiusPx = 3;
         const maxRadiusPx = 40;
         const absoluteMaxValue = Math.max(Math.abs(minValue), Math.abs(maxValue));
         const scalePowFn = scaleSqrt([0, absoluteMaxValue], [0, maxRadiusPx]);
+        return (d: Pick<ICountryLocationData, "value">): number => {
+            return (d.value !== 0) ? Math.max((scalePowFn(Math.abs(d.value))), minRadiusPx) : 0;
+        }
+    }
 
-        return (value: number) => {
-            if (value === 0) return 3; // Zero values have no radius
-            // Use Math.abs to match the map's behavior - radius is based on magnitude
-            return Math.max(scalePowFn(Math.abs(value)), minRadiusPx);
-        };
+    transFormFn(value: number): Pick<ICountryLocationData, "value" | "country"> {
+        return {value, country: ""};
     }
 
     protected readonly topicDefinitions = topicDefinitions;
