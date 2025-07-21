@@ -3,11 +3,11 @@ import {Color} from '@deck.gl/core';
 
 @Component({
     selector: 'app-legend',
-    templateUrl: './legend.component.html',
-    styleUrls: ['./legend.component.scss'],
+    templateUrl: './hex-map-legend.component.html',
+    styleUrls: ['./hex-map-legend.component.scss'],
     imports: []
 })
-export class LegendComponent<T,K extends keyof T> implements AfterViewInit {
+export class HexMapLegendComponent<T,K extends keyof T> implements AfterViewInit {
     @Input() minValue!: number;
     @Input() maxValue!: number;
     @Input() colorFunction!: (value: Pick<T, K>) => Color;
