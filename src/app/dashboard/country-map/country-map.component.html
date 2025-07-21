@@ -1,24 +1,27 @@
-<div class="bd bgc-white pos-r" #overlayContainer>
-    <overlay [isLoading]="isLoading" [containerElement]="overlayContainer"></overlay>
+<div #overlayContainer class="bd bgc-white pos-r">
+    <overlay [containerElement]="overlayContainer" [isLoading]="isLoading"></overlay>
     <div class="peers fxw-nw@lg+ ai-s">
         <div class="peer peer-greed w-70p@lg+ w-100@lg- p-20">
             <div class="layers">
                 <div class="w-100" style=";position: relative;">
                     <div #deckContainer class="deck-container">
-                        <div class="osm-attribution"><a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        <div class="osm-attribution"><a href="https://www.stadiamaps.com/" target="_blank">Stadia
+                            Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy;
+                            <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a
+                                    href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         </div>
                     </div>
                 </div>
-                <div class="legend-container" *ngIf="!isLoading && minMaxStats">
-                    <app-country-map-legend
-                            [radiusFunction]="getRadiusFn()"
-                            [minValue]="minMaxStats.minValue"
-                            [maxValue]="minMaxStats.maxValue"
-                            [colorFunction]="getColorFn()"
-                            [transformFn]="transFormFn"
-                            [legendTitle]="topicDefinitions[activeTopic]['y-title']">
-                    </app-country-map-legend>
-                </div>
+            </div>
+            <div *ngIf="!isLoading && minMaxStats" class="legend-container">
+                <app-country-map-legend
+                        [colorFunction]="getColorFn()"
+                        [legendTitle]="topicDefinitions[activeTopic]['y-title']"
+                        [maxValue]="minMaxStats.maxValue"
+                        [minValue]="minMaxStats.minValue"
+                        [radiusFunction]="getRadiusFn()"
+                        [transformFn]="transFormFn">
+                </app-country-map-legend>
             </div>
         </div>
     </div>

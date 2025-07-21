@@ -1,38 +1,42 @@
 <div #overlayContainer class="bd bgc-white pos-r">
     <overlay [containerElement]="overlayContainer" [isLoading]="isH3Loading"></overlay>
-    <!-- Resolution Toggle Slider -->
-    <div *ngIf="showResolutionToggle" class="resolution-toggle-container">
-        <div class="resolution-toggle">
-            <span class="resolution-label" [class.active]="!isHighResolution">Low</span>
-            <label class="toggle-switch">
-                <input
-                        type="checkbox"
-                        [checked]="isHighResolution"
-                        (change)="toggleResolution()">
-                <span class="slider"></span>
-            </label>
-            <span class="resolution-label" [class.active]="isHighResolution">High</span>
-        </div>
-        <div class="resolution-subtitle">Resolution</div>
-    </div>
-    <div class="layers">
-        <div class="layer w-100 pX-20 pT-20" style="position: relative;">
-            <div #deckContainer class="deck-container">
-                <div class="osm-attribution"><a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a>
-                    &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a
-                            href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a
-                            href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    <div class="peers fxw-nw@lg+ ai-s">
+        <div class="peer peer-greed w-70p@lg+ w-100@lg- p-20">
+            <!-- Resolution Toggle Slider -->
+            <div *ngIf="showResolutionToggle" class="resolution-toggle-container">
+                <div class="resolution-toggle">
+                    <span class="resolution-label" [class.active]="!isHighResolution">Low</span>
+                    <label class="toggle-switch">
+                        <input
+                                type="checkbox"
+                                [checked]="isHighResolution"
+                                (change)="toggleResolution()">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="resolution-label" [class.active]="isHighResolution">High</span>
+                </div>
+                <div class="resolution-subtitle">Resolution</div>
+            </div>
+            <div class="layers">
+                <div class="layer w-100" style="position: relative;">
+                    <div #deckContainer class="deck-container">
+                        <div class="osm-attribution"><a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a>
+                            &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a
+                                    href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a
+                                    href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        </div>
+                    </div>
+                    <div *ngIf="!isH3Loading && minMaxStats" class="legend-container">
+                        <app-legend
+                                [colorFunction]="getColorFn()"
+                                [transformFn]="transFormFn"
+                                [maxValue]="minMaxStats.result.max"
+                                [minValue]="minMaxStats.result.min"
+                                [unit]="getTopicUnit()">
+                        </app-legend>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div *ngIf="!isH3Loading && minMaxStats" class="legend-container">
-            <app-legend
-                    [colorFunction]="getColorFn()"
-                    [transformFn]="transFormFn"
-                    [maxValue]="minMaxStats.result.max"
-                    [minValue]="minMaxStats.result.min"
-                    [unit]="getTopicUnit()">
-            </app-legend>
         </div>
     </div>
 </div>

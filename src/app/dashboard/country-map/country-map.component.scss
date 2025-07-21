@@ -1,6 +1,6 @@
 .deck-container {
   width: 100%;
-  height: 400px;
+  min-height: 40vh;
   position: relative;
   overflow: hidden;
   border: gray 1px solid;
@@ -18,6 +18,8 @@
 }
 
 .legend-container {
+  display: flex;
+  justify-content: center;
   margin-top: 5px;
   background: rgba(255, 255, 255, 0.9);
   z-index: 1;

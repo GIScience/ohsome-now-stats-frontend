@@ -12,9 +12,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 500px;
   position: relative;
   width: 100%;
+  max-width: 470px;
 
   .circle-item {
     display: flex;
@@ -34,7 +34,7 @@
       font-weight: 500;
       color: #555;
       text-align: center;
-      min-width: 60px;
+      min-width: 30px;
       white-space: nowrap;
     }
   }
