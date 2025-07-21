@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {Color} from '@deck.gl/core';
 
 @Component({
@@ -7,15 +7,13 @@ import {Color} from '@deck.gl/core';
     styleUrls: ['./legend.component.scss'],
     imports: []
 })
-export class LegendComponent<T,K extends keyof T> implements OnChanges, AfterViewInit {
+export class LegendComponent<T,K extends keyof T> implements AfterViewInit {
     @Input() minValue!: number;
     @Input() maxValue!: number;
     @Input() colorFunction!: (value: Pick<T, K>) => Color;
     @Input() transformFn!: (value: number) => Pick<T, K>;
     @Input() unit: string = '';
     @ViewChild('legendCanvas', {static: true}) canvasRef!: ElementRef<HTMLCanvasElement>;
-
-    private isCanvasReady = false;
 
     get showZeroLabel(): boolean {
         return this.minValue < 0 && this.maxValue > 0;
@@ -28,15 +26,7 @@ export class LegendComponent<T,K extends keyof T> implements OnChanges, AfterVie
     }
 
     ngAfterViewInit() {
-        this.isCanvasReady = true;
         this.drawLegend();
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        if ((changes['minValue'] || changes['maxValue'] || changes['colorFunction'])
-            && this.isCanvasReady) {
-            this.drawLegend();
-        }
     }
 
     private drawLegend() {
