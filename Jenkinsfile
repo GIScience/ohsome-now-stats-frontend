@@ -38,7 +38,7 @@ pipeline {
     stage ('Test') {
       steps {
         nodejs(nodeJSInstallationName: 'NodeJS 22') {
-          sh 'ng test --karma-config karma-jenkins.conf.js --code-coverage'
+          sh 'ng test --karma-config karma-jenkins.conf.js --code-coverage --watch=false'
         }
       }
       post {
