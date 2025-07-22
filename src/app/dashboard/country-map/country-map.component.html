@@ -17,7 +17,7 @@
       <div class="legend-container">
         <app-country-map-legend
           [colorFunction]="getColorFn()"
-          [legendTitle]="topicDefinitions[activeTopic]['y-title']"
+          [legendTitle]="topicDefinitions[activeTopic]['name'] + ' per country'"
           [maxValue]="minMaxStats.maxValue"
           [minValue]="minMaxStats.minValue"
           [radiusFunction]="getRadiusFn()"
