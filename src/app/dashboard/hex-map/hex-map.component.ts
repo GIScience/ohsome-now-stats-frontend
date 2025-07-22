@@ -271,7 +271,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
     }
 
     getTopicUnit(): string {
-        return topicDefinitions[this.selectedTopic]?.["y-title"] || '';
+        return topicDefinitions[this.selectedTopic]?.["name"] + ' per hex cell' || '';
     }
 
     transFormFn(value: number): Pick<HexDataType, "result"> {
