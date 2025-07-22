@@ -40,7 +40,6 @@ export class HexMapComponent implements OnInit, OnDestroy {
     currentResolution = 3;
     private MAX_HEX_CELL = 314000;
     private canToggleResolution = false;
-    private manualResolutionOverride = false; // Prevent automatic switching when user manually controls
 
     // Fixed TileLayer configuration
     private readonly osmLayer = new TileLayer({
@@ -75,7 +74,6 @@ export class HexMapComponent implements OnInit, OnDestroy {
             this.selectedTopic = this.relevantState().active_topic
             this.currentResolution = 3
             this.canToggleResolution = false
-            this.manualResolutionOverride = false
             const reqParams = {
                 hashtag: this.relevantState().hashtag,
                 start: this.relevantState().start,
@@ -180,24 +178,7 @@ export class HexMapComponent implements OnInit, OnDestroy {
 
             // count the number ot hex-cells
             const num_of_cells = result.length - 1 // first row is the CSV header
-            // Only auto-switch if user hasn't manually overridden
-            if (this.currentResolution === 3 &&
-                num_of_cells * (7 * 7 * 7) < this.MAX_HEX_CELL &&
-                !this.manualResolutionOverride) {
-
-                this.canToggleResolution = true;
-                this.currentResolution = 6;
-                const reqParams = {
-                    hashtag: this.relevantState().hashtag,
-                    start: this.relevantState().start,
-                    end: this.relevantState().end,
-                    countries: this.relevantState().countries,
-                    topic: this.relevantState().active_topic,
-                    resolution: 6
-                }
-                this.updateLayer(reqParams)
-                return new H3HexagonLayer<HexDataType>({id: 'temp'}); // Return temp layer, will be replaced
-            } else if (num_of_cells * (7 * 7 * 7) < this.MAX_HEX_CELL) {
+            if (num_of_cells * (7 * 7 * 7) < this.MAX_HEX_CELL) {
                 // Enable toggle even if not auto-switching
                 this.canToggleResolution = true;
             }
@@ -225,7 +206,6 @@ export class HexMapComponent implements OnInit, OnDestroy {
     toggleResolution() {
         if (!this.canToggleResolution) return;
 
-        this.manualResolutionOverride = true; // Set manual override
         const newResolution = this.currentResolution === 6 ? 3 : 6;
         this.currentResolution = newResolution;
 
