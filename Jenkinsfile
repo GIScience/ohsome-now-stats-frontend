@@ -24,7 +24,7 @@ pipeline {
           echo env.BUILD_NUMBER
           echo env.TAG_NAME
         }
-        nodejs(nodeJSInstallationName: 'NodeJS 18') {
+        nodejs(nodeJSInstallationName: 'NodeJS 22') {
           sh 'npm install'
         }
       }
@@ -37,7 +37,7 @@ pipeline {
 
     stage ('Test') {
       steps {
-        nodejs(nodeJSInstallationName: 'NodeJS 18') {
+        nodejs(nodeJSInstallationName: 'NodeJS 22') {
           sh 'ng test --karma-config karma-jenkins.conf.js --code-coverage'
         }
       }
@@ -63,7 +63,7 @@ pipeline {
               SONAR_CLI_PARAMETER = " " +
                 "-Dsonar.branch.name=${env.BRANCH_NAME}"
             }
-            nodejs('NodeJS 18') {
+            nodejs('NodeJS 22') {
               sh "${scannerHome}/bin/sonar-scanner " + SONAR_CLI_PARAMETER
             }
           }
@@ -85,7 +85,7 @@ pipeline {
       }
       steps {
         // TODO fix and replace deployment
-        nodejs(nodeJSInstallationName: 'NodeJS 18') {
+        nodejs(nodeJSInstallationName: 'NodeJS 22') {
           sh 'npm run build:int'
         }
         withCredentials([gitUsernamePassword(credentialsId: 'e78912d9-de2f-473c-a1b2-6a2ee82a879a')]) {
@@ -115,7 +115,7 @@ pipeline {
       }
       steps {
         // TODO fix and replace deployment
-        nodejs(nodeJSInstallationName: 'NodeJS 18') {
+        nodejs(nodeJSInstallationName: 'NodeJS 22') {
           sh 'npm run build:prod'
         }
         withCredentials([gitUsernamePassword(credentialsId: 'e78912d9-de2f-473c-a1b2-6a2ee82a879a')]) {

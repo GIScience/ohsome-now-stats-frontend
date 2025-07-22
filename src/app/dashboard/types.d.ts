@@ -30,6 +30,10 @@ export interface ITopicDefinitionValue extends IStatsData {
     icon: string
 }
 
+export interface DropdownOption {
+    name: string;
+    value: string;
+}
 
 interface IModifiedSection {
     count_modified: number,
@@ -88,7 +92,7 @@ export interface ICountryData extends IStatsData {
     country: string
 }
 
-export interface ICountryLocationData extends ICountryData{
+export interface ICountryLocationData extends ICountryData {
     lonLat: [number, number]
 }
 
@@ -139,6 +143,25 @@ interface IHighlightedHashtag {
 interface IDateRange {
     end: dayjs.Dayjs
     start: dayjs.Dayjs
+}
+
+interface DateRanges {
+    [p: string]: [Dayjs, Dayjs]
+}
+
+interface TimePeriod {
+    [p: string]: Dayjs
+
+    startDate: Dayjs
+    endDate: Dayjs
+}
+
+export interface StartDate {
+    startDate: Dayjs
+}
+
+export interface EndDate {
+    endDate: Dayjs
 }
 
 export interface IBaseResponse {

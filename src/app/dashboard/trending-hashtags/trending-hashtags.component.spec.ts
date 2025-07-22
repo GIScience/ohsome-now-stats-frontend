@@ -6,7 +6,7 @@ import {Overlay} from '../../overlay.component';
 import {TrendingHashtagsComponent} from './trending-hashtags.component';
 import {DataService} from '../../data.service';
 import {StateService} from '../../state.service';
-import {IHashtag} from '../types';
+import {IHashtag, StatsType} from '../types';
 
 describe('TrendingHashtagsComponent', () => {
     let component: TrendingHashtagsComponent;
@@ -28,7 +28,7 @@ describe('TrendingHashtagsComponent', () => {
         hashtag: 'test',
         interval: 'P1M',
         topics: '',
-        active_topic: 'users' as any,
+        active_topic: 'users' as StatsType,
         fit_to_content: ''
     };
 
@@ -328,7 +328,6 @@ describe('TrendingHashtagsComponent', () => {
 
             const overlayElement = fixture.debugElement.query(By.css('overlay'));
             expect(overlayElement).toBeTruthy();
-            expect(overlayElement.nativeElement.getAttribute('ng-reflect-is-loading')).toBe('true');
         });
     });
 

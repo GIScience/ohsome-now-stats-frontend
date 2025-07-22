@@ -11,9 +11,17 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IDateRange, IHashtags, IHighlightedHashtag, ISelectionItem, IStateParams, StatsType} from "../types";
+import {
+    DateRanges, DropdownOption, EndDate,
+    IDateRange,
+    IHashtags,
+    IHighlightedHashtag,
+    ISelectionItem,
+    IStateParams, StartDate,
+    StatsType,
+    TimePeriod
+} from "../types";
 import {StateService} from "../../state.service";
-import {DateRanges, EndDate, StartDate, TimePeriod} from "ngx-daterangepicker-material/daterangepicker.component";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
 import {over5000IntervalBins} from "../../utils";
 
@@ -59,11 +67,11 @@ export class QueryComponent implements OnInit {
     })
 
     countries: string[] = [];  // only codes for url and get request
-    dropdownOptions = dropdownOptions;  // all possible countries with name and code
+    dropdownOptions: DropdownOption[] = dropdownOptions;  // all possible countries with name and code
     selectedCountries: ISelectionItem[] = []  // selected countries with name and code
 
     topics: string[] = [];  // only codes for url and get request
-    topicOptions: Array<{ name: string; value: string; }> = []
+    topicOptions: DropdownOption[] = []
     selectedTopics: ISelectionItem[] = []  // selected countries with name and code
     allHashtagOptions: IHashtags[] = []
     filteredHashtagOptions: IHighlightedHashtag[] = []
@@ -154,8 +162,8 @@ export class QueryComponent implements OnInit {
         }
 
         this.topics = this.selectedTopics.map(e => e.value)
-        let previousState = this.stateService.appState()
-        let active_topic = this.topics.includes(previousState.active_topic) ? previousState.active_topic : this.topics[0]
+        const previousState = this.stateService.appState()
+        const active_topic = this.topics.includes(previousState.active_topic) ? previousState.active_topic : this.topics[0]
 
         const state = {
             countries: this.countries.toString(),
@@ -370,6 +378,6 @@ export class QueryComponent implements OnInit {
     }
 }
 
-function customComparator(a: any, b: any) {
+function customComparator(a: DropdownOption, b: DropdownOption) {
     return a.name.localeCompare(b.name)
 }
