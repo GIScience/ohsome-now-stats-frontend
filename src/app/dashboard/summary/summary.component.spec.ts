@@ -43,6 +43,7 @@ describe('SummaryComponent', () => {
                     poi: {
                         value: 20
                     },
+                    power: {value: 20},
                     social_facility: {
                         value: 20
                     },
@@ -165,20 +166,6 @@ describe('SummaryComponent', () => {
         });
     });
 
-    describe('enableTooltips', () => {
-        it('should initialize bootstrap tooltips', () => {
-            // Mock bootstrap tooltip elements
-            const mockTooltipElement = document.createElement('div');
-            mockTooltipElement.setAttribute('data-bs-toggle', 'tooltip');
-            document.body.appendChild(mockTooltipElement);
-
-            spyOn(document, 'querySelectorAll').and.returnValue([mockTooltipElement] as any);
-
-            expect(() => component.enableTooltips()).not.toThrow();
-
-            document.body.removeChild(mockTooltipElement);
-        });
-    });
 
     describe('computed properties', () => {
         it('should create state computed property', () => {

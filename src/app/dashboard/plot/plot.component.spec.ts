@@ -40,6 +40,7 @@ describe('PlotComponent', () => {
             lulc: {value: [500, 1000, 1500]},
             place: {value: [500, 1000, 1500]},
             poi: {value: [500, 1000, 1500]},
+            power: {value: [500, 1000, 1500]},
             social_facility: {value: [500, 1000, 1500]},
             wash: {value: [500, 1000, 1500]},
             waterway: {value: [500, 1000, 1500]}

@@ -14,6 +14,7 @@ export type StatsType =
     | 'lulc'
     | 'place'
     | 'poi'
+    | 'power'
     | 'social_facility'
     | 'wash'
     | 'waterway';
@@ -88,7 +89,7 @@ export interface ICountryData extends IStatsData {
     country: string
 }
 
-export interface ICountryLocationData extends ICountryData{
+export interface ICountryLocationData extends ICountryData {
     lonLat: [number, number]
 }
 
