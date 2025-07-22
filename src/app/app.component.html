@@ -1,138 +1,139 @@
 <!-- @App Content -->
 <!-- =================================================== -->
 <div id="sidebar-container" class="is-collapsed">
-    <!-- #Left Sidebar ==================== -->
-    <div class="sidebar">
-        <div class="sidebar-inner">
-            <!-- ### $Sidebar Header ### -->
-            <div class="sidebar-logo">
-                <div class="peers ai-c fxw-nw">
-                    <div class="peer peer-greed">
-                        <a class="sidebar-link td-n" href="https://heigit.org/technology/#osm-data"
-                           target="_blank" rel="noopener">
-                            <div class="peers ai-c fxw-nw">
-                                <div class="peer">
-                                    <div class="logo pt-3 px-1">
-                                        <img src="assets/images/HeiGIT_Logo_compact_transparent.svg"
-                                             alt="Heidelberg Institute for Geoinformation Technology">
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="peer">
-                        <div class="mobile-toggle sidebar-toggle">
-                            <a (click)="toggleSidebar()" class="td-n">
-                                <i class="ti-arrow-circle-left"></i>
-                            </a>
-                        </div>
-                    </div>
+  <!-- #Left Sidebar ==================== -->
+  <div class="sidebar">
+    <div class="sidebar-inner">
+      <!-- ### $Sidebar Header ### -->
+      <div class="sidebar-logo">
+        <div class="peers ai-c fxw-nw">
+          <div class="peer peer-greed">
+            <a class="sidebar-link td-n" href="https://heigit.org/technology/#osm-data"
+               target="_blank" rel="noopener">
+              <div class="peers ai-c fxw-nw">
+                <div class="peer">
+                  <div class="logo pt-3 px-1">
+                    <img src="assets/images/HeiGIT_Logo_compact_transparent.svg"
+                         alt="Heidelberg Institute for Geoinformation Technology">
+                  </div>
                 </div>
+              </div>
+            </a>
+          </div>
+          <div class="peer">
+            <div class="mobile-toggle sidebar-toggle">
+              <a (click)="toggleSidebar()" class="td-n">
+                <i class="ti-arrow-circle-left"></i>
+              </a>
             </div>
-
-            <!-- ### $Sidebar Menu ### -->
-            <ul class="sidebar-menu scrollable pos-r">
-                <li class="nav-item mT-30 activated" [ngClass]="page === 'dashboard' ? 'active' : ''">
-                    <a class="sidebar-link" [routerLink]="['/dashboard']" data-bs-toggle="tooltip"
-                       data-bs-placement="right" [attr.data-bs-title]="'Dashboard'">
-                        <span class="icon-holder">
-                          <i class="c-blue-500 ti-home"></i>
-                        </span>
-                        <span class="title">Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item" [ngClass]="page === 'hotosm' ? 'active' : ''">
-                    <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-                       [routerLink]="['/dashboard/hotosm']" data-bs-toggle="tooltip" [attr.data-bs-title]="'HOT Mode'"
-                       data-bs-placement="right">
-                        <div class="icon-holder" style="cursor: pointer">
-                            <img alt="HOT"
-                                 src="assets/images/hot_logo.png"
-                                 style="height: 20px">
-                        </div>
-                        <span class="title">HOT View</span>
-                    </a>
-                </li>
-                <li class="nav-item" [ngClass]="page === 'live' ? 'active' : ''">
-                    <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-                       [routerLink]="['/dashboard/live']" data-bs-toggle="tooltip" [attr.data-bs-title]="'Live Mode'"
-                       data-bs-placement="right">
-                        <div class="icon-holder" style="cursor: pointer">
-                            <img alt="Live Mode"
-                                 src="assets/images/live.png"
-                                 style="height: 20px">
-                        </div>
-                        <span class="title">Live View</span>
-                    </a>
-                </li>
-                <li class="nav-item" [ngClass]="page === 'about' ? 'active' : ''">
-                    <a class='sidebar-link' [routerLink]="['/about']" data-bs-toggle="tooltip" data-bs-placement="right"
-                       [attr.data-bs-title]="'About'">
-                        <span class="icon-holder">
-                          <i class="c-deep-orange-500 ti-info"></i>
-                        </span>
-                        <span class="title">About</span>
-                    </a>
-                </li>
-                <li class="nav-item" [ngClass]="page === 'help' ? 'active' : ''">
-                    <a class='sidebar-link' [routerLink]="['/help']" data-bs-toggle="tooltip" data-bs-placement="right"
-                       [attr.data-bs-title]="'Help'">
-                        <span class="icon-holder">
-                          <i class="c-indigo-500 ti-help-alt"></i>
-                        </span>
-                        <span class="title">Help</span>
-                    </a>
-                </li>
-            </ul>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- #Main ============================ -->
-    <div class="page-container">
-        <!-- ### $Topbar ### -->
-        <div class="header navbar z-1">
-            <div class="header-container">
-                <ul class="nav-left">
-                    <li>
-                        <a id='sidebar-toggle' class="sidebar-toggle d-n@md+" (click)="toggleSidebar()">
-                            <i class="ti-menu"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/">
-                            <img class="h-1r h-3/2r@sm h-2r@md h-2r@lg h-5/2r@xl+"
-                                 src="assets/images/ohsomeNowStats_logo.svg" alt="ohsome now stats">
-                        </a>
-                    </li>
-                </ul>
-                <ul class="nav-right">
-                    <!-- user related -->
-                    <div class="mR-10 pt-2 px-1" *ngIf="live">
-                        <img src="assets/images/live.png" class="h-3r"
-                             alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
-                    </div>
-                </ul>
-            </div>
-        </div>
-
-        <!-- ### $App Screen Content ### -->
-        <main class='main-content bgc-grey-100'>
-            <div id='mainContent'>
-                <router-outlet></router-outlet>
-            </div>
-        </main>
-
-        <!-- ### $App Toast ### -->
-        <app-toast></app-toast>
-        <!-- ### $App Screen Footer ### -->
-        <footer class="bdT ta-c p-30 lh-1\/2 fsz-sm c-grey-600" style="white-space: pre-line;">
-            <span> © {{currentYear}} Heidelberg Institute for Geoinformation Technology at <a href="https://uni-heidelberg.de/gis/"
-                                                                                   target="_blank" rel="noopener">Heidelberg University</a> | HeiGIT gGmbH | <a
-                    href="https://heigit.org/imprint/" target="_blank" rel="noopener">imprint</a>&nbsp;|&nbsp;<a
-                    href="https://heigit.org/privacy-policy" target="_blank" rel="noopener">privacy policy</a>
-                | v{{ appVersion }}
+      <!-- ### $Sidebar Menu ### -->
+      <ul class="sidebar-menu scrollable pos-r">
+        <li class="nav-item mT-30 activated" [ngClass]="page === 'dashboard' ? 'active' : ''">
+          <a class="sidebar-link" [routerLink]="['/dashboard']" data-bs-toggle="tooltip" #tooltip
+             data-bs-placement="right" [attr.data-bs-title]="'Dashboard'">
+            <span class="icon-holder">
+              <i class="c-blue-500 ti-home"></i>
             </span>
-        </footer>
+            <span class="title">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item" [ngClass]="page === 'hotosm' ? 'active' : ''">
+          <a class="sidebar-link flex-row" style="display:flex; height: 45px"
+             [routerLink]="['/dashboard/hotosm']" data-bs-toggle="tooltip" [attr.data-bs-title]="'HOT Mode'"
+             data-bs-placement="right" #tooltip>
+            <div class="icon-holder" style="cursor: pointer">
+              <img alt="HOT"
+                   src="assets/images/hot_logo.png"
+                   style="height: 20px">
+            </div>
+            <span class="title">HOT View</span>
+          </a>
+        </li>
+        <li class="nav-item" [ngClass]="page === 'live' ? 'active' : ''">
+          <a class="sidebar-link flex-row" style="display:flex; height: 45px"
+             [routerLink]="['/dashboard/live']" data-bs-toggle="tooltip" [attr.data-bs-title]="'Live Mode'"
+             data-bs-placement="right" #tooltip>
+            <div class="icon-holder" style="cursor: pointer">
+              <img alt="Live Mode" src="assets/images/live.png" style="height: 20px">
+            </div>
+            <span class="title">Live View</span>
+          </a>
+        </li>
+        <li class="nav-item" [ngClass]="page === 'about' ? 'active' : ''">
+          <a class='sidebar-link' [routerLink]="['/about']" data-bs-toggle="tooltip" data-bs-placement="right"
+             [attr.data-bs-title]="'About'" #tooltip>
+            <span class="icon-holder">
+              <i class="c-deep-orange-500 ti-info"></i>
+            </span>
+            <span class="title">About</span>
+          </a>
+        </li>
+        <li class="nav-item" [ngClass]="page === 'help' ? 'active' : ''">
+          <a class='sidebar-link' [routerLink]="['/help']" data-bs-toggle="tooltip" data-bs-placement="right"
+             [attr.data-bs-title]="'Help'" #tooltip>
+            <span class="icon-holder">
+              <i class="c-indigo-500 ti-help-alt"></i>
+            </span>
+            <span class="title">Help</span>
+          </a>
+        </li>
+      </ul>
     </div>
-    <status-banner></status-banner>
+  </div>
+
+  <!-- #Main ============================ -->
+  <div class="page-container">
+    <!-- ### $Topbar ### -->
+    <div class="header navbar z-1">
+      <div class="header-container">
+        <ul class="nav-left">
+          <li>
+            <a id='sidebar-toggle' class="sidebar-toggle d-n@md+" (click)="toggleSidebar()">
+              <i class="ti-menu"></i>
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              <img class="h-1r h-3/2r@sm h-2r@md h-2r@lg h-5/2r@xl+"
+                   src="assets/images/ohsomeNowStats_logo.svg" alt="ohsome now stats">
+            </a>
+          </li>
+        </ul>
+        <ul class="nav-right">
+          <!-- user related -->
+          @if (live) {
+            <div class="mR-10 pt-2 px-1">
+              <img src="assets/images/live.png" class="h-3r"
+                   alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
+            </div>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!-- ### $App Screen Content ### -->
+    <main class='main-content bgc-grey-100'>
+      <div id='mainContent'>
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+
+    <!-- ### $App Toast ### -->
+    <app-toast></app-toast>
+    <!-- ### $App Screen Footer ### -->
+    <footer class="bdT ta-c p-30 lh-1\/2 fsz-sm c-grey-600" style="white-space: pre-line;">
+        <span> © {{ currentYear }} Heidelberg Institute for Geoinformation Technology at <a
+          href="https://uni-heidelberg.de/gis/"
+          target="_blank" rel="noopener">Heidelberg University</a> | HeiGIT gGmbH | <a
+          href="https://heigit.org/imprint/" target="_blank" rel="noopener">imprint</a>&nbsp;|&nbsp;<a
+          href="https://heigit.org/privacy-policy" target="_blank" rel="noopener">privacy policy</a>
+    | v{{ appVersion }}
+  </span>
+    </footer>
+  </div>
+  <status-banner></status-banner>
 </div>

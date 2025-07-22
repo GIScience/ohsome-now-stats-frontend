@@ -1,21 +1,42 @@
-import {Component, computed, effect, inject, OnInit, Signal} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    computed,
+    effect,
+    ElementRef,
+    inject,
+    OnInit,
+    QueryList,
+    Signal,
+    ViewChildren
+} from '@angular/core';
 import dayjs, {Dayjs} from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
 import isoWeek from 'dayjs/plugin/isoWeek'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import * as bootstrap from 'bootstrap';
 
 import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../data.service';
 import {ToastService} from 'src/app/toast.service';
-import {IDateRange, IHashtags, IHighlightedHashtag, ISelectionItem, IStateParams, StatsType} from "../types";
+import {
+    DateRanges,
+    DropdownOption,
+    EndDate,
+    IDateRange,
+    IHashtags,
+    IHighlightedHashtag,
+    ISelectionItem,
+    IStateParams,
+    StartDate,
+    StatsType,
+    TimePeriod
+} from "../types";
 import {StateService} from "../../state.service";
-import {DateRanges, EndDate, StartDate, TimePeriod} from "ngx-daterangepicker-material/daterangepicker.component";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
-import {over5000IntervalBins} from "../../utils";
+import {enableTooltips, over5000IntervalBins} from "../../utils";
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -29,7 +50,8 @@ dayjs.extend(customParseFormat)
     styleUrls: ['./query.component.scss'],
     standalone: false
 })
-export class QueryComponent implements OnInit {
+export class QueryComponent implements OnInit, AfterViewInit {
+    @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
     stateService = inject(StateService);
     dataService = inject(DataService);
     toastService = inject(ToastService);
@@ -59,11 +81,11 @@ export class QueryComponent implements OnInit {
     })
 
     countries: string[] = [];  // only codes for url and get request
-    dropdownOptions = dropdownOptions;  // all possible countries with name and code
+    dropdownOptions: DropdownOption[] = dropdownOptions;  // all possible countries with name and code
     selectedCountries: ISelectionItem[] = []  // selected countries with name and code
 
     topics: string[] = [];  // only codes for url and get request
-    topicOptions: Array<{ name: string; value: string; }> = []
+    topicOptions: DropdownOption[] = []
     selectedTopics: ISelectionItem[] = []  // selected countries with name and code
     allHashtagOptions: IHashtags[] = []
     filteredHashtagOptions: IHighlightedHashtag[] = []
@@ -114,10 +136,16 @@ export class QueryComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.enableTooltips()
         this.dataService.requestAllHashtags().subscribe((hashtagsResult: Array<IHashtags>) => {
             this.allHashtagOptions = hashtagsResult
         })
+
+    }
+
+    ngAfterViewInit() {
+        setTimeout(() => {
+            enableTooltips(this.tooltips, false)
+        }, 300)
     }
 
     /**
@@ -154,8 +182,8 @@ export class QueryComponent implements OnInit {
         }
 
         this.topics = this.selectedTopics.map(e => e.value)
-        let previousState = this.stateService.appState()
-        let active_topic = this.topics.includes(previousState.active_topic) ? previousState.active_topic : this.topics[0]
+        const previousState = this.stateService.appState()
+        const active_topic = this.topics.includes(previousState.active_topic) ? previousState.active_topic : this.topics[0]
 
         const state = {
             countries: this.countries.toString(),
@@ -320,21 +348,6 @@ export class QueryComponent implements OnInit {
     }
 
     /**
-     * Boostrap need to enable tooltip on every element with its attribute
-     */
-    enableTooltips(): void {
-        // enable tooltip
-        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
-
-        // remove previous tooltips
-        const tooltips = Array.from(document.getElementsByClassName("tooltip"))
-        tooltips.forEach(tooltipEle => {
-            tooltipEle.remove()
-        })
-    }
-
-    /**
      * Updates form fields based on current state
      * This is called automatically when state changes
      *
@@ -370,6 +383,6 @@ export class QueryComponent implements OnInit {
     }
 }
 
-function customComparator(a: any, b: any) {
+function customComparator(a: DropdownOption, b: DropdownOption) {
     return a.name.localeCompare(b.name)
 }

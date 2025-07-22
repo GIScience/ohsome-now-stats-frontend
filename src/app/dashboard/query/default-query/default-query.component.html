@@ -1,111 +1,113 @@
 <div class="row gap-20" style="overflow: visible !important;">
-    <div class='col-md-12'>
-        <div class="bgc-white p-20 bd">
-            <form (keyup.enter)="updateStateFromSelection()" class="needs-validation was-validated" novalidate="">
-                <div class="row">
-                    <div class="mb-3 col-md-12">
-                        <div class="mb-3 row">
-                            <div class="col-md-10">
-                                <label class="form-label" for="hashtag"> Hashtag</label>
-                            </div>
-                            <div class="col-md-2 flex-end">
-                                <span class="icon-holder tooltip1" data-bs-placement="bottom"
-                                      data-bs-toggle="tooltip"
-                                      title="Filter stats by hashtag used in changesets comments eg: missingmaps. Keep it blank for statistics of all edits with or without hashtags"
-                                      data-bs-html="true">
-                                    <i class="c-grey-800 ti-help-alt"></i>
-                                </span>
-                            </div>
-                            <p-autoComplete
-                                    id="hashtag"
-                                    [(ngModel)]="selectedHashtagOption"
-                                    name="hashtag"
-                                    [suggestions]="filteredHashtagOptions"
-                                    (completeMethod)="searchChange($event)"
-                                    [minLength]=1
-                                    [delay]="150"
-                                    placeholder="Keep blank or Enter a hashtag"
-                                    optionLabel="hashtag"
-                            >
-                                <ng-template let-value pTemplate="item">
-                                    <span [innerHTML]="value.highlighted"></span>
-                                </ng-template>
-                            </p-autoComplete>
-                        </div>
-                        <!-- Start date, End date and interval -->
-                        <div class="mb-3 row">
-                            <div class="col-md-10">
-                                <label class="form-label" for="dateRange"> Date and Time Range</label>
-                            </div>
-                            <div class="col-md-2 flex-end">
-                                <span class="icon-holder tooltip1" data-bs-placement="bottom"
-                                      data-bs-toggle="tooltip"
-                                      title="Latest database entry: {{ maxDate().toDate() | UTCToLocalConverter }}. You can't query for data later then this."
-                                      data-bs-html="true">
-                                    <i class="c-grey-800 ti-help-alt"></i>
-                                </span>
-                            </div>
-                            <div>
-                                <input type="text"
-                                       class="form-control"
-                                       ngxDaterangepickerMd
-                                       [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
-                                       startKey="start"
-                                       endKey="end"
-                                       [minDate]="minDate()"
-                                       [maxDate]="dateRangeShiftedMaxDate"
-                                       [(ngModel)]="selectedDateRange"
-                                       (datesUpdated)="updateDateRange($event)"
-                                       id="dateRange"
-                                       name="daterange"
-                                       [showCustomRangeLabel]="true"
-                                       [alwaysShowCalendars]="false"
-                                       [ranges]="ranges()"
-                                       [linkedCalendars]="true"
-                                       [showClearButton]="true"
-                                       [timePicker]="true"
-                                       [timePicker24Hour]="true"
-                                       (endDateChanged)="updateEndDate($event)"
-                                       (startDateChanged)="updateStartDate($event)"
-                                       [autoApply]="true"
-                                       [closeOnAutoApply]="false"
-                                       placeholder="Select please..."
-                                       required=""/>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <div class="col-md-12">
-                                <label class="form-label" for="intervals"> Interval </label>
-                                <select name="intervals" class="form-control" id="intervals" [(ngModel)]="interval">
-                                    <option *ngFor="let option of intervals; index as i; first as isFirst"
-                                            [value]="option.value"
-                                            [disabled]="isForbiddenInterval(option.value)">{{ option.label }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <div class="col-md-12">
-                                <label class="form-label" for="countries">Country</label>
-                                <ngx-select-dropdown [options]="dropdownOptions" id="countries" name="countries"
-                                                     [config]="configCountry"
-                                                     [(ngModel)]="selectedCountries" [multiple]="true"
-                                                     class="customDropdown"></ngx-select-dropdown>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label class="form-label" for="topics-selection">OSM Data Topic</label>
-                            <ngx-select-dropdown [options]="topicOptions" name="topics-selection"
-                                                 [config]="configTopics"
-                                                 [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"
-                                                 id="topics-selection"></ngx-select-dropdown>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn btn-primary btn-color" (click)="updateStateFromSelection()" type="submit"
-                        id="btnGetStats" data-bs-toggle="tooltip" title="Submit">Get Statistics
-                </button>
-            </form>
+  <div class='col-md-12'>
+    <div class="bgc-white p-20 bd">
+      <form (keyup.enter)="updateStateFromSelection()" class="needs-validation was-validated" novalidate="">
+        <div class="row">
+          <div class="mb-3 col-md-12">
+            <div class="mb-3 row">
+              <div class="col-md-10">
+                <label class="form-label" for="hashtag"> Hashtag</label>
+              </div>
+              <div class="col-md-2 flex-end">
+                <span class="icon-holder tooltip1" data-bs-placement="bottom"
+                      data-bs-toggle="tooltip" #tooltip
+                      title="Filter stats by hashtag used in changesets comments eg: missingmaps. Keep it blank for statistics of all edits with or without hashtags"
+                      data-bs-html="true">
+                  <i class="c-grey-800 ti-help-alt"></i>
+                </span>
+              </div>
+              <p-autoComplete
+                id="hashtag"
+                [(ngModel)]="selectedHashtagOption"
+                name="hashtag"
+                [suggestions]="filteredHashtagOptions"
+                (completeMethod)="searchChange($event)"
+                [minLength]=1
+                [delay]="150"
+                placeholder="Keep blank or Enter a hashtag"
+                optionLabel="hashtag"
+              >
+                <ng-template let-value pTemplate="item">
+                  <span [innerHTML]="value.highlighted"></span>
+                </ng-template>
+              </p-autoComplete>
+            </div>
+            <!-- Start date, End date and interval -->
+            <div class="mb-3 row">
+              <div class="col-md-10">
+                <label class="form-label" for="dateRange"> Date and Time Range</label>
+              </div>
+              <div class="col-md-2 flex-end">
+                <span class="icon-holder tooltip1" data-bs-placement="bottom"
+                      data-bs-toggle="tooltip" #tooltip
+                      title="Latest database entry: {{ maxDate().toDate() | UTCToLocalConverter }}. You can't query for data later then this."
+                      data-bs-html="true">
+                  <i class="c-grey-800 ti-help-alt"></i>
+                </span>
+              </div>
+              <div>
+                <input type="text"
+                       class="form-control"
+                       ngxDaterangepickerMd
+                       [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
+                       startKey="start"
+                       endKey="end"
+                       [minDate]="minDate()"
+                       [maxDate]="dateRangeShiftedMaxDate"
+                       [(ngModel)]="selectedDateRange"
+                       (datesUpdated)="updateDateRange($event)"
+                       id="dateRange"
+                       name="daterange"
+                       [showCustomRangeLabel]="true"
+                       [alwaysShowCalendars]="false"
+                       [ranges]="ranges()"
+                       [linkedCalendars]="true"
+                       [showClearButton]="true"
+                       [timePicker]="true"
+                       [timePicker24Hour]="true"
+                       (endDateChanged)="updateEndDate($event)"
+                       (startDateChanged)="updateStartDate($event)"
+                       [autoApply]="true"
+                       [closeOnAutoApply]="false"
+                       placeholder="Select please..."
+                       required=""/>
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <div class="col-md-12">
+                <label class="form-label" for="intervals"> Interval </label>
+                <select name="intervals" class="form-control" id="intervals" [(ngModel)]="interval">
+                  @for (option of intervals; track option; let i = $index; let isFirst = $first) {
+                    <option
+                      [value]="option.value"
+                      [disabled]="isForbiddenInterval(option.value)">{{ option.label }}
+                    </option>
+                  }
+                </select>
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <div class="col-md-12">
+                <label class="form-label" for="countries">Country</label>
+                <ngx-select-dropdown [options]="dropdownOptions" id="countries" name="countries"
+                                     [config]="configCountry"
+                                     [(ngModel)]="selectedCountries" [multiple]="true"
+                                     class="customDropdown"></ngx-select-dropdown>
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label class="form-label" for="topics-selection">OSM Data Topic</label>
+              <ngx-select-dropdown [options]="topicOptions" name="topics-selection"
+                                   [config]="configTopics"
+                                   [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"
+                                   id="topics-selection"></ngx-select-dropdown>
+            </div>
+          </div>
         </div>
+        <button class="btn btn-primary btn-color" (click)="updateStateFromSelection()" type="submit" #tooltip
+                id="btnGetStats" data-bs-toggle="tooltip" title="Submit">Get Statistics
+        </button>
+      </form>
     </div>
+  </div>
 </div>

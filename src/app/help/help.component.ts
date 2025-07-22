@@ -24,7 +24,7 @@ export class HelpComponent implements AfterViewInit {
 
     ngAfterViewInit() {
         if (window.location.hash != "") {
-            setTimeout(() => this.scroller.scrollToAnchor(this.hash.split("#")[1]), 100)
+            setTimeout(() => this.scroller.scrollToAnchor(this.hash.split("#")[1]), 200)
         }
     }
 

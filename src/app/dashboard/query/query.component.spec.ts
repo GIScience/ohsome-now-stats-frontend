@@ -135,7 +135,6 @@ describe('QueryComponent', () => {
 
     describe('ngOnInit', () => {
         it('should initialize hashtags', () => {
-            spyOn(component, 'enableTooltips');
             component.ngOnInit();
 
             expect(mockDataService.requestAllHashtags).toHaveBeenCalled();

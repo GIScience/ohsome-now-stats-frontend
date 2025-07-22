@@ -1,7 +1,7 @@
 <div class="big_number">
     <div class="layers bd bgc-white p-20@md+ p-10@sm p-20@sm-" [ngClass]="isSelected ? 'selected' : ''">
         <span class="icon-holder tooltip1" data-bs-placement="bottom" data-bs-toggle="tooltip" title="{{data.tooltip}}"
-              data-bs-html="true" (click)="openHelp()">
+              data-bs-html="true" (click)="openHelp()" #tooltip>
               <i class="c-grey-800 ti-help-alt"></i>
         </span>
         <div [ngClass]="alternativeSelectedLayout ? '': 'flex-col'" style="position: relative;">
@@ -17,9 +17,9 @@
                 </span>
                 @if (data.value < 0) {
                     <span class="icon-holder tooltip2" data-bs-placement="bottom"
-                          data-bs-toggle="tooltip"
+                          data-bs-toggle="tooltip" #tooltip data-bs-html="true"
                           title="NOTE: Negative results can occur for all Δ topics if the number of deleted objects surpassed the number of newly created objects for the hashtag and the time range defined in your query. The number of modified objects is not considered. "
-                          data-bs-html="true">
+                          >
                         <i class="c-grey-800 ti-help-alt"></i>
                     </span>
                 }

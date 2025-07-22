@@ -6,7 +6,7 @@ import {Overlay} from '../../overlay.component';
 import {TrendingHashtagsComponent} from './trending-hashtags.component';
 import {DataService} from '../../data.service';
 import {StateService} from '../../state.service';
-import {IHashtag} from '../types';
+import {IHashtag, StatsType} from '../types';
 
 describe('TrendingHashtagsComponent', () => {
     let component: TrendingHashtagsComponent;
@@ -28,7 +28,7 @@ describe('TrendingHashtagsComponent', () => {
         hashtag: 'test',
         interval: 'P1M',
         topics: '',
-        active_topic: 'users' as any,
+        active_topic: 'users' as StatsType,
         fit_to_content: ''
     };
 
@@ -91,10 +91,6 @@ describe('TrendingHashtagsComponent', () => {
     });
 
     describe('requestFromAPI', () => {
-        beforeEach(() => {
-            spyOn(component, 'enableTooltips');
-        });
-
         it('should call getTrendingHashtags with correct parameters', () => {
             component['requestFromAPI'](mockState);
 
@@ -124,14 +120,6 @@ describe('TrendingHashtagsComponent', () => {
             );
         }));
 
-        it('should create tooltips for hashtags', fakeAsync(() => {
-            component['requestFromAPI'](mockState);
-            tick();
-
-            component.hashtags.forEach(hashtag => {
-                expect(hashtag.tooltip).toBe(`${hashtag.hashtag} with ${hashtag.number_of_users} distinct users`);
-            });
-        }));
 
         it('should truncate long hashtag titles', fakeAsync(() => {
             component['requestFromAPI'](mockState);
@@ -167,13 +155,6 @@ describe('TrendingHashtagsComponent', () => {
             }
         }));
 
-        it('should call enableTooltips after timeout', fakeAsync(() => {
-            component['requestFromAPI'](mockState);
-            tick(300);
-
-            expect(component.enableTooltips).toHaveBeenCalled();
-        }));
-
         it('should handle API errors', () => {
             spyOn(console, 'error');
             mockDataService.getTrendingHashtags.and.returnValue(throwError('API Error'));
@@ -206,42 +187,6 @@ describe('TrendingHashtagsComponent', () => {
         });
     });
 
-    describe('enableTooltips', () => {
-        beforeEach(() => {
-            // Mock DOM elements
-            const mockTooltipElement = document.createElement('div');
-            mockTooltipElement.setAttribute('data-bs-toggle', 'tooltip');
-            document.body.appendChild(mockTooltipElement);
-
-            const mockExistingTooltip = document.createElement('div');
-            mockExistingTooltip.className = 'tooltip';
-            document.body.appendChild(mockExistingTooltip);
-        });
-
-        afterEach(() => {
-            // Clean up DOM
-            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => el.remove());
-            document.querySelectorAll('.tooltip').forEach(el => el.remove());
-        });
-
-        it('should initialize bootstrap tooltips', () => {
-            spyOn(document, 'querySelectorAll').and.callThrough();
-
-            component.enableTooltips();
-
-            expect(document.querySelectorAll).toHaveBeenCalledWith('[data-bs-toggle="tooltip"]');
-        });
-
-        it('should remove existing tooltips', () => {
-            const initialTooltipCount = document.getElementsByClassName('tooltip').length;
-            expect(initialTooltipCount).toBeGreaterThan(0);
-
-            component.enableTooltips();
-
-            const finalTooltipCount = document.getElementsByClassName('tooltip').length;
-            expect(finalTooltipCount).toBe(0);
-        });
-    });
 
     describe('relevantState computed', () => {
         it('should return correct state properties', () => {
@@ -328,7 +273,6 @@ describe('TrendingHashtagsComponent', () => {
 
             const overlayElement = fixture.debugElement.query(By.css('overlay'));
             expect(overlayElement).toBeTruthy();
-            expect(overlayElement.nativeElement.getAttribute('ng-reflect-is-loading')).toBe('true');
         });
     });
 

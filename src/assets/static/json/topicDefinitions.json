@@ -162,11 +162,24 @@
     "dropdown_name": "Points of Interest",
     "color-hex": "#272D2B",
     "color-light": "#CBCBCB",
-    "tooltip": "The absolute increase or decrease in the amount of points of Interest, in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
+    "tooltip": "The absolute increase or decrease in the amount of points of interest, in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
     "additional-help": "Currently this definition is based on a definition by the old osm-stats api used by the HOT Tasking Manager. It will probably change in the future:",
-    "query-parameter": "amenity = * or shop = * or craft = * or office = * or leisure = * or aeroway = *",
+    "query-parameter": "amenity=* or shop=* or craft=* or office=* or leisure=* or aeroway=*",
     "formula": "Δ Points of Interest = Points of Interest<sub>created</sub> - Points of Interest<sub>deleted</sub>",
     "icon": "fa-route"
+  },
+  "power": {
+    "id": "power",
+    "name": "Δ Power Grid",
+    "y-title": "# of Δ power grid",
+    "dropdown_name": "Power Grid",
+    "color-hex": "#471c1c",
+    "color-light": "#daafa4",
+    "tooltip": "The absolute increase or decrease in the amount of power generation facilities and infrastructure, in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
+    "additional-help": "All objects that are tagged as power are considered here, this includes e.g. power poles as well as power generation plants.",
+    "query-parameter": "power=*",
+    "formula": "Δ Power Grid = Power Grid<sub>created</sub> - Power Grid<sub>deleted</sub>",
+    "icon": "fa-bolt-lightning"
   },
   "social_facility": {
     "id": "social_facility",
@@ -176,7 +189,7 @@
     "color-hex": "#ec6600",
     "color-light": "#ffca9b",
     "tooltip": "The absolute increase or decrease in the amount of social facilities and shelters in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
-    "additional-help": " According to the <a target='_blank' href='https://wiki.openstreetmap.org/wiki/Key:social_facility'>OSM Wiki</a> a social facility is considered as any place where social services are conducted.",
+    "additional-help": "According to the <a target='_blank' href='https://wiki.openstreetmap.org/wiki/Key:social_facility'>OSM Wiki</a> a social facility is considered as any place where social services are conducted.",
     "query-parameter": "social_facility=* or amenity in (shelter, social_facility, refugee_site)",
     "formula": "Δ Social Facilities = Social Facilities<sub>created</sub> - Social Facilities<sub>deleted</sub>",
     "icon": "fa-person-shelter"

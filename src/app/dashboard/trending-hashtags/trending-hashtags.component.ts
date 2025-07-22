@@ -1,10 +1,10 @@
-import {Component, computed, effect} from '@angular/core';
-import * as bootstrap from 'bootstrap';
+import {Component, computed, effect, ElementRef, QueryList, ViewChildren} from '@angular/core';
 
 import {DataService} from '../../data.service';
 import {dashboard} from '../tooltip-data';
 import {IHashtag} from "../types";
 import {StateService} from "../../state.service";
+import {enableTooltips} from "../../utils";
 
 @Component({
     selector: 'app-trending-hashtags',
@@ -13,7 +13,7 @@ import {StateService} from "../../state.service";
     standalone: false
 })
 export class TrendingHashtagsComponent {
-
+    @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
     hashtags!: Array<IHashtag> | []
     trendingHashtagLimit = 0
     numOfHashtags = 0
@@ -77,11 +77,7 @@ export class TrendingHashtagsComponent {
                             h.percent = h.number_of_users / this.hashtags[0].number_of_users * 100
 
                     })
-
-                    // give sometime to the renderer to actually find elements
-                    setTimeout(() => {
-                        this.enableTooltips()
-                    }, 300)
+                    setTimeout(() => enableTooltips(this.tooltips, true), 300)
                 }
             },
             error: (err) => {
@@ -97,21 +93,6 @@ export class TrendingHashtagsComponent {
     clickHashtag(hashtag: string) {
         this.stateService.updatePartialState({
             hashtag: hashtag
-        })
-    }
-
-    /**
-     * Boostrap need to enable tooltip on every element with its attribute
-     */
-    enableTooltips(): void {
-        // enble tooltip
-        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
-
-        // remove previous tooltips
-        const tooltips = Array.from(document.getElementsByClassName("tooltip"))
-        tooltips.forEach(tooltipEle => {
-            tooltipEle.remove()
         })
     }
 }

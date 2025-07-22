@@ -1,5 +1,4 @@
 import {Component, computed, effect} from '@angular/core';
-import * as bootstrap from 'bootstrap';
 
 import {IQueryParams, IStatsData, ITopicDefinitionValue, StatsType} from '../types';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
@@ -34,7 +33,6 @@ export class SummaryComponent {
         private stateService: StateService,
         private dataService: DataService
     ) {
-        this.enableTooltips()
         effect(() => {
             this.requestFromAPI(this.relevantState())
         });
@@ -72,13 +70,5 @@ export class SummaryComponent {
         this.stateService.updatePartialState({
             active_topic: newCurrentStats as StatsType,
         });
-    }
-
-    /**
-     * Boostrap need to enable tooltip on every element with its attribute
-     */
-    enableTooltips(): void {
-        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'}))
     }
 }
