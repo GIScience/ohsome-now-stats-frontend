@@ -11,7 +11,7 @@
               </div>
               <div class="col-md-2 flex-end">
                 <span class="icon-holder tooltip1" data-bs-placement="bottom"
-                  data-bs-toggle="tooltip"
+                  data-bs-toggle="tooltip" #tooltip
                   title="Filter stats by hashtag used in changesets comments eg: missingmaps. Keep it blank for statistics of all edits with or without hashtags"
                   data-bs-html="true">
                   <i class="c-grey-800 ti-help-alt"></i>
@@ -27,7 +27,7 @@
                 [delay]="150"
                 placeholder="Keep blank or Enter a hashtag"
                 optionLabel="hashtag"
-                >
+              >
                 <ng-template let-value pTemplate="item">
                   <span [innerHTML]="value.highlighted"></span>
                 </ng-template>
@@ -40,7 +40,7 @@
               </div>
               <div class="col-md-2 flex-end">
                 <span class="icon-holder tooltip1" data-bs-placement="bottom"
-                  data-bs-toggle="tooltip"
+                  data-bs-toggle="tooltip" #tooltip
                   title="Latest database entry: {{ maxDate().toDate() | UTCToLocalConverter }}. You can't query for data later then this."
                   data-bs-html="true">
                   <i class="c-grey-800 ti-help-alt"></i>
@@ -94,95 +94,96 @@
                   [config]="configCountry"
                   [(ngModel)]="selectedCountries" [multiple]="true"
                   class="customDropdown"
-                (change)="selectedHub=undefined;"></ngx-select-dropdown>
+                  (change)="selectedHub=undefined;">
+                </ngx-select-dropdown>
               </div>
             </div>
             <div class="row" style="align-items: center; margin-bottom: 1rem;">
-              <p class="inline-p"><a class="inline-p" target="_blank" rel="noopener"
-              href="https://www.hotosm.org/hubs/">HOT-Priority-Regions:</a>
-            </p>
-            <div class="custom-row" style="width: auto;">
-              <div class="custom-row" style="width: auto;  padding: 0;">
-                <div class="hub-icon-wrapper"
-                  [ngClass]="{'selected': selectedHub === 'asia-pacific'}">
-                  <button title="Asia-Pacific" (click)="changeHub('asia-pacific')"
-                    class="hub-icon"
-                  style="background: url(../../../../assets/images/hubs/asia-pacific.png)"></button>
+              <p class="inline-p">
+                <a class="inline-p" target="_blank" rel="noopener" href="https://www.hotosm.org/hubs/">HOT-Priority-Regions:</a>
+              </p>
+              <div class="custom-row" style="width: auto;">
+                <div class="custom-row" style="width: auto;  padding: 0;">
+                  <div class="hub-icon-wrapper"
+                    [ngClass]="{'selected': selectedHub === 'asia-pacific'}">
+                    <button title="Asia-Pacific" (click)="changeHub('asia-pacific')"
+                      class="hub-icon"
+                      style="background: url(../../../../assets/images/hubs/asia-pacific.png)"></button>
+                  </div>
+                  <div class="hub-icon-wrapper"
+                    [ngClass]="{'selected': selectedHub === 'la-carribean'}">
+                    <button title="Latin America & the Carribean"
+                      (click)="changeHub('la-carribean')" class="hub-icon"
+                      style="background: url(../../../../assets/images/hubs/la-carribean.png)"></button>
+                  </div>
                 </div>
-                <div class="hub-icon-wrapper"
-                  [ngClass]="{'selected': selectedHub === 'la-carribean'}">
-                  <button title="Latin America & the Carribean"
-                    (click)="changeHub('la-carribean')" class="hub-icon"
-                  style="background: url(../../../../assets/images/hubs/la-carribean.png)"></button>
-                </div>
-              </div>
-              <div class="custom-row" style="width: auto;  padding: 0;">
-                <div class="hub-icon-wrapper" [ngClass]="{'selected': selectedHub === 'wna'}">
-                  <button title="West & Northern Africa" (click)="changeHub('wna')"
-                    class="hub-icon"
-                  style="background: url(../../../../assets/images/hubs/wna.png)"></button>
-                </div>
-                <div class="hub-icon-wrapper" [ngClass]="{'selected': selectedHub === 'esa'}">
-                  <button title="Eastern & Southern Africa" (click)="changeHub('esa')"
-                    class="hub-icon"
-                  style="background: url(../../../../assets/images/hubs/esa.png)"></button>
+                <div class="custom-row" style="width: auto;  padding: 0;">
+                  <div class="hub-icon-wrapper" [ngClass]="{'selected': selectedHub === 'wna'}">
+                    <button title="West & Northern Africa" (click)="changeHub('wna')"
+                      class="hub-icon"
+                      style="background: url(../../../../assets/images/hubs/wna.png)"></button>
+                  </div>
+                  <div class="hub-icon-wrapper" [ngClass]="{'selected': selectedHub === 'esa'}">
+                    <button title="Eastern & Southern Africa" (click)="changeHub('esa')"
+                      class="hub-icon"
+                      style="background: url(../../../../assets/images/hubs/esa.png)"></button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="mb-3 row">
-            <label class="form-label" for="topics-selection">OSM Data Topic</label>
-            <ngx-select-dropdown [options]="topicOptions" name="topics-selection"
-              [config]="configTopics"
-              [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"
-              id="topics-selection"
-            (change)="selectedImpactArea=undefined;"></ngx-select-dropdown>
-          </div>
-          <div class="row" style="align-items: center; margin-bottom: 1rem;">
-            <p class="inline-p"><a class="inline-p" target="_blank" rel="noopener"
-            href="https://www.hotosm.org/impact-areas/">HOT-Impact-Areas:</a></p>
-            <div class="custom-row" style="width: auto;">
-              <div class="hub-icon-wrapper"
-                [ngClass]="{'selected': selectedImpactArea === 'disaster'}">
-                <button title="Disaster & Climate Resilience "
-                  (click)="changeImpactArea('disaster')" class="hub-icon"
-                style="background: url(../../../../assets/images/impact_areas/disaster_climate_resilience.png)"></button>
-              </div>
-              <div class="hub-icon-wrapper"
-                [ngClass]="{'selected': selectedImpactArea === 'sus_cities'}">
-                <button title="Sustainable Cities & Communities"
-                  (click)="changeImpactArea('sus_cities')" class="hub-icon"
-                style="background: url(../../../../assets/images/impact_areas/sustainable_cities.png)"></button>
-              </div>
-              <div class="hub-icon-wrapper"
-                [ngClass]="{'selected': selectedImpactArea === 'pub_health'}">
-                <button title="Public Health" (click)="changeImpactArea('pub_health')"
-                  class="hub-icon"
-                style="background: url(../../../../assets/images/impact_areas/public_health.png)"></button>
-              </div>
-              <div class="hub-icon-wrapper"
-                [ngClass]="{'selected': selectedImpactArea === 'migration'}">
-                <button title="Displacement & Safe Migration"
-                  (click)="changeImpactArea('migration')" class="hub-icon"
-                style="background: url(../../../../assets/images/impact_areas/displacement.png)"></button>
-              </div>
-              <div class="hub-icon-wrapper"
-                [ngClass]="{'selected': selectedImpactArea === 'g_equality'}">
-                <button title="Gender Equality" (click)="changeImpactArea('g_equality')"
-                  class="hub-icon"
-                style="background: url(../../../../assets/images/impact_areas/gender_equality.png)"></button>
+            <div class="mb-3 row">
+              <label class="form-label" for="topics-selection">OSM Data Topic</label>
+              <ngx-select-dropdown [options]="topicOptions" name="topics-selection"
+                [config]="configTopics"
+                [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"
+                id="topics-selection"
+                (change)="selectedImpactArea=undefined;"></ngx-select-dropdown>
+            </div>
+            <div class="row" style="align-items: center; margin-bottom: 1rem;">
+              <p class="inline-p">
+                <a class="inline-p" target="_blank" rel="noopener" href="https://www.hotosm.org/impact-areas/">HOT-Impact-Areas:</a>
+              </p>
+              <div class="custom-row" style="width: auto;">
+                <div class="hub-icon-wrapper"
+                  [ngClass]="{'selected': selectedImpactArea === 'disaster'}">
+                  <button title="Disaster & Climate Resilience "
+                    (click)="changeImpactArea('disaster')" class="hub-icon"
+                    style="background: url(../../../../assets/images/impact_areas/disaster_climate_resilience.png)"></button>
+                </div>
+                <div class="hub-icon-wrapper"
+                  [ngClass]="{'selected': selectedImpactArea === 'sus_cities'}">
+                  <button title="Sustainable Cities & Communities"
+                    (click)="changeImpactArea('sus_cities')" class="hub-icon"
+                    style="background: url(../../../../assets/images/impact_areas/sustainable_cities.png)"></button>
+                </div>
+                <div class="hub-icon-wrapper"
+                  [ngClass]="{'selected': selectedImpactArea === 'pub_health'}">
+                  <button title="Public Health" (click)="changeImpactArea('pub_health')"
+                    class="hub-icon"
+                    style="background: url(../../../../assets/images/impact_areas/public_health.png)"></button>
+                </div>
+                <div class="hub-icon-wrapper"
+                  [ngClass]="{'selected': selectedImpactArea === 'migration'}">
+                  <button title="Displacement & Safe Migration"
+                    (click)="changeImpactArea('migration')" class="hub-icon"
+                    style="background: url(../../../../assets/images/impact_areas/displacement.png)"></button>
+                </div>
+                <div class="hub-icon-wrapper"
+                  [ngClass]="{'selected': selectedImpactArea === 'g_equality'}">
+                  <button title="Gender Equality" (click)="changeImpactArea('g_equality')"
+                    class="hub-icon"
+                    style="background: url(../../../../assets/images/impact_areas/gender_equality.png)"></button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-      </div>
-      <button class="btn btn-primary btn-color" (click)="updateStateFromSelection()" type="submit"
-        id="btnGetStats"
-        data-bs-toggle="tooltip" title="Submit">Get Statistics
-      </button>
-    </form>
+        <button class="btn btn-primary btn-color" (click)="updateStateFromSelection()" type="submit"
+          id="btnGetStats" #tooltip
+          data-bs-toggle="tooltip" title="Submit">Get Statistics
+        </button>
+      </form>
+    </div>
   </div>
-</div>
 </div>

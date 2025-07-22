@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, HostListener} from '@angular/core';
-import * as bootstrap from 'bootstrap';
+import {AfterViewInit, Component, ElementRef, HostListener, QueryList, ViewChildren} from '@angular/core';
 import {ToastService} from './toast.service';
 import {DataService} from "./data.service";
 import {StateService} from "./state.service";
 import packageJson from '../../package.json';
+import {enableTooltips} from "./utils";
 
 @Component({
     selector: 'app-root',
@@ -12,6 +12,7 @@ import packageJson from '../../package.json';
     standalone: false
 })
 export class AppComponent implements AfterViewInit {
+    @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
     title = 'ohsomeNow Stats'
     name = 'HeiGIT';
     isOpen = false
@@ -58,11 +59,9 @@ export class AppComponent implements AfterViewInit {
         setTimeout(() => {
             this.checkForSmallScreen();
         }, 1000);
-        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(tooltipTriggerEl => {
-            new bootstrap.Tooltip(tooltipTriggerEl, {trigger: 'hover'});
-        });
-
+        setTimeout(() => {
+            enableTooltips(this.tooltips, true)
+        }, 300)
     }
 
     toggleSidebar() {

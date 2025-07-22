@@ -9,12 +9,12 @@
         <div class="peers ai-c fxw-nw">
           <div class="peer peer-greed">
             <a class="sidebar-link td-n" href="https://heigit.org/technology/#osm-data"
-              target="_blank" rel="noopener">
+               target="_blank" rel="noopener">
               <div class="peers ai-c fxw-nw">
                 <div class="peer">
                   <div class="logo pt-3 px-1">
                     <img src="assets/images/HeiGIT_Logo_compact_transparent.svg"
-                      alt="Heidelberg Institute for Geoinformation Technology">
+                         alt="Heidelberg Institute for Geoinformation Technology">
                   </div>
                 </div>
               </div>
@@ -33,8 +33,8 @@
       <!-- ### $Sidebar Menu ### -->
       <ul class="sidebar-menu scrollable pos-r">
         <li class="nav-item mT-30 activated" [ngClass]="page === 'dashboard' ? 'active' : ''">
-          <a class="sidebar-link" [routerLink]="['/dashboard']" data-bs-toggle="tooltip"
-            data-bs-placement="right" [attr.data-bs-title]="'Dashboard'">
+          <a class="sidebar-link" [routerLink]="['/dashboard']" data-bs-toggle="tooltip" #tooltip
+             data-bs-placement="right" [attr.data-bs-title]="'Dashboard'">
             <span class="icon-holder">
               <i class="c-blue-500 ti-home"></i>
             </span>
@@ -43,31 +43,29 @@
         </li>
         <li class="nav-item" [ngClass]="page === 'hotosm' ? 'active' : ''">
           <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-            [routerLink]="['/dashboard/hotosm']" data-bs-toggle="tooltip" [attr.data-bs-title]="'HOT Mode'"
-            data-bs-placement="right">
+             [routerLink]="['/dashboard/hotosm']" data-bs-toggle="tooltip" [attr.data-bs-title]="'HOT Mode'"
+             data-bs-placement="right" #tooltip>
             <div class="icon-holder" style="cursor: pointer">
               <img alt="HOT"
-                src="assets/images/hot_logo.png"
-                style="height: 20px">
+                   src="assets/images/hot_logo.png"
+                   style="height: 20px">
             </div>
             <span class="title">HOT View</span>
           </a>
         </li>
         <li class="nav-item" [ngClass]="page === 'live' ? 'active' : ''">
           <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-            [routerLink]="['/dashboard/live']" data-bs-toggle="tooltip" [attr.data-bs-title]="'Live Mode'"
-            data-bs-placement="right">
+             [routerLink]="['/dashboard/live']" data-bs-toggle="tooltip" [attr.data-bs-title]="'Live Mode'"
+             data-bs-placement="right" #tooltip>
             <div class="icon-holder" style="cursor: pointer">
-              <img alt="Live Mode"
-                src="assets/images/live.png"
-                style="height: 20px">
+              <img alt="Live Mode" src="assets/images/live.png" style="height: 20px">
             </div>
             <span class="title">Live View</span>
           </a>
         </li>
         <li class="nav-item" [ngClass]="page === 'about' ? 'active' : ''">
           <a class='sidebar-link' [routerLink]="['/about']" data-bs-toggle="tooltip" data-bs-placement="right"
-            [attr.data-bs-title]="'About'">
+             [attr.data-bs-title]="'About'" #tooltip>
             <span class="icon-holder">
               <i class="c-deep-orange-500 ti-info"></i>
             </span>
@@ -76,7 +74,7 @@
         </li>
         <li class="nav-item" [ngClass]="page === 'help' ? 'active' : ''">
           <a class='sidebar-link' [routerLink]="['/help']" data-bs-toggle="tooltip" data-bs-placement="right"
-            [attr.data-bs-title]="'Help'">
+             [attr.data-bs-title]="'Help'" #tooltip>
             <span class="icon-holder">
               <i class="c-indigo-500 ti-help-alt"></i>
             </span>
@@ -101,40 +99,41 @@
           <li>
             <a href="/">
               <img class="h-1r h-3/2r@sm h-2r@md h-2r@lg h-5/2r@xl+"
-                src="assets/images/ohsomeNowStats_logo.svg" alt="ohsome now stats">
-              </a>
-            </li>
-          </ul>
-          <ul class="nav-right">
-            <!-- user related -->
-            @if (live) {
-              <div class="mR-10 pt-2 px-1">
-                <img src="assets/images/live.png" class="h-3r"
-                  alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
-              </div>
-            }
-          </ul>
-        </div>
+                   src="assets/images/ohsomeNowStats_logo.svg" alt="ohsome now stats">
+            </a>
+          </li>
+        </ul>
+        <ul class="nav-right">
+          <!-- user related -->
+          @if (live) {
+            <div class="mR-10 pt-2 px-1">
+              <img src="assets/images/live.png" class="h-3r"
+                   alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
+            </div>
+          }
+        </ul>
       </div>
+    </div>
 
-      <!-- ### $App Screen Content ### -->
-      <main class='main-content bgc-grey-100'>
-        <div id='mainContent'>
-          <router-outlet></router-outlet>
-        </div>
-      </main>
+    <!-- ### $App Screen Content ### -->
+    <main class='main-content bgc-grey-100'>
+      <div id='mainContent'>
+        <router-outlet></router-outlet>
+      </div>
+    </main>
 
-      <!-- ### $App Toast ### -->
-      <app-toast></app-toast>
-      <!-- ### $App Screen Footer ### -->
-      <footer class="bdT ta-c p-30 lh-1\/2 fsz-sm c-grey-600" style="white-space: pre-line;">
-        <span> © {{currentYear}} Heidelberg Institute for Geoinformation Technology at <a href="https://uni-heidelberg.de/gis/"
-        target="_blank" rel="noopener">Heidelberg University</a> | HeiGIT gGmbH | <a
-      href="https://heigit.org/imprint/" target="_blank" rel="noopener">imprint</a>&nbsp;|&nbsp;<a
-    href="https://heigit.org/privacy-policy" target="_blank" rel="noopener">privacy policy</a>
+    <!-- ### $App Toast ### -->
+    <app-toast></app-toast>
+    <!-- ### $App Screen Footer ### -->
+    <footer class="bdT ta-c p-30 lh-1\/2 fsz-sm c-grey-600" style="white-space: pre-line;">
+        <span> © {{ currentYear }} Heidelberg Institute for Geoinformation Technology at <a
+          href="https://uni-heidelberg.de/gis/"
+          target="_blank" rel="noopener">Heidelberg University</a> | HeiGIT gGmbH | <a
+          href="https://heigit.org/imprint/" target="_blank" rel="noopener">imprint</a>&nbsp;|&nbsp;<a
+          href="https://heigit.org/privacy-policy" target="_blank" rel="noopener">privacy policy</a>
     | v{{ appVersion }}
   </span>
-</footer>
-</div>
-<status-banner></status-banner>
+    </footer>
+  </div>
+  <status-banner></status-banner>
 </div>

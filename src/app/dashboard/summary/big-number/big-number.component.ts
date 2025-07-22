@@ -2,7 +2,7 @@ import {AfterViewInit, Component, computed, effect, ElementRef, Input, QueryList
 import {ITopicDefinitionValue} from "../../types";
 import {StateService} from "../../../state.service";
 import {Router} from "@angular/router";
-import * as bootstrap from 'bootstrap';
+import {enableTooltips} from "../../../utils";
 
 @Component({
     selector: 'app-big-number',
@@ -24,7 +24,7 @@ export class BigNumberComponent implements AfterViewInit {
     }
 
     ngAfterViewInit() {
-        setTimeout(() => this.enableTooltips(), 100)
+        setTimeout(() => enableTooltips(this.tooltips, true), 300)
     }
 
     formatNumbertoNumberformatString(value: number): string {
@@ -41,16 +41,5 @@ export class BigNumberComponent implements AfterViewInit {
 
     openHelp() {
         this.router.navigate([`help`], {fragment: this.data.id, queryParams: this.stateService.appState()});
-    }
-
-    enableTooltips() {
-        this.tooltips.forEach(
-            (tooltip) => {
-                const bootsTip = new bootstrap.Tooltip(tooltip.nativeElement, {trigger: 'hover'})
-                tooltip.nativeElement.addEventListener('click', () => {
-                    bootsTip.hide()
-                })
-            }
-        )
     }
 }
