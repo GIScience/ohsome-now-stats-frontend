@@ -170,15 +170,15 @@
   },
   "power": {
     "id": "power",
-    "name": "Δ Power Grid",
-    "y-title": "# of Δ power grid",
+    "name": "Δ Power Grid Features",
+    "y-title": "# of Δ power grid features",
     "dropdown_name": "Power Grid",
     "color-hex": "#471c1c",
     "color-light": "#daafa4",
     "tooltip": "The absolute increase or decrease in the amount of power generation facilities and infrastructure, in the OSM database induced by mapping activity for the hashtag and the time range defined in your query.",
     "additional-help": "All objects that are tagged as power are considered here, this includes e.g. power poles as well as power generation plants.",
     "query-parameter": "power=*",
-    "formula": "Δ Power Grid = Power Grid<sub>created</sub> - Power Grid<sub>deleted</sub>",
+    "formula": "Δ Power Grid Features = Power Grid Features<sub>created</sub> - Power Grid Features<sub>deleted</sub>",
     "icon": "fa-bolt-lightning"
   },
   "social_facility": {
