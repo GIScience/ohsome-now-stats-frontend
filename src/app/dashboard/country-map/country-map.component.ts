@@ -11,14 +11,14 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {scalePow, scaleSqrt} from 'd3-scale';
 import {interpolateHcl} from 'd3-interpolate';
 import {lch, rgb} from 'd3-color';
-import {NgIf} from '@angular/common';
+
 import {CountryMapLegendComponent} from "./country-map-legend/country-map-legend.component";
 
 const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryCode: string]: [number, number] | null };
 
 @Component({
     selector: 'app-country-map',
-    imports: [Overlay, NgIf, CountryMapLegendComponent],
+    imports: [Overlay, CountryMapLegendComponent],
     templateUrl: './country-map.component.html',
     styleUrl: './country-map.component.scss'
 })
