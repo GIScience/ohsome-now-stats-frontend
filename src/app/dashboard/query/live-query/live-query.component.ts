@@ -32,6 +32,7 @@ export class LiveQueryComponent extends QueryComponent implements OnDestroy {
         if (this.refreshIntervalId) {
             clearInterval(this.refreshIntervalId)
             this.refreshIntervalId = null
+            this.dataService.toggleLiveMode(false)
         }
     }
 
