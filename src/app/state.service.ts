@@ -64,9 +64,14 @@ export class StateService {
         if (data.fit_to_content !== undefined) {
             fragment += "&fit_to_content="
         }
-        this.router.navigate([], {
+        this.router.navigate(this.firstRouting() ? this.window.location.pathname.split("/") : [], {
             fragment: fragment
         })
+    }
+
+    private firstRouting(): boolean {
+        // router not yet properly initialized
+        return this.router.url === "/"
     }
 
     /**
