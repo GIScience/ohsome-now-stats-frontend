@@ -64,9 +64,6 @@ export class StateService {
         if (data.fit_to_content !== undefined) {
             fragment += "&fit_to_content="
         }
-        console.log(this.firstRouting())
-        console.log(this.window.location.pathname)
-        console.log(this.window.location.pathname.split("/"))
         this.router.navigate(this.firstRouting() ? this.window.location.pathname.split("/").filter(val => {
             return val !== ""
         }) : [], {
