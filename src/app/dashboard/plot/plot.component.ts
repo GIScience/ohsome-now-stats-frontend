@@ -1,6 +1,6 @@
-import {AfterContentInit, Component, computed, effect} from '@angular/core';
+import {Component, computed, effect} from '@angular/core';
 
-import Plotly, {Config, Layout} from 'plotly.js-basic-dist-min';
+import {Config, Layout} from 'plotly.js-basic-dist-min';
 import dayjs from "dayjs";
 import moment from "moment";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
@@ -19,7 +19,7 @@ import {IPlotResult, IQueryParams, StatsType} from "../types";
     styleUrls: ['./plot.component.scss'],
     standalone: false
 })
-export class PlotComponent implements AfterContentInit {
+export class PlotComponent {
 
     private relevantState = computed(() => {
         return this.stateService.appState();
@@ -41,7 +41,24 @@ export class PlotComponent implements AfterContentInit {
     data!: IPlotResult;
     activeTopic!: StatsType;
 
-    layout: Layout | any;
+    plotData: any[] | undefined;
+
+    layout: Partial<Layout> = {
+        autosize: true,
+        height: 350,
+        grid: {rows: 1, columns: 1},
+        shapes: [],
+        annotations: [],
+        margin: {l: 50, r: 20, t: 20, b: 40},
+        legend: {orientation: 'h'},
+        barmode: 'group',
+        font: {
+            family: 'Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif'
+        },
+        xaxis: {range: [], autorange: false},
+        yaxis: {title: {text: ""}}
+    };
+
     fitToContentIcon = {
         'width': 600,
         'height': 500,
@@ -50,6 +67,13 @@ export class PlotComponent implements AfterContentInit {
     config: Partial<Config> = {
         responsive: true,
         modeBarButtonsToRemove: ['select2d', 'lasso2d', 'resetScale2d', 'zoomOut2d', 'zoomIn2d'],
+        modeBarButtonsToAdd: [
+            {
+                name: 'FitToContent',
+                icon: this.fitToContentIcon,
+                title: 'Fit to Content',
+                click: this.fitToContent()
+            }]
     }
     isPlotsLoading: boolean = false;
 
@@ -74,10 +98,6 @@ export class PlotComponent implements AfterContentInit {
         })
     }
 
-    ngAfterContentInit(): void {
-        this.initChart();
-    }
-
     private requestToAPI(state: IQueryParams) {
         this.isPlotsLoading = true;
         this.dataService.requestPlot(state).subscribe({
@@ -100,30 +120,9 @@ export class PlotComponent implements AfterContentInit {
         });
     }
 
-    /**
-     * Draws the blank plotly chart. Traces will be added dynamically
-     */
-    initChart() {
-        this.layout = {
-            autosize: true,
-            height: 350,
-            grid: {rows: 1, columns: 1},
-            shapes: [],
-            annotations: [],
-            margin: {l: 50, r: 20, t: 20, b: 40},
-            legend: {orientation: 'h'},
-            barmode: 'group',
-            font: {
-                family: 'Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif'
-            },
-
-        };
-
-        Plotly.react('summaryplot', [], this.layout, this.config);
-    }
 
     refreshPlot() {
-        const plotData = [{
+        this.plotData = [{
             x: this.data.startDate.map(e => UTCStringToLocalDateConverterFunction(e)),
             y: this.data.topics[this.activeTopic].value,
             customdata: this.data.topics[this.activeTopic].value,
@@ -143,15 +142,7 @@ export class PlotComponent implements AfterContentInit {
                 color: `${topicDefinitions[this.activeTopic]["color-hex"]}`
             },
         }];
-        this.layout.yaxis.title = `${topicDefinitions[this.activeTopic]["y-title"]}`
-        this.config.modeBarButtonsToAdd = [
-            {
-                name: 'FitToContent',
-                icon: this.fitToContentIcon,
-                title: 'Fit to Content',
-                click: this.fitToContent()
-            }]
-        Plotly.react('summaryplot', plotData as any, this.layout, this.config);
+        this.layout.yaxis!.title!.text = `${topicDefinitions[this.activeTopic]["y-title"]}`
     }
 
     /**
@@ -179,22 +170,19 @@ export class PlotComponent implements AfterContentInit {
             const data_start = this.data.topics[this.activeTopic].value.findIndex(value => value != 0)
             const data_end = this.data.topics[this.activeTopic].value.findLastIndex(value => value != 0)
             const half_an_interval = moment.duration(this.relevantState().interval).asMilliseconds() / 2;
-            Plotly.relayout('summaryplot', {
-                xaxis: {
-                    range: [
-                        UTCStringToLocalDateConverterFunction(dayjs(this.data.startDate[data_start > 0 ? data_start : 0]).subtract(half_an_interval, 'milliseconds').toDate().toISOString()),
-                        UTCStringToLocalDateConverterFunction(dayjs(this.data.startDate[data_end > 0 ? data_end : this.data.startDate.length - 1]).add(half_an_interval, 'milliseconds').toDate().toISOString())
-                    ],
-                },
-            });
+            this.layout.xaxis = {
+                autorange: false,
+                range: [
+                    UTCStringToLocalDateConverterFunction(dayjs(this.data.startDate[data_start > 0 ? data_start : 0]).subtract(half_an_interval, 'milliseconds').toDate().toISOString()),
+                    UTCStringToLocalDateConverterFunction(dayjs(this.data.startDate[data_end > 0 ? data_end : this.data.startDate.length - 1]).add(half_an_interval, 'milliseconds').toDate().toISOString())
+                ]
+            }
         }
     }
 
     resetZoom() {
-        Plotly.relayout('summaryplot', {
-            xaxis: {
-                autorange: true
-            }
-        });
+        this.layout.xaxis = {
+            autorange: true
+        }
     }
 }

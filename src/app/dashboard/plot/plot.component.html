@@ -1,12 +1,10 @@
 <div class="bd bgc-white pos-r" [hidden]="!data" #overlayContainer>
-    <overlay [isLoading]="isPlotsLoading"  [containerElement]="overlayContainer"></overlay>
-
-    <div class="layers">
-        <div class="peers layer w-100 pX-20 pT-20">
-            <!--<h6 class="peer lh-1">Chart based on interval</h6>-->
-        </div>
-        <div class="layer w-100 pX-20 pB-20">
-            <div id="summaryplot" style="height: 350px;"></div>
-        </div>
+  <overlay [isLoading]="isPlotsLoading" [containerElement]="overlayContainer"></overlay>
+  <div class="layers">
+    <div class="layer w-100 pX-20 pB-20">
+      @if (plotData) {
+        <plotly-plot [data]="plotData" [layout]="layout" [config]="config"></plotly-plot>
+      }
     </div>
+  </div>
 </div>

@@ -1,4 +1,4 @@
-import {NgModule, inject, provideAppInitializer} from '@angular/core';
+import {inject, NgModule, provideAppInitializer} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
@@ -37,6 +37,8 @@ import {CountryMapComponent} from './dashboard/country-map/country-map.component
 import {HexMapComponent} from "./dashboard/hex-map/hex-map.component";
 import {HexMapLegendComponent} from "./dashboard/hex-map/legend/hex-map-legend.component";
 import {CountryMapLegendComponent} from "./dashboard/country-map/country-map-legend/country-map-legend.component";
+import {PlotlyComponent, PlotlyModule} from "angular-plotly.js";
+import * as PlotlyJS from 'plotly.js-dist-min';
 
 const routes = [{path: 'help', component: HelpComponent}];
 
@@ -76,7 +78,10 @@ const routes = [{path: 'help', component: HelpComponent}];
         CountryMapComponent,
         HexMapLegendComponent,
         CountryMapLegendComponent,
-        Overlay],
+        Overlay,
+        PlotlyComponent,
+        PlotlyModule.forRoot(PlotlyJS)
+    ],
     exports: [
         Overlay
     ],
