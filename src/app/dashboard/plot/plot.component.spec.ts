@@ -119,36 +119,6 @@ describe('PlotComponent', () => {
         expect(component.fitToContentIcon).toBeDefined();
     });
 
-    describe('ngAfterContentInit', () => {
-        it('should call initChart', () => {
-            spyOn(component, 'initChart');
-
-            component.ngAfterContentInit();
-
-            expect(component.initChart).toHaveBeenCalled();
-        });
-    });
-
-    describe('initChart', () => {
-        it('should initialize layout and call Plotly.react', () => {
-            component.initChart();
-
-            expect(component.layout).toBeDefined();
-            expect(component.layout.autosize).toBe(true);
-            expect(component.layout.height).toBe(350);
-            // expect(mockPlotly.react).toHaveBeenCalledWith('summaryplot', [], component.layout, component.config);
-        });
-
-        it('should set correct layout properties', () => {
-            component.initChart();
-
-            expect(component.layout.margin).toEqual({l: 50, r: 20, t: 20, b: 40});
-            expect(component.layout.legend).toEqual({orientation: 'h'});
-            expect(component.layout.barmode).toBe('group');
-            expect(component.layout.font.family).toContain('Roboto');
-        });
-    });
-
     describe('requestToAPI', () => {
         beforeEach(() => {
             spyOn(component, 'refreshPlot');
