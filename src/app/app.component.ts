@@ -33,7 +33,7 @@ export class AppComponent implements AfterViewInit {
         })
     }
 
-    @HostListener('window:resize', ['$event'])
+    @HostListener('window:resize')
     onWindowResize() {
         this.checkForSmallScreen()
         this.tryCollapseMenuOnBiggerScreens()
