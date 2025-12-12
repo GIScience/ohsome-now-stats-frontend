@@ -1,6 +1,4 @@
-@import 'perfect-scrollbar/css/perfect-scrollbar';
-@import 'themify-icons';
-@import 'fontawesome/css/fontawesome';
-@import 'fontawesome/css/solid';
-@import 'fontawesome/css/regular';
-@import 'perfectScrollbar';
+@use 'perfect-scrollbar/css/perfect-scrollbar' as *;
+@use 'themify-icons' as *;
+@use 'font-awesome' as *;
+@use 'perfectScrollbar' as *;
