@@ -5,7 +5,7 @@ import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {providePrimeNG} from 'primeng/config';
-import Aura from '@primeng/themes/aura';
+import Aura from '@primeuix/themes/aura';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';

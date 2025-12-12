@@ -36,13 +36,13 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@deck.gl/core':
-        specifier: ^9.2.1
+        specifier: ^9.2.5
         version: 9.2.5
       '@deck.gl/geo-layers':
-        specifier: ^9.2.1
+        specifier: ^9.2.5
         version: 9.2.5(@deck.gl/core@9.2.5)(@deck.gl/extensions@9.2.5(@deck.gl/core@9.2.5)(@luma.gl/core@9.2.4)(@luma.gl/engine@9.2.4(@luma.gl/core@9.2.4)(@luma.gl/shadertools@9.2.4(@luma.gl/core@9.2.4))))(@deck.gl/layers@9.2.5(@deck.gl/core@9.2.5)(@loaders.gl/core@4.3.4)(@luma.gl/core@9.2.4)(@luma.gl/engine@9.2.4(@luma.gl/core@9.2.4)(@luma.gl/shadertools@9.2.4(@luma.gl/core@9.2.4))))(@deck.gl/mesh-layers@9.2.5(@deck.gl/core@9.2.5)(@loaders.gl/core@4.3.4)(@luma.gl/core@9.2.4)(@luma.gl/engine@9.2.4(@luma.gl/core@9.2.4)(@luma.gl/shadertools@9.2.4(@luma.gl/core@9.2.4)))(@luma.gl/gltf@9.2.4(@luma.gl/constants@9.2.4)(@luma.gl/core@9.2.4)(@luma.gl/engine@9.2.4(@luma.gl/core@9.2.4)(@luma.gl/shadertools@9.2.4(@luma.gl/core@9.2.4)))(@luma.gl/shadertools@9.2.4(@luma.gl/core@9.2.4)))(@luma.gl/shadertools@9.2.4(@luma.gl/core@9.2.4)))(@loaders.gl/core@4.3.4)(@luma.gl/constants@9.2.4)(@luma.gl/core@9.2.4)(@luma.gl/engine@9.2.4(@luma.gl/core@9.2.4)(@luma.gl/shadertools@9.2.4(@luma.gl/core@9.2.4)))
       '@deck.gl/layers':
-        specifier: ^9.2.1
+        specifier: ^9.2.5
         version: 9.2.5(@deck.gl/core@9.2.5)(@loaders.gl/core@4.3.4)(@luma.gl/core@9.2.4)(@luma.gl/engine@9.2.4(@luma.gl/core@9.2.4)(@luma.gl/shadertools@9.2.4(@luma.gl/core@9.2.4)))
       '@loaders.gl/core':
         specifier: ^4.3.4
@@ -50,9 +50,9 @@ importers:
       '@loaders.gl/csv':
         specifier: ^4.3.4
         version: 4.3.4(@loaders.gl/core@4.3.4)
-      '@primeng/themes':
-        specifier: ^20.2.0
-        version: 20.4.0
+      '@primeuix/themes':
+        specifier: ^2.0.2
+        version: 2.0.2
       '@types/vanillajs-datepicker':
         specifier: ^1.3.5
         version: 1.3.5
@@ -78,7 +78,7 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       dayjs:
-        specifier: ^1.11.18
+        specifier: ^1.11.19
         version: 1.11.19
       export-to-csv:
         specifier: ^1.4.0
@@ -102,10 +102,10 @@ importers:
         specifier: ^1.5.6
         version: 1.5.6
       plotly.js-dist-min:
-        specifier: ^3.1.1
+        specifier: ^3.3.0
         version: 3.3.0
       plotly.js-geo-dist:
-        specifier: ^3.1.1
+        specifier: ^3.3.0
         version: 3.3.0
       rxjs:
         specifier: ^7.8.2
@@ -160,7 +160,7 @@ importers:
         specifier: ~4.3.6
         version: 4.3.6
       '@types/papaparse':
-        specifier: ^5.3.16
+        specifier: ^5.5.1
         version: 5.5.1
       '@types/plotly.js-basic-dist-min':
         specifier: ^2.12.4
@@ -169,13 +169,13 @@ importers:
         specifier: ^2.3.4
         version: 2.3.4
       '@typescript-eslint/eslint-plugin':
-        specifier: ^8.46.1
+        specifier: ^8.49.0
         version: 8.49.0(@typescript-eslint/parser@8.49.0(eslint@9.39.1)(typescript@5.9.3))(eslint@9.39.1)(typescript@5.9.3)
       '@typescript-eslint/parser':
-        specifier: ^8.46.1
+        specifier: ^8.49.0
         version: 8.49.0(eslint@9.39.1)(typescript@5.9.3)
       eslint:
-        specifier: ^9.37.0
+        specifier: ^9.39.1
         version: 9.39.1
       jasmine-core:
         specifier: ~4.5.0
@@ -196,8 +196,8 @@ importers:
         specifier: ~2.0.0
         version: 2.0.0(jasmine-core@4.5.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
       primeng:
-        specifier: ^20.2.0
-        version: 20.4.0(a3e41dd1f8ab13b260525f8274d72539)
+        specifier: ^21.0.1
+        version: 21.0.1(77d5658ccaa4bcc1f561888852cc497a)
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
@@ -1628,18 +1628,19 @@ packages:
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
-  '@primeng/themes@20.4.0':
-    resolution: {integrity: sha512-bh1yIRbCDAo+OLhQ+bm8sgwlZFRphwlR3/GXOdshJVurm5/Up+CWzoRqsZw/Q2RSrq0x3rDNA2pOTIYpcwgXbA==}
+  '@primeuix/motion@0.0.10':
+    resolution: {integrity: sha512-PsZwOPq79Scp7/ionshRcQ5xKVf9+zuLcyY5mf6onK8chHT5C9JGphmcIZ4CzcqxuGEpsm8AIbTGy+zS3RtzLA==}
+    engines: {node: '>=12.11.0'}
 
   '@primeuix/styled@0.7.4':
     resolution: {integrity: sha512-QSO/NpOQg8e9BONWRBx9y8VGMCMYz0J/uKfNJEya/RGEu7ARx0oYW0ugI1N3/KB1AAvyGxzKBzGImbwg0KUiOQ==}
     engines: {node: '>=12.11.0'}
 
-  '@primeuix/styles@1.2.5':
-    resolution: {integrity: sha512-nypFRct/oaaBZqP4jinT0puW8ZIfs4u+l/vqUFmJEPU332fl5ePj6DoOpQgTLzo3OfmvSmz5a5/5b4OJJmmi7Q==}
+  '@primeuix/styles@2.0.2':
+    resolution: {integrity: sha512-LNtkJsTonNHF5ag+9s3+zQzm00+LRmffw68QRIHy6S/dam1JpdrrAnUzNYlWbaY7aE2EkZvQmx7Np7+PyHn+ow==}
 
-  '@primeuix/themes@1.2.5':
-    resolution: {integrity: sha512-n3YkwJrHQaEESc/D/A/iD815sxp8cKnmzscA6a8Tm8YvMtYU32eCahwLLe6h5rywghVwxASWuG36XBgISYOIjQ==}
+  '@primeuix/themes@2.0.2':
+    resolution: {integrity: sha512-prwQvA3tDGBz8yWSUenaJUttEMCEvPvxwOfFhDPmSe1vwsfVKL2Nmh5eZvtPFQnxmIOPsHZS7zc0/L3CzJ83Eg==}
 
   '@primeuix/utils@0.6.3':
     resolution: {integrity: sha512-/SLNQSKQ73WbBIsflKVqbpVjCfFYvQO3Sf1LMheXyxh8JqxO4M63dzP56wwm9OPGuCQ6MYOd2AHgZXz+g7PZcg==}
@@ -3515,16 +3516,15 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  primeng@20.4.0:
-    resolution: {integrity: sha512-vXUD1G4/uet4rDkPW8xx7yZWj7RmsmexEJ3+GhpQgsNaLtPFsTCVfQq8v4FQ4tIs7shoD0hz76d3jtjGWZ49QQ==}
+  primeng@21.0.1:
+    resolution: {integrity: sha512-lCmMpr2cgL4r/HPByMnrKTPgwYJAQhMDbtu/u8VL3Otnzs8KSKY7bmSnH6cqvucsk8lr/VSKJTxbssb9gtmOVg==}
     peerDependencies:
-      '@angular/animations': ^20.0.4
-      '@angular/cdk': ^20.0.3
-      '@angular/common': ^20.0.4
-      '@angular/core': ^20.0.4
-      '@angular/forms': ^20.0.4
-      '@angular/platform-browser': ^20.0.4
-      '@angular/router': ^20.0.4
+      '@angular/cdk': ^21.0.0
+      '@angular/common': ^21.0.0
+      '@angular/core': ^21.0.0
+      '@angular/forms': ^21.0.0
+      '@angular/platform-browser': ^21.0.0
+      '@angular/router': ^21.0.0
       rxjs: ^6.0.0 || ^7.8.1
 
   proc-log@5.0.0:
@@ -5630,20 +5630,19 @@ snapshots:
 
   '@popperjs/core@2.11.8': {}
 
-  '@primeng/themes@20.4.0':
+  '@primeuix/motion@0.0.10':
     dependencies:
-      '@primeuix/styled': 0.7.4
-      '@primeuix/themes': 1.2.5
+      '@primeuix/utils': 0.6.3
 
   '@primeuix/styled@0.7.4':
     dependencies:
       '@primeuix/utils': 0.6.3
 
-  '@primeuix/styles@1.2.5':
+  '@primeuix/styles@2.0.2':
     dependencies:
       '@primeuix/styled': 0.7.4
 
-  '@primeuix/themes@1.2.5':
+  '@primeuix/themes@2.0.2':
     dependencies:
       '@primeuix/styled': 0.7.4
 
@@ -7629,17 +7628,17 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  primeng@20.4.0(a3e41dd1f8ab13b260525f8274d72539):
+  primeng@21.0.1(77d5658ccaa4bcc1f561888852cc497a):
     dependencies:
-      '@angular/animations': 21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))
       '@angular/cdk': 20.2.14(@angular/common@21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/common': 21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/core': 21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1)
       '@angular/forms': 21.0.4(@angular/common@21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@21.0.4(@angular/animations@21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1)))(@standard-schema/spec@1.0.0)(rxjs@7.8.2)
       '@angular/platform-browser': 21.0.4(@angular/animations@21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))
       '@angular/router': 21.0.4(@angular/common@21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@21.0.4(@angular/animations@21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@21.0.4(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.0.4(@angular/compiler@21.0.4)(rxjs@7.8.2)(zone.js@0.15.1)))(rxjs@7.8.2)
+      '@primeuix/motion': 0.0.10
       '@primeuix/styled': 0.7.4
-      '@primeuix/styles': 1.2.5
+      '@primeuix/styles': 2.0.2
       '@primeuix/utils': 0.6.3
       rxjs: 7.8.2
       tslib: 2.8.1
