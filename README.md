@@ -41,7 +41,7 @@ check [GIScience/ohsome-now-stats-service](https://github.com/GIScience/ohsome-n
 
 # For Developers
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 19.2.6.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
 
 ## Development server
 
