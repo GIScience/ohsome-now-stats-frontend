@@ -188,7 +188,7 @@
       }
 
       @include placeholder {
-        color: lighten($default-text-color, 20%);
+        color: color.adjust($default-text-color, $lightness: 20%);
         font-style: italic;
       }
     }

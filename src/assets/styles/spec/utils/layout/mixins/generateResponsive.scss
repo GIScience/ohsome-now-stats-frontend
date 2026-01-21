@@ -1,5 +1,6 @@
 @use '../../../settings/breakpoints' as *;
 @use 'mediaQueryCondition' as *;
+@use "sass:list";
 
 // Initialize global variable to avoid deprecation warning
 $breakpointAlias: null;
@@ -13,8 +14,8 @@ $breakpointAlias: null;
 
 @mixin generateResponsive() {
   @each $breakpoint in $breakpoints {
-    $breakpointAlias     : nth($breakpoint, 1) !global;
-    $breakpointCondition : nth($breakpoint, 2);
+    $breakpointAlias: list.nth($breakpoint, 1) !global;
+    $breakpointCondition: list.nth($breakpoint, 2);
 
     @include mediaQueryCondition($breakpointAlias) {
       @content;
