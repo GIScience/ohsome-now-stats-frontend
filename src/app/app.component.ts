@@ -1,9 +1,19 @@
-import {AfterViewInit, Component, ElementRef, HostListener, QueryList, ViewChildren} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    HostListener,
+    inject,
+    OnInit,
+    QueryList,
+    ViewChildren
+} from '@angular/core';
 import {ToastService} from './toast.service';
 import {DataService} from "./data.service";
 import {StateService} from "./state.service";
 import packageJson from '../../package.json';
 import {enableTooltips} from "./utils";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
     selector: 'app-root',
@@ -11,7 +21,7 @@ import {enableTooltips} from "./utils";
     styleUrls: ['./app.component.scss'],
     standalone: false
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit, AfterViewInit {
     @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
     title = 'ohsomeNow Stats'
     name = 'HeiGIT';
@@ -22,14 +32,17 @@ export class AppComponent implements AfterViewInit {
     protected readonly appVersion: string = packageJson.version
     protected currentYear: string = new Date().getFullYear().toString()
 
-    constructor(private toastService: ToastService,
-                private dataService: DataService,
-                stateService: StateService,
-    ) {
+    stateService = inject(StateService);
+    private router: Router = inject(Router);
+    private route: ActivatedRoute = inject(ActivatedRoute);
+    private toastService: ToastService = inject(ToastService);
+    private dataService: DataService = inject(DataService);
+
+    constructor() {
         this.dataService.liveMode.subscribe(mode => {
             this.live = mode
         })
-        stateService.activePage.subscribe(page => {
+        this.stateService.activePage.subscribe(page => {
             this.page = page!.split('?')[0]
         })
     }
@@ -38,6 +51,19 @@ export class AppComponent implements AfterViewInit {
     onWindowResize() {
         this.checkForSmallScreen()
         this.tryCollapseMenuOnBiggerScreens()
+    }
+
+    ngOnInit(): void {
+        // Check if user is already logged in by checking for auth cookie
+        this.checkLoginStatus();
+
+        // Check if returning from login with a token
+        this.route.queryParams.subscribe(params => {
+            const token = params['token'];
+            if (token) {
+                this.handleLoginCallback(token);
+            }
+        });
     }
 
     tryCollapseMenuOnBiggerScreens() {
@@ -78,4 +104,34 @@ export class AppComponent implements AfterViewInit {
         }
     }
 
+    checkLoginStatus(): void {
+        const authToken = this.stateService.getCookie('authToken');
+        this.isLoggedIn = !!authToken;
+    }
+
+    onLogin(): void {
+        const currentUrl = window.location.href;
+        window.location.href = `https://account.heigit.org/login?redirect=${encodeURIComponent(currentUrl)}`;
+    }
+
+    handleLoginCallback(token: string): void {
+        // Set the auth token cookie (expires in 7 days)
+        this.stateService.setCookie('authToken', token, 7);
+        this.isLoggedIn = true;
+
+    }
+
+    onSignOut(): void {
+        // Delete the auth cookie
+        this.stateService.deleteCookie('authToken');
+        this.isLoggedIn = false;
+
+        // this.router.navigate(['/']);
+    }
+
+
+    onSignup() {
+        const currentUrl = window.location.href;
+        window.location.href = `https://account.heigit.org/signup?redirect=${encodeURIComponent(currentUrl)}`;
+    }
 }
