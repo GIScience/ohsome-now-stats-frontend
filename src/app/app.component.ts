@@ -18,6 +18,7 @@ export class AppComponent implements AfterViewInit {
     isOpen = false
     live: boolean = false
     page: string = ''
+    isLoggedIn: boolean = false;
     protected readonly appVersion: string = packageJson.version
     protected currentYear: string = new Date().getFullYear().toString()
 

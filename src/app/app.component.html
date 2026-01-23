@@ -106,11 +106,57 @@
         <ul class="nav-right">
           <!-- user related -->
           @if (live) {
-            <div class="mR-10 pt-2 px-1">
-              <img src="assets/images/live.png" class="h-3r"
-                   alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
-            </div>
+              <div class="mR-10 pt-2 px-1">
+                  <img src="assets/images/live.png" class="h-3r"
+                       alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
+              </div>
           }
+        <!-- User dropdown for logged in users -->
+            <li class="dropdown">
+                <a class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" data-bs-toggle="dropdown">
+                    <div class="peer mR-10">
+                      <span class="icon-holder px-1 bgc-grey-100">
+                        <i class="fa-regular fa-user fsz-xl"></i>
+                      </span>
+                    </div>
+                </a>
+                <ul class="dropdown-menu fsz-sm">
+                    @if (isLoggedIn) {
+                    <li>
+                        <a href="#" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700">
+                            <i class="fa-regular fa-user mR-10"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700">
+                            <i class="fa-solid fa-chart-line mR-10"></i>
+                            <span>User Statistics</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700">
+                            <i class="fa-solid fa-right-from-bracket mR-10"></i>
+                            <span>Sign Out</span>
+                        </a>
+                    </li>
+                    } @else {
+                        <!-- Login and Sign up buttons for non-logged in users -->
+                        <li>
+                            <a href="#" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700">
+                                <i class="fa-regular fa-user mR-10"></i>
+                                <span>Login</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700">
+                                <i class="fa-solid fa-chart-line mR-10"></i>
+                                <span>Sign up</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </li>
         </ul>
       </div>
     </div>
