@@ -13,7 +13,6 @@ import {DataService} from "./data.service";
 import {StateService} from "./state.service";
 import packageJson from '../../package.json';
 import {enableTooltips} from "./utils";
-import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
     selector: 'app-root',
@@ -21,10 +20,16 @@ import {ActivatedRoute, Router} from "@angular/router";
     styleUrls: ['./app.component.scss'],
     standalone: false
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements AfterViewInit {
     @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
+    stateService = inject(StateService);
+    // private router: Router = inject(Router);
+    // private route: ActivatedRoute = inject(ActivatedRoute);
+    private toastService: ToastService = inject(ToastService);
+    private dataService: DataService = inject(DataService);
+
     title = 'ohsomeNow Stats'
-    name = 'HeiGIT';
+    name = 'HeiGIT'
     isOpen = false
     live: boolean = false
     page: string = ''
@@ -32,11 +37,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     protected readonly appVersion: string = packageJson.version
     protected currentYear: string = new Date().getFullYear().toString()
 
-    stateService = inject(StateService);
-    private router: Router = inject(Router);
-    private route: ActivatedRoute = inject(ActivatedRoute);
-    private toastService: ToastService = inject(ToastService);
-    private dataService: DataService = inject(DataService);
 
     constructor() {
         this.dataService.liveMode.subscribe(mode => {
@@ -53,18 +53,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.tryCollapseMenuOnBiggerScreens()
     }
 
-    ngOnInit(): void {
-        // Check if user is already logged in by checking for auth cookie
-        this.checkLoginStatus();
-
-        // Check if returning from login with a token
-        this.route.queryParams.subscribe(params => {
-            const token = params['token'];
-            if (token) {
-                this.handleLoginCallback(token);
-            }
-        });
-    }
+    // async ngOnInit() {
+    //     // Check if user is already logged in by checking for auth cookie
+    //     // this.checkLoginStatus();
+    //     await this.appwriteService.tryToLogin()
+    // }
 
     tryCollapseMenuOnBiggerScreens() {
         if (window.innerWidth >= 992) {
@@ -104,34 +97,35 @@ export class AppComponent implements OnInit, AfterViewInit {
         }
     }
 
-    checkLoginStatus(): void {
-        const authToken = this.stateService.getCookie('authToken');
-        this.isLoggedIn = !!authToken;
-    }
-
-    onLogin(): void {
-        const currentUrl = window.location.href;
-        window.location.href = `https://account.heigit.org/login?redirect=${encodeURIComponent(currentUrl)}`;
-    }
-
-    handleLoginCallback(token: string): void {
-        // Set the auth token cookie (expires in 7 days)
-        this.stateService.setCookie('authToken', token, 7);
-        this.isLoggedIn = true;
-
-    }
-
-    onSignOut(): void {
-        // Delete the auth cookie
-        this.stateService.deleteCookie('authToken');
-        this.isLoggedIn = false;
-
-        // this.router.navigate(['/']);
-    }
-
-
-    onSignup() {
-        const currentUrl = window.location.href;
-        window.location.href = `https://account.heigit.org/signup?redirect=${encodeURIComponent(currentUrl)}`;
-    }
+    // checkLoginStatus(): void {
+    //     const authToken = this.stateService.getCookie('authToken');
+    //     this.isLoggedIn = !!authToken;
+    // }
+    //
+    // async onLogin() {
+    //     // const currentUrl = window.location.href;
+    //     // window.location.href = `https://account.heigit.org/login?redirect=${encodeURIComponent(currentUrl)}`;
+    //     await this.appwriteService.tryToLogin()
+    // }
+    //
+    // handleLoginCallback(token: string): void {
+    //     // Set the auth token cookie (expires in 7 days)
+    //     this.stateService.setCookie('authToken', token, 7);
+    //     this.isLoggedIn = true;
+    //
+    // }
+    //
+    // onSignOut(): void {
+    //     // Delete the auth cookie
+    //     this.stateService.deleteCookie('authToken');
+    //     this.isLoggedIn = false;
+    //
+    //     // this.router.navigate(['/']);
+    // }
+    //
+    //
+    // onSignup() {
+    //     const currentUrl = window.location.href;
+    //     window.location.href = `https://account.heigit.org/signup?redirect=${encodeURIComponent(currentUrl)}`;
+    // }
 }

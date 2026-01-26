@@ -1,0 +1,45 @@
+<li class="dropdown">
+    <a class="dropdown-toggle no-after peers fxw-nw ai-c lh-1 user-menu" data-bs-toggle="dropdown">
+        <div class="peer mR-10">
+              <span class="icon-holder px-1 bgc-grey-100">
+                <i class="fa-regular fa-user fsz-xl"></i>
+              </span>
+        </div>
+    </a>
+    <ul class="dropdown-menu fsz-sm">
+        @if (user) {
+            <li>
+                <a href="#" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700 user-menu">
+                    <i class="fa-regular fa-user mR-10"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700 user-menu">
+                    <i class="fa-solid fa-chart-line mR-10"></i>
+                    <span>User Statistics</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="onLogout()" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700 user-menu">
+                    <i class="fa-solid fa-right-from-bracket mR-10"></i>
+                    <span>Sign Out</span>
+                </a>
+            </li>
+        } @else {
+            <!-- Login and Sign up buttons for non-logged in users -->
+            <li>
+                <a (click)="onLogin()" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700 user-menu">
+                    <i class="fa-regular fa-user mR-10"></i>
+                    <span>Login</span>
+                </a>
+            </li>
+            <li>
+                <a (click)="onSignup()" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700 user-menu">
+                    <i class="fa-solid fa-arrow-right-to-bracket mR-10"></i>
+                    <span>Sign up</span>
+                </a>
+            </li>
+        }
+    </ul>
+</li>

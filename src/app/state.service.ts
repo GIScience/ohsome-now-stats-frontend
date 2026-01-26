@@ -1,4 +1,4 @@
-import {effect, Injectable, signal} from '@angular/core';
+import {effect, inject, Injectable, signal} from '@angular/core';
 import {IStateParams} from "./dashboard/types";
 import {environment} from "../environments/environment";
 import {DataService} from "./data.service";
@@ -11,6 +11,10 @@ import {BehaviorSubject, filter} from "rxjs";
     providedIn: 'root'
 })
 export class StateService {
+
+    private dataService = inject(DataService);
+    private router = inject(Router);
+
     // doing this to be able to mock window easily in tests
     window = window;
     url = environment.ohsomeStatsServiceUrl
@@ -28,16 +32,13 @@ export class StateService {
     bsActivePage = new BehaviorSubject<string | undefined>(undefined);
     activePage = this.bsActivePage.asObservable();
 
-    constructor(
-        private dataService: DataService,
-        private router: Router,
-    ) {
+    constructor() {
         effect(() => {
             console.info('Query state changed:', this.appState());
             // This is THE ONLY PLACE WE WANT URL TO BE UPDATED
             this.updateURL(this.appState())
         });
-        if (router.events) {
+        if (this.router.events) {
             this.router.events.pipe(
                 filter(event => event instanceof NavigationEnd)
             ).subscribe((_) => {

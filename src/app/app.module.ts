@@ -39,6 +39,7 @@ import {HexMapLegendComponent} from "./dashboard/hex-map/legend/hex-map-legend.c
 import {CountryMapLegendComponent} from "./dashboard/country-map/country-map-legend/country-map-legend.component";
 import {PlotlyComponent, PlotlyModule} from "angular-plotly.js";
 import * as PlotlyJS from 'plotly.js-dist-min';
+import {AccountComponent} from "@app/account/account.component";
 
 const routes = [{path: 'help', component: HelpComponent}];
 
@@ -80,7 +81,7 @@ const routes = [{path: 'help', component: HelpComponent}];
         CountryMapLegendComponent,
         Overlay,
         PlotlyComponent,
-        PlotlyModule.forRoot(PlotlyJS)
+        PlotlyModule.forRoot(PlotlyJS), AccountComponent
     ],
     exports: [
         Overlay

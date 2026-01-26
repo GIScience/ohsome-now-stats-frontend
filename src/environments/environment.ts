@@ -7,6 +7,9 @@ export const environment = {
     ohsomeStatsUrl: 'https://int-stats.now.ohsome.org',
     ohsomeStatsServiceUrl: 'https://int-stats.now.ohsome.org/api',
     ohsomeApiUrl: 'https://api.ohsome.org/v1',
+    appwriteProjectId: '',
+    appwriteEndpoint: 'https://api.account.heigit.org',
+    appwriteWebsiteUrl: 'https://account.heigit.org'
 };
 
 /*

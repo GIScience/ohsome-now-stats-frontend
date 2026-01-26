@@ -1,0 +1,132 @@
+.account-container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 7.5px;
+    position: relative;
+
+    .login-container {
+        display: inline-flex;
+    }
+
+    .account-menu {
+        display: inline-block;
+        position: relative;
+    }
+
+    .profile-button,
+    .login-button,
+    .fake-user-button {
+        align-items: center;
+        background: none;
+        border: none;
+        border-radius: 25px;
+        color: #666;
+        cursor: pointer;
+        display: flex;
+        font-variation-settings: 'wght' 600;
+        gap: 5px;
+        padding: 7.5px 7.5px 7.5px 10px;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: rgb(0 128 128 / 15%);
+        }
+
+        i-lucide {
+            color: #666;
+        }
+    }
+
+    .fake-user-button {
+        border: 2px dashed #e78400;
+        margin-right: 10px;
+    }
+
+    .account-menu {
+        .account-menu__content {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 4px;
+            min-width: 200px;
+            opacity: 0;
+            padding: 8px 0;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+            transform: translateY(-10px);
+            transition:
+                opacity 0.2s ease,
+                transform 0.2s ease;
+            z-index: 100;
+
+            &.show {
+                opacity: 1;
+                pointer-events: all;
+                transform: translateY(0);
+            }
+
+            .user-info {
+                padding: 8px 16px;
+
+                .name {
+                    color: #333;
+                    font-size: 14px;
+                    font-variation-settings: 'wght' 600;
+                    margin-bottom: 4px;
+                }
+
+                .email {
+                    color: #666;
+                    font-size: 13px;
+                }
+            }
+
+            .divider {
+                background-color: #eee;
+                height: 1px;
+                margin: 8px 0;
+            }
+
+            .account-menu__item {
+                align-items: center;
+                background: none;
+                border: none;
+                color: #333;
+                cursor: pointer;
+                display: flex;
+                font-size: 14px;
+                gap: 12px;
+                padding: 8px 16px;
+                text-align: left;
+                text-decoration: none;
+                transition: background-color 0.2s;
+                width: 100%;
+
+                i-lucide {
+                    color: #666;
+                }
+
+                &:hover {
+                    background-color: #f5f5f5;
+                }
+
+                &.logout-button {
+                    color: #d32f2f;
+
+                    i-lucide {
+                        color: #d32f2f;
+                    }
+
+                    &:hover {
+                        background-color: #ffebee;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.user-menu {
+  cursor: pointer;
+}
