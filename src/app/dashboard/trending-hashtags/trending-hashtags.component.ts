@@ -1,11 +1,11 @@
-import {Component, computed, effect, ElementRef, QueryList, ViewChildren} from '@angular/core';
+import {Component, computed, effect, ElementRef, QueryList, signal, ViewChildren} from '@angular/core';
 
 import {DataService} from '../../data.service';
 import {dashboard} from '../tooltip-data';
 import {IHashtag} from "../types";
 import {StateService} from "../../state.service";
-import {enableTooltips} from "../../utils";
 import {Overlay} from '../../overlay.component';
+import {enableTooltips} from "../../utils";
 
 @Component({
     selector: 'app-trending-hashtags',
@@ -15,11 +15,12 @@ import {Overlay} from '../../overlay.component';
 })
 export class TrendingHashtagsComponent {
     @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
-    hashtags!: Array<IHashtag> | []
-    trendingHashtagLimit = 0
-    numOfHashtags = 0
-    dashboardTooltips
-    isHashtagsLoading: boolean = false
+    hashtags = signal<IHashtag[]>([]);
+    isHashtagsLoading = signal(false);
+    trendingHashtagLimit = this.dataService.trendingHashtagLimit;
+    numOfHashtags = computed(() => this.hashtags().length);
+    dashboardTooltips = dashboard;
+
     private relevantState = computed(() => {
         const state = this.stateService.appState();
         return {
@@ -39,16 +40,21 @@ export class TrendingHashtagsComponent {
         private stateService: StateService,
         private dataService: DataService
     ) {
-        this.trendingHashtagLimit = dataService.trendingHashtagLimit
-        this.dashboardTooltips = dashboard
+        effect(() => {
+            this.fetchHashtags(this.relevantState());
+        });
 
         effect(() => {
-            this.requestFromAPI(this.relevantState());
+            if (this.hashtags().length) {
+                queueMicrotask(() =>
+                    enableTooltips(this.tooltips, true)
+                );
+            }
         });
     }
 
-    private requestFromAPI(state: { start: string; end: string; countries: string; }) {
-        this.isHashtagsLoading = true;
+    private fetchHashtags(state: { start: string; end: string; countries: string; }) {
+        this.isHashtagsLoading.set(true);
         // fire trending hashtag API
         this.dataService.getTrendingHashtags({
             start: state.start,
@@ -56,35 +62,31 @@ export class TrendingHashtagsComponent {
             limit: this.dataService.trendingHashtagLimit,
             countries: state.countries
         }).subscribe({
-            next: (res: Array<IHashtag>) => {
-                // console.log('>>> getTrendingHashtags >>> res = ', res)
-                this.isHashtagsLoading = false;
-                this.hashtags = res;
-                if (this.hashtags) {
-                    this.numOfHashtags = this.hashtags ? this.hashtags.length : this.trendingHashtagLimit
-                    // arrange the hashtags in desc order
-                    this.hashtags.sort((a, b) => b.number_of_users - a.number_of_users)
-                    this.hashtags.forEach(h => {
-                        // prepare a readable tooltip
-                        h.tooltip = `${h.hashtag} with ${h.number_of_users} distinct users`
-                        // clip longer hashtag to fix in view
-                        if (h.hashtag.length > 20)
-                            h.hashtagTitle = h.hashtag.substring(0, 19) + "..."
-                        else
-                            h.hashtagTitle = h.hashtag
+            next: (res: IHashtag[]) => {
+                const sorted = res
+                    .sort((a, b) => b.number_of_users - a.number_of_users);
 
-                        // calc hashtag's percentage
-                        if (this.hashtags[0])
-                            h.percent = h.number_of_users / this.hashtags[0].number_of_users * 100
+                const maxUsers = sorted[0]?.number_of_users ?? 1;
 
-                    })
-                    setTimeout(() => enableTooltips(this.tooltips, true), 300)
-                }
+                this.hashtags.set(
+                    sorted.map(h => ({
+                        ...h,
+                        tooltip: `${h.hashtag} with ${h.number_of_users} distinct users`,
+                        hashtagTitle:
+                            h.hashtag.length > 20
+                                ? h.hashtag.substring(0, 19) + '...'
+                                : h.hashtag,
+                        percent: (h.number_of_users / maxUsers) * 100,
+                    }))
+                );
+
+                this.isHashtagsLoading.set(false);
             },
-            error: (err) => {
-                console.error('Error while requesting TRending hashtags data  ', err)
+            error: err => {
+                console.error('Error while requesting trending hashtags data', err);
+                this.isHashtagsLoading.set(false);
             }
-        })
+        });
     }
 
     /**
