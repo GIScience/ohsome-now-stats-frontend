@@ -278,6 +278,8 @@ export class QueryComponent implements OnInit, AfterViewInit {
      * @returns string comma seperated hashtag without the symbol hashtag
      */
     cleanHashTag(hashtag: IHighlightedHashtag | string): string {
+        if (hashtag === null) hashtag = ""
+        
         if (typeof hashtag != "string") {
             hashtag = hashtag.hashtag
         }
