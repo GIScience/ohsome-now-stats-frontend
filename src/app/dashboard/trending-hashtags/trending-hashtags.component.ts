@@ -55,7 +55,6 @@ export class TrendingHashtagsComponent {
 
     private fetchHashtags(state: { start: string; end: string; countries: string; }) {
         this.isHashtagsLoading.set(true);
-        // fire trending hashtag API
         this.dataService.getTrendingHashtags({
             start: state.start,
             end: state.end,
@@ -89,10 +88,6 @@ export class TrendingHashtagsComponent {
         });
     }
 
-    /**
-     * Called on click of individual hashtag among the list. Updates the URL to trigger further action
-     * @param hashtag
-     */
     clickHashtag(hashtag: string) {
         this.stateService.updatePartialState({
             hashtag: hashtag
