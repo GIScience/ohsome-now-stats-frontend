@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, computed, input} from '@angular/core';
 import {Color} from '@deck.gl/core';
 import {CommonModule} from '@angular/common';
 
@@ -10,84 +10,82 @@ import {CommonModule} from '@angular/common';
         CommonModule,
     ]
 })
-export class CountryMapLegendComponent<T, K extends keyof T> implements OnInit {
-    @Input() minValue!: number;
-    @Input() maxValue!: number;
-    @Input() colorFunction!: (value: number, country: string, selectedCountries?: string) => Color;
-    @Input() transformFn!: (value: number) => Pick<T, K>;
-    @Input() legendTitle: string = '';
-    @Input() radiusFunction!: (value: Pick<T, K>) => number;
+export class CountryMapLegendComponent<T, K extends keyof T> {
+    minValue = input.required<number>();
+    maxValue = input.required<number>();
+    colorFunction = input.required<
+        (value: number, country: string, selectedCountries?: string) => Color
+    >();
+    transformFn = input.required<(value: number) => Pick<T, K>>();
+    radiusFunction = input.required<(value: Pick<T, K>) => number>();
 
-    public positiveGradientSteps: number[] = [];
-    public negativeGradientSteps: number[] = [];
+    unit = input<string>('');
+    legendTitle = input<string>('');
 
-    ngOnInit() {
-        this.generateGradientSteps();
-    }
+    private gradientSteps = computed(() => {
+        const min = this.minValue();
+        const max = this.maxValue();
 
-    private generateGradientSteps() {
         const baseNumberOfSteps = 15;
-        const minSteps = 0; // Minimum steps to maintain visual continuity
-        const maxSteps = 25; // Maximum steps to prevent overcrowding
+        const minSteps = 0;
+        const maxSteps = 25;
 
-        // Calculate absolute distances from zero
-        const negativeDistance = Math.abs(this.minValue);
-        const positiveDistance = Math.abs(this.maxValue);
+        const negativeDistance = Math.abs(min);
+        const positiveDistance = Math.abs(max);
         const totalDistance = negativeDistance + positiveDistance;
 
-        // Calculate proportional step counts based on relative distances
         let negativeSteps = 0;
         let positiveSteps = 0;
 
         if (totalDistance > 0) {
-            // Calculate proportional steps
-            const negativeRatio = negativeDistance / totalDistance;
-            const positiveRatio = positiveDistance / totalDistance;
+            const totalStepsToDistribute = baseNumberOfSteps * 2;
 
-            // Distribute total steps proportionally
-            const totalStepsToDistribute = baseNumberOfSteps * 2; // Total steps for both sides
-            negativeSteps = Math.round(totalStepsToDistribute * negativeRatio);
-            positiveSteps = Math.round(totalStepsToDistribute * positiveRatio);
+            negativeSteps = Math.round(
+                totalStepsToDistribute * (negativeDistance / totalDistance)
+            );
+            positiveSteps = Math.round(
+                totalStepsToDistribute * (positiveDistance / totalDistance)
+            );
 
-            // Ensure minimum and maximum bounds
             negativeSteps = Math.max(minSteps, Math.min(maxSteps, negativeSteps));
             positiveSteps = Math.max(minSteps, Math.min(maxSteps, positiveSteps));
         }
 
-        // Generate positive gradient steps
-        if (this.maxValue > 0) {
-            const newPositiveSteps: number[] = [];
+        const positive: number[] = [];
+        const negative: number[] = [];
+
+        if (max > 0 && positiveSteps > 0) {
             for (let i = 1; i <= positiveSteps; i++) {
-                const value = (i / positiveSteps) * this.maxValue;
-                newPositiveSteps.push(value);
+                positive.push((i / positiveSteps) * max);
             }
-            this.positiveGradientSteps = newPositiveSteps;
-        } else {
-            this.positiveGradientSteps = [];
         }
 
-        // Generate negative gradient steps
-        if (this.minValue < 0) {
-            const newNegativeSteps: number[] = [];
+        if (min < 0 && negativeSteps > 0) {
             for (let i = 1; i <= negativeSteps; i++) {
-                const value = (i / negativeSteps) * this.minValue;
-                newNegativeSteps.push(value);
+                negative.push((i / negativeSteps) * min);
             }
-            newNegativeSteps.reverse();
-            this.negativeGradientSteps = newNegativeSteps;
-        } else {
-            this.negativeGradientSteps = [];
+            negative.reverse();
         }
-    }
+
+        return {positive, negative};
+    });
+
+    positiveGradientSteps = computed(
+        () => this.gradientSteps().positive
+    );
+
+    negativeGradientSteps = computed(
+        () => this.gradientSteps().negative
+    );
 
     getPositiveGradientStepStyle(value: number) {
 
-        const colorArr = this.colorFunction(value, "");
+        const colorArr = this.colorFunction()(value, "");
         const color = `rgba(${colorArr[0]},${colorArr[1]},${colorArr[2]},${colorArr[3]! / 255})`;
 
-        const radius = this.radiusFunction ? this.radiusFunction(this.transformFn(value)) : 10;
-        const maxRadius = this.radiusFunction(this.transformFn(this.maxValue));
-        const minRadius = this.radiusFunction(this.transformFn(0));
+        const radius = this.radiusFunction() ? this.radiusFunction()(this.transformFn()(value)) : 10;
+        const maxRadius = this.radiusFunction()(this.transformFn()(this.maxValue()));
+        const minRadius = this.radiusFunction()(this.transformFn()(0));
 
         const normalizedRadius = (radius - minRadius) / (maxRadius - minRadius);
         const height = Math.max(3, normalizedRadius * 70);
@@ -102,10 +100,10 @@ export class CountryMapLegendComponent<T, K extends keyof T> implements OnInit {
 
     getNegativeGradientStepStyle(value: number) {
 
-        const colorArr = this.colorFunction(value, "");
+        const colorArr = this.colorFunction()(value, "");
         const color = `rgba(${colorArr[0]},${colorArr[1]},${colorArr[2]},${colorArr[3]! / 255})`;
 
-        const radius = this.radiusFunction(this.transformFn(value));
+        const radius = this.radiusFunction()(this.transformFn()(value));
         const height = radius * 2;
 
         return {
@@ -129,8 +127,8 @@ export class CountryMapLegendComponent<T, K extends keyof T> implements OnInit {
     }
 
     getLegendCircleStyle(value: number) {
-        const radius = this.radiusFunction(this.transformFn(value));
-        const colorArr = this.colorFunction(value, "");
+        const radius = this.radiusFunction()(this.transformFn()(value));
+        const colorArr = this.colorFunction()(value, "");
         const color = `rgba(${colorArr[0]},${colorArr[1]},${colorArr[2]},${colorArr[3]! / 255})`;
         return {
             width: `${radius * 2}px`,
