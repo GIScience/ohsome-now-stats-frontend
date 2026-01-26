@@ -4,12 +4,14 @@ import {IQueryParams, IStatsData, ITopicDefinitionValue, StatsType} from '../typ
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from "../../data.service";
 import {StateService} from "../../state.service";
+import { Overlay } from '../../overlay.component';
+import { BigNumberComponent } from './big-number/big-number.component';
 
 @Component({
     selector: 'app-summary',
     templateUrl: './summary.component.html',
     styleUrls: ['./summary.component.scss'],
-    standalone: false
+    imports: [Overlay, BigNumberComponent]
 })
 export class SummaryComponent {
     bignumberData: Array<ITopicDefinitionValue> = [];

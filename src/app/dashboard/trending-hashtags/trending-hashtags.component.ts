@@ -5,12 +5,13 @@ import {dashboard} from '../tooltip-data';
 import {IHashtag} from "../types";
 import {StateService} from "../../state.service";
 import {enableTooltips} from "../../utils";
+import {Overlay} from '../../overlay.component';
 
 @Component({
     selector: 'app-trending-hashtags',
     templateUrl: './trending-hashtags.component.html',
     styleUrls: ['./trending-hashtags.component.scss'],
-    standalone: false
+    imports: [Overlay],
 })
 export class TrendingHashtagsComponent {
     @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;

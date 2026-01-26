@@ -1,5 +1,6 @@
 import {Component, computed, effect} from '@angular/core';
 
+import * as PlotlyJS from 'plotly.js-basic-dist-min';
 import {Config, Layout} from 'plotly.js-basic-dist-min';
 import dayjs from "dayjs";
 import moment from "moment";
@@ -12,12 +13,16 @@ import {
 import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
 import {IPlotResult, IQueryParams, StatsType} from "../types";
+import {Overlay} from '../../overlay.component';
+import {PlotlyComponent, PlotlyModule} from 'angular-plotly.js';
+
+PlotlyModule.forRoot(PlotlyJS)
 
 @Component({
     selector: 'app-plot',
     templateUrl: './plot.component.html',
     styleUrls: ['./plot.component.scss'],
-    standalone: false
+    imports: [Overlay, PlotlyComponent,]
 })
 export class PlotComponent {
 

@@ -1,3 +1,4 @@
+import {type Mock, vi} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import {QueryComponent} from './query.component';
@@ -8,7 +9,6 @@ import {of} from 'rxjs';
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from '@angular/router';
 import {NO_ERRORS_SCHEMA, signal} from '@angular/core';
-import dayjs from 'dayjs';
 import {IHashtags, IStateParams} from '../types';
 import {AutoCompleteCompleteEvent} from 'primeng/autocomplete';
 
@@ -46,28 +46,28 @@ describe('QueryComponent', () => {
     beforeEach(async () => {
         mockDataService = {
             metaData: signal(mockMetaData),
-            requestAllHashtags: jasmine.createSpy('requestAllHashtags').and.returnValue(of(mockHashtags)),
-            toggleLiveMode: jasmine.createSpy('toggleLiveMode'),
+            requestAllHashtags: vi.fn().mockReturnValue(of(mockHashtags)),
+            toggleLiveMode: vi.fn(),
             timeIntervals: [
                 {label: '1 Day', value: 'P1D'},
                 {label: '1 Month', value: 'P1M'},
                 {label: '5 Minutes', value: 'PT5M'}
             ],
             defaultIntervalValue: 'P1M',
-            requestMetadata: jasmine.createSpy('requestMetadata').and.returnValue(of(mockMetaData))
+            requestMetadata: vi.fn().mockReturnValue(of(mockMetaData))
         };
 
         mockToastService = {
-            show: jasmine.createSpy('show')
+            show: vi.fn()
         };
 
         mockStateService = {
             appState: signal(mockAppState),
-            updatePartialState: jasmine.createSpy('updatePartialState')
+            updatePartialState: vi.fn()
         };
 
         mockUTCConverter = {
-            transform: jasmine.createSpy('transform').and.returnValue('2024-06-10 15:30:00')
+            transform: vi.fn().mockReturnValue('2024-06-10 15:30:00')
         };
 
         mockActivatedRoute = {
@@ -77,8 +77,7 @@ describe('QueryComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [QueryComponent, UTCToLocalConverterPipe],
-            imports: [FormsModule],
+            imports: [FormsModule, QueryComponent, UTCToLocalConverterPipe],
             providers: [
                 {provide: DataService, useValue: mockDataService},
                 {provide: ToastService, useValue: mockToastService},
@@ -150,23 +149,21 @@ describe('QueryComponent', () => {
             expect(component.topicOptions.length).toBeGreaterThan(0);
 
             // Check that excluded topics are not present
-            const excludedTopics = component.topicOptions.filter(option =>
-                ['roads', 'buildings', 'edits', 'users'].includes(option.value)
-            );
+            const excludedTopics = component.topicOptions.filter(option => ['roads', 'buildings', 'edits', 'users'].includes(option.value));
             expect(excludedTopics.length).toBe(0);
         });
     });
 
     describe('Form Validation', () => {
-        let getElementByIdSpy: jasmine.Spy;
+        let getElementByIdSpy: Mock;
         beforeEach(() => {
             // Mock getElementById to return a valid input element
-            getElementByIdSpy = spyOn(document, 'getElementById');
+            getElementByIdSpy = vi.spyOn(document, 'getElementById');
         });
 
         afterEach(() => {
             // Reset the spy after each test
-            getElementByIdSpy.calls.reset();
+            getElementByIdSpy.mockClear();
         });
 
         it('should fail validation when selectedDateRangeUTC is undefined', () => {
@@ -177,10 +174,10 @@ describe('QueryComponent', () => {
         });
 
         it('should fail validation when start or end date is missing', () => {
-            component.selectedDateRange = {
-                start: dayjs('2024-01-01'),
-                end: undefined as any
-            };
+            component.selectedDateRange = [
+                new Date('2024-01-01'),
+                undefined as any
+            ];
 
             const result = component.validateForm();
 
@@ -190,10 +187,10 @@ describe('QueryComponent', () => {
 
     describe('getStatistics', () => {
         beforeEach(() => {
-            component.selectedDateRange = {
-                start: dayjs('2024-01-01'),
-                end: dayjs('2024-12-31')
-            };
+            component.selectedDateRange = [
+                new Date('2024-01-01'),
+                new Date('2024-12-31')
+            ];
             component.selectedHashtagOption = {hashtag: 'missingmaps', highlighted: ''};
             component.selectedCountries = [];
             component.selectedTopics = [];
@@ -204,7 +201,7 @@ describe('QueryComponent', () => {
         });
 
         it('should not proceed if validation fails', () => {
-            spyOn(component, 'validateForm').and.returnValue(false);
+            vi.spyOn(component, 'validateForm').mockReturnValue(false);
 
             component.updateStateFromSelection();
 
@@ -212,20 +209,20 @@ describe('QueryComponent', () => {
         });
 
         it('should update state with form values when validation passes', () => {
-            spyOn(component, 'validateForm').and.returnValue(true);
-            spyOn(component, 'cleanHashTag').and.returnValue('missingmaps');
-            component.interval = "P1M"
+            vi.spyOn(component, 'validateForm').mockReturnValue(true);
+            vi.spyOn(component, 'cleanHashTag').mockReturnValue('missingmaps');
+            component.interval = "P1M";
             component.updateStateFromSelection();
 
-            expect(mockStateService.updatePartialState).toHaveBeenCalledWith(jasmine.objectContaining({
+            expect(mockStateService.updatePartialState).toHaveBeenCalledWith(expect.objectContaining({
                 hashtag: 'missingmaps',
                 interval: 'P1M'
             }));
         });
 
         it('should handle all countries selection', () => {
-            spyOn(component, 'validateForm').and.returnValue(true);
-            spyOn(component, 'cleanHashTag').and.returnValue('test');
+            vi.spyOn(component, 'validateForm').mockReturnValue(true);
+            vi.spyOn(component, 'cleanHashTag').mockReturnValue('test');
 
             component.selectedCountries = component.dropdownOptions;
 
@@ -298,10 +295,10 @@ describe('QueryComponent', () => {
 
     describe('Interval Validation', () => {
         it('should allow interval when date range is within limits', () => {
-            component.selectedDateRange = {
-                start: dayjs('2024-01-01'),
-                end: dayjs('2024-01-02') // 1 day difference
-            };
+            component.selectedDateRange = [
+                new Date('2024-01-01'),
+                new Date('2024-01-02') // 1 day difference
+            ];
 
             const result = component.isForbiddenInterval('P1D');
             expect(result).toBe(false);

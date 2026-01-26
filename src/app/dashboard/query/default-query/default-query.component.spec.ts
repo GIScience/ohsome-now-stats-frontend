@@ -10,6 +10,7 @@ import {StateService} from "../../../state.service";
 import {UTCToLocalConverterPipe} from "../pipes/utc-to-local-converter.pipe";
 import {ActivatedRoute} from "@angular/router";
 import {IHashtags, IStateParams} from "../../types";
+import {vi} from "vitest";
 
 describe('DefaultQueryComponent', () => {
     let component: DefaultQueryComponent;
@@ -46,8 +47,8 @@ describe('DefaultQueryComponent', () => {
     beforeEach(async () => {
         mockDataService = {
             metaData: signal(mockMetaData),
-            requestAllHashtags: jasmine.createSpy('requestAllHashtags').and.returnValue(of(mockHashtags)),
-            toggleLiveMode: jasmine.createSpy('toggleLiveMode'),
+            requestAllHashtags: vi.fn().mockReturnValue(of(mockHashtags)),
+            toggleLiveMode: vi.fn(),
             timeIntervals: [
                 {label: '1 Day', value: 'P1D'},
                 {label: '1 Month', value: 'P1M'},
@@ -57,16 +58,16 @@ describe('DefaultQueryComponent', () => {
         };
 
         mockToastService = {
-            show: jasmine.createSpy('show')
+            show: vi.fn()
         };
 
         mockStateService = {
             appState: signal(mockAppState),
-            updatePartialState: jasmine.createSpy('updatePartialState')
+            updatePartialState: vi.fn()
         };
 
         mockUTCConverter = {
-            transform: jasmine.createSpy('transform').and.returnValue('2024-06-10 15:30:00')
+            transform: vi.fn().mockReturnValue('2024-06-10 15:30:00')
         };
 
         mockActivatedRoute = {
@@ -76,8 +77,7 @@ describe('DefaultQueryComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [QueryComponent],
-            imports: [FormsModule],
+            imports: [FormsModule, QueryComponent],
             providers: [
                 {provide: DataService, useValue: mockDataService},
                 {provide: ToastService, useValue: mockToastService},

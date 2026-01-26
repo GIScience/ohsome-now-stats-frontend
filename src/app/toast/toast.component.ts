@@ -3,12 +3,13 @@ import * as bootstrap from 'bootstrap';
 
 import { IToastUI, ToastService } from '../toast.service';
 import { ToastTypes } from './toasttypes.modal';
+import { NgClass } from '@angular/common';
 
 @Component({
     selector: 'app-toast',
     templateUrl: './toast.component.html',
     styleUrls: ['./toast.component.scss'],
-    standalone: false
+    imports: [NgClass]
 })
 export class ToastComponent implements OnInit {
   toastVisible = false

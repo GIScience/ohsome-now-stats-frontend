@@ -10,7 +10,7 @@ import {
     Signal,
     ViewChildren
 } from '@angular/core';
-import dayjs, {Dayjs} from "dayjs";
+import dayjs from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
@@ -24,15 +24,11 @@ import {ToastService} from 'src/app/toast.service';
 import {
     DateRanges,
     DropdownOption,
-    EndDate,
-    IDateRange,
     IHashtags,
     IHighlightedHashtag,
     ISelectionItem,
     IStateParams,
-    StartDate,
-    StatsType,
-    TimePeriod
+    StatsType
 } from "../types";
 import {StateService} from "../../state.service";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
@@ -47,8 +43,7 @@ dayjs.extend(customParseFormat)
 @Component({
     selector: 'app-query',
     templateUrl: './query.component.html',
-    styleUrls: ['./query.component.scss'],
-    standalone: false
+    styleUrls: ['./query.component.scss']
 })
 export class QueryComponent implements OnInit, AfterViewInit {
     @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
@@ -61,22 +56,29 @@ export class QueryComponent implements OnInit, AfterViewInit {
         value: string;
     }> | undefined
     interval: string | undefined
-    selectedDateRange: IDateRange | undefined
+    selectedDateRange: Date[] | undefined = undefined;
 
     minDate = computed(() => dayjs.utc(this.dataService.metaData().min_timestamp))
     maxDate = computed(() => dayjs.utc(this.dataService.metaData().max_timestamp))
+    metadata = computed(() => {
+        return this.dataService.metaData()
+    })
+    disabledDate = (current: Date): boolean => {
+        console.log(this.metadata().max_timestamp);
+        return dayjs(current).isBefore(this.minDate()) || dayjs(current).isAfter(this.maxDate());
+    }
 
     dateRangeShiftedMaxDate = this.maxDate().local().add(dayjs().utcOffset(), "minute")
 
     ranges: Signal<DateRanges> = computed(() => {
         return {
-            'Today': [dayjs().startOf('day'), this.dateRangeShiftedMaxDate],
-            'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
-            'Last 3 Hours': [dayjs().subtract(3, 'hours').startOf('hour'), dayjs()],
-            'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day'), dayjs().endOf('day')],
-            'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day'), dayjs().endOf('day')],
-            'Last Year': [dayjs().subtract(1, 'year').startOf('day'), dayjs().endOf('day')],
-            'Entire Duration': [this.minDate().local(), this.dateRangeShiftedMaxDate]
+            'Today': [dayjs().startOf('day').toDate(), this.dateRangeShiftedMaxDate.toDate()],
+            'Yesterday': [dayjs().subtract(1, 'days').startOf('day').toDate(), dayjs().subtract(1, 'days').endOf('day').toDate()],
+            'Last 3 Hours': [dayjs().subtract(3, 'hours').startOf('hour').toDate(), dayjs().toDate()],
+            'Last 7 Days': [dayjs().subtract(6, 'days').startOf('day').toDate(), dayjs().endOf('day').toDate()],
+            'Last 30 Days': [dayjs().subtract(29, 'days').startOf('day').toDate(), dayjs().endOf('day').toDate()],
+            'Last Year': [dayjs().subtract(1, 'year').startOf('day').toDate(), dayjs().endOf('day').toDate()],
+            'Entire Duration': [this.minDate().local().toDate(), this.dateRangeShiftedMaxDate.toDate()]
         }
     })
 
@@ -129,7 +131,6 @@ export class QueryComponent implements OnInit, AfterViewInit {
             // TODO: check if the values differ
             this.updateSelectionFromState(this.state());
         });
-
         this.buildTopicOptions()
 
         this.intervals = this.dataService.timeIntervals
@@ -170,8 +171,8 @@ export class QueryComponent implements OnInit, AfterViewInit {
         if (!this.validateForm() || !this.selectedDateRange)
             return
 
-        const tempStart = this.selectedDateRange.start.utc().format()
-        const tempEnd = this.selectedDateRange.end.utc().format()
+        const tempStart = dayjs(this.selectedDateRange[0]).utc().format()
+        const tempEnd = dayjs(this.selectedDateRange[1]).utc().format()
 
         const tempHashTag = this.cleanHashTag(this.selectedHashtagOption)
 
@@ -206,7 +207,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
         // check for actual values
         if (!this.selectedDateRange)
             return false
-        if (!(this.selectedDateRange.start && this.selectedDateRange.end)) {
+        if (!(this.selectedDateRange[0] && this.selectedDateRange[1])) {
             console.error('Date range is empty')
             // show the message on toast
             this.toastService.show({
@@ -219,8 +220,8 @@ export class QueryComponent implements OnInit, AfterViewInit {
             return false
         }
 
-        if (!(dayjs(this.selectedDateRange.start, 'DD-MM-YYYY', true).isValid()
-            && dayjs(this.selectedDateRange.end, 'DD-MM-YYYY', true).isValid())) {
+        if (!(dayjs(dayjs(this.selectedDateRange[0]), 'DD-MM-YYYY', true).isValid()
+            && dayjs(dayjs(this.selectedDateRange[1]), 'DD-MM-YYYY', true).isValid())) {
 
             console.error('Either the start date or end is invalid')
             // show the message on toast
@@ -234,7 +235,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
             return false
         }
 
-        if (this.selectedDateRange.start.isAfter(this.selectedDateRange.end) || this.selectedDateRange.start.isSame(this.selectedDateRange.end)) {
+        if (dayjs(this.selectedDateRange[0]).isAfter(dayjs(this.selectedDateRange[1])) || dayjs(this.selectedDateRange[0]).isSame(dayjs(this.selectedDateRange[1]))) {
             this.toastService.show({
                 title: 'Invalid date',
                 body: 'End date needs to be after start date',
@@ -256,7 +257,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
             return false
         }
 
-        if (over5000IntervalBins(this.selectedDateRange.start, this.selectedDateRange.end, this.interval!)) {
+        if (over5000IntervalBins(dayjs(this.selectedDateRange[0]), dayjs(this.selectedDateRange[1]), this.interval!)) {
             this.toastService.show({
                 title: 'Mismatch of timespan and interval',
                 body: 'The combination would result in over 5000 interval bins, please select a shorter timespan or bigger interval.',
@@ -313,38 +314,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     }
 
     isForbiddenInterval(value: string) {
-        return over5000IntervalBins(this.selectedDateRange!.start, this.selectedDateRange!.end, value)
-    }
-
-    firstTimeStart = true
-    firstTimeEnd = true
-
-    updateEndDate(event: EndDate | null) {
-        if (this.firstTimeEnd) {
-            this.firstTimeEnd = false
-            return
-        }
-
-        if (!event) return;
-        this.selectedDateRange!.end = event.endDate.subtract(dayjs().utcOffset(), "minute") as Dayjs
-    }
-
-    updateDateRange(event: TimePeriod) {
-        this.selectedDateRange = {
-            start: event.startDate as Dayjs,
-            end: event.endDate as Dayjs
-        }
-    }
-
-
-    updateStartDate(event: StartDate | null) {
-        if (this.firstTimeStart) {
-            this.firstTimeStart = false
-            return
-        }
-
-        if (!event) return;
-        this.selectedDateRange!.start = event.startDate.subtract(dayjs().utcOffset(), "minute") as Dayjs
+        return over5000IntervalBins(dayjs(this.selectedDateRange![0]), dayjs(this.selectedDateRange![1]), value)
     }
 
     /**
@@ -355,10 +325,10 @@ export class QueryComponent implements OnInit, AfterViewInit {
      */
     protected updateSelectionFromState(inputData: IStateParams): void {
         if (inputData.start && inputData.end) {
-            this.selectedDateRange = {
-                start: dayjs.utc(inputData.start).local(),
-                end: dayjs.utc(inputData.end).local()
-            };
+            this.selectedDateRange = [
+                dayjs.utc(inputData.start).local().toDate(),
+                dayjs.utc(inputData.end).local().toDate()
+            ]
         }
 
         // Set hashtag textarea

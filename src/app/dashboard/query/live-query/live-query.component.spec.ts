@@ -11,6 +11,7 @@ import {NO_ERRORS_SCHEMA, signal} from '@angular/core';
 import dayjs from 'dayjs';
 import {IHashtags, IStateParams} from '../../types';
 import {QueryComponent} from "../query.component";
+import {vi} from "vitest";
 
 describe('LiveQueryComponent', () => {
     let component: LiveQueryComponent;
@@ -46,28 +47,28 @@ describe('LiveQueryComponent', () => {
     beforeEach(async () => {
         mockDataService = {
             metaData: signal(mockMetaData),
-            requestAllHashtags: jasmine.createSpy('requestAllHashtags').and.returnValue(of(mockHashtags)),
-            toggleLiveMode: jasmine.createSpy('toggleLiveMode'),
+            requestAllHashtags: vi.fn().mockReturnValue(of(mockHashtags)),
+            toggleLiveMode: vi.fn(),
             timeIntervals: [
                 {label: '1 Day', value: 'P1D'},
                 {label: '1 Month', value: 'P1M'},
                 {label: '5 Minutes', value: 'PT5M'}
             ],
             defaultIntervalValue: 'P1M',
-            requestMetadata: jasmine.createSpy('requestMetadata').and.returnValue(of(mockMetaData))
+            requestMetadata: vi.fn().mockReturnValue(of(mockMetaData))
         };
 
         mockToastService = {
-            show: jasmine.createSpy('show')
+            show: vi.fn()
         };
 
         mockStateService = {
             appState: signal(mockAppState),
-            updatePartialState: jasmine.createSpy('updatePartialState')
+            updatePartialState: vi.fn()
         };
 
         mockUTCConverter = {
-            transform: jasmine.createSpy('transform').and.returnValue('2024-06-10 15:30:00')
+            transform: vi.fn().mockReturnValue('2024-06-10 15:30:00')
         };
 
         mockActivatedRoute = {
@@ -77,8 +78,7 @@ describe('LiveQueryComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [LiveQueryComponent, QueryComponent],
-            imports: [FormsModule],
+            imports: [FormsModule, LiveQueryComponent, QueryComponent],
             providers: [
                 {provide: DataService, useValue: mockDataService},
                 {provide: ToastService, useValue: mockToastService},
@@ -108,7 +108,7 @@ describe('LiveQueryComponent', () => {
         });
 
         it('should toggle live mode on', fakeAsync(() => {
-            spyOn(component, 'triggerMetaDataRetrieval');
+            vi.spyOn(component, 'triggerMetaDataRetrieval');
 
             component.toggleLiveMode();
 
@@ -119,7 +119,7 @@ describe('LiveQueryComponent', () => {
 
         it('should toggle live mode off', () => {
             component.liveMode = true;
-            spyOn(component, 'turnOffLiveMode');
+            vi.spyOn(component, 'turnOffLiveMode');
 
             component.toggleLiveMode();
 
@@ -129,7 +129,7 @@ describe('LiveQueryComponent', () => {
         it('should turn off live mode completely', () => {
             component.liveMode = true;
             component.refreshIntervalId = 123;
-            spyOn(window, 'clearInterval');
+            vi.spyOn(window, 'clearInterval');
 
             component.turnOffLiveMode();
 

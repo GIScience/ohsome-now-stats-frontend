@@ -2,6 +2,9 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "types": [
+      "vitest/globals"
+    ],
     "resolveJsonModule": true,
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",

@@ -4,7 +4,6 @@ import {DashboardComponent} from './dashboard.component';
 import {Component} from "@angular/core";
 import {StateService} from "../state.service";
 import {of} from "rxjs";
-import {CountryMapComponent} from "./country-map/country-map.component";
 
 // Mock child components
 @Component({
@@ -77,9 +76,7 @@ describe('DashboardComponent', () => {
                 MockPlotComponent,
                 MockMapComponent,
                 MockHexMapComponent,
-                MockCountryMapComponent
-            ],
-            declarations: [
+                MockCountryMapComponent,
                 DashboardComponent
             ],
             providers: [{provide: StateService, useValue: {activePage: of(null)}}]

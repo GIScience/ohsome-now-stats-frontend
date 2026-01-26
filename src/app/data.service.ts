@@ -16,7 +16,7 @@ import {
 } from "./dashboard/types";
 import * as Papa from 'papaparse';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class DataService {
 
     url = environment.ohsomeStatsServiceUrl
@@ -55,6 +55,7 @@ export class DataService {
                 }),
                 tap((meta: IMetaData) => {
                     this._metaData.set(meta)
+                    console.log(this.metaData())
                 }),
                 catchError(error => {
                     if (error.status === 0) {

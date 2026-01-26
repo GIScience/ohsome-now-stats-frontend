@@ -10,12 +10,14 @@ import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {ToastService} from "../../toast.service";
+import { Overlay } from '../../overlay.component';
+import { HexMapLegendComponent } from './legend/hex-map-legend.component';
 
 @Component({
     selector: 'app-hex-map',
     templateUrl: './hex-map.component.html',
     styleUrls: ['./hex-map.component.scss'],
-    standalone: false
+    imports: [Overlay, HexMapLegendComponent]
 })
 export class HexMapComponent implements OnInit, OnDestroy {
     @ViewChild('deckContainer', {static: true}) deckContainer!: ElementRef;

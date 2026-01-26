@@ -1,3 +1,4 @@
+import {type MockedObject, vi} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
 import {SummaryComponent} from './summary.component';
@@ -9,64 +10,63 @@ import {Overlay} from '../../overlay.component';
 describe('SummaryComponent', () => {
     let component: SummaryComponent;
     let fixture: ComponentFixture<SummaryComponent>;
-    let mockDataService: jasmine.SpyObj<DataService>;
-    let mockStateService: jasmine.SpyObj<StateService>;
+    let mockDataService: MockedObject<DataService>;
+    let mockStateService: MockedObject<StateService>;
 
     const mockTopicData: IWrappedStatsResult = {
-        result:
-            {
-                topics: {
-                    amenity: {
-                        value: 10
-                    },
-                    body_of_water: {
-                        value: 20
-                    },
-                    commercial: {
-                        value: 20
-                    },
-                    education: {
-                        value: 20
-                    },
-                    financial: {
-                        value: 20
-                    },
-                    healthcare: {
-                        value: 20
-                    },
-                    lulc: {
-                        value: 20
-                    },
-                    place: {
-                        value: 20
-                    },
-                    poi: {
-                        value: 20
-                    },
-                    power: {value: 20},
-                    social_facility: {
-                        value: 20
-                    },
-                    wash: {
-                        value: 20
-                    },
-                    waterway: {
-                        value: 20
-                    },
-                    contributor: {
-                        value: 20
-                    },
-                    edit: {
-                        value: 20
-                    },
-                    building: {
-                        value: 20
-                    },
-                    road: {
-                        value: 20
-                    }
+        result: {
+            topics: {
+                amenity: {
+                    value: 10
+                },
+                body_of_water: {
+                    value: 20
+                },
+                commercial: {
+                    value: 20
+                },
+                education: {
+                    value: 20
+                },
+                financial: {
+                    value: 20
+                },
+                healthcare: {
+                    value: 20
+                },
+                lulc: {
+                    value: 20
+                },
+                place: {
+                    value: 20
+                },
+                poi: {
+                    value: 20
+                },
+                power: {value: 20},
+                social_facility: {
+                    value: 20
+                },
+                wash: {
+                    value: 20
+                },
+                waterway: {
+                    value: 20
+                },
+                contributor: {
+                    value: 20
+                },
+                edit: {
+                    value: 20
+                },
+                building: {
+                    value: 20
+                },
+                road: {
+                    value: 20
                 }
             }
+        }
     };
 
     const mockQueryParams: IStateParams = {
@@ -80,12 +80,17 @@ describe('SummaryComponent', () => {
     };
 
     beforeEach(async () => {
-        const dataServiceSpy = jasmine.createSpyObj('DataService', ['requestSummary', 'requestTopic']);
-        const stateServiceSpy = jasmine.createSpyObj('StateService', ['appState', 'updatePartialState']);
+        const dataServiceSpy = {
+            requestSummary: vi.fn().mockName("DataService.requestSummary"),
+            requestTopic: vi.fn().mockName("DataService.requestTopic")
+        };
+        const stateServiceSpy = {
+            appState: vi.fn().mockName("StateService.appState"),
+            updatePartialState: vi.fn().mockName("StateService.updatePartialState")
+        };
 
         await TestBed.configureTestingModule({
-            declarations: [SummaryComponent],
-            imports: [Overlay],
+            imports: [Overlay, SummaryComponent],
             providers: [
                 {provide: DataService, useValue: dataServiceSpy},
                 {provide: StateService, useValue: stateServiceSpy}
@@ -94,12 +99,12 @@ describe('SummaryComponent', () => {
 
         fixture = TestBed.createComponent(SummaryComponent);
         component = fixture.componentInstance;
-        mockDataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
-        mockStateService = TestBed.inject(StateService) as jasmine.SpyObj<StateService>;
+        mockDataService = TestBed.inject(DataService) as MockedObject<DataService>;
+        mockStateService = TestBed.inject(StateService) as MockedObject<StateService>;
 
         // Setup default mock returns
-        mockStateService.appState.and.returnValue(mockQueryParams);
-        mockDataService.requestSummary.and.returnValue(of(mockTopicData));
+        mockStateService.appState.mockReturnValue(mockQueryParams);
+        mockDataService.requestSummary.mockReturnValue(of(mockTopicData));
     });
 
     it('should create', () => {
@@ -113,7 +118,7 @@ describe('SummaryComponent', () => {
 
     describe('requestFromAPI', () => {
         it('should request both summary and topic data when topics are provided', () => {
-            spyOn(component, 'updateBigNumber');
+            vi.spyOn(component, 'updateBigNumber');
 
             component.requestFromAPI(mockQueryParams);
 
@@ -123,7 +128,7 @@ describe('SummaryComponent', () => {
 
         it('should request only summary data when topics are not provided', () => {
             const queryParamsWithoutTopics = {...mockQueryParams, topics: ''};
-            spyOn(component, 'updateBigNumber');
+            vi.spyOn(component, 'updateBigNumber');
 
             component.requestFromAPI(queryParamsWithoutTopics);
 

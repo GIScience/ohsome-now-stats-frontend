@@ -1,13 +1,20 @@
 import {Component} from '@angular/core';
 import {QueryComponent} from "../query.component";
 import {ISelectionItem} from "../../types";
+import {FormsModule} from '@angular/forms';
+import {AutoComplete} from 'primeng/autocomplete';
+import {PrimeTemplate} from 'primeng/api';
+import {SelectDropDownModule} from 'ngx-select-dropdown';
+import {NgClass} from '@angular/common';
+import {UTCToLocalConverterPipe} from '../pipes/utc-to-local-converter.pipe';
+import {NzDatePickerModule, NzRangePickerComponent} from "ng-zorro-antd/date-picker";
 
 
 @Component({
     selector: 'hot-query',
     templateUrl: './hot-query.component.html',
     styleUrls: ['./hot-query.component.scss'],
-    standalone: false
+    imports: [FormsModule, AutoComplete, PrimeTemplate, SelectDropDownModule, NgClass, UTCToLocalConverterPipe, NzRangePickerComponent, NzDatePickerModule]
 })
 export class HotQueryComponent extends QueryComponent {
     hubs: { [hubName: string]: string } = {

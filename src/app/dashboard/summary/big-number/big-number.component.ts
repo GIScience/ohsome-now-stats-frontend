@@ -3,12 +3,13 @@ import {ITopicDefinitionValue} from "../../types";
 import {StateService} from "../../../state.service";
 import {Router} from "@angular/router";
 import {enableTooltips} from "../../../utils";
+import { NgClass, NgStyle } from '@angular/common';
 
 @Component({
     selector: 'app-big-number',
     templateUrl: './big-number.component.html',
     styleUrls: ['./big-number.component.scss'],
-    standalone: false
+    imports: [NgClass, NgStyle]
 })
 export class BigNumberComponent implements AfterViewInit {
     @Input() data!: ITopicDefinitionValue

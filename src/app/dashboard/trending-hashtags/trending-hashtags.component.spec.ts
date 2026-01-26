@@ -1,3 +1,4 @@
+import {type MockedObject, vi} from "vitest";
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 import {By} from '@angular/platform-browser';
@@ -11,8 +12,8 @@ import {IHashtag, StatsType} from '../types';
 describe('TrendingHashtagsComponent', () => {
     let component: TrendingHashtagsComponent;
     let fixture: ComponentFixture<TrendingHashtagsComponent>;
-    let mockDataService: jasmine.SpyObj<DataService>;
-    let mockStateService: jasmine.SpyObj<StateService>;
+    let mockDataService: MockedObject<DataService>;
+    let mockStateService: MockedObject<StateService>;
 
     const mockHashtags: IHashtag[] = [
         {hashtag: 'hashtag1', number_of_users: 100},
@@ -33,22 +34,23 @@ describe('TrendingHashtagsComponent', () => {
     };
 
     beforeEach(async () => {
-        const dataServiceSpy = jasmine.createSpyObj('DataService', [
-            'getTrendingHashtags',
-            'getAbortHashtagReqSubject'
-        ], {
+        const dataServiceSpy = {
+            getTrendingHashtags: vi.fn().mockName("DataService.getTrendingHashtags"),
+            getAbortHashtagReqSubject: vi.fn().mockName("DataService.getAbortHashtagReqSubject"),
             trendingHashtagLimit: 10,
-            abortHashtagReqSub: jasmine.createSpyObj('Subject', ['next', 'unsubscribe'])
-        });
+            abortHashtagReqSub: {
+                next: vi.fn().mockName("Subject.next"),
+                unsubscribe: vi.fn().mockName("Subject.unsubscribe")
+            }
+        };
 
-        const stateServiceSpy = jasmine.createSpyObj('StateService', [
-            'appState',
-            'updatePartialState'
-        ]);
+        const stateServiceSpy = {
+            appState: vi.fn().mockName("StateService.appState"),
+            updatePartialState: vi.fn().mockName("StateService.updatePartialState")
+        };
 
         await TestBed.configureTestingModule({
-            declarations: [TrendingHashtagsComponent],
-            imports: [Overlay],
+            imports: [Overlay, TrendingHashtagsComponent],
             providers: [
                 {provide: DataService, useValue: dataServiceSpy},
                 {provide: StateService, useValue: stateServiceSpy}
@@ -57,12 +59,12 @@ describe('TrendingHashtagsComponent', () => {
 
         fixture = TestBed.createComponent(TrendingHashtagsComponent);
         component = fixture.componentInstance;
-        mockDataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
-        mockStateService = TestBed.inject(StateService) as jasmine.SpyObj<StateService>;
+        mockDataService = TestBed.inject(DataService) as MockedObject<DataService>;
+        mockStateService = TestBed.inject(StateService) as MockedObject<StateService>;
 
         // Setup default mock returns
-        mockStateService.appState.and.returnValue(mockState);
-        mockDataService.getTrendingHashtags.and.returnValue(of(mockHashtags));
+        mockStateService.appState.mockReturnValue(mockState);
+        mockDataService.getTrendingHashtags.mockReturnValue(of(mockHashtags));
     });
 
     it('should create', () => {
@@ -84,7 +86,7 @@ describe('TrendingHashtagsComponent', () => {
         });
 
         it('should call requestFromAPI on initialization', () => {
-            spyOn(component as any, 'requestFromAPI');
+            vi.spyOn(component as any, 'requestFromAPI');
             fixture.detectChanges();
             expect((component as any).requestFromAPI).toHaveBeenCalled();
         });
@@ -107,7 +109,7 @@ describe('TrendingHashtagsComponent', () => {
             tick();
 
             expect(component.isHashtagsLoading).toBe(false);
-            expect(component.hashtags).toEqual(jasmine.any(Array));
+            expect(component.hashtags).toEqual(expect.any(Array));
             expect(component.numOfHashtags).toBe(mockHashtags.length);
         }));
 
@@ -115,9 +117,7 @@ describe('TrendingHashtagsComponent', () => {
             component['requestFromAPI'](mockState);
             tick();
 
-            expect(component.hashtags[0].number_of_users).toBeGreaterThanOrEqual(
-                component.hashtags[1].number_of_users
-            );
+            expect(component.hashtags[0].number_of_users).toBeGreaterThanOrEqual(component.hashtags[1].number_of_users);
         }));
 
 
@@ -156,8 +156,8 @@ describe('TrendingHashtagsComponent', () => {
         }));
 
         it('should handle API errors', () => {
-            spyOn(console, 'error');
-            mockDataService.getTrendingHashtags.and.returnValue(throwError('API Error'));
+            vi.spyOn(console, 'error');
+            mockDataService.getTrendingHashtags.mockReturnValue(throwError('API Error'));
 
             component['requestFromAPI'](mockState);
 
@@ -165,7 +165,7 @@ describe('TrendingHashtagsComponent', () => {
         });
 
         it('should handle empty hashtags response', fakeAsync(() => {
-            mockDataService.getTrendingHashtags.and.returnValue(of([]));
+            mockDataService.getTrendingHashtags.mockReturnValue(of([]));
 
             component['requestFromAPI'](mockState);
             tick();
@@ -254,7 +254,7 @@ describe('TrendingHashtagsComponent', () => {
         });
 
         it('should call clickHashtag when hashtag is clicked', () => {
-            spyOn(component, 'clickHashtag');
+            vi.spyOn(component, 'clickHashtag');
             const firstHashtagElement = fixture.debugElement.query(By.css('span.clickable'));
 
             firstHashtagElement.nativeElement.click();
@@ -278,11 +278,11 @@ describe('TrendingHashtagsComponent', () => {
 
     describe('effect integration', () => {
         it('should react to state changes', () => {
-            spyOn(component as any, 'requestFromAPI');
+            vi.spyOn(component as any, 'requestFromAPI');
 
             // Simulate state change
             const newState = {...mockState, start: '2023-02-01'};
-            mockStateService.appState.and.returnValue(newState);
+            mockStateService.appState.mockReturnValue(newState);
 
             fixture.detectChanges();
 

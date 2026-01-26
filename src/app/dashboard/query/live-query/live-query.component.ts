@@ -1,13 +1,18 @@
 import {Component, OnDestroy} from '@angular/core';
-import dayjs, {Dayjs} from "dayjs";
+import dayjs from "dayjs";
 import {QueryComponent} from "../query.component";
+import {FormsModule} from '@angular/forms';
+import {AutoComplete} from 'primeng/autocomplete';
+import {PrimeTemplate} from 'primeng/api';
+import {SelectDropDownModule} from 'ngx-select-dropdown';
+import {NgClass} from '@angular/common';
 
 
 @Component({
     selector: 'live-query',
     templateUrl: './live-query.component.html',
     styleUrls: ['./live-query.component.scss'],
-    standalone: false
+    imports: [FormsModule, AutoComplete, PrimeTemplate, SelectDropDownModule, NgClass]
 })
 export class LiveQueryComponent extends QueryComponent implements OnDestroy {
     liveMode: boolean = false
@@ -18,10 +23,10 @@ export class LiveQueryComponent extends QueryComponent implements OnDestroy {
         this.updateSelectionFromState(this.state());
 
         // set default values for this mode
-        this.selectedDateRange = {
-            start: this.ranges()["Last 3 Hours"][0] as Dayjs,
-            end: this.ranges()["Last 3 Hours"][1] as Dayjs
-        }
+        this.selectedDateRange = [
+            this.ranges()["Last 3 Hours"][0],
+            this.ranges()["Last 3 Hours"][1]
+        ]
         this.interval = "PT5M"
 
         // make the first query with the used default values
@@ -41,10 +46,10 @@ export class LiveQueryComponent extends QueryComponent implements OnDestroy {
         this.dataService.requestMetadata().subscribe(
             (metadata) => {
                 if (!dayjs(metadata.max_timestamp).isSame(previousEndDate)) {
-                    this.selectedDateRange = {
-                        start: (this.ranges()["Last 3 Hours"][0] as Dayjs),
-                        end: (this.ranges()["Last 3 Hours"][1] as Dayjs)
-                    }
+                    this.selectedDateRange = [
+                        this.ranges()["Last 3 Hours"][0],
+                        this.ranges()["Last 3 Hours"][1]
+                    ]
                     this.updateStateFromSelection()
                 }
             }
