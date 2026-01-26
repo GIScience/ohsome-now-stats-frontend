@@ -42,16 +42,16 @@ export class HotQueryComponent extends QueryComponent {
     }
 
     changeHub(hubName: string) {
-        this.selectedCountries = this.dropdownOptions.filter((option: ISelectionItem) => {
+        this.selectedCountries.set(this.dropdownOptions.filter((option: ISelectionItem) => {
             return this.hubs[hubName].includes(option.value)
-        })
+        }))
         this.selectedHub = hubName
     }
 
     changeImpactArea(impactAreaName: string) {
-        this.selectedTopics = this.topicOptions.filter((option: ISelectionItem) => {
+        this.selectedTopics.set(this.topicOptions.filter((option: ISelectionItem) => {
             return this.impactAreas[impactAreaName].includes(option.value)
-        })
+        }))
         this.selectedImpactArea = impactAreaName
     }
 

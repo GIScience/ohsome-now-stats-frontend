@@ -23,11 +23,11 @@ export class LiveQueryComponent extends QueryComponent implements OnDestroy {
         this.updateSelectionFromState(this.state());
 
         // set default values for this mode
-        this.selectedDateRange = [
-            this.ranges()["Last 3 Hours"][0],
-            this.ranges()["Last 3 Hours"][1]
-        ]
-        this.interval = "PT5M"
+        this.selectedDateRange.set(
+            [this.ranges()["Last 3 Hours"][0],
+                this.ranges()["Last 3 Hours"][1]]
+        )
+        this.interval.set("PT5M")
 
         // make the first query with the used default values
         this.updateStateFromSelection()
@@ -43,18 +43,17 @@ export class LiveQueryComponent extends QueryComponent implements OnDestroy {
 
     triggerMetaDataRetrieval() {
         const previousEndDate = this.maxDate()
-        this.dataService.requestMetadata().subscribe(
+        this.dataService.requestMetadata().then(
             (metadata) => {
                 if (!dayjs(metadata.max_timestamp).isSame(previousEndDate)) {
-                    this.selectedDateRange = [
-                        this.ranges()["Last 3 Hours"][0],
-                        this.ranges()["Last 3 Hours"][1]
-                    ]
-                    this.updateStateFromSelection()
+                    this.selectedDateRange.set([
+                        this.ranges()["Last 3 Hours"]![0],
+                        this.ranges()["Last 3 Hours"]![1]
+                    ]);
+                    this.updateStateFromSelection();
                 }
             }
         )
-
     }
 
     toggleLiveMode() {

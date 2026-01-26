@@ -1,6 +1,6 @@
-import {Injectable, Signal, signal, WritableSignal} from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, catchError, map, Observable, retry, tap, throwError} from 'rxjs';
+import {BehaviorSubject, catchError, firstValueFrom, map, Observable, retry, tap, throwError} from 'rxjs';
 
 import {environment} from '../environments/environment';
 import {
@@ -34,43 +34,27 @@ export class DataService {
     bsLive = new BehaviorSubject<boolean>(false)
     liveMode = this.bsLive.asObservable()
 
-    private _metaData: WritableSignal<IMetaData> = signal<IMetaData>({
-        min_timestamp: "",
-        max_timestamp: ""
-    })
-    public metaData: Signal<IMetaData> = this._metaData.asReadonly();
+    private _metaData = signal<IMetaData>({max_timestamp: "", min_timestamp: ""})
+    public metaData = this._metaData.asReadonly();
 
     constructor(
         private http: HttpClient,
     ) {
     }
 
-    // will be called by APP_INITIALIZER provider in app.module.ts on the start of the application
-    requestMetadata(): Observable<IMetaData> {
-        return this.http.get<IMetadataResponse>(`${this.url}/metadata`)
+    requestMetadata() {
+        return firstValueFrom(this.http.get<IMetadataResponse>(`${this.url}/metadata`)
             .pipe(
-                retry({count: 2, delay: 2000, resetOnSuccess: true}),
-                map((response: IMetadataResponse) => {
-                    return response!.result as IMetaData
-                }),
-                tap((meta: IMetaData) => {
-                    this._metaData.set(meta)
-                    console.log(this.metaData())
-                }),
-                catchError(error => {
-                    if (error.status === 0) {
-                        // A client-side or network error occurred. Handle it accordingly.
-                        console.error('An error occurred:', error.error);
-                    } else {
-                        // The backend returned an unsuccessful response code.
-                        // The response body may contain clues as to what went wrong.
-                        console.error(
-                            `Backend returned code ${error.status}, body was: `, error.error);
-                    }
-                    // Return an observable with a user-facing error message.
-                    return throwError(() => new Error('ohsomeNow Stats Service did not respond with a metadata response.'));
-                })
-            )
+                retry({count: 2, delay: 2000}),
+                map(res => res.result),
+                tap(meta => this._metaData.set(meta)),
+                catchError(err =>
+                    throwError(() => new Error('Metadata request failed'))
+                )
+            ))
+            .then((res) => {
+                return res
+            });
     }
 
     requestAllHashtags() {

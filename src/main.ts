@@ -17,7 +17,6 @@ import {registerLocaleData} from '@angular/common';
 import en from '@angular/common/locales/en';
 import {en_US, provideNzI18n} from 'ng-zorro-antd/i18n';
 import {inject, provideAppInitializer} from "@angular/core";
-import {firstValueFrom} from "rxjs";
 
 registerLocaleData(en);
 
@@ -37,13 +36,11 @@ bootstrapApplication(AppComponent, {
                 }
             }
         }),
-
-        DataService,
         ToastService,
 
         provideAppInitializer(() => {
             const dataService = inject(DataService);
-            return firstValueFrom(dataService.requestMetadata());
+            return dataService.requestMetadata();
         })
     ]
 }).catch(err => console.error(err));

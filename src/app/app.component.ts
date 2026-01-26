@@ -14,7 +14,6 @@ import {RouterLink, RouterOutlet} from "@angular/router";
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     imports: [StatusBannerComponent, ToastComponent, NgClass, RouterOutlet, RouterLink],
-    providers: [DataService],
     standalone: true
 })
 export class AppComponent implements AfterViewInit {
