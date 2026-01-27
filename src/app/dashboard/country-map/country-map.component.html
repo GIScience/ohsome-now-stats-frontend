@@ -1,5 +1,5 @@
 <div #overlayContainer class="bd bgc-white pos-r">
-  <overlay [containerElement]="overlayContainer" [isLoading]="isLoading"></overlay>
+  <overlay [containerElement]="overlayContainer" [isLoading]="isLoading()"></overlay>
   <div class="peers fxw-nw@lg+ ai-s">
     <div class="peer peer-greed w-70p@lg+ w-100@lg- p-20">
       <div class="layers">
@@ -8,23 +8,23 @@
             <div class="osm-attribution"><a href="https://www.stadiamaps.com/" target="_blank">Stadia
               Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy;
               <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a
-            href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            </div>
           </div>
         </div>
       </div>
+      @if (!isLoading() && minMaxStats()) {
+        <div class="legend-container">
+          <app-country-map-legend
+            [colorFunction]="getColorFn()"
+            [legendTitle]="topicDefinitions[activeTopic()]['name'] + ' per country'"
+            [maxValue]="minMaxStats().maxValue"
+            [minValue]="minMaxStats().minValue"
+            [radiusFunction]="getRadiusFn()"
+            [transformFn]="transFormFn">
+          </app-country-map-legend>
+        </div>
+      }
     </div>
-    @if (!isLoading && minMaxStats) {
-      <div class="legend-container">
-        <app-country-map-legend
-          [colorFunction]="getColorFn()"
-          [legendTitle]="topicDefinitions[activeTopic]['name'] + ' per country'"
-          [maxValue]="minMaxStats.maxValue"
-          [minValue]="minMaxStats.minValue"
-          [radiusFunction]="getRadiusFn()"
-          [transformFn]="transFormFn">
-        </app-country-map-legend>
-      </div>
-    }
   </div>
-</div>
 </div>

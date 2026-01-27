@@ -5,15 +5,16 @@ import {provideRouter, Router} from "@angular/router";
 import {BehaviorSubject, of} from "rxjs";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {StateService} from "./state.service";
+import {vi} from "vitest";
 
 describe('AppComponent', () => {
     let component: AppComponent;
 
     beforeEach(async () => {
-        const dataServiceSpy = jasmine.createSpyObj<DataService>('DataService', [], {
+        const dataServiceSpy = {
             // Properties that need to be mocked
             liveMode: new BehaviorSubject<boolean>(false).asObservable()
-        });
+        };
 
         await TestBed.configureTestingModule({
             declarations: [AppComponent],
@@ -23,7 +24,7 @@ describe('AppComponent', () => {
                 {
                     provide: Router,
                     useValue: {
-                        navigate: jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true))
+                        navigate: vi.fn().mockReturnValue(Promise.resolve(true))
                     }
                 },
                 {

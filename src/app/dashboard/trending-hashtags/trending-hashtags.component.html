@@ -1,13 +1,13 @@
-@if (numOfHashtags > 0) {
+@if (numOfHashtags() > 0) {
   <div class="bd bgc-white" #overlayContainer>
-    <overlay [isLoading]="isHashtagsLoading" [containerElement]="overlayContainer"></overlay>
+    <overlay [isLoading]="isHashtagsLoading()" [containerElement]="overlayContainer"></overlay>
     <div class="peers fxw-nw@lg+ ai-s">
       <div class="peer peer-greed w-70p@lg+ w-100@lg- p-20">
         <div class="layers">
           <div class="layer w-100 mB-10">
             <div class="peers ai-sb fxw-nw">
               <div class="peer peer-greed pX-5 pT-5">
-                <h6 id="title_trendingHashTags" class="lh-1">Top {{ numOfHashtags }} most used hashtags</h6>
+                <h6 id="title_trendingHashTags" class="lh-1">Top {{ numOfHashtags() }} most used hashtags</h6>
               </div>
               <div class="peer pX-5 pT-5">
                 <span class="icon-holder" data-bs-toggle="tooltip" #tooltip
@@ -18,7 +18,7 @@
             </div>
           </div>
           <div class="layer w-100">
-            @for (ht of hashtags; track ht) {
+            @for (ht of hashtags(); track ht) {
               <div class="mT-10 mL-5">
                 <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 whs-nw tov-e clickable"
                   [style.width]="ht.percent + '%'"

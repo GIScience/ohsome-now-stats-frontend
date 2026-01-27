@@ -1,12 +1,11 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {Routes} from '@angular/router';
 
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {AboutComponent} from './about/about.component';
 import {HelpComponent} from './help/help.component';
 
-const routes: Routes = [
+export const routes: Routes = [
     {
         path: '',
         pathMatch: 'full',
@@ -43,9 +42,3 @@ const routes: Routes = [
     },
 ];
 
-@NgModule({
-    imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule]
-})
-export class AppRoutingModule {
-}

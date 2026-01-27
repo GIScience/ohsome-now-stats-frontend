@@ -1,3 +1,4 @@
+import {type MockedObject, vi} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ActivatedRoute} from '@angular/router';
@@ -9,7 +10,7 @@ import {IMetaData, IMetadataResponse} from './dashboard/types';
 describe('DataService', () => {
     let service: DataService;
     let httpMock: HttpTestingController;
-    let mockActivatedRoute: jasmine.SpyObj<ActivatedRoute>;
+    let mockActivatedRoute: MockedObject<ActivatedRoute>;
 
     const mockUrl = 'https://int-stats.now.ohsome.org/api';
     const mockMetaData: IMetaData = {
@@ -26,11 +27,11 @@ describe('DataService', () => {
 
 
     beforeEach(() => {
-        const activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', [], {
+        const activatedRouteSpy = {
             snapshot: {
                 fragment: 'hashtag=test&start=2023-01-01T00:00:00Z&end=2023-01-31T00:00:00Z'
             }
-        });
+        };
 
         // Mock environment
         environment.ohsomeStatsServiceUrl = mockUrl; // Correct way to mock a simple variable
@@ -45,7 +46,7 @@ describe('DataService', () => {
 
         service = TestBed.inject(DataService);
         httpMock = TestBed.inject(HttpTestingController);
-        mockActivatedRoute = TestBed.inject(ActivatedRoute) as jasmine.SpyObj<ActivatedRoute>;
+        mockActivatedRoute = TestBed.inject(ActivatedRoute) as MockedObject<ActivatedRoute>;
     });
 
     afterEach(() => {
@@ -83,13 +84,13 @@ describe('DataService', () => {
         });
 
         it('should handle client-side errors', () => {
-            spyOn(console, 'error');
+            vi.spyOn(console, 'error');
 
             service.requestMetadata().subscribe({
-                next: () => fail('should have failed'),
+                next: () => expect.fail('should have failed'),
                 error: (error) => {
                     expect(error.message).toBe('ohsomeNow Stats Service did not respond with a metadata response.');
-                    expect(console.error).toHaveBeenCalledWith('An error occurred:', jasmine.any(Object));
+                    expect(console.error).toHaveBeenCalledWith('An error occurred:', expect.any(Object));
                 }
             });
 
@@ -98,16 +99,13 @@ describe('DataService', () => {
         });
 
         it('should handle server errors', () => {
-            spyOn(console, 'error');
+            vi.spyOn(console, 'error');
 
             service.requestMetadata().subscribe({
-                next: () => fail('should have failed'),
+                next: () => expect.fail('should have failed'),
                 error: (error) => {
                     expect(error.message).toBe('ohsomeNow Stats Service did not respond with a metadata response.');
-                    expect(console.error).toHaveBeenCalledWith(
-                        'Backend returned code 500, body was: ',
-                        'Server Error'
-                    );
+                    expect(console.error).toHaveBeenCalledWith('Backend returned code 500, body was: ', 'Server Error');
                 }
             });
 

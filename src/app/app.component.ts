@@ -13,12 +13,17 @@ import {DataService} from "./data.service";
 import {StateService} from "./state.service";
 import packageJson from '../../package.json';
 import {enableTooltips} from "./utils";
+import {StatusBannerComponent} from "./status-banner/status-banner.component";
+import {ToastComponent} from "./toast/toast.component";
+import {NgClass} from "@angular/common";
+import {RouterLink, RouterOutlet} from "@angular/router";
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    standalone: false
+    imports: [StatusBannerComponent, ToastComponent, NgClass, RouterOutlet, RouterLink],
+    standalone: true
 })
 export class AppComponent implements AfterViewInit {
     @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;

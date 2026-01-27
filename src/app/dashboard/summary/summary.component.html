@@ -1,6 +1,6 @@
 <div class="row pos-r" id="big-number_container" style="padding-right: 0 !important;" #overlayContainer>
-  <overlay [isLoading]="isSummaryLoading" [containerElement]="overlayContainer"></overlay>
-  @for (data of bignumberData; track data) {
+  <overlay [isLoading]="isSummaryLoading()" [containerElement]="overlayContainer"></overlay>
+  @for (data of bignumberData(); track data) {
     <app-big-number [data]="data"
       class="col-md-3 app-big-number" (click)="changeSelectedBigNumber($event, data.id)"
       style="padding-right: 0 !important;"

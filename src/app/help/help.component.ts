@@ -1,4 +1,4 @@
-import {ViewportScroller} from '@angular/common';
+import { ViewportScroller, KeyValuePipe } from '@angular/common';
 import {AfterViewInit, Component} from '@angular/core';
 import {dashboard} from 'src/app/dashboard/tooltip-data'
 import topicDefinitions from "../../assets/static/json/topicDefinitions.json"
@@ -7,7 +7,7 @@ import topicDefinitions from "../../assets/static/json/topicDefinitions.json"
     selector: 'app-help',
     templateUrl: './help.component.html',
     styleUrls: ['./help.component.scss'],
-    standalone: false
+    imports: [KeyValuePipe]
 })
 export class HelpComponent implements AfterViewInit {
     topicDefinitions = topicDefinitions

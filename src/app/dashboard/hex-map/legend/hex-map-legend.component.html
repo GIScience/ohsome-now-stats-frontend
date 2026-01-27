@@ -1,23 +1,23 @@
 <div class="color-legend">
-    <div class="legend-title">{{ unit }}</div>
-    <div class="legend-bar-container">
-        <div class="flex-row">
-            <span class="legend-label min-label">{{ formatValue(minValue) }}</span>
-            <div class="legend-bar" #legendBar>
-                <canvas
-                    #legendCanvas
-                    class="legend-canvas">
-                </canvas>
-                @if (showZeroLabel) {
-                    <div class="legend-labels">
+  <div class="legend-title">{{ unit() }}</div>
+  <div class="legend-bar-container">
+    <div class="flex-row">
+      <span class="legend-label min-label">{{ formatValue(minValue()) }}</span>
+      <div class="legend-bar" #legendBar>
+        <canvas
+            #legendCanvas
+          class="legend-canvas">
+        </canvas>
+        @if (showZeroLabel()) {
+          <div class="legend-labels">
                         <span
-                                [style.left.%]="zeroPosition * 100"
-                                class="legend-label zero-label"
+                          [style.left.%]="zeroPosition() * 100"
+                          class="legend-label zero-label"
                         >0</span>
-                    </div>
-                }
-            </div>
-            <span class="legend-label max-label">{{ formatValue(maxValue) }}</span>
-        </div>
+          </div>
+        }
+      </div>
+      <span class="legend-label max-label">{{ formatValue(maxValue()) }}</span>
     </div>
+  </div>
 </div>

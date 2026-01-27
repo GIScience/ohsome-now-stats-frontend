@@ -1,11 +1,11 @@
-import {Component, computed, effect, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, computed, effect, ElementRef, NgZone, OnDestroy, OnInit, signal, ViewChild} from '@angular/core';
 import {StateService} from 'src/app/state.service';
 import {Overlay} from '../../overlay.component';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer, ScatterplotLayer} from '@deck.gl/layers';
 import {DataService} from '../../data.service';
-import {ICountryData, ICountryLocationData, IWrappedCountryResult, StatsType} from '../types';
+import {ICountryData, ICountryLocationData, IStateParams, StatsType} from '../types';
 import countryPlotPositions from '../../../assets/static/json/countryLabelpoint.json';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json";
 import {scalePow, scaleSqrt} from 'd3-scale';
@@ -26,6 +26,31 @@ export class CountryMapComponent implements OnInit, OnDestroy {
 
     @ViewChild('deckContainer', {static: true}) deckContainer!: ElementRef;
 
+    isLoading = signal(false);
+    enrichedCountryData = signal<ICountryLocationData[]>([]);
+    selectedCountries = computed(
+        () => this.stateService.appState().countries
+    );
+    activeTopic = computed<StatsType>(
+        () => this.relevantState().active_topic
+    );
+
+    minMaxStats = computed(() => {
+        const data = this.enrichedCountryData();
+        if (!data.length) {
+            return {minValue: 0, maxValue: 0};
+        }
+
+        return data.reduce(
+            (previousValue: { minValue: number; maxValue: number; }, currentValue: ICountryLocationData) => {
+                return {
+                    minValue: Math.min(previousValue.minValue, currentValue.value),
+                    maxValue: Math.max(previousValue.maxValue, currentValue.value)
+                }
+            }, {minValue: Infinity, maxValue: -Infinity}
+        );
+    });
+
     private relevantState = computed(() => {
         return this.stateService.appState()
     }, {
@@ -37,17 +62,8 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 && a.active_topic == b.active_topic
         }
     });
-    // filtering on countries should only change style, but not trigger new data request
-    private countryState = computed(() => {
-        return this.stateService.appState().countries
-    })
 
-    activeTopic: StatsType = this.relevantState().active_topic;
-    selectedCountries: string = this.countryState();
-    isLoading: boolean = false;
     deck!: Deck<MapView>;
-    minMaxStats: { minValue: number; maxValue: number; } = {minValue: 0, maxValue: 0};
-    enrichedCountryData: ICountryLocationData[] = [];
 
     constructor(
         private stateService: StateService,
@@ -55,14 +71,11 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         private readonly ngZone: NgZone
     ) {
         effect(() => {
-            this.activeTopic = this.relevantState().active_topic;
-            this.updateData();
-
+            this.updateData(this.relevantState());
         });
 
         effect(() => {
-            this.selectedCountries = this.countryState();
-            this.createOrReplaceCountryDataLayer(this.enrichedCountryData);
+            this.createOrReplaceCountryDataLayer(this.enrichedCountryData(), this.selectedCountries());
         });
     }
 
@@ -74,51 +87,29 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        if (this.deck) {
-            this.deck.finalize();
-        }
+        this.deck?.finalize();
     }
 
-    updateData() {
-        console.log("updateData")
-
-        //create or update ScatterplotLayer
-
-        //get data
+    updateData(state: IStateParams) {
         const reqParams = {
-            hashtag: this.relevantState().hashtag,
-            start: this.relevantState().start,
-            end: this.relevantState().end,
-            topics: this.relevantState().active_topic,
+            hashtag: state.hashtag,
+            start: state.start,
+            end: state.end,
+            topics: state.active_topic,
         }
 
-        const handleResponse = (response: IWrappedCountryResult) => {
-            const countryData: ICountryData[] = response.result.topics[this.activeTopic];
-            this.enrichedCountryData = this.enrichCountryDataWithPlotPositions(countryData);
-            this.minMaxStats = this.enrichedCountryData.reduce(
-                (previousValue: { minValue: number; maxValue: number; }, currentValue: ICountryLocationData) => {
-                    return {
-                        minValue: Math.min(previousValue.minValue, currentValue.value),
-                        maxValue: Math.max(previousValue.maxValue, currentValue.value)
-                    }
-                }, {minValue: Infinity, maxValue: -Infinity}
-            );
-            this.createOrReplaceCountryDataLayer(this.enrichedCountryData);
-        }
-
-        this.isLoading = true;
+        this.isLoading.set(true);
         this.dataService.requestCountryStats(reqParams).subscribe({
-            next: handleResponse,
+            next: (res) => {
+                const countryData: ICountryData[] = res.result.topics[this.activeTopic()];
+                this.enrichedCountryData.set(this.enrichCountryDataWithPlotPositions(countryData));
+                this.isLoading.set(false);
+            },
             error: (err) => {
                 console.log(err);
-                this.isLoading = false;
-            },
-            complete: () => {
-                this.isLoading = false;
+                this.isLoading.set(false);
             }
         })
-
-
     }
 
     /**
@@ -143,8 +134,8 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             .sort((a: ICountryLocationData, b: ICountryLocationData) => Math.abs(b.value) - Math.abs(a.value));
     }
 
-        getColorFn() {
-        const topicColorHex = topicDefinitions[this.activeTopic]?.["color-hex"]
+    getColorFn() {
+        const topicColorHex = topicDefinitions[this.activeTopic()]?.["color-hex"]
 
         // Interpolator
         // Negative color ranges from pale to strong red
@@ -159,7 +150,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         const positiveColorPale = lch(70, positiveColorStrong.c, positiveColorStrong.h, 0.3);
         const positiveInterpolator = interpolateHcl(positiveColorStrong, positiveColorPale);
 
-        const {minValue, maxValue} = this.minMaxStats;
+        const {minValue, maxValue} = this.minMaxStats();
         const abMax = Math.max(Math.abs(minValue), Math.abs(maxValue));
         const negativeScale = scalePow([-abMax, 0], [0, 1]).exponent(1 / 4);
         const positiveScale = scalePow([0, abMax], [0, 1]).exponent(2);
@@ -168,10 +159,8 @@ export class CountryMapComponent implements OnInit, OnDestroy {
 
             let color;
             if (value < 0) {
-                // Use negative interpolator
                 color = lch(negativeInterpolator(negativeScale(value)));
             } else {
-                // Use positive interpolator
                 color = lch(positiveInterpolator(positiveScale(value)));
             }
 
@@ -192,7 +181,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             maxZoom: 19,
             minZoom: 0,
             tileSize: 256,
-            renderSubLayers: (props)  => {
+            renderSubLayers: (props) => {
                 const {boundingBox: [[west, south], [east, north]]} = props.tile;
                 return new BitmapLayer({
                     ...props,
@@ -222,15 +211,14 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         } as DeckProps<MapView>);
     };
 
-    createOrReplaceCountryDataLayer = (enrichedCountryData: ICountryLocationData[]) => {
-
+    createOrReplaceCountryDataLayer = (enrichedCountryData: ICountryLocationData[], selectedCountries: string) => {
         const countryLayer = new ScatterplotLayer<ICountryLocationData>({
             id: 'countryLayer',
             data: enrichedCountryData,
-            getPosition: (d: ICountryLocationData) => d.lonLat,
-            getFillColor: (d: ICountryLocationData)=> this.getColorFn().call(null, d.value, d.country, this.selectedCountries),
+            getPosition: d => d.lonLat,
+            getFillColor: d => this.getColorFn()(d.value, d.country, selectedCountries),
             updateTriggers: {
-                getFillColor: this.selectedCountries
+                getFillColor: selectedCountries
             },
             getRadius: this.getRadiusFn(),
             radiusUnits: 'pixels',
@@ -242,9 +230,8 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         this.deck.setProps({layers: [this.deck.props.layers[0], countryLayer]})
     }
 
-    getRadiusFn(){
-        const minValue = this.minMaxStats.minValue;
-        const maxValue = this.minMaxStats.maxValue;
+    getRadiusFn() {
+        const {minValue, maxValue} = this.minMaxStats();
         const minRadiusPx = 3;
         const maxRadiusPx = 40;
         const absoluteMaxValue = Math.max(Math.abs(minValue), Math.abs(maxValue));

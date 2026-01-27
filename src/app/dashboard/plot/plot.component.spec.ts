@@ -1,3 +1,4 @@
+import {type MockedObject, vi} from "vitest";
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 
@@ -11,17 +12,17 @@ import dayjs from "dayjs";
 
 // Mock Plotly
 const mockPlotly = {
-    react: jasmine.createSpy('react'),
-    relayout: jasmine.createSpy('relayout')
+    react: vi.fn(),
+    relayout: vi.fn()
 };
 
 
 describe('PlotComponent', () => {
     let component: PlotComponent;
     let fixture: ComponentFixture<PlotComponent>;
-    let mockDataService: jasmine.SpyObj<DataService>;
-    let mockStateService: jasmine.SpyObj<StateService>;
-    let mockUtcToLocalConverter: jasmine.SpyObj<UTCToLocalConverterPipe>;
+    let mockDataService: MockedObject<DataService>;
+    let mockStateService: MockedObject<StateService>;
+    let mockUtcToLocalConverter: MockedObject<UTCToLocalConverterPipe>;
 
     const mockPlotData: IPlotResult = {
         startDate: ['2023-01-01T00:00:00.000Z', '2023-01-02T00:00:00.000Z', '2023-01-03T00:00:00.000Z'],
@@ -59,26 +60,25 @@ describe('PlotComponent', () => {
     };
 
     beforeEach(async () => {
-        const dataServiceSpy = jasmine.createSpyObj('DataService', [
-            'requestPlot',
-            'requestTopicInterval',
-            'metaData'
-        ]);
+        const dataServiceSpy = {
+            requestPlot: vi.fn().mockName("DataService.requestPlot"),
+            requestTopicInterval: vi.fn().mockName("DataService.requestTopicInterval"),
+            metaData: vi.fn().mockName("DataService.metaData")
+        };
 
-        const stateServiceSpy = jasmine.createSpyObj('StateService', [
-            'appState'
-        ]);
+        const stateServiceSpy = {
+            appState: vi.fn().mockName("StateService.appState")
+        };
 
-        const utcToLocalConverterSpy = jasmine.createSpyObj('UTCToLocalConverterPipe', [
-            'transform'
-        ]);
+        const utcToLocalConverterSpy = {
+            transform: vi.fn().mockName("UTCToLocalConverterPipe.transform")
+        };
 
         // Mock global Plotly
         (window as any).Plotly = mockPlotly;
 
         await TestBed.configureTestingModule({
-            declarations: [PlotComponent],
-            imports: [Overlay],
+            imports: [Overlay, PlotComponent],
             providers: [
                 {provide: DataService, useValue: dataServiceSpy},
                 {provide: StateService, useValue: stateServiceSpy},
@@ -88,23 +88,23 @@ describe('PlotComponent', () => {
 
         fixture = TestBed.createComponent(PlotComponent);
         component = fixture.componentInstance;
-        mockDataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
-        mockStateService = TestBed.inject(StateService) as jasmine.SpyObj<StateService>;
-        mockUtcToLocalConverter = TestBed.inject(UTCToLocalConverterPipe) as jasmine.SpyObj<UTCToLocalConverterPipe>;
+        mockDataService = TestBed.inject(DataService) as MockedObject<DataService>;
+        mockStateService = TestBed.inject(StateService) as MockedObject<StateService>;
+        mockUtcToLocalConverter = TestBed.inject(UTCToLocalConverterPipe) as MockedObject<UTCToLocalConverterPipe>;
 
         // Setup default mock returns
-        mockStateService.appState.and.returnValue(mockState);
-        mockDataService.requestPlot.and.returnValue(of({result: mockPlotData}));
-        mockDataService.metaData.and.returnValue({
+        mockStateService.appState.mockReturnValue(mockState);
+        mockDataService.requestPlot.mockReturnValue(of({result: mockPlotData}));
+        mockDataService.metaData.mockReturnValue({
             min_timestamp: dayjs().toISOString(),
             max_timestamp: dayjs().toISOString()
         });
-        mockUtcToLocalConverter.transform.and.returnValue('2023-01-01 00:00:00');
+        mockUtcToLocalConverter.transform.mockReturnValue('2023-01-01 00:00:00');
     });
 
     afterEach(() => {
-        mockPlotly.react.calls.reset();
-        mockPlotly.relayout.calls.reset();
+        mockPlotly.react.mockClear();
+        mockPlotly.relayout.mockClear();
     });
 
     it('should create', () => {
@@ -121,10 +121,10 @@ describe('PlotComponent', () => {
 
     describe('requestToAPI', () => {
         beforeEach(() => {
-            spyOn(component, 'refreshPlot');
-            spyOn(component, 'fitToContent').and.returnValue(() => {
+            vi.spyOn(component, 'refreshPlot');
+            vi.spyOn(component, 'fitToContent').mockReturnValue(() => {
             });
-            spyOn(component, 'resetZoom');
+            vi.spyOn(component, 'resetZoom');
         });
 
         it('should call requestPlot with correct parameters', () => {
@@ -157,8 +157,8 @@ describe('PlotComponent', () => {
         }));
 
         it('should handle API errors', () => {
-            spyOn(console, 'error');
-            mockDataService.requestPlot.and.returnValue(throwError('API Error'));
+            vi.spyOn(console, 'error');
+            mockDataService.requestPlot.mockReturnValue(throwError('API Error'));
 
             component['requestToAPI'](mockState);
 
@@ -168,7 +168,7 @@ describe('PlotComponent', () => {
 
     describe('computed properties and effects', () => {
         it('should call requestToAPI when relevantState changes', () => {
-            spyOn(component as any, 'requestToAPI');
+            vi.spyOn(component as any, 'requestToAPI');
 
             fixture.detectChanges();
 
@@ -177,10 +177,10 @@ describe('PlotComponent', () => {
 
         it('should call refreshPlot when only active_topic changes', () => {
             component.data = mockPlotData;
-            spyOn(component, 'refreshPlot');
+            vi.spyOn(component, 'refreshPlot');
 
             // Simulate active topic change
-            mockStateService.appState.and.returnValue({
+            mockStateService.appState.mockReturnValue({
                 ...mockState,
                 active_topic: 'buildings' as StatsType
             });

@@ -6,6 +6,7 @@ import {StateService} from "../../state.service";
 import {signal} from "@angular/core";
 import {of} from "rxjs";
 import {IHashtags, IStateParams} from "../types";
+import {vi} from "vitest";
 
 describe('ExportDataComponent', () => {
     let component: ExportDataComponent;
@@ -38,15 +39,15 @@ describe('ExportDataComponent', () => {
     beforeEach(async () => {
         mockDataService = {
             metaData: signal(mockMetaData),
-            requestCountryStats: jasmine.createSpy('requestCountryStats').and.returnValue(of(mockHashtags)),
+            requestCountryStats: vi.fn().mockReturnValue(of(mockHashtags)),
         };
         mockStateService = {
             appState: signal(mockAppState),
-            updatePartialState: jasmine.createSpy('updatePartialState')
+            updatePartialState: vi.fn()
         };
 
         await TestBed.configureTestingModule({
-            declarations: [ExportDataComponent],
+            imports: [ExportDataComponent],
             providers: [
                 {provide: DataService, useValue: mockDataService},
                 {provide: StateService, useValue: mockStateService}

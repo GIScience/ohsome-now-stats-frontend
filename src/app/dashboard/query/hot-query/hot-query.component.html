@@ -47,31 +47,13 @@
                 </span>
               </div>
               <div>
-                <input type="text"
-                  class="form-control"
-                  ngxDaterangepickerMd
-                  [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}"
-                  startKey="start"
-                  endKey="end"
-                  [minDate]="minDate()"
-                  [maxDate]="dateRangeShiftedMaxDate"
+                <nz-range-picker
+                  [nzRanges]="ranges()"
                   [(ngModel)]="selectedDateRange"
-                  id="dateRange"
                   name="daterange"
-                  [showCustomRangeLabel]="true"
-                  [alwaysShowCalendars]="false"
-                  (datesUpdated)="updateDateRange($event)"
-                  [ranges]="ranges()"
-                  [linkedCalendars]="true"
-                  [showClearButton]="true"
-                  [timePicker]="true"
-                  [timePicker24Hour]="true"
-                  (endDateChanged)="updateEndDate($event)"
-                  (startDateChanged)="updateStartDate($event)"
-                  [autoApply]="true"
-                  [closeOnAutoApply]="false"
-                  placeholder="Select please..."
-                  required=""/>
+                  nzShowTime
+                  [nzDisabledDate]="disabledDate"
+                ></nz-range-picker>
               </div>
             </div>
             <div class="mb-3 row">

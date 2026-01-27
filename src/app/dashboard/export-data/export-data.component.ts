@@ -7,8 +7,7 @@ import {DataService} from "../../data.service";
 @Component({
     selector: 'app-export-data',
     templateUrl: './export-data.component.html',
-    styleUrl: './export-data.component.scss',
-    standalone: false
+    styleUrl: './export-data.component.scss'
 })
 export class ExportDataComponent {
 

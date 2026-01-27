@@ -1,3 +1,4 @@
+import {type MockedObject, vi} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {Router} from '@angular/router';
 
@@ -7,8 +8,8 @@ import {IStateParams, StatsType} from './dashboard/types';
 
 describe('StateService', () => {
     let service: StateService;
-    let mockRouter: jasmine.SpyObj<Router>;
-    let mockDataService: jasmine.SpyObj<DataService>;
+    let mockRouter: MockedObject<Router>;
+    let mockDataService: MockedObject<DataService>;
 
     const mockMetaData = {
         max_timestamp: '2024-01-01T00:00:00Z'
@@ -26,10 +27,14 @@ describe('StateService', () => {
     };
 
     beforeEach(() => {
-        const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-        const dataServiceSpy = jasmine.createSpyObj('DataService', ['metaData']);
+        const routerSpy = {
+            navigate: vi.fn().mockName("Router.navigate")
+        };
+        const dataServiceSpy = {
+            metaData: vi.fn().mockName("DataService.metaData")
+        };
         window.onbeforeunload = () => 'Oh no!';
-        dataServiceSpy.metaData.and.returnValue(mockMetaData);
+        dataServiceSpy.metaData.mockReturnValue(mockMetaData);
         TestBed.configureTestingModule({
             providers: [
                 StateService,
@@ -39,8 +44,8 @@ describe('StateService', () => {
         });
 
         service = TestBed.inject(StateService);
-        mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-        mockDataService = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
+        mockRouter = TestBed.inject(Router) as MockedObject<Router>;
+        mockDataService = TestBed.inject(DataService) as MockedObject<DataService>;
     });
 
     it('should be created', () => {
@@ -59,10 +64,10 @@ describe('StateService', () => {
             // Get the service through TestBed to maintain injection context
             const serviceWithFragment = TestBed.inject(StateService);
             // @ts-ignore
-            serviceWithFragment.window = {location: {href: 'stats.now.ohsome.org/dashboard#hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=building&countries=DE&topics=building'}}
+            serviceWithFragment.window = {location: {href: 'stats.now.ohsome.org/dashboard#hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=building&countries=DE&topics=building'}};
             serviceWithFragment.updatePartialState(serviceWithFragment.initInitialState());
 
-            const currentState = serviceWithFragment.appState()
+            const currentState = serviceWithFragment.appState();
             expect(currentState.hashtag).toBe('test');
             expect(currentState.start).toBe('2023-06-01T00:00:00Z');
             expect(currentState.end).toBe('2023-12-01T00:00:00Z');
@@ -86,7 +91,7 @@ describe('StateService', () => {
 
     describe('URL updates', () => {
         it('should update URL when state changes', () => {
-            mockRouter.navigate.calls.reset();
+            mockRouter.navigate.mockClear();
 
             const testState: IStateParams = {
                 hashtag: 'test-hashtag',
@@ -103,13 +108,13 @@ describe('StateService', () => {
             (service as any).updateURL(testState);
 
             expect(mockRouter.navigate).toHaveBeenCalledWith([], {
-                fragment: jasmine.stringContaining('hashtag=test-hashtag')
+                fragment: expect.stringContaining('hashtag=test-hashtag')
             });
         });
 
         it('should include fit_to_content in URL when defined', () => {
             // service.updatePartialState({ fit_to_content: 'true' });
-            mockRouter.navigate.calls.reset();
+            mockRouter.navigate.mockClear();
 
             const testState: IStateParams = {
                 hashtag: 'test-hashtag',
@@ -126,7 +131,7 @@ describe('StateService', () => {
             (service as any).updateURL(testState);
 
             expect(mockRouter.navigate).toHaveBeenCalledWith([], {
-                fragment: jasmine.stringContaining('fit_to_content=')
+                fragment: expect.stringContaining('fit_to_content=')
             });
         });
     });
@@ -134,16 +139,16 @@ describe('StateService', () => {
     describe('getQueryParamsFromFragments', () => {
         it('should return null when no fragment exists', () => {
             // @ts-ignore
-            service.window = {location: {href: ''}}
+            service.window = {location: {href: ''}};
             const result = service.getQueryParamsFromFragments();
 
             expect(result).toBeNull();
         });
-        
+
 
         it('should parse fragment into URLSearchParams', () => {
             // @ts-ignore
-            service.window = {location: {href: 'stats.now.ohsome.org/dashboard#hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=building&countries=DE&topics=building'}}
+            service.window = {location: {href: 'stats.now.ohsome.org/dashboard#hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=building&countries=DE&topics=building'}};
 
             const result = service.getQueryParamsFromFragments();
 

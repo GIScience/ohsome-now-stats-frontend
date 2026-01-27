@@ -1,9 +1,9 @@
-<div class="bd bgc-white pos-r" [hidden]="!data" #overlayContainer>
-  <overlay [isLoading]="isPlotsLoading" [containerElement]="overlayContainer"></overlay>
+<div class="bd bgc-white pos-r" [hidden]="!data()" #overlayContainer>
+  <overlay [isLoading]="isPlotsLoading()" [containerElement]="overlayContainer"></overlay>
   <div class="layers">
     <div class="layer w-100 pX-20 pB-20">
-      @if (plotData) {
-        <plotly-plot [data]="plotData" [layout]="layout" [config]="config"></plotly-plot>
+      @if (plotData() != undefined) {
+        <plotly-plot [data]="plotData()!" [layout]="layout" [config]="config"></plotly-plot>
       }
     </div>
   </div>

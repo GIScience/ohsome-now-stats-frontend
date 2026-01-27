@@ -2,10 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import dayjs from "dayjs";
 // @ts-ignore
 
-@Pipe({
-  name: 'UTCToLocalConverter',
-  standalone: false
-})
+@Pipe({ name: 'UTCToLocalConverter' })
 export class UTCToLocalConverterPipe implements PipeTransform {
 
   transform(dateToFormat: Date | string, ...args: unknown[]): string {

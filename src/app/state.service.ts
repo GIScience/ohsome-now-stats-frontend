@@ -124,7 +124,7 @@ export class StateService {
     }
 
     private getDefaultMinAndMaxTimestamp(queryParams: URLSearchParams | null) {
-        let {max_timestamp, min_timestamp} = this.dataService.metaData()
+        let {max_timestamp, min_timestamp} = this.dataService.metaData();
 
         if (this.onlyHashtagButNoDatesProvided(queryParams)) {
             return {max_timestamp, min_timestamp}

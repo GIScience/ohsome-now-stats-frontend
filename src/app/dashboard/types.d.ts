@@ -1,5 +1,3 @@
-import dayjs from "dayjs";
-
 export type StatsType =
     'contributor'
     | 'edit'
@@ -141,13 +139,9 @@ interface IHighlightedHashtag {
     highlighted: string
 }
 
-interface IDateRange {
-    end: dayjs.Dayjs
-    start: dayjs.Dayjs
-}
 
 interface DateRanges {
-    [p: string]: [Dayjs, Dayjs]
+    [p: string]: [Date, Date]
 }
 
 interface TimePeriod {

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, computed, ElementRef, input, viewChild} from '@angular/core';
 import {Color} from '@deck.gl/core';
 
 @Component({
@@ -7,34 +7,38 @@ import {Color} from '@deck.gl/core';
     styleUrls: ['./hex-map-legend.component.scss'],
     imports: []
 })
-export class HexMapLegendComponent<T,K extends keyof T> implements AfterViewInit {
-    @Input() minValue!: number;
-    @Input() maxValue!: number;
-    @Input() colorFunction!: (value: Pick<T, K>) => Color;
-    @Input() transformFn!: (value: number) => Pick<T, K>;
-    @Input() unit: string = '';
-    @ViewChild('legendCanvas', {static: true}) canvasRef!: ElementRef<HTMLCanvasElement>;
+export class HexMapLegendComponent<T, K extends keyof T> implements AfterViewInit {
+    minValue = input.required<number>();
+    maxValue = input.required<number>();
+    colorFunction = input.required<(value: Pick<T, K>) => Color>();
+    transformFn = input.required<(value: number) => Pick<T, K>>();
+    unit = input<string>('');
 
-    get showZeroLabel(): boolean {
-        return this.minValue < 0 && this.maxValue > 0;
-    }
+    canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('legendCanvas');
 
-    get zeroPosition(): number {
-        // Returns a value between 0 and 1
-        if (!this.showZeroLabel) return 0;
-        return (-this.minValue) / (this.maxValue - this.minValue);
-    }
+    showZeroLabel = computed(() =>
+        this.minValue() < 0 && this.maxValue() > 0
+    );
+
+    zeroPosition = computed(() => {
+        if (!this.showZeroLabel()) return 0;
+        return (-this.minValue()) / (this.maxValue() - this.minValue());
+    });
+
 
     ngAfterViewInit() {
         this.drawLegend();
     }
 
     private drawLegend() {
-        if (!this.canvasRef?.nativeElement || !this.colorFunction) {
+        const canvas = this.canvasRef()?.nativeElement;
+        const colorFn = this.colorFunction();
+        const transformFn = this.transformFn();
+
+        if (!canvas || !colorFn || !transformFn) {
             return;
         }
 
-        const canvas = this.canvasRef.nativeElement;
         const parent = canvas.parentElement;
         if (!parent) return;
 
@@ -54,19 +58,17 @@ export class HexMapLegendComponent<T,K extends keyof T> implements AfterViewInit
         // Clear canvas
         ctx.clearRect(0, 0, width, height);
 
+        const min = this.minValue();
+        const max = this.maxValue();
         // Create gradient by drawing vertical lines
         for (let x = 0; x < width; x++) {
-            // Map x position to value range
             const normalizedX = x / (width - 1);
-            const value = this.minValue + normalizedX * (this.maxValue - this.minValue);
+            const value = min + normalizedX * (max - min);
 
-            const tempTData = this.transformFn(value);
+            const tempTData = transformFn(value);
+            const color = colorFn(tempTData);
 
-
-            const color = this.colorFunction(tempTData);
-
-            // Draw vertical line using CSS color string
-            ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]! / 255})`;
+            ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${(color[3] ?? 255) / 255})`;
             ctx.fillRect(x, 0, 1, height);
         }
     }

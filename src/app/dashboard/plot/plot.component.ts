@@ -1,5 +1,6 @@
-import {Component, computed, effect} from '@angular/core';
+import {Component, computed, effect, signal} from '@angular/core';
 
+import * as PlotlyJS from 'plotly.js-basic-dist-min';
 import {Config, Layout} from 'plotly.js-basic-dist-min';
 import dayjs from "dayjs";
 import moment from "moment";
@@ -12,14 +13,22 @@ import {
 import {StateService} from "../../state.service";
 import {DataService} from "../../data.service";
 import {IPlotResult, IQueryParams, StatsType} from "../types";
+import {Overlay} from '../../overlay.component';
+import {PlotlyComponent, PlotlyModule} from 'angular-plotly.js';
+
+PlotlyModule.forRoot(PlotlyJS)
 
 @Component({
     selector: 'app-plot',
     templateUrl: './plot.component.html',
     styleUrls: ['./plot.component.scss'],
-    standalone: false
+    imports: [Overlay, PlotlyComponent,]
 })
 export class PlotComponent {
+
+    data = signal<IPlotResult | null>(null);
+    activeTopic = signal<StatsType | null>(null);
+    isPlotsLoading = signal(false);
 
     private relevantState = computed(() => {
         return this.stateService.appState();
@@ -37,11 +46,6 @@ export class PlotComponent {
     private activeTopicState = computed(() => {
         return this.stateService.appState().active_topic;
     });
-
-    data!: IPlotResult;
-    activeTopic!: StatsType;
-
-    plotData: any[] | undefined;
 
     layout: Partial<Layout> = {
         autosize: true,
@@ -75,7 +79,6 @@ export class PlotComponent {
                 click: this.fitToContent()
             }]
     }
-    isPlotsLoading: boolean = false;
 
     constructor(
         private stateService: StateService,
@@ -85,33 +88,27 @@ export class PlotComponent {
 
         // Overall Effect for calling API
         effect(() => {
-            this.activeTopic = this.relevantState().active_topic
-            this.requestToAPI(this.relevantState());
+            this.activeTopic.set(this.relevantState().active_topic)
+            this.fetchPlotData(this.relevantState());
         });
 
         // Effect for plot refresh when ONLY active_topic changes
         effect(() => {
-            this.activeTopic = this.activeTopicState()
-            if (this.data) {
-                this.refreshPlot()
-            }
+            this.activeTopic.set(this.activeTopicState())
         })
     }
 
-    private requestToAPI(state: IQueryParams) {
-        this.isPlotsLoading = true;
+    private fetchPlotData(state: IQueryParams) {
+        this.isPlotsLoading.set(true);
         this.dataService.requestPlot(state).subscribe({
             next: (res) => {
-                if (res) {
-                    this.data = res.result
-                    this.refreshPlot();
-                    this.isPlotsLoading = false;
+                this.data.set(res.result);
+                this.isPlotsLoading.set(false);
 
-                    if (this.relevantState().fit_to_content !== undefined) {
-                        this.fitToContent()()
-                    } else {
-                        this.resetZoom()
-                    }
+                if (this.relevantState().fit_to_content !== undefined) {
+                    this.fitToContent();
+                } else {
+                    this.resetZoom();
                 }
             },
             error: (err) => {
@@ -120,44 +117,50 @@ export class PlotComponent {
         });
     }
 
+    plotData = computed(() => {
+        const data = this.data();
+        const topic = this.activeTopic();
 
-    refreshPlot() {
-        this.plotData = [{
-            x: this.data.startDate.map(e => UTCStringToLocalDateConverterFunction(e)),
-            y: this.data.topics[this.activeTopic].value,
-            customdata: this.data.topics[this.activeTopic].value,
-            hovertext: this.data.startDate.map((start_date, index) => `From ${this.utcToLocalConverter.transform(start_date)}<br>To ${this.utcToLocalConverter.transform(this.data.endDate[index])}`),
-            hovertemplate: `%{hovertext}<br>${topicDefinitions[this.activeTopic]["name"]}: %{customdata}<extra></extra>`,
+        if (!data || !topic) return undefined;
+        this.layout.yaxis!.title!.text = `${topicDefinitions[topic]["y-title"]}`
+
+        return [{
+            x: data.startDate.map(UTCStringToLocalDateConverterFunction),
+            y: data.topics[topic].value,
+            customdata: data.topics[topic].value,
+            hovertext: data.startDate.map((start, i) => `From ${this.utcToLocalConverter.transform(start)}<br> To ${this.utcToLocalConverter.transform(data.endDate[i])}`),
+            hovertemplate: `%{hovertext}<br>${topicDefinitions[topic].name}: %{customdata}<extra></extra>`,
             type: 'bar',
-            name: `${topicDefinitions[this.activeTopic]["name"]}`,
+            name: topicDefinitions[topic].name,
             marker: {
                 pattern: {
                     // apply striped pattern only for current running time
-                    shape: this.data.startDate.map((_, index) =>
+                    shape: data.startDate.map((_, index) =>
                         this.stripedOrNot(index)
                     ),
                     size: 7,
                     solidity: 0.6
                 },
-                color: `${topicDefinitions[this.activeTopic]["color-hex"]}`
+                color: `${topicDefinitions[topic]["color-hex"]}`
             },
         }];
-        this.layout.yaxis!.title!.text = `${topicDefinitions[this.activeTopic]["y-title"]}`
-    }
+    });
 
     /**
      * Return striped if first or last element are not fully contained in timeline.
      */
     stripedOrNot(index: number) {
+        const data = this.data();
+        if (!data) return;
         // only check first and last 2 indexes - otherwise performance will suffer
-        if (![0, this.data.startDate.length - 1, this.data.startDate.length - 2].includes(index)) {
+        if (![0, data.startDate.length - 1, data.startDate.length - 2].includes(index)) {
             return ''
         }
 
         if (
-            dayjs.utc(this.relevantState().end).isBefore(dayjs.utc(this.data.endDate[index]))
-            || dayjs.utc(this.dataService.metaData().max_timestamp).isBefore(dayjs.utc(this.data.endDate[index]))
-            || dayjs.utc(this.relevantState().start).isAfter(dayjs.utc(this.data.startDate[index]))
+            dayjs.utc(this.relevantState().end).isBefore(dayjs.utc(data.endDate[index]))
+            || dayjs.utc(this.dataService.metaData().max_timestamp).isBefore(dayjs.utc(data.endDate[index]))
+            || dayjs.utc(this.relevantState().start).isAfter(dayjs.utc(data.startDate[index]))
         ) {
             return '/'
         }
@@ -167,14 +170,17 @@ export class PlotComponent {
 
     fitToContent() {
         return () => {
-            const data_start = this.data.topics[this.activeTopic].value.findIndex(value => value != 0)
-            const data_end = this.data.topics[this.activeTopic].value.findLastIndex(value => value != 0)
+            const data = this.data();
+            const topic = this.activeTopic();
+            if (!data || !topic) return;
+            const data_start = data.topics[topic].value.findIndex(value => value != 0)
+            const data_end = data.topics[topic].value.findLastIndex(value => value != 0)
             const half_an_interval = moment.duration(this.relevantState().interval).asMilliseconds() / 2;
             this.layout.xaxis = {
                 autorange: false,
                 range: [
-                    UTCStringToLocalDateConverterFunction(dayjs(this.data.startDate[data_start > 0 ? data_start : 0]).subtract(half_an_interval, 'milliseconds').toDate().toISOString()),
-                    UTCStringToLocalDateConverterFunction(dayjs(this.data.startDate[data_end > 0 ? data_end : this.data.startDate.length - 1]).add(half_an_interval, 'milliseconds').toDate().toISOString())
+                    UTCStringToLocalDateConverterFunction(dayjs(data.startDate[data_start > 0 ? data_start : 0]).subtract(half_an_interval, 'milliseconds').toDate().toISOString()),
+                    UTCStringToLocalDateConverterFunction(dayjs(data.startDate[data_end > 0 ? data_end : data.startDate.length - 1]).add(half_an_interval, 'milliseconds').toDate().toISOString())
                 ]
             }
         }
