@@ -41,7 +41,7 @@ export class SummaryComponent {
 
     requestFromAPI(queryParams: IQueryParams) {
         this.isSummaryLoading.set(true);
-
+        // todo: if we are in user dashboard, request user endpoint instead
         this.dataService.requestSummary(queryParams).subscribe({
             next: (data) => {
                 const topics = data.result.topics;

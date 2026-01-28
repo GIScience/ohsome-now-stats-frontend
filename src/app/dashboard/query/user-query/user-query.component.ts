@@ -25,4 +25,8 @@ export class UserQueryComponent extends QueryComponent {
     }
 
 
+    // todo: logic for setting username as well
+    //  query as a parent should probably not be aware of username
+    //  so if we can manage all that here it would be great
+
 }

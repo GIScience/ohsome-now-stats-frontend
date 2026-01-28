@@ -37,7 +37,7 @@ export class AuthService {
                         {
                             functionId: functionsList["link_on_user_creation_anonymous"],
                             body: JSON.stringify({
-                                "policy": "ors_anonymous",
+                                "policy": "ors_anonymous", // todo: change to some other policy, probably switch to some heigit anon
                                 "tag": "ohsome-now-client"
                             })
                         }
@@ -46,7 +46,6 @@ export class AuthService {
                     return this.user;
                 }
             })
-
     }
 
     async getKey(isFullUser: boolean) {
