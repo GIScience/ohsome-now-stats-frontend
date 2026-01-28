@@ -4,8 +4,8 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {ActivatedRoute} from '@angular/router';
 
 import {DataService} from './data.service';
-import {environment} from '../environments/environment';
-import {IMetaData, IMetadataResponse} from './dashboard/types';
+import {environment} from '@environments/environment';
+import {IMetaData, IMetadataResponse} from './types';
 
 describe('DataService', () => {
     let service: DataService;

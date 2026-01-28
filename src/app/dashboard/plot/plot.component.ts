@@ -10,9 +10,9 @@ import {
     UTCStringToLocalDateConverterFunction,
     UTCToLocalConverterPipe
 } from "../query/pipes/utc-to-local-converter.pipe";
-import {StateService} from "../../state.service";
-import {DataService} from "../../data.service";
-import {IPlotResult, IQueryParams, StatsType} from "../types";
+import {StateService} from "../../../lib/state.service";
+import {DataService} from "../../../lib/data.service";
+import {IPlotResult, IQueryParams, StatsType} from "../../../lib/types";
 import {Overlay} from '../../overlay.component';
 import {PlotlyComponent, PlotlyModule} from 'angular-plotly.js';
 

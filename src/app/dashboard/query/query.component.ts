@@ -19,12 +19,12 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-import {DataService} from '../../data.service';
-import {ToastService} from 'src/app/toast.service';
-import {DropdownOption, IHashtags, IHighlightedHashtag, IStateParams, StatsType} from "../types";
-import {StateService} from "../../state.service";
+import {DataService} from '../../../lib/data.service';
+import {ToastService} from '../../../lib/toast.service';
+import {DropdownOption, IHashtags, IHighlightedHashtag, IStateParams, StatsType} from "../../../lib/types";
+import {StateService} from "../../../lib/state.service";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
-import {enableTooltips, over5000IntervalBins} from "../../utils";
+import {enableTooltips, over5000IntervalBins} from "../../../lib/utils";
 
 dayjs.extend(duration)
 dayjs.extend(utc)

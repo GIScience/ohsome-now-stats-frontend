@@ -4,6 +4,20 @@
       <form (keyup.enter)="updateStateFromSelection()" class="needs-validation was-validated" novalidate="">
         <div class="row">
           <div class="mb-3 col-md-12">
+            <div class="mb-3 row" style="--bs-gutter-x: 0px;">
+              <div class="flex-row">
+                <label class="form-label" for="userName">User Name</label>
+                <div style="margin-left: auto;">
+                  <span class="icon-holder tooltip1" data-bs-placement="bottom"
+                    data-bs-toggle="tooltip" #tooltip
+                    title="Filter stats by user name, e.g. Steve"
+                    data-bs-html="true">
+                    <i class="c-grey-800 ti-help-alt"></i>
+                  </span>
+                </div>
+              </div>
+              <input class="p-inputtext" placeholder="OSM user name" [(ngModel)]="userName" name="userName">
+            </div>
             <div class="mb-3 row">
               <div class="col-md-10">
                 <label class="form-label" for="hashtag"> Hashtag</label>

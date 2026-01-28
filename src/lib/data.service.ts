@@ -2,7 +2,7 @@ import {Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, catchError, firstValueFrom, map, Observable, retry, tap, throwError} from 'rxjs';
 
-import {environment} from '../environments/environment';
+import {environment} from '@environments/environment';
 import {
     HexDataType,
     IHashtag,
@@ -13,7 +13,7 @@ import {
     IWrappedCountryResult,
     IWrappedPlotResult,
     IWrappedStatsResult
-} from "./dashboard/types";
+} from "./types";
 import * as Papa from 'papaparse';
 
 @Injectable({providedIn: 'root'})

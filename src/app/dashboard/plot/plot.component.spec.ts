@@ -3,10 +3,10 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {of, throwError} from 'rxjs';
 
 import {PlotComponent} from './plot.component';
-import {DataService} from '../../data.service';
-import {StateService} from '../../state.service';
+import {DataService} from '../../../lib/data.service';
+import {StateService} from '../../../lib/state.service';
 import {UTCToLocalConverterPipe} from '../query/pipes/utc-to-local-converter.pipe';
-import {IPlotResult, StatsType} from '../types';
+import {IPlotResult, StatsType} from '../../../lib/types';
 import {Overlay} from '../../overlay.component';
 import dayjs from "dayjs";
 

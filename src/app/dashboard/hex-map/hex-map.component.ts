@@ -5,11 +5,11 @@ import {BitmapLayer} from '@deck.gl/layers';
 import {lch, rgb} from 'd3-color';
 import {scalePow} from 'd3-scale';
 import {interpolateHcl} from "d3-interpolate";
-import {HexDataType, IStateParams, StatsType} from '../types'
-import {StateService} from "../../state.service";
-import {DataService} from "../../data.service";
+import {HexDataType, IStateParams, StatsType} from '../../../lib/types'
+import {StateService} from "../../../lib/state.service";
+import {DataService} from "../../../lib/data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-import {ToastService} from "../../toast.service";
+import {ToastService} from "../../../lib/toast.service";
 import {Overlay} from '../../overlay.component';
 import {HexMapLegendComponent} from './legend/hex-map-legend.component';
 import {firstValueFrom} from "rxjs";

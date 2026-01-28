@@ -1,7 +1,7 @@
 import {Component, computed, effect, signal} from '@angular/core';
-import {IQueryParams, ITopicDefinitionValue, StatsType} from "../types";
-import {StateService} from "../../state.service";
-import {DataService} from "../../data.service";
+import {IQueryParams, ITopicDefinitionValue, StatsType} from "../../../lib/types";
+import {StateService} from "../../../lib/state.service";
+import {DataService} from "../../../lib/data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {BigNumberComponent} from "./big-number/big-number.component";
 import {Overlay} from "../../overlay.component";

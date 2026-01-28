@@ -1,10 +1,10 @@
 import {TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
-import {DataService} from './data.service';
+import {DataService} from '../lib/data.service';
 import {provideRouter, Router} from "@angular/router";
 import {BehaviorSubject, of} from "rxjs";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
-import {StateService} from "./state.service";
+import {StateService} from "../lib/state.service";
 import {vi} from "vitest";
 
 describe('AppComponent', () => {

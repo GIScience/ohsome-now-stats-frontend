@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 
 import {StateService} from './state.service';
 import {DataService} from './data.service';
-import {IStateParams, StatsType} from './dashboard/types';
+import {IStateParams, StatsType} from './types';
 
 describe('StateService', () => {
     let service: StateService;

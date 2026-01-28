@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {QueryComponent} from "../query.component";
-import {ISelectionItem} from "../../types";
+import {ISelectionItem} from "../../../../lib/types";
 import {FormsModule} from '@angular/forms';
 import {AutoComplete} from 'primeng/autocomplete';
 import {PrimeTemplate} from 'primeng/api';

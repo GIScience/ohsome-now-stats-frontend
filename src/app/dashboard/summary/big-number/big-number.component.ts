@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, computed, effect, ElementRef, Input, QueryList, ViewChildren} from '@angular/core';
-import {ITopicDefinitionValue} from "../../types";
-import {StateService} from "../../../state.service";
+import {ITopicDefinitionValue} from "../../../../lib/types";
+import {StateService} from "../../../../lib/state.service";
 import {Router} from "@angular/router";
-import {enableTooltips} from "../../../utils";
-import { NgClass, NgStyle } from '@angular/common';
+import {enableTooltips} from "../../../../lib/utils";
+import {NgClass, NgStyle} from '@angular/common';
 
 @Component({
     selector: 'app-big-number',

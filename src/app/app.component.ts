@@ -4,48 +4,49 @@ import {
     ElementRef,
     HostListener,
     inject,
-    OnInit,
     QueryList,
+    signal,
     ViewChildren
 } from '@angular/core';
-import {ToastService} from './toast.service';
-import {DataService} from "./data.service";
-import {StateService} from "./state.service";
+import {ToastService} from '../lib/toast.service';
+import {DataService} from "../lib/data.service";
+import {StateService} from "../lib/state.service";
 import packageJson from '../../package.json';
-import {enableTooltips} from "./utils";
+import {enableTooltips} from "../lib/utils";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
 import {ToastComponent} from "./toast/toast.component";
 import {NgClass} from "@angular/common";
 import {RouterLink, RouterOutlet} from "@angular/router";
+import {AuthService} from "../lib/auth.service";
+import {NzIconModule} from "ng-zorro-antd/icon";
+import {NzButtonModule} from "ng-zorro-antd/button";
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    imports: [StatusBannerComponent, ToastComponent, NgClass, RouterOutlet, RouterLink],
+    imports: [StatusBannerComponent, ToastComponent, NgClass, RouterOutlet, RouterLink, NzButtonModule, NzIconModule],
     standalone: true
 })
 export class AppComponent implements AfterViewInit {
     @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
     stateService = inject(StateService);
-    // private router: Router = inject(Router);
-    // private route: ActivatedRoute = inject(ActivatedRoute);
-    private toastService: ToastService = inject(ToastService);
-    private dataService: DataService = inject(DataService);
+    private toastService = inject(ToastService);
+    private dataService = inject(DataService);
+    protected authService = inject(AuthService);
 
     title = 'ohsomeNow Stats'
     name = 'HeiGIT'
     isOpen = false
-    live: boolean = false
+    live = signal<boolean>(false)
     page: string = ''
-    isLoggedIn: boolean = false;
     protected readonly appVersion: string = packageJson.version
     protected currentYear: string = new Date().getFullYear().toString()
 
-
     constructor() {
         this.dataService.liveMode.subscribe(mode => {
-            this.live = mode
+            console.log(mode)
+            this.live.set(mode)
         })
         this.stateService.activePage.subscribe(page => {
             this.page = page!.split('?')[0]
@@ -57,12 +58,6 @@ export class AppComponent implements AfterViewInit {
         this.checkForSmallScreen()
         this.tryCollapseMenuOnBiggerScreens()
     }
-
-    // async ngOnInit() {
-    //     // Check if user is already logged in by checking for auth cookie
-    //     // this.checkLoginStatus();
-    //     await this.appwriteService.tryToLogin()
-    // }
 
     tryCollapseMenuOnBiggerScreens() {
         if (window.innerWidth >= 992) {
@@ -90,9 +85,7 @@ export class AppComponent implements AfterViewInit {
     }
 
     toggleSidebar() {
-        // console.log('>>> AppComponent >>> toggleSidebar ')
         this.isOpen = !this.isOpen
-        // this.triggerResizeEvent()
         const app = document.querySelector('#sidebar-container')
         if (app) {
             if (app.classList.contains('is-collapsed'))
@@ -101,36 +94,4 @@ export class AppComponent implements AfterViewInit {
                 app.classList.add('is-collapsed')
         }
     }
-
-    // checkLoginStatus(): void {
-    //     const authToken = this.stateService.getCookie('authToken');
-    //     this.isLoggedIn = !!authToken;
-    // }
-    //
-    // async onLogin() {
-    //     // const currentUrl = window.location.href;
-    //     // window.location.href = `https://account.heigit.org/login?redirect=${encodeURIComponent(currentUrl)}`;
-    //     await this.appwriteService.tryToLogin()
-    // }
-    //
-    // handleLoginCallback(token: string): void {
-    //     // Set the auth token cookie (expires in 7 days)
-    //     this.stateService.setCookie('authToken', token, 7);
-    //     this.isLoggedIn = true;
-    //
-    // }
-    //
-    // onSignOut(): void {
-    //     // Delete the auth cookie
-    //     this.stateService.deleteCookie('authToken');
-    //     this.isLoggedIn = false;
-    //
-    //     // this.router.navigate(['/']);
-    // }
-    //
-    //
-    // onSignup() {
-    //     const currentUrl = window.location.href;
-    //     window.location.href = `https://account.heigit.org/signup?redirect=${encodeURIComponent(currentUrl)}`;
-    // }
 }

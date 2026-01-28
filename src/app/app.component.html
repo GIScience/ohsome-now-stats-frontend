@@ -9,12 +9,12 @@
         <div class="peers ai-c fxw-nw">
           <div class="peer peer-greed">
             <a class="sidebar-link td-n" href="https://heigit.org/technology/#osm-data"
-               target="_blank" rel="noopener">
+              target="_blank" rel="noopener">
               <div class="peers ai-c fxw-nw">
                 <div class="peer">
                   <div class="logo pt-3 px-1">
                     <img src="assets/images/HeiGIT_Logo_compact_transparent.svg"
-                         alt="Heidelberg Institute for Geoinformation Technology">
+                      alt="Heidelberg Institute for Geoinformation Technology">
                   </div>
                 </div>
               </div>
@@ -34,7 +34,7 @@
       <ul class="sidebar-menu scrollable pos-r">
         <li class="nav-item mT-30 activated" [ngClass]="page === 'dashboard' ? 'active' : ''">
           <a class="sidebar-link" [routerLink]="['/dashboard']" data-bs-toggle="tooltip" #tooltip
-             data-bs-placement="right" [attr.data-bs-title]="'Dashboard'">
+            data-bs-placement="right" [attr.data-bs-title]="'Dashboard'">
             <span class="icon-holder">
               <i class="c-blue-500 ti-home"></i>
             </span>
@@ -43,29 +43,39 @@
         </li>
         <li class="nav-item" [ngClass]="page === 'hotosm' ? 'active' : ''">
           <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-             [routerLink]="['/dashboard/hotosm']" data-bs-toggle="tooltip" [attr.data-bs-title]="'HOT Mode'"
-             data-bs-placement="right" #tooltip>
+            [routerLink]="['/dashboard/hotosm']" data-bs-toggle="tooltip" [attr.data-bs-title]="'HOT Mode'"
+            data-bs-placement="right" #tooltip>
             <div class="icon-holder" style="cursor: pointer">
               <img alt="HOT"
-                   src="assets/images/hot_logo.png"
-                   style="height: 20px">
+                src="assets/images/hot_logo.png"
+                style="height: 20px">
             </div>
             <span class="title">HOT View</span>
           </a>
         </li>
         <li class="nav-item" [ngClass]="page === 'live' ? 'active' : ''">
           <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-             [routerLink]="['/dashboard/live']" data-bs-toggle="tooltip" [attr.data-bs-title]="'Live Mode'"
-             data-bs-placement="right" #tooltip>
+            [routerLink]="['/dashboard/live']" data-bs-toggle="tooltip" [attr.data-bs-title]="'Live Mode'"
+            data-bs-placement="right" #tooltip>
             <div class="icon-holder" style="cursor: pointer">
               <img alt="Live Mode" src="assets/images/live.png" style="height: 20px">
             </div>
             <span class="title">Live View</span>
           </a>
         </li>
+        <li class="nav-item" [ngClass]="page === 'user-dashboard' ? 'active' : ''">
+          <a class="sidebar-link flex-row" style="display:flex; height: 45px"
+            [routerLink]="['/user-dashboard']" data-bs-toggle="tooltip" [attr.data-bs-title]="'User Dashboard'"
+            data-bs-placement="right" #tooltip>
+            <div class="icon-holder" style="cursor: pointer">
+              <img alt="User Dashboard" src="assets/images/user.png" style="height: 20px">
+            </div>
+            <span class="title">User View</span>
+          </a>
+        </li>
         <li class="nav-item" [ngClass]="page === 'about' ? 'active' : ''">
           <a class='sidebar-link' [routerLink]="['/about']" data-bs-toggle="tooltip" data-bs-placement="right"
-             [attr.data-bs-title]="'About'" #tooltip>
+            [attr.data-bs-title]="'About'" #tooltip>
             <span class="icon-holder">
               <i class="c-deep-orange-500 ti-info"></i>
             </span>
@@ -74,7 +84,7 @@
         </li>
         <li class="nav-item" [ngClass]="page === 'help' ? 'active' : ''">
           <a class='sidebar-link' [routerLink]="['/help']" data-bs-toggle="tooltip" data-bs-placement="right"
-             [attr.data-bs-title]="'Help'" #tooltip>
+            [attr.data-bs-title]="'Help'" #tooltip>
             <span class="icon-holder">
               <i class="c-indigo-500 ti-help-alt"></i>
             </span>
@@ -99,22 +109,33 @@
           <li>
             <a href="/">
               <img class="h-1r h-3/2r@sm h-2r@md h-2r@lg h-5/2r@xl+"
-                   src="assets/images/ohsomeNowStats_logo.svg" alt="ohsome now stats">
+                src="assets/images/ohsomeNowStats_logo.svg" alt="ohsome now stats">
             </a>
           </li>
         </ul>
         <ul class="nav-right">
-          <!-- user related -->
-          @if (live) {
-              <div class="mR-10 pt-2 px-1">
-                  <img src="assets/images/live.png" class="h-3r"
-                       alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
-              </div>
-          }
-          <!-- User dropdown for logged in users -->
-            <div class="mR-10 p-10">
-                <app-account></app-account>
+          @if (live()) {
+            <div class="mR-10 pt-2 px-1">
+              <img src="assets/images/live.png" class="h-3r"
+                alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
             </div>
+          }
+          <div class="mR-10 pt-2 px-1">
+            @if (authService.isAnon()) {
+              <button nz-button nzType="text" nzSize="large" nzShape="round" (click)="authService.login()">
+                <nz-icon nzType="login"/>
+                Login
+              </button>
+            } @else {
+              <button nz-button nzType="text" nzSize="large" nzShape="round" (click)="authService.profile()">
+                <nz-icon nzType="user"/>
+              </button>
+              <button nz-button nzType="text" nzSize="large" nzShape="round" (click)="authService.logout()">
+                <nz-icon nzType="logout"/>
+                Logout
+              </button>
+            }
+          </div>
         </ul>
       </div>
     </div>

@@ -1,15 +1,15 @@
 import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import {LiveQueryComponent} from './live-query.component';
-import {DataService} from '../../../data.service';
-import {ToastService} from 'src/app/toast.service';
-import {StateService} from '../../../state.service';
+import {DataService} from '../../../../lib/data.service';
+import {ToastService} from '../../../../lib/toast.service';
+import {StateService} from '../../../../lib/state.service';
 import {of} from 'rxjs';
 import {UTCToLocalConverterPipe} from '../pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from '@angular/router';
 import {NO_ERRORS_SCHEMA, signal} from '@angular/core';
 import dayjs from 'dayjs';
-import {IHashtags, IStateParams} from '../../types';
+import {IHashtags, IStateParams} from '../../../../lib/types';
 import {QueryComponent} from "../query.component";
 import {vi} from "vitest";
 

@@ -196,3 +196,7 @@ export interface ISelectionItem {
     name: string;
     value: string;
 }
+
+export interface Key extends Models.Row {
+    key: string;
+}

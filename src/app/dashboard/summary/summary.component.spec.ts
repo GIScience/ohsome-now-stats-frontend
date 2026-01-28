@@ -2,9 +2,9 @@ import {type MockedObject, vi} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
 import {SummaryComponent} from './summary.component';
-import {DataService} from '../../data.service';
-import {StateService} from '../../state.service';
-import {IStateParams, IWrappedStatsResult, StatsType} from '../types';
+import {DataService} from '../../../lib/data.service';
+import {StateService} from '../../../lib/state.service';
+import {IStateParams, IWrappedStatsResult, StatsType} from '../../../lib/types';
 import {Overlay} from '../../overlay.component';
 
 describe('SummaryComponent', () => {

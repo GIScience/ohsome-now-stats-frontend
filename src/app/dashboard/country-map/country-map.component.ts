@@ -1,11 +1,11 @@
 import {Component, computed, effect, ElementRef, NgZone, OnDestroy, OnInit, signal, ViewChild} from '@angular/core';
-import {StateService} from 'src/app/state.service';
+import {StateService} from '../../../lib/state.service';
 import {Overlay} from '../../overlay.component';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer, ScatterplotLayer} from '@deck.gl/layers';
-import {DataService} from '../../data.service';
-import {ICountryData, ICountryLocationData, IStateParams, StatsType} from '../types';
+import {DataService} from '../../../lib/data.service';
+import {ICountryData, ICountryLocationData, IStateParams, StatsType} from '../../../lib/types';
 import countryPlotPositions from '../../../assets/static/json/countryLabelpoint.json';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json";
 import {scalePow, scaleSqrt} from 'd3-scale';

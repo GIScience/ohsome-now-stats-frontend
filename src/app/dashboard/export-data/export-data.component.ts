@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
 import {download, generateCsv, mkConfig} from "export-to-csv";
-import {ICountryResult, IPlotResult, IStateParams, IStatsResult} from "../types";
-import {StateService} from "../../state.service";
-import {DataService} from "../../data.service";
+import {ICountryResult, IPlotResult, IStateParams, IStatsResult} from "../../../lib/types";
+import {StateService} from "../../../lib/state.service";
+import {DataService} from "../../../lib/data.service";
 
 @Component({
     selector: 'app-export-data',

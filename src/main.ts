@@ -10,8 +10,9 @@ import Aura from '@primeuix/themes/aura';
 import {AppComponent} from './app/app.component';
 import {routes} from './app/app-routing.module';
 
-import {DataService} from './app/data.service';
-import {ToastService} from './app/toast.service';
+import {DataService} from './lib/data.service';
+import {ToastService} from './lib/toast.service';
+import {AuthService} from './lib/auth.service';
 
 import {registerLocaleData} from '@angular/common';
 import en from '@angular/common/locales/en';
@@ -40,7 +41,12 @@ bootstrapApplication(AppComponent, {
 
         provideAppInitializer(() => {
             const dataService = inject(DataService);
-            return dataService.requestMetadata();
+            const authService = inject(AuthService);
+            console.log("tryToResolve")
+            return Promise.all(
+                [dataService.requestMetadata(),
+                    authService.initializeUser()]
+            );
         })
     ]
 }).catch(err => console.error(err));

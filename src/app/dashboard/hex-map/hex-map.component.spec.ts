@@ -1,8 +1,8 @@
 import {type MockedObject, vi} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {HexMapComponent} from './hex-map.component';
-import {DataService} from '../../data.service';
-import {StateService} from '../../state.service';
+import {DataService} from '../../../lib/data.service';
+import {StateService} from '../../../lib/state.service';
 import {of} from 'rxjs';
 import {Overlay} from '../../overlay.component';
 

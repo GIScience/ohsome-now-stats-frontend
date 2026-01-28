@@ -5,9 +5,9 @@ import {By} from '@angular/platform-browser';
 import {Overlay} from '../../overlay.component';
 
 import {TrendingHashtagsComponent} from './trending-hashtags.component';
-import {DataService} from '../../data.service';
-import {StateService} from '../../state.service';
-import {IHashtag, StatsType} from '../types';
+import {DataService} from '../../../lib/data.service';
+import {StateService} from '../../../lib/state.service';
+import {IHashtag, StatsType} from '../../../lib/types';
 
 describe('TrendingHashtagsComponent', () => {
     let component: TrendingHashtagsComponent;

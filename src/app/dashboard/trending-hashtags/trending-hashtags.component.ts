@@ -1,11 +1,11 @@
 import {Component, computed, effect, ElementRef, QueryList, signal, ViewChildren} from '@angular/core';
 
-import {DataService} from '../../data.service';
+import {DataService} from '../../../lib/data.service';
 import {dashboard} from '../tooltip-data';
-import {IHashtag} from "../types";
-import {StateService} from "../../state.service";
+import {IHashtag} from "../../../lib/types";
+import {StateService} from "../../../lib/state.service";
 import {Overlay} from '../../overlay.component';
-import {enableTooltips} from "../../utils";
+import {enableTooltips} from "../../../lib/utils";
 
 @Component({
     selector: 'app-trending-hashtags',

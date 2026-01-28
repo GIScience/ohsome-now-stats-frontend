@@ -1,8 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {DashboardComponent} from './dashboard.component';
+import {DefaultDashboardComponent} from './default-dashboard.component';
 import {Component} from "@angular/core";
-import {StateService} from "../state.service";
+import {StateService} from "../../../../lib/state.service";
 import {of} from "rxjs";
 
 // Mock child components
@@ -63,8 +63,8 @@ class MockCountryMapComponent {
 }
 
 describe('DashboardComponent', () => {
-    let component: DashboardComponent;
-    let fixture: ComponentFixture<DashboardComponent>;
+    let component: DefaultDashboardComponent;
+    let fixture: ComponentFixture<DefaultDashboardComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -77,13 +77,13 @@ describe('DashboardComponent', () => {
                 MockMapComponent,
                 MockHexMapComponent,
                 MockCountryMapComponent,
-                DashboardComponent
+                DefaultDashboardComponent
             ],
             providers: [{provide: StateService, useValue: {activePage: of(null)}}]
         })
             .compileComponents();
 
-        fixture = TestBed.createComponent(DashboardComponent);
+        fixture = TestBed.createComponent(DefaultDashboardComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
