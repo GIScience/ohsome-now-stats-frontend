@@ -114,28 +114,32 @@
           </li>
         </ul>
         <ul class="nav-right">
-          @if (live()) {
-            <div class="mR-10 pt-2 px-1">
-              <img src="assets/images/live.png" class="h-3r"
-                alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
-            </div>
-          }
-          <div class="mR-10 pt-2 px-1">
-            @if (authService.isAnon()) {
-              <button nz-button nzType="text" nzSize="large" nzShape="round" (click)="authService.login()">
-                <nz-icon nzType="login"/>
-                Login
-              </button>
-            } @else {
-              <button nz-button nzType="text" nzSize="large" nzShape="round" (click)="authService.profile()">
-                <nz-icon nzType="user"/>
-              </button>
-              <button nz-button nzType="text" nzSize="large" nzShape="round" (click)="authService.logout()">
-                <nz-icon nzType="logout"/>
-                Logout
-              </button>
+          <li>
+            @if (live()) {
+              <div class="pt-2 px-1">
+                <img src="assets/images/live.png" class="h-3r"
+                  alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
+              </div>
             }
-          </div>
+          </li>
+          <li>
+            <div class="mR-10 pt-2 px-1">
+              @if (authService.isAnon()) {
+                <button nz-button nzType="text" nzSize="large" nzShape="round" (click)="authService.login()">
+                  <nz-icon nzType="login"/>
+                  Login
+                </button>
+              } @else {
+                <button nz-button nzType="text" nzSize="large" nzShape="round" (click)="authService.profile()">
+                  <nz-icon nzType="user"/>
+                </button>
+                <button nz-button nzType="text" nzSize="large" nzShape="round" (click)="authService.logout()">
+                  <nz-icon nzType="logout"/>
+                  Logout
+                </button>
+              }
+            </div>
+          </li>
         </ul>
       </div>
     </div>
