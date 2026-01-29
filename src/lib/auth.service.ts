@@ -57,7 +57,8 @@ export class AuthService {
     }
 
     login() {
-
+        const currentUrl = window.location.href;
+        window.location.href = `${environment.accountFrontendUrl}/login?redirect=${encodeURIComponent(currentUrl)}`;
     }
 
     profile() {
