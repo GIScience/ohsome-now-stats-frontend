@@ -1,5 +1,5 @@
-import {Component, computed, effect, signal} from '@angular/core';
-import {IQueryParams, ITopicDefinitionValue, StatsType} from "../../../lib/types";
+import {Component, computed, effect, inject, Input, signal} from '@angular/core';
+import {IQueryParams, ITopicDefinitionValue, IUserSummaryRequest, StatsType} from "../../../lib/types";
 import {StateService} from "../../../lib/state.service";
 import {DataService} from "../../../lib/data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
@@ -13,6 +13,10 @@ import {Overlay} from "../../overlay.component";
     imports: [Overlay, BigNumberComponent]
 })
 export class SummaryComponent {
+    private stateService: StateService = inject(StateService);
+    private dataService: DataService = inject(DataService);
+
+    osmUsername = 'mrKhan';
     bignumberData = signal<ITopicDefinitionValue[]>([]);
     isSummaryLoading = signal(false);
 
@@ -29,13 +33,15 @@ export class SummaryComponent {
                 a.topics === b.topics
         }
     );
+    @Input() isAnon: boolean = true;
 
-    constructor(
-        private stateService: StateService,
-        private dataService: DataService
-    ) {
+    constructor() {
         effect(() => {
-            this.requestFromAPI(this.relevantState());
+            if(this.isAnon) {
+                this.requestFromAPI(this.relevantState());
+            } else {
+                this.requestUserSummary(this.relevantState());
+            }
         });
     }
 
@@ -43,6 +49,31 @@ export class SummaryComponent {
         this.isSummaryLoading.set(true);
         // todo: if we are in user dashboard, request user endpoint instead
         this.dataService.requestSummary(queryParams).subscribe({
+            next: (data) => {
+                const topics = data.result.topics;
+
+                const result: ITopicDefinitionValue[] = [];
+
+                for (const [key, value] of Object.entries(topics)) {
+                    result.push({...value, ...topicDefinitions[key as StatsType]});
+                }
+
+                this.bignumberData.set(result);
+                this.isSummaryLoading.set(false);
+            },
+            error: err => {
+                console.error(err);
+                this.isSummaryLoading.set(false);
+            }
+        });
+        }
+
+    requestUserSummary(params: IQueryParams) {
+        const queryParams: IUserSummaryRequest = {
+            userId: this.osmUsername,
+            topics: params.topics,
+        }
+        this.dataService.requestUserSummary(queryParams).subscribe({
             next: (data) => {
                 const topics = data.result.topics;
 

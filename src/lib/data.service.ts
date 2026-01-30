@@ -1,4 +1,4 @@
-import {Injectable, signal} from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, catchError, firstValueFrom, map, Observable, retry, tap, throwError} from 'rxjs';
 
@@ -9,7 +9,7 @@ import {
     IMetaData,
     IMetadataResponse,
     IQueryParams,
-    ITrendingHashtagResponse,
+    ITrendingHashtagResponse, IUserSummaryRequest,
     IWrappedCountryResult,
     IWrappedPlotResult,
     IWrappedStatsResult
@@ -20,7 +20,9 @@ import {AuthService} from "./auth.service";
 @Injectable({providedIn: 'root'})
 export class DataService {
 
+    private http = inject(HttpClient);
     url = environment.ohsomeStatsServiceUrl
+    userStatUrl = environment.ohsomeUserStatsUrl
 
     trendingHashtagLimit = 10
     timeIntervals = [
@@ -116,5 +118,9 @@ export class DataService {
 
     toggleLiveMode(mode: boolean) {
         this.bsLive.next(mode)
+    }
+
+    requestUserSummary(params: IUserSummaryRequest) {
+        return this.http.get<IWrappedStatsResult>(`${this.userStatUrl}/stats/user?userId=${params.userId}&topics=${params.topics}`)
     }
 }

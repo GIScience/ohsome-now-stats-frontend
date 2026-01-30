@@ -1,9 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {StateService} from "../../../../lib/state.service";
 import {ExportDataComponent} from '../../export-data/export-data.component';
 import {SummaryComponent} from '../../summary/summary.component';
 import {UTCToLocalConverterPipe} from "../../query/pipes/utc-to-local-converter.pipe";
 import {UserQueryComponent} from "@app/dashboard/query/user-query/user-query.component";
+import {AuthService} from "../../../../lib/auth.service";
 
 @Component({
     selector: 'app-user-dashboard',
@@ -13,9 +14,11 @@ import {UserQueryComponent} from "@app/dashboard/query/user-query/user-query.com
     providers: [UTCToLocalConverterPipe]
 })
 export class UserDashboardComponent {
+    private stateService = inject(StateService);
+    authService = inject(AuthService);
     mode: string = '';
 
-    constructor(stateService: StateService) {
-        stateService.activePage.subscribe(page => this.mode = page!)
+    constructor() {
+        this.stateService.activePage.subscribe(page => this.mode = page!)
     }
 }
