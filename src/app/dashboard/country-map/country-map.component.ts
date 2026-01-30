@@ -1,4 +1,15 @@
-import {Component, computed, effect, ElementRef, NgZone, OnDestroy, OnInit, signal, ViewChild} from '@angular/core';
+import {
+    Component,
+    computed,
+    effect,
+    ElementRef,
+    inject,
+    NgZone,
+    OnDestroy,
+    OnInit,
+    signal,
+    ViewChild
+} from '@angular/core';
 import {StateService} from '../../../lib/state.service';
 import {Overlay} from '../../overlay.component';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
@@ -25,6 +36,9 @@ const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryC
 export class CountryMapComponent implements OnInit, OnDestroy {
 
     @ViewChild('deckContainer', {static: true}) deckContainer!: ElementRef;
+    private stateService: StateService = inject(StateService);
+    private dataService: DataService = inject(DataService);
+    private readonly ngZone: NgZone = inject(NgZone);
 
     isLoading = signal(false);
     enrichedCountryData = signal<ICountryLocationData[]>([]);
@@ -65,11 +79,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
 
     deck!: Deck<MapView>;
 
-    constructor(
-        private stateService: StateService,
-        private dataService: DataService,
-        private readonly ngZone: NgZone
-    ) {
+    constructor() {
         effect(() => {
             this.updateData(this.relevantState());
         });

@@ -4,7 +4,7 @@ import {StateService} from "../../../lib/state.service";
 import {DataService} from "../../../lib/data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {BigNumberComponent} from "./big-number/big-number.component";
-import {Overlay} from "../../overlay.component";
+import {Overlay} from "@app/overlay.component";
 
 @Component({
     selector: 'app-summary',

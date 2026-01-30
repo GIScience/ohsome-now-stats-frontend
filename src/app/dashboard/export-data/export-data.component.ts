@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {download, generateCsv, mkConfig} from "export-to-csv";
 import {ICountryResult, IPlotResult, IStateParams, IStatsResult} from "../../../lib/types";
 import {StateService} from "../../../lib/state.service";
@@ -10,15 +10,11 @@ import {DataService} from "../../../lib/data.service";
     styleUrl: './export-data.component.scss'
 })
 export class ExportDataComponent {
-
-    constructor(
-        private stateService: StateService,
-        private dataService: DataService
-    ) {
-    }
+    private stateService: StateService = inject(StateService);
+    private dataService: DataService = inject(DataService);
 
     exportOverview() {
-        let state = this.stateService.appState()
+        const state = this.stateService.appState()
         this.dataService.requestSummary(state).subscribe({
             next: (data) => {
                 this.prepareOverviewDataAndDownload(data.result, state)
@@ -82,7 +78,7 @@ export class ExportDataComponent {
             columnHeaders: arrangedHeaders
         });
 
-        let csvData = plotData.startDate.map((value, index) => {
+        const csvData = plotData.startDate.map((value, index) => {
             return {
                 startDate: value,
                 endDate: plotData.endDate[index],
@@ -124,7 +120,7 @@ export class ExportDataComponent {
             selectedCountryList.length === 0 || selectedCountryList.includes(country as string)
         )
 
-        let countryData = countries.map(country => {
+        const countryData = countries.map(country => {
             return {
                 startDate: state.start,
                 endDate: state.end,
