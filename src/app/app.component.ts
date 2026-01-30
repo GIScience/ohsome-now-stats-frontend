@@ -45,7 +45,6 @@ export class AppComponent implements AfterViewInit {
 
     constructor() {
         this.dataService.liveMode.subscribe(mode => {
-            console.log(mode)
             this.live.set(mode)
         })
         this.stateService.activePage.subscribe(page => {
