@@ -6,17 +6,17 @@
           <div class="mb-3 col-md-12">
             <div class="mb-3 row" style="--bs-gutter-x: 0px;">
               <div class="flex-row">
-                <label class="form-label" for="userName">User Name</label>
+                <label class="form-label" for="userId">OSM User ID</label>
                 <div style="margin-left: auto;">
                   <span class="icon-holder tooltip1" data-bs-placement="bottom"
                     data-bs-toggle="tooltip" #tooltip
-                    title="Filter stats by user name, e.g. Steve"
+                    title="Filter stats by OSM user id, e.g. 42"
                     data-bs-html="true">
                     <i class="c-grey-800 ti-help-alt"></i>
                   </span>
                 </div>
               </div>
-              <input class="p-inputtext" placeholder="OSM user name" [(ngModel)]="userName" name="userName">
+              <input class="p-inputtext" placeholder="OSM user id" [(ngModel)]="userID" name="userId">
             </div>
             <div class="mb-3 row">
               <div class="col-md-10">
