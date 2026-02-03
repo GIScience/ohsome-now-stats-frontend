@@ -6,16 +6,19 @@ import {environment} from "@environments/environment";
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
-    public user = signal<Models.User>({} as Models.User);
-    public key = signal<Key>({} as Key)
+    private _user = signal<Models.User>({} as Models.User);
+    public user = this._user.asReadonly()
+
+    private _key = signal<Key>({} as Key)
+    public key = this._key.asReadonly();
     public isAnon = signal<boolean>(true);
 
     async initializeUser() {
         return account.get()
             .then(async user => {
-                this.user.set(user);
+                this._user.set(user);
                 this.isAnon.set(user.email === "");
-                this.key.set(await this.getKey(!this.isAnon())
+                this._key.set(await this.getKey(!this.isAnon())
                     .catch(e => {
                         if (e.code === 404) {
                             this.logout()
@@ -32,7 +35,7 @@ export class AuthService {
                 } else {
                     // user is not logged in yet
                     await account.createAnonymousSession();
-                    this.user.set(await account.get());
+                    this._user.set(await account.get());
                     await functions.createExecution(
                         {
                             functionId: functionsList["link_on_user_creation_anonymous"],
@@ -42,13 +45,13 @@ export class AuthService {
                             })
                         }
                     );
-                    this.key.set(await this.getKey(false));
-                    return this.user;
+                    this._key.set(await this.getKey(false));
+                    return this._user;
                 }
             })
     }
 
-    async getKey(isFullUser: boolean) {
+    private async getKey(isFullUser: boolean) {
         return await tables.getRow({
             databaseId: "tyk_integration",
             tableId: isFullUser ? "basic_keys" : "anonymous_keys",
@@ -56,16 +59,16 @@ export class AuthService {
         }) as unknown as Key;
     }
 
-    login() {
+    public login() {
         const currentUrl = window.location.href;
         window.location.href = `${environment.accountFrontendUrl}/login?redirect=${encodeURIComponent(currentUrl)}`;
     }
 
-    profile() {
+    public profile() {
         window.location.replace(environment.accountFrontendUrl)
     }
 
-    async logout() {
+    public async logout() {
         await account.deleteSession({sessionId: 'current'})
         location.reload();
     }

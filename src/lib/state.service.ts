@@ -1,6 +1,5 @@
 import {effect, inject, Injectable, signal} from '@angular/core';
 import {IStateParams} from "./types";
-import {environment} from "@environments/environment";
 import {DataService} from "./data.service";
 import {NavigationEnd, Router} from "@angular/router";
 import dayjs from "dayjs";
@@ -17,7 +16,6 @@ export class StateService {
 
     // doing this to be able to mock window easily in tests
     window = window;
-    url = environment.ohsomeStatsServiceUrl
 
     private initialState = this.initInitialState()
 

@@ -15,6 +15,7 @@ import {
     IWrappedStatsResult
 } from "./types";
 import * as Papa from 'papaparse';
+import {AuthService} from "./auth.service";
 
 @Injectable({providedIn: 'root'})
 export class DataService {
@@ -37,9 +38,13 @@ export class DataService {
     private _metaData = signal<IMetaData>({max_timestamp: "", min_timestamp: ""})
     public metaData = this._metaData.asReadonly();
 
+    private key;
+
     constructor(
         private http: HttpClient,
+        private authService: AuthService
     ) {
+        this.key = authService.key;
     }
 
     requestMetadata() {
@@ -58,26 +63,26 @@ export class DataService {
     }
 
     requestAllHashtags() {
-        return this.http.get<any>(`${this.url}/hashtags`)
+        return this.http.get<any>(`${this.url}/hashtags`, {headers: {"Authorization": this.key().key}})
             .pipe(
                 map(res => res.result)
             )
     }
 
     requestSummary(params: IQueryParams): Observable<IWrappedStatsResult> {
-        return this.http.get<IWrappedStatsResult>(`${this.url}/stats?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`)
+        return this.http.get<IWrappedStatsResult>(`${this.url}/stats?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
     }
 
     requestPlot(params: IQueryParams): Observable<IWrappedPlotResult> {
-        return this.http.get<IWrappedPlotResult>(`${this.url}/stats/interval?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`)
+        return this.http.get<IWrappedPlotResult>(`${this.url}/stats/interval?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
     }
 
     requestCountryStats(params: any): Observable<IWrappedCountryResult> {
-        return this.http.get<IWrappedCountryResult>(`${this.url}/stats/country?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topics=${params.topics}`)
+        return this.http.get<IWrappedCountryResult>(`${this.url}/stats/country?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
     }
 
     getTrendingHashtags(params: { start?: string; end?: string; limit?: number; countries?: string; }) {
-        return this.http.get<ITrendingHashtagResponse>(`${this.url}/most-used-hashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}&countries=${params['countries']}`)
+        return this.http.get<ITrendingHashtagResponse>(`${this.url}/most-used-hashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}&countries=${params['countries']}`, {headers: {"Authorization": this.key().key}})
             .pipe(
                 map((response: ITrendingHashtagResponse) => {
                     return response!.result as Array<IHashtag>
@@ -95,7 +100,7 @@ export class DataService {
     }): Observable<HexDataType[]> {
         return this.http.get(
             `${this.url}/stats/h3?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topic=${params['topic']}&resolution=${params['resolution']}&countries=${params['countries']}`,
-            {responseType: 'text'}
+            {responseType: 'text', headers: {"Authorization": this.key().key}}
         ).pipe(
             map(csv => {
                 const parsed = Papa.parse(csv, {header: true, skipEmptyLines: true});
