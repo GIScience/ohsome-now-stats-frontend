@@ -108,6 +108,7 @@ export interface IQueryParams {
     interval: string
     countries: string
     topics: string
+    osm_user_id?: string
 }
 
 export interface IStateParams extends IQueryParams {

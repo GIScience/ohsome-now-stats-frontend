@@ -21,8 +21,8 @@ import {AuthService} from "./auth.service";
 export class DataService {
 
     private http = inject(HttpClient);
+    private authService = inject(AuthService);
     url = environment.ohsomeStatsServiceUrl
-    userStatUrl = environment.ohsomeUserStatsUrl
 
     trendingHashtagLimit = 10
     timeIntervals = [
@@ -42,11 +42,8 @@ export class DataService {
 
     private key;
 
-    constructor(
-        private http: HttpClient,
-        private authService: AuthService
-    ) {
-        this.key = authService.key;
+    constructor() {
+        this.key = this.authService.key;
     }
 
     requestMetadata() {
@@ -121,6 +118,8 @@ export class DataService {
     }
 
     requestUserSummary(params: IUserSummaryRequest) {
-        return this.http.get<IWrappedStatsResult>(`${this.userStatUrl}/stats/user?userId=${params.userId}&topics=${params.topics}`)
+        return this.http.get<IWrappedStatsResult>(
+            `${this.url}/user?userId=${params.userId}&topics=${params.topics}`,
+            {headers: {"Authorization": this.key().key}})
     }
 }

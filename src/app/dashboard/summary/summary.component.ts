@@ -16,7 +16,6 @@ export class SummaryComponent {
     private stateService: StateService = inject(StateService);
     private dataService: DataService = inject(DataService);
 
-    osmUsername = 'mrKhan';
     bignumberData = signal<ITopicDefinitionValue[]>([]);
     isSummaryLoading = signal(false);
 
@@ -48,29 +47,33 @@ export class SummaryComponent {
     requestFromAPI(queryParams: IQueryParams) {
         this.isSummaryLoading.set(true);
         // todo: if we are in user dashboard, request user endpoint instead
-        this.dataService.requestSummary(queryParams).subscribe({
-            next: (data) => {
-                const topics = data.result.topics;
+        if(!queryParams.osm_user_id) {
+            this.dataService.requestSummary(queryParams).subscribe({
+                next: (data) => {
+                    const topics = data.result.topics;
 
-                const result: ITopicDefinitionValue[] = [];
+                    const result: ITopicDefinitionValue[] = [];
 
-                for (const [key, value] of Object.entries(topics)) {
-                    result.push({...value, ...topicDefinitions[key as StatsType]});
+                    for (const [key, value] of Object.entries(topics)) {
+                        result.push({...value, ...topicDefinitions[key as StatsType]});
+                    }
+
+                    this.bignumberData.set(result);
+                    this.isSummaryLoading.set(false);
+                },
+                error: err => {
+                    console.error(err);
+                    this.isSummaryLoading.set(false);
                 }
-
-                this.bignumberData.set(result);
-                this.isSummaryLoading.set(false);
-            },
-            error: err => {
-                console.error(err);
-                this.isSummaryLoading.set(false);
-            }
-        });
+            });
+        } else {
+            this.requestUserSummary(queryParams)
+        }
         }
 
     requestUserSummary(params: IQueryParams) {
         const queryParams: IUserSummaryRequest = {
-            userId: this.osmUsername,
+            userId: params.osm_user_id!,
             topics: params.topics,
         }
         this.dataService.requestUserSummary(queryParams).subscribe({
