@@ -1,5 +1,5 @@
-import {Component, computed, effect, inject, Input, signal} from '@angular/core';
-import {IQueryParams, ITopicDefinitionValue, IUserSummaryRequest, StatsType} from "../../../lib/types";
+import {booleanAttribute, Component, computed, effect, inject, input, signal} from '@angular/core';
+import {IQueryParams, ITopicDefinitionValue, IWrappedStatsResult, StatsType} from "../../../lib/types";
 import {StateService} from "../../../lib/state.service";
 import {DataService} from "../../../lib/data.service";
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
@@ -32,52 +32,24 @@ export class SummaryComponent {
                 a.topics === b.topics
         }
     );
-    @Input() isAnon: boolean = true;
+    userMode = input(false, {transform: booleanAttribute});
 
     constructor() {
         effect(() => {
-            if(this.isAnon) {
-                this.requestFromAPI(this.relevantState());
-            } else {
-                this.requestUserSummary(this.relevantState());
-            }
+            this.requestFromAPI(this.relevantState());
         });
     }
 
     requestFromAPI(queryParams: IQueryParams) {
         this.isSummaryLoading.set(true);
-        // todo: if we are in user dashboard, request user endpoint instead
-        if(!queryParams.osm_user_id) {
-            this.dataService.requestSummary(queryParams).subscribe({
-                next: (data) => {
-                    const topics = data.result.topics;
+        this.userMode()
+            ? this.dataService.requestUserSummary(queryParams).subscribe(this.processResult())
+            : this.dataService.requestSummary(queryParams).subscribe(this.processResult());
+    }
 
-                    const result: ITopicDefinitionValue[] = [];
-
-                    for (const [key, value] of Object.entries(topics)) {
-                        result.push({...value, ...topicDefinitions[key as StatsType]});
-                    }
-
-                    this.bignumberData.set(result);
-                    this.isSummaryLoading.set(false);
-                },
-                error: err => {
-                    console.error(err);
-                    this.isSummaryLoading.set(false);
-                }
-            });
-        } else {
-            this.requestUserSummary(queryParams)
-        }
-        }
-
-    requestUserSummary(params: IQueryParams) {
-        const queryParams: IUserSummaryRequest = {
-            userId: params.osm_user_id!,
-            topics: params.topics,
-        }
-        this.dataService.requestUserSummary(queryParams).subscribe({
-            next: (data) => {
+    private processResult() {
+        return {
+            next: (data: IWrappedStatsResult) => {
                 const topics = data.result.topics;
 
                 const result: ITopicDefinitionValue[] = [];
@@ -89,11 +61,11 @@ export class SummaryComponent {
                 this.bignumberData.set(result);
                 this.isSummaryLoading.set(false);
             },
-            error: err => {
+            error: (err: Error) => {
                 console.error(err);
                 this.isSummaryLoading.set(false);
             }
-        });
+        };
     }
 
     changeSelectedBigNumber(e: MouseEvent, newCurrentStats: string) {

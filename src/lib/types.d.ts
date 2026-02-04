@@ -201,8 +201,3 @@ export interface ISelectionItem {
 export interface Key extends Models.Row {
     key: string;
 }
-
-export interface IUserSummaryRequest {
-    userId: string;
-    topics: string;
-}

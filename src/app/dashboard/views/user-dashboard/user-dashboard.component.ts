@@ -4,7 +4,6 @@ import {ExportDataComponent} from '../../export-data/export-data.component';
 import {SummaryComponent} from '../../summary/summary.component';
 import {UTCToLocalConverterPipe} from "../../query/pipes/utc-to-local-converter.pipe";
 import {UserQueryComponent} from "@app/dashboard/query/user-query/user-query.component";
-import {AuthService} from "../../../../lib/auth.service";
 
 @Component({
     selector: 'app-user-dashboard',
@@ -15,7 +14,6 @@ import {AuthService} from "../../../../lib/auth.service";
 })
 export class UserDashboardComponent {
     private stateService = inject(StateService);
-    authService = inject(AuthService);
     mode: string = '';
 
     constructor() {

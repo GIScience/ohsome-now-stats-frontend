@@ -9,7 +9,7 @@ import {
     IMetaData,
     IMetadataResponse,
     IQueryParams,
-    ITrendingHashtagResponse, IUserSummaryRequest,
+    ITrendingHashtagResponse,
     IWrappedCountryResult,
     IWrappedPlotResult,
     IWrappedStatsResult
@@ -69,6 +69,10 @@ export class DataService {
     }
 
     requestSummary(params: IQueryParams): Observable<IWrappedStatsResult> {
+        console.log(params)
+        const url = `${this.url}/stats?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`
+        console.log(url)
+
         return this.http.get<IWrappedStatsResult>(`${this.url}/stats?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
     }
 
@@ -117,9 +121,9 @@ export class DataService {
         this.bsLive.next(mode)
     }
 
-    requestUserSummary(params: IUserSummaryRequest) {
+    requestUserSummary(params: IQueryParams) {
         return this.http.get<IWrappedStatsResult>(
-            `${this.url}/user?userId=${params.userId}&topics=${params.topics}`,
+            `${this.url}/user?userId=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`,
             {headers: {"Authorization": this.key().key}})
     }
 }
