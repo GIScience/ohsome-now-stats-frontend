@@ -1,9 +1,11 @@
 import {
+    booleanAttribute,
     Component,
     computed,
     effect,
     ElementRef,
     inject,
+    input,
     NgZone,
     OnDestroy,
     OnInit,
@@ -78,6 +80,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     });
 
     deck!: Deck<MapView>;
+    userMode = input(false, {transform: booleanAttribute});
 
     constructor() {
         effect(() => {
@@ -101,25 +104,34 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     }
 
     updateData(state: IStateParams) {
+        const isUserMode = this.userMode();
         const reqParams = {
             hashtag: state.hashtag,
             start: state.start,
             end: state.end,
             topics: state.active_topic,
-        }
+            ...(!isUserMode ? {} : { osm_user_id: state.osm_user_id }),
+        };
 
         this.isLoading.set(true);
-        this.dataService.requestCountryStats(reqParams).subscribe({
-            next: (res) => {
+        (isUserMode
+                ? this.dataService.requestUserCountryStats(reqParams)
+                : this.dataService.requestCountryStats(reqParams)
+        ).subscribe(this.handleResponse());
+    }
+
+    private handleResponse() {
+        return {
+            next: (res: any) => {
                 const countryData: ICountryData[] = res.result.topics[this.activeTopic()];
                 this.enrichedCountryData.set(this.enrichCountryDataWithPlotPositions(countryData));
                 this.isLoading.set(false);
             },
-            error: (err) => {
+            error: (err: Error) => {
                 console.log(err);
                 this.isLoading.set(false);
             }
-        })
+        }
     }
 
     /**

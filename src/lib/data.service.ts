@@ -90,6 +90,10 @@ export class DataService {
         return this.http.get<IWrappedCountryResult>(`${this.url}/stats/country?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
     }
 
+    requestUserCountryStats(params: any): Observable<IWrappedCountryResult> {
+        return this.http.get<IWrappedCountryResult>(`${this.url}/user/country?userId=${params.osm_user_id}&hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
+    }
+
     getTrendingHashtags(params: { start?: string; end?: string; limit?: number; countries?: string; }) {
         return this.http.get<ITrendingHashtagResponse>(`${this.url}/most-used-hashtags?startdate=${params['start']}&enddate=${params['end']}&limit=${params['limit']}&countries=${params['countries']}`, {headers: {"Authorization": this.key().key}})
             .pipe(
