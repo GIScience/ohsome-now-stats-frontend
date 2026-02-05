@@ -1,4 +1,16 @@
-import {Component, computed, effect, ElementRef, NgZone, OnDestroy, signal, viewChild} from '@angular/core';
+import {
+    booleanAttribute,
+    Component,
+    computed,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    NgZone,
+    OnDestroy,
+    signal,
+    viewChild
+} from '@angular/core';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {H3HexagonLayer, H3HexagonLayerProps, TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
@@ -21,6 +33,12 @@ import {firstValueFrom} from "rxjs";
     imports: [Overlay, HexMapLegendComponent]
 })
 export class HexMapComponent implements OnDestroy {
+
+    private stateService = inject(StateService);
+    private dataService = inject(DataService);
+    private toastService = inject(ToastService);
+    private readonly ngZone = inject(NgZone);
+
     deckContainer = viewChild<ElementRef>('deckContainer');
 
     isH3Loading = signal(false);
@@ -50,6 +68,7 @@ export class HexMapComponent implements OnDestroy {
     deck!: Deck<MapView>;
     private layer!: H3HexagonLayer<HexDataType>;
     private readonly MAX_HEX_CELL = 314_000;
+    userMode = input(false, {transform: booleanAttribute});
 
     // Fixed TileLayer configuration
     private readonly osmLayer = new TileLayer({
@@ -73,11 +92,7 @@ export class HexMapComponent implements OnDestroy {
         },
     });
 
-    constructor(
-        private stateService: StateService,
-        private dataService: DataService,
-        private toastService: ToastService,
-        private readonly ngZone: NgZone) {
+    constructor() {
         effect(() => {
             const container = this.deckContainer()?.nativeElement;
             if (!container || this.deck) return;
@@ -112,7 +127,8 @@ export class HexMapComponent implements OnDestroy {
                 end: state.end,
                 countries: state.countries,
                 topic: state.active_topic,
-                resolution: 3
+                resolution: 3,
+                ...(!this.userMode() ? {} : { osm_user_id: state.osm_user_id }),
             });
         })
     }
@@ -129,6 +145,7 @@ export class HexMapComponent implements OnDestroy {
         countries: string;
         topic: string;
         resolution: number;
+        osm_user_id?: string;
     }) {
         this.layer = await this.createCountryLayer(reqParams);
         this.deck.setProps({
@@ -139,7 +156,7 @@ export class HexMapComponent implements OnDestroy {
     }
 
     async createCountryLayer(
-        params: { hashtag: string, start: string, end: string, topic: string, resolution: number, countries: string },
+        params: { hashtag: string, start: string, end: string, topic: string, resolution: number, countries: string, osm_user_id?: string },
         options?: Partial<H3HexagonLayerProps<HexDataType>>,
     ): Promise<H3HexagonLayer<HexDataType>> {
         this.isH3Loading.set(true);
@@ -147,7 +164,10 @@ export class HexMapComponent implements OnDestroy {
         let result;
         try {
             result = await firstValueFrom(
-                this.dataService.getH3Map(params)
+                (this.userMode() && params.osm_user_id
+                        ? this.dataService.getUserH3Map(params)
+                        : this.dataService.getH3Map(params)
+                )
             );
         } catch (e: any) {
             console.error('Error getting HexMap data from API ', e);

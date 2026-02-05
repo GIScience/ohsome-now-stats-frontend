@@ -18,7 +18,7 @@ import {StatsType} from "../../../../lib/types";
     providers: []
 })
 export class UserQueryComponent extends QueryComponent {
-    userID: string = "6687852";
+    userID: string = "115612";
 
     constructor() {
         super();

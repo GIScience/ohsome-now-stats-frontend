@@ -6,12 +6,13 @@ import {UTCToLocalConverterPipe} from "../../query/pipes/utc-to-local-converter.
 import {UserQueryComponent} from "@app/dashboard/query/user-query/user-query.component";
 import {PlotComponent} from "@app/dashboard/plot/plot.component";
 import {CountryMapComponent} from "@app/dashboard/country-map/country-map.component";
+import {HexMapComponent} from "@app/dashboard/hex-map/hex-map.component";
 
 @Component({
     selector: 'app-user-dashboard',
     templateUrl: './user-dashboard.component.html',
     styleUrls: ['./user-dashboard.component.scss'],
-    imports: [ExportDataComponent, SummaryComponent, UserQueryComponent, PlotComponent, CountryMapComponent],
+    imports: [ExportDataComponent, SummaryComponent, UserQueryComponent, PlotComponent, CountryMapComponent, HexMapComponent],
     providers: [UTCToLocalConverterPipe]
 })
 export class UserDashboardComponent {

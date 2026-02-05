@@ -127,6 +127,31 @@ export class DataService {
         );
     }
 
+    getUserH3Map(params: {
+        hashtag: string,
+        start: string,
+        end: string,
+        topic: string,
+        resolution: number,
+        countries: string,
+        osm_user_id?: string
+    }): Observable<HexDataType[]> {
+        return this.http.get(
+            `${this.url}/user/h3?userId=${params.osm_user_id}&hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topic=${params['topic']}&resolution=${params['resolution']}&countries=${params['countries']}`,
+            {responseType: 'text', headers: {"Authorization": this.key().key}}
+        ).pipe(
+            map(csv => {
+                const parsed = Papa.parse(csv, {header: true, skipEmptyLines: true});
+                // parsed is of type ParseResult<any>
+                // parsed.data is the array of rows
+                return (parsed.data as any[]).map(row => ({
+                    result: Number(row.result),
+                    hex_cell: row.hex_cell
+                }));
+            })
+        );
+    }
+
     toggleLiveMode(mode: boolean) {
         this.bsLive.next(mode)
     }
