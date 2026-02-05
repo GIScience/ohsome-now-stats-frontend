@@ -1,4 +1,4 @@
-import {booleanAttribute, Component, computed, effect, input, signal} from '@angular/core';
+import {booleanAttribute, Component, computed, effect, inject, input, signal} from '@angular/core';
 
 import * as PlotlyJS from 'plotly.js-basic-dist-min';
 import {Config, Layout} from 'plotly.js-basic-dist-min';
@@ -25,6 +25,10 @@ PlotlyModule.forRoot(PlotlyJS)
     imports: [Overlay, PlotlyComponent,]
 })
 export class PlotComponent {
+
+    private stateService: StateService = inject(StateService);
+    private dataService: DataService = inject(DataService);
+    private utcToLocalConverter: UTCToLocalConverterPipe = inject(UTCToLocalConverterPipe);
 
     data = signal<IPlotResult | null>(null);
     activeTopic = signal<StatsType | null>(null);
@@ -81,12 +85,7 @@ export class PlotComponent {
     }
     userMode = input(false, {transform: booleanAttribute});
 
-    constructor(
-        private stateService: StateService,
-        private dataService: DataService,
-        private utcToLocalConverter: UTCToLocalConverterPipe
-    ) {
-
+    constructor() {
         // Overall Effect for calling API
         effect(() => {
             this.activeTopic.set(this.relevantState().active_topic)
