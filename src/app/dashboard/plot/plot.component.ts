@@ -100,9 +100,10 @@ export class PlotComponent {
 
     private fetchPlotData(state: IQueryParams) {
         this.isPlotsLoading.set(true);
-        this.userMode()
-            ? this.dataService.requestUserPlot(state).subscribe(this.handleResponse())
-            : this.dataService.requestPlot(state).subscribe(this.handleResponse());
+        (this.userMode()
+            ? this.dataService.requestUserPlot(state)
+            : this.dataService.requestPlot(state)
+        ).subscribe(this.handleResponse());
     }
 
     private handleResponse() {
