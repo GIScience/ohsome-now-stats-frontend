@@ -69,15 +69,21 @@ export class DataService {
     }
 
     requestSummary(params: IQueryParams): Observable<IWrappedStatsResult> {
-        console.log(params)
-        const url = `${this.url}/stats?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`
-        console.log(url)
-
         return this.http.get<IWrappedStatsResult>(`${this.url}/stats?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
+    }
+
+    requestUserSummary(params: IQueryParams) {
+        return this.http.get<IWrappedStatsResult>(
+            `${this.url}/user?userId=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`,
+            {headers: {"Authorization": this.key().key}})
     }
 
     requestPlot(params: IQueryParams): Observable<IWrappedPlotResult> {
         return this.http.get<IWrappedPlotResult>(`${this.url}/stats/interval?hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
+    }
+
+    requestUserPlot(params: IQueryParams): Observable<IWrappedPlotResult> {
+        return this.http.get<IWrappedPlotResult>(`${this.url}/user/interval?userId=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
     }
 
     requestCountryStats(params: any): Observable<IWrappedCountryResult> {
@@ -121,9 +127,4 @@ export class DataService {
         this.bsLive.next(mode)
     }
 
-    requestUserSummary(params: IQueryParams) {
-        return this.http.get<IWrappedStatsResult>(
-            `${this.url}/user?userId=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`,
-            {headers: {"Authorization": this.key().key}})
-    }
 }

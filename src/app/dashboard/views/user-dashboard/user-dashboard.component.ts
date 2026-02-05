@@ -4,12 +4,13 @@ import {ExportDataComponent} from '../../export-data/export-data.component';
 import {SummaryComponent} from '../../summary/summary.component';
 import {UTCToLocalConverterPipe} from "../../query/pipes/utc-to-local-converter.pipe";
 import {UserQueryComponent} from "@app/dashboard/query/user-query/user-query.component";
+import {PlotComponent} from "@app/dashboard/plot/plot.component";
 
 @Component({
     selector: 'app-user-dashboard',
     templateUrl: './user-dashboard.component.html',
     styleUrls: ['./user-dashboard.component.scss'],
-    imports: [ExportDataComponent, SummaryComponent, UserQueryComponent],
+    imports: [ExportDataComponent, SummaryComponent, UserQueryComponent, PlotComponent],
     providers: [UTCToLocalConverterPipe]
 })
 export class UserDashboardComponent {

@@ -1,4 +1,4 @@
-import {Component, computed, effect, signal} from '@angular/core';
+import {booleanAttribute, Component, computed, effect, input, signal} from '@angular/core';
 
 import * as PlotlyJS from 'plotly.js-basic-dist-min';
 import {Config, Layout} from 'plotly.js-basic-dist-min';
@@ -79,6 +79,7 @@ export class PlotComponent {
                 click: this.fitToContent()
             }]
     }
+    userMode = input(false, {transform: booleanAttribute});
 
     constructor(
         private stateService: StateService,
@@ -100,8 +101,14 @@ export class PlotComponent {
 
     private fetchPlotData(state: IQueryParams) {
         this.isPlotsLoading.set(true);
-        this.dataService.requestPlot(state).subscribe({
-            next: (res) => {
+        this.userMode()
+            ? this.dataService.requestUserPlot(state).subscribe(this.handleResponse())
+            : this.dataService.requestPlot(state).subscribe(this.handleResponse());
+    }
+
+    private handleResponse() {
+        return {
+            next: (res: any) => {
                 this.data.set(res.result);
                 this.isPlotsLoading.set(false);
 
@@ -111,10 +118,10 @@ export class PlotComponent {
                     this.resetZoom();
                 }
             },
-            error: (err) => {
+            error: (err: Error) => {
                 console.error('Error while requesting Plot data  ', err)
             }
-        });
+        }
     }
 
     plotData = computed(() => {
