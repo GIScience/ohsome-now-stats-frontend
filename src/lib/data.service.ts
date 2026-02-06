@@ -103,52 +103,36 @@ export class DataService {
             )
     }
 
-    getH3Map(params: {
-        hashtag: string,
-        start: string,
-        end: string,
-        topic: string,
-        resolution: number,
-        countries: string
-    }): Observable<HexDataType[]> {
-        return this.http.get(
-            `${this.url}/stats/h3?hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topic=${params['topic']}&resolution=${params['resolution']}&countries=${params['countries']}`,
-            {responseType: 'text', headers: {"Authorization": this.key().key}}
-        ).pipe(
-            map(csv => {
-                const parsed = Papa.parse(csv, {header: true, skipEmptyLines: true});
-                // parsed is of type ParseResult<any>
-                // parsed.data is the array of rows
-                return (parsed.data as any[]).map(row => ({
-                    result: Number(row.result),
-                    hex_cell: row.hex_cell
-                }));
-            })
-        );
-    }
+    private readonly h3Parser = (csv: string): HexDataType[] => {
+        const parsed = Papa.parse(csv, { header: true, skipEmptyLines: true });
+        return (parsed.data as any[]).map(row => ({
+            result: Number(row.result),
+            hex_cell: row.hex_cell
+        }));
+    };
 
-    getUserH3Map(params: {
-        hashtag: string,
-        start: string,
-        end: string,
-        topic: string,
-        resolution: number,
-        countries: string,
-        osm_user_id?: string
+    getH3Map(params: {
+        hashtag: string;
+        start: string;
+        end: string;
+        topic: string;
+        resolution: number;
+        countries: string;
+        osm_user_id?: string;
     }): Observable<HexDataType[]> {
+
+        const isUserQuery = !!params.osm_user_id;
+        const endpoint = isUserQuery ? '/user/h3' : '/stats/h3';
+
+        let reqParamUrl = `hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topic=${params['topic']}&resolution=${params['resolution']}&countries=${params['countries']}`
+        if (isUserQuery) {
+            reqParamUrl = `userId=${params.osm_user_id}&${reqParamUrl}`
+        }
         return this.http.get(
-            `${this.url}/user/h3?userId=${params.osm_user_id}&hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topic=${params['topic']}&resolution=${params['resolution']}&countries=${params['countries']}`,
+            `${this.url}${endpoint}?${reqParamUrl}`,
             {responseType: 'text', headers: {"Authorization": this.key().key}}
         ).pipe(
-            map(csv => {
-                const parsed = Papa.parse(csv, {header: true, skipEmptyLines: true});
-                // parsed is of type ParseResult<any>
-                // parsed.data is the array of rows
-                return (parsed.data as any[]).map(row => ({
-                    result: Number(row.result),
-                    hex_cell: row.hex_cell
-                }));
-            })
+            map(csv => this.h3Parser(csv))
         );
     }
 

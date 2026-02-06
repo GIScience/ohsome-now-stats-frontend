@@ -51,7 +51,6 @@ export class HexMapComponent implements OnDestroy {
     showResolutionToggle = computed(() => this.canToggleResolution());
     isHighResolution = computed(() => this.currentResolution() === 6);
 
-
     private relevantState = computed((): IStateParams => {
         return this.stateService.appState()
     }, {
@@ -164,9 +163,8 @@ export class HexMapComponent implements OnDestroy {
         let result;
         try {
             result = await firstValueFrom(
-                (this.userMode() && params.osm_user_id
-                        ? this.dataService.getUserH3Map(params)
-                        : this.dataService.getH3Map(params)
+                this.dataService.getH3Map(
+                    this.userMode() ? params : { ...params, osm_user_id: undefined }
                 )
             );
         } catch (e: any) {
