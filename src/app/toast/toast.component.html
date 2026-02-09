@@ -7,8 +7,7 @@
       <!-- <small>11 mins ago</small> -->
       <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" (click)="hideToast()"></button>
     </div>
-    <div class="toast-body">
-      {{body}}
+    <div class="toast-body" [innerHTML]="body">
     </div>
   </div>
 </div>

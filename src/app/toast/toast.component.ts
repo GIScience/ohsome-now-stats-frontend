@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 
 import {IToastUI, ToastService} from '../../lib/toast.service';
 import {ToastTypes} from './toasttypes.modal';
 import {NgClass} from '@angular/common';
+import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-toast',
@@ -12,15 +13,18 @@ import {NgClass} from '@angular/common';
     imports: [NgClass]
 })
 export class ToastComponent implements OnInit {
+
+    private toastService: ToastService = inject(ToastService);
+    private sanitizer: DomSanitizer = inject(DomSanitizer);
+
     toastVisible = false
     // toastTypes: typeof ToastTypes = ToastTypes
     title: string | undefined
-    body: string | undefined
+    body: SafeHtml | undefined
     type: string | undefined
     time: number | undefined
 
-    constructor(private toastService: ToastService) {
-    }
+    constructor() {}
 
     ngOnInit() {
         this.toastService.showToast$.subscribe((param: IToastUI | null) => {
@@ -29,7 +33,7 @@ export class ToastComponent implements OnInit {
 
             // console.log('>>> ToastComponent >>> showToast$.subscribe ', param, ToastTypes, ToastTypes[param.type as keyof typeof ToastTypes])
             this.title = param.title
-            this.body = param.body
+            this.body = this.sanitizer.bypassSecurityTrustHtml(param.body);
             this.type = ToastTypes[param.type as keyof typeof ToastTypes]
             this.time = param.time
 

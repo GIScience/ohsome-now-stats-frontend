@@ -65,7 +65,7 @@
         </li>
         <li class="nav-item" [ngClass]="page === 'user-dashboard' ? 'active' : ''">
           <a class="sidebar-link flex-row" style="display:flex; height: 45px"
-            [routerLink]="['/user-dashboard']" data-bs-toggle="tooltip" [attr.data-bs-title]="'User Dashboard'"
+            (click)="redirectUserDashboard()" data-bs-toggle="tooltip" [attr.data-bs-title]="'User Dashboard'"
             data-bs-placement="right" #tooltip>
               <div class="mL-5 p-2" style="cursor: pointer;" >
                 <img alt="User Dashboard" src="assets/images/user.png" style="height: 20px;" [ngClass]="{ 'user-icon-disabled': authService.isAnon() }"/>
