@@ -70,6 +70,6 @@ export class AuthService {
 
     public async logout() {
         await account.deleteSession({sessionId: 'current'})
-        location.reload();
+        window.location.href = `/dashboard`;
     }
 }
