@@ -16,7 +16,7 @@ import {enableTooltips} from "../lib/utils";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
 import {ToastComponent} from "./toast/toast.component";
 import {NgClass} from "@angular/common";
-import {RouterLink, RouterOutlet} from "@angular/router";
+import {Router, RouterLink, RouterOutlet} from "@angular/router";
 import {AuthService} from "../lib/auth.service";
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {NzButtonModule} from "ng-zorro-antd/button";
@@ -35,6 +35,7 @@ export class AppComponent implements AfterViewInit {
     private toastService = inject(ToastService);
     private dataService = inject(DataService);
     protected authService = inject(AuthService);
+    private router: Router = inject(Router);
 
     title = 'ohsomeNow Stats'
     name = 'HeiGIT'
@@ -105,6 +106,6 @@ export class AppComponent implements AfterViewInit {
             })
         }
         else
-            window.location.href = '/user-dashboard'
+            this.router.navigate(['/user-dashboard'])
     }
 }
