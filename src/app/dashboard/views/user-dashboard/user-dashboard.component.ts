@@ -21,5 +21,14 @@ export class UserDashboardComponent {
 
     constructor() {
         this.stateService.activePage.subscribe(page => this.mode = page!)
+
+        // in user-dashboard we don't need to show 'contributor' topic
+        const state = this.stateService.appState()
+        let topics = state.topics;
+        topics = topics.replace(/(^|,)contributor(,|$)/, '$1').replace(/^,|,$/g, '');
+        this.stateService.updatePartialState({
+            active_topic: 'edit',
+            topics: topics
+        });
     }
 }
