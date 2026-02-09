@@ -42,9 +42,11 @@ export class SummaryComponent {
 
     requestFromAPI(queryParams: IQueryParams) {
         this.isSummaryLoading.set(true);
-        this.userMode()
-            ? this.dataService.requestUserSummary(queryParams).subscribe(this.processResult())
-            : this.dataService.requestSummary(queryParams).subscribe(this.processResult());
+        const isUserMode = this.userMode();
+        (isUserMode
+                ? this.dataService.requestUserSummary(queryParams)
+                : this.dataService.requestSummary(queryParams)
+        ).subscribe(this.processResult());
     }
 
     private processResult() {
