@@ -5,6 +5,7 @@ import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {AboutComponent} from './about/about.component';
 import {HelpComponent} from './help/help.component';
 import {UserDashboardComponent} from "@app/dashboard/views/user-dashboard/user-dashboard.component";
+import {userGuard} from "../lib/user.guard";
 
 export const routes: Routes = [
     {
@@ -28,7 +29,8 @@ export const routes: Routes = [
     {
         path: 'user-dashboard',
         pathMatch: 'full',
-        component: UserDashboardComponent
+        component: UserDashboardComponent,
+        canActivate: [userGuard],
     },
     {
         path: 'about',
