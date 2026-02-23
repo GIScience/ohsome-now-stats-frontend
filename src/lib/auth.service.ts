@@ -1,11 +1,13 @@
-import {Injectable, signal} from "@angular/core";
+import {inject, Injectable, signal} from "@angular/core";
 import {Models} from "appwrite";
 import {account, functions, functionsList, tables} from "./appwrite";
 import {Key} from "./types";
 import {environment} from "@environments/environment";
+import {Router} from "@angular/router";
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
+    router: Router = inject(Router);
     private _user = signal<Models.User>({} as Models.User);
     public user = this._user.asReadonly()
 
@@ -70,6 +72,18 @@ export class AuthService {
 
     public async logout() {
         await account.deleteSession({sessionId: 'current'})
-        window.location.href = `/dashboard`;
+        const currentUrl = window.location.href;
+        const [path, query] = currentUrl.split('?');
+
+        const isUserDashboard = path.includes('user-dashboard');
+        if (isUserDashboard) {
+            const targetUrl = query
+                ? `/dashboard?${query}`
+                : `/dashboard`;
+
+            window.location.replace(targetUrl);
+        } else {
+            window.location.reload();
+        }
     }
 }
