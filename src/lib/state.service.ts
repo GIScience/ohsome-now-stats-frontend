@@ -60,6 +60,9 @@ export class StateService {
 
     private updateURL(data: IStateParams): void {
         let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&active_topic=${data.active_topic}&countries=${data.countries}&topics=${data.topics}`
+        if (data.osm_user_id !== undefined) {
+            fragment += `&osm_user=${data.osm_user_id}`
+        }
         if (data.fit_to_content !== undefined) {
             fragment += "&fit_to_content="
         }
@@ -95,7 +98,8 @@ export class StateService {
             countries: this.fromUrlOrDefault(queryParams, "countries", ''),
             topics: topics,
             fit_to_content: this.fromUrlOrDefault(queryParams, 'fit_to_content', undefined),
-            active_topic: active_topic
+            active_topic: active_topic,
+            osm_user_id: this.fromUrlOrDefault(queryParams, 'osm_user', '115612')
         }
     }
 

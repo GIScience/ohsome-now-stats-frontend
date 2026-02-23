@@ -47,6 +47,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     readonly selectedCountries = signal<any[]>([]);
     readonly selectedTopics = signal<any[]>([]);
     readonly interval = signal<string | null>(null);
+    readonly osm_user = signal<string | undefined>('115612');
 
     intervals = this.dataService.timeIntervals;
 
@@ -200,7 +201,8 @@ export class QueryComponent implements OnInit, AfterViewInit {
             end: tempEnd,
             interval: this.interval()!,
             topics: this.topics.toString(),
-            active_topic: active_topic as StatsType
+            active_topic: active_topic as StatsType,
+            osm_user_id: this.osm_user()!
         };
 
         // update the state
@@ -360,6 +362,8 @@ export class QueryComponent implements OnInit, AfterViewInit {
         this.selectedTopics.set(this.topicOptions.filter((option) => {
             return this.topics.includes(option.value);
         }));
+
+        this.osm_user.set(inputData.osm_user_id);
     }
 }
 

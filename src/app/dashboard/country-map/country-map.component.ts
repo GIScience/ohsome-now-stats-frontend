@@ -76,6 +76,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 && a.start === b.start
                 && a.end === b.end
                 && a.active_topic == b.active_topic
+                && a.osm_user_id === b.osm_user_id
         }
     });
 

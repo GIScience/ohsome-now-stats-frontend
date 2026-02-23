@@ -16,7 +16,7 @@
                   </span>
                 </div>
               </div>
-              <input class="p-inputtext" placeholder="OSM user id" [(ngModel)]="userID" name="userId">
+              <input class="p-inputtext" placeholder="OSM user id" [(ngModel)]="osm_user" name="userId">
             </div>
             <div class="mb-3 row">
               <div class="col-md-10">
@@ -100,7 +100,7 @@
             </div>
           </div>
         </div>
-        <button class="btn btn-primary btn-color" (click)="updateStateWithOSMUser()" type="submit" #tooltip
+        <button class="btn btn-primary btn-color" (click)="updateStateFromSelection()" type="submit" #tooltip
                 id="btnGetStats" data-bs-toggle="tooltip" title="Submit">Get Statistics
         </button>
       </form>

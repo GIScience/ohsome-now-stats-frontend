@@ -61,6 +61,7 @@ export class HexMapComponent implements OnDestroy {
                 && a.end === b.end
                 && a.topics == b.topics
                 && a.countries == b.countries
+                && a.osm_user_id === b.osm_user_id
         }
     })
     colorFunc: ((value: HexDataType) => Color) | undefined = undefined;
