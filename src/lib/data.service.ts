@@ -10,6 +10,7 @@ import {
     IMetadataResponse,
     IQueryParams,
     ITrendingHashtagResponse,
+    IWhosthat,
     IWrappedCountryResult,
     IWrappedPlotResult,
     IWrappedStatsResult
@@ -23,6 +24,7 @@ export class DataService {
     private http = inject(HttpClient);
     private authService = inject(AuthService);
     url = environment.ohsomeStatsServiceUrl
+    whosthatUrl = environment.whosthatUrl
 
     trendingHashtagLimit = 10
     timeIntervals = [
@@ -140,4 +142,7 @@ export class DataService {
         this.bsLive.next(mode)
     }
 
+    getOsmUserId(userName: string) {
+        return this.http.get<Array<IWhosthat>>(`${this.whosthatUrl}?action=names&q=${userName}`)
+    }
 }

@@ -201,3 +201,8 @@ export interface ISelectionItem {
 export interface Key extends Models.Row {
     key: string;
 }
+
+export interface IWhosthat {
+    id: string;
+    names: Array<string>;
+}

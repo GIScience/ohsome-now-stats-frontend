@@ -15,9 +15,28 @@ import {NzDatePickerComponent, NzDatePickerModule} from "ng-zorro-antd/date-pick
     providers: []
 })
 export class UserQueryComponent extends QueryComponent {
+    osmUserName: string = 'tyr_asd';
     constructor() {
         super();
         this.updateSelectionFromState(this.state());
-        this.updateStateFromSelection();
+        // this.osmUserName = this.state().osm_user_id!;
+        // this.updateStateFromSelection();
+        this.prepareSelectionForStateChange()
+    }
+
+    prepareSelectionForStateChange() {
+        if(this.osmUserName === ''){
+            this.toastService.show({
+                title: 'OSM Username can\'t be blank',
+                body: 'Please provide a valid OSM username. Username field can\'t be blank',
+                type: 'warning',
+                time: 5000
+            })
+        } else {
+            this.dataService.getOsmUserId(this.osmUserName).subscribe(data => {
+                this.osm_user.set(data[0].id)
+                this.updateStateFromSelection();
+            })
+        }
     }
 }
