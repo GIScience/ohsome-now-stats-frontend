@@ -42,7 +42,7 @@ export class AuthService {
                         {
                             functionId: functionsList["link_on_user_creation_anonymous"],
                             body: JSON.stringify({
-                                "policy": "ors_anonymous", // todo: change to some other policy, probably switch to some heigit anon
+                                "policy": "heigit_anonymous",
                                 "tag": "ohsome-now-client"
                             })
                         }
