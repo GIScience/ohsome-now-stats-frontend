@@ -76,7 +76,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 && a.start === b.start
                 && a.end === b.end
                 && a.active_topic == b.active_topic
-                && a.osm_user_id === b.osm_user_id
+                && a.osm_user!.id === b.osm_user!.id
         }
     });
 
@@ -111,7 +111,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             start: state.start,
             end: state.end,
             topics: state.active_topic,
-            ...(!isUserMode ? {} : { osm_user_id: state.osm_user_id }),
+            ...(!isUserMode ? {} : { osm_user_id: state.osm_user!.id }),
         };
 
         this.isLoading.set(true);

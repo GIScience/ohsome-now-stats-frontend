@@ -61,7 +61,7 @@ export class HexMapComponent implements OnDestroy {
                 && a.end === b.end
                 && a.topics == b.topics
                 && a.countries == b.countries
-                && a.osm_user_id === b.osm_user_id
+                && a.osm_user!.id === b.osm_user!.id
         }
     })
     colorFunc: ((value: HexDataType) => Color) | undefined = undefined;
@@ -128,7 +128,7 @@ export class HexMapComponent implements OnDestroy {
                 countries: state.countries,
                 topic: state.active_topic,
                 resolution: 3,
-                ...(!this.userMode() ? {} : { osm_user_id: state.osm_user_id }),
+                ...(!this.userMode() ? {} : { osm_user_id: state.osm_user!.id }),
             });
         })
     }

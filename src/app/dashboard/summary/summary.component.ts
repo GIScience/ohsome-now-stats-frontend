@@ -30,7 +30,7 @@ export class SummaryComponent {
                 a.end === b.end &&
                 a.countries === b.countries &&
                 a.topics === b.topics &&
-                a.osm_user_id === b.osm_user_id
+                a.osm_user!.id === b.osm_user!.id
         }
     );
     userMode = input(false, {transform: booleanAttribute});

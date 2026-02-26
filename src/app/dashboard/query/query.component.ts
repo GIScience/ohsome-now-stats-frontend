@@ -21,7 +21,7 @@ import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {DataService} from '../../../lib/data.service';
 import {ToastService} from '../../../lib/toast.service';
-import {DropdownOption, IHashtags, IHighlightedHashtag, IStateParams, StatsType} from "../../../lib/types";
+import {DropdownOption, IHashtags, IHighlightedHashtag, IStateParams, OsmUser, StatsType} from "../../../lib/types";
 import {StateService} from "../../../lib/state.service";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
 import {enableTooltips, over5000IntervalBins} from "../../../lib/utils";
@@ -47,7 +47,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     readonly selectedCountries = signal<any[]>([]);
     readonly selectedTopics = signal<any[]>([]);
     readonly interval = signal<string | null>(null);
-    readonly osm_user = signal<string | undefined>('115612');
+    readonly osm_user = signal<OsmUser | undefined>(undefined);
 
     intervals = this.dataService.timeIntervals;
 
@@ -202,7 +202,10 @@ export class QueryComponent implements OnInit, AfterViewInit {
             interval: this.interval()!,
             topics: this.topics.toString(),
             active_topic: active_topic as StatsType,
-            osm_user_id: this.osm_user()!
+            osm_user: {                     // osm_user is updated before calling updateStateFromSelection()
+                id: this.osm_user()!.id,
+                name: this.osm_user()!.name
+            }
         };
 
         // update the state
@@ -363,7 +366,10 @@ export class QueryComponent implements OnInit, AfterViewInit {
             return this.topics.includes(option.value);
         }));
 
-        this.osm_user.set(inputData.osm_user_id);
+        this.osm_user.set({
+            id: inputData.osm_user.id,
+            name: inputData.osm_user.name,
+        });
     }
 }
 

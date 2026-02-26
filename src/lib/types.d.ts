@@ -108,7 +108,7 @@ export interface IQueryParams {
     interval: string
     countries: string
     topics: string
-    osm_user_id?: string
+    osm_user: OsmUser
 }
 
 export interface IStateParams extends IQueryParams {
@@ -200,6 +200,11 @@ export interface ISelectionItem {
 
 export interface Key extends Models.Row {
     key: string;
+}
+
+export interface OsmUser {
+    id: string
+    name: string
 }
 
 export interface IWhosthat {
