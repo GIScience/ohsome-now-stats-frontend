@@ -100,8 +100,8 @@ export class StateService {
             fit_to_content: this.fromUrlOrDefault(queryParams, 'fit_to_content', undefined),
             active_topic: active_topic,
             osm_user: {
-                id: '115612',
-                name: this.fromUrlOrDefault(queryParams, 'osm_user', 'tyr_asd'),
+                id: this.fromUrlOrDefault(queryParams, 'osm_user', '115612'),
+                name: 'tyr_asd',
             }
         }
     }

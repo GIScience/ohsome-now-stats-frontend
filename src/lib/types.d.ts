@@ -207,6 +207,12 @@ export interface OsmUser {
     name: string
 }
 
+interface IHighlightedOsmUser {
+    id: string;
+    name: string;
+    highlighted?: string;
+}
+
 export interface IWhosthat {
     id: string;
     names: Array<string>;
