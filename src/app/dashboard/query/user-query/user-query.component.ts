@@ -15,7 +15,7 @@ import {NzDatePickerComponent, NzDatePickerModule} from "ng-zorro-antd/date-pick
     providers: []
 })
 export class UserQueryComponent extends QueryComponent {
-    osmUserName: string = this.state().osm_user.name;
+    osmUserName: string = this.state().osm_user.id;
     constructor() {
         super();
         this.updateSelectionFromState(this.state());
@@ -31,11 +31,12 @@ export class UserQueryComponent extends QueryComponent {
                 time: 5000
             })
         } else {
-            this.dataService.getOsmUserId(this.osmUserName).subscribe(data => {
+            this.dataService.getOsmUserIdFromName(this.osmUserName).subscribe(data => {
                 this.osm_user.set({
                     id: data[0].id,
                     name: data[0].names[0],
                 })
+                // this.osm_user.set(data[0].id)
                 this.updateStateFromSelection();
             })
         }

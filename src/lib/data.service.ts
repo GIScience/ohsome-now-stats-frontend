@@ -142,7 +142,11 @@ export class DataService {
         this.bsLive.next(mode)
     }
 
-    getOsmUserId(userName: string) {
+    getOsmUserIdFromName(userName: string) {
         return this.http.get<Array<IWhosthat>>(`${this.whosthatUrl}?action=names&q=${userName}`)
+    }
+
+    getOsmUserNameFromId(userId: string) {
+        return this.http.get<Array<IWhosthat>>(`${this.whosthatUrl}?action=info&id=${userId}`)
     }
 }

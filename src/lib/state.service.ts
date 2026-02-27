@@ -61,7 +61,7 @@ export class StateService {
     private updateURL(data: IStateParams): void {
         let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&active_topic=${data.active_topic}&countries=${data.countries}&topics=${data.topics}`
         if (data.osm_user!.id !== undefined) {
-            fragment += `&osm_user=${data.osm_user.name}`
+            fragment += `&osm_user=${data.osm_user.id}`
         }
         if (data.fit_to_content !== undefined) {
             fragment += "&fit_to_content="
