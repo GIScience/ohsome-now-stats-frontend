@@ -4,6 +4,7 @@ import {BehaviorSubject, catchError, firstValueFrom, map, Observable, retry, tap
 
 import {environment} from '@environments/environment';
 import {
+    ApiItem,
     HexDataType,
     IHashtag,
     IMetaData,
@@ -76,7 +77,7 @@ export class DataService {
 
     requestUserSummary(params: IQueryParams) {
         return this.http.get<IWrappedStatsResult>(
-            `${this.url}/user?userId=${params.osm_user.id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`,
+            `${this.url}/user?userId=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`,
             {headers: {"Authorization": this.key().key}})
     }
 
@@ -85,7 +86,7 @@ export class DataService {
     }
 
     requestUserPlot(params: IQueryParams): Observable<IWrappedPlotResult> {
-        return this.http.get<IWrappedPlotResult>(`${this.url}/user/interval?userId=${params.osm_user.id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
+        return this.http.get<IWrappedPlotResult>(`${this.url}/user/interval?userId=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
     }
 
     requestCountryStats(params: any): Observable<IWrappedCountryResult> {
@@ -147,6 +148,6 @@ export class DataService {
     }
 
     getOsmUserNameFromId(userId: string) {
-        return this.http.get<Array<IWhosthat>>(`${this.whosthatUrl}?action=info&id=${userId}`)
+        return this.http.get<Array<ApiItem>>(`${this.whosthatUrl}?action=info&id=${userId}`)
     }
 }

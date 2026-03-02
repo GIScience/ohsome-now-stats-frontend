@@ -202,10 +202,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
             interval: this.interval()!,
             topics: this.topics.toString(),
             active_topic: active_topic as StatsType,
-            osm_user: {                     // osm_user is updated before calling updateStateFromSelection()
-                id: this.osm_user()!.id,
-                name: this.osm_user()!.name
-            }
+            osm_userid: this.osm_user() ? this.osm_user()!.id : '115612',
         };
 
         // update the state
@@ -366,10 +363,6 @@ export class QueryComponent implements OnInit, AfterViewInit {
             return this.topics.includes(option.value);
         }));
 
-        this.osm_user.set({
-            id: inputData.osm_user.id,
-            name: inputData.osm_user.name,
-        });
     }
 }
 

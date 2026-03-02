@@ -7,6 +7,7 @@ import {SelectDropDownModule} from 'ngx-select-dropdown';
 import {UTCToLocalConverterPipe} from '../pipes/utc-to-local-converter.pipe';
 import {NzDatePickerComponent, NzDatePickerModule} from "ng-zorro-antd/date-picker";
 import {IHighlightedOsmUser} from "../../../../lib/types";
+import {stringifyNamesFromResponse, stringifyStringArray} from "../../../../lib/utils";
 
 @Component({
     selector: 'user-query',
@@ -17,15 +18,25 @@ import {IHighlightedOsmUser} from "../../../../lib/types";
 })
 export class UserQueryComponent extends QueryComponent {
     filteredOsmUsers: IHighlightedOsmUser[] = [];
-    selectedOsmUser: IHighlightedOsmUser = {
-        id: this.state().osm_user.id,
-        name: this.state().osm_user.name,
-    };
+    selectedOsmUser: IHighlightedOsmUser | null = null;
 
     constructor() {
         super();
-        this.updateSelectionFromState(this.state());
-        this.prepareSelectionForStateChange()
+        this.dataService.getOsmUserNameFromId(this.state().osm_user_id).subscribe(userInfo => {
+            const osm_usernames = stringifyNamesFromResponse(userInfo);
+            this.osm_user.set({
+                id: this.state().osm_user_id,
+                name: osm_usernames,
+            });
+
+            this.selectedOsmUser = {
+                id: this.osm_user()!.id,
+                name: osm_usernames,
+            };
+
+            this.updateSelectionFromState(this.state());
+            this.prepareSelectionForStateChange()
+        })
     }
 
     prepareSelectionForStateChange() {
@@ -49,8 +60,8 @@ export class UserQueryComponent extends QueryComponent {
                     .slice(0, 100)
                     .map(user => ({
                         id: user.id,
-                        name: this.stringifyStringArray(user.names),
-                        highlighted: this.highlightMatch(this.stringifyStringArray(user.names), lowerQuery)
+                        name: stringifyStringArray(user.names),
+                        highlighted: this.highlightMatch(stringifyStringArray(user.names), lowerQuery)
                     }));
             });
     }
@@ -58,13 +69,5 @@ export class UserQueryComponent extends QueryComponent {
     private highlightMatch(text: string, query: string): string {
         const regex = new RegExp(`(${query})`, 'gi');
         return text.replace(regex, '<b>$1</b>');
-    }
-
-    private stringifyStringArray(arr: string[]): string {
-        return arr.map(str => {
-                const json = JSON.stringify(str);
-                return json.substring(1, json.length - 1);
-            })
-            .join(", ");
     }
 }
