@@ -7,6 +7,7 @@ import {UserQueryComponent} from "@app/dashboard/query/user-query/user-query.com
 import {PlotComponent} from "@app/dashboard/plot/plot.component";
 import {CountryMapComponent} from "@app/dashboard/country-map/country-map.component";
 import {HexMapComponent} from "@app/dashboard/hex-map/hex-map.component";
+import {AuthService} from "../../../../lib/auth.service";
 
 @Component({
     selector: 'app-user-dashboard',
@@ -17,6 +18,7 @@ import {HexMapComponent} from "@app/dashboard/hex-map/hex-map.component";
 })
 export class UserDashboardComponent {
     private stateService = inject(StateService);
+    protected authService = inject(AuthService);
     mode: string = '';
 
     constructor() {

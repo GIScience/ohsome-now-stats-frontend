@@ -20,7 +20,6 @@ import {Router, RouterLink, RouterOutlet} from "@angular/router";
 import {AuthService} from "../lib/auth.service";
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {NzButtonModule} from "ng-zorro-antd/button";
-import {environment} from "@environments/environment";
 
 @Component({
     selector: 'app-root',
@@ -94,18 +93,5 @@ export class AppComponent implements AfterViewInit {
             else
                 app.classList.add('is-collapsed')
         }
-    }
-
-    redirectUserDashboard() {
-        if(this.authService.isAnon()) {
-            this.toastService.show({
-                title: 'Unauthorized access',
-                body: `Our User dashboard gives access to statistics of individual OSM users, to view those please 
-                       <a href="${environment.accountFrontendUrl}/login?redirect=${encodeURIComponent(window.location.href)}" onclick="this.authService.login()">login</a> with your HeiGIT credentials`,
-                type: 'warning',
-            })
-        }
-        else
-            this.router.navigate(['/user-dashboard'])
     }
 }

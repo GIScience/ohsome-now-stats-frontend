@@ -86,4 +86,9 @@ export class AuthService {
             window.location.reload();
         }
     }
+
+    register() {
+        const currentUrl = window.location.href;
+        window.location.href = `${environment.accountFrontendUrl}/signup?redirect=${encodeURIComponent(currentUrl)}`;
+    }
 }
