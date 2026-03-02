@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, signal, WritableSignal} from '@angular/core';
 import {QueryComponent} from "../query.component";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AutoComplete, AutoCompleteCompleteEvent} from 'primeng/autocomplete';
@@ -17,8 +17,8 @@ import {stringifyNamesFromResponse, stringifyStringArray} from "../../../../lib/
     providers: []
 })
 export class UserQueryComponent extends QueryComponent {
-    filteredOsmUsers: IHighlightedOsmUser[] = [];
-    selectedOsmUser: IHighlightedOsmUser | null = null;
+    filteredOsmUsers: WritableSignal<IHighlightedOsmUser[]> = signal([]);
+    selectedOsmUser: WritableSignal<IHighlightedOsmUser | null> = signal(null);
 
     constructor() {
         super();
@@ -29,10 +29,10 @@ export class UserQueryComponent extends QueryComponent {
                 name: osm_usernames,
             });
 
-            this.selectedOsmUser = {
+            this.selectedOsmUser.set({
                 id: this.osm_user()!.id,
                 name: osm_usernames,
-            };
+            });
 
             this.updateSelectionFromState(this.state());
             this.prepareSelectionForStateChange()
@@ -41,8 +41,8 @@ export class UserQueryComponent extends QueryComponent {
 
     prepareSelectionForStateChange() {
         this.osm_user.set({
-            id: this.selectedOsmUser!.id,
-            name: this.selectedOsmUser!.name,
+            id: this.selectedOsmUser()!.id,
+            name: this.selectedOsmUser()!.name,
         })
         this.updateStateFromSelection();
     }
@@ -50,19 +50,20 @@ export class UserQueryComponent extends QueryComponent {
     searchOsmUsers(event: AutoCompleteCompleteEvent) {
         const query = event.query?.trim();
         if (!query) {
-            this.filteredOsmUsers = [];
+            this.filteredOsmUsers.set([]);
             return;
         }
         this.dataService.getOsmUserIdFromName(query)
             .subscribe(users => {
                 const lowerQuery = query.toLowerCase();
-                this.filteredOsmUsers = users
+                this.filteredOsmUsers.set(users
                     .slice(0, 100)
                     .map(user => ({
                         id: user.id,
                         name: stringifyStringArray(user.names),
                         highlighted: this.highlightMatch(stringifyStringArray(user.names), lowerQuery)
-                    }));
+                    }))
+                );
             });
     }
 
