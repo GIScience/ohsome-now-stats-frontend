@@ -7,7 +7,7 @@ import {SelectDropDownModule} from 'ngx-select-dropdown';
 import {UTCToLocalConverterPipe} from '../pipes/utc-to-local-converter.pipe';
 import {NzDatePickerComponent, NzDatePickerModule} from "ng-zorro-antd/date-picker";
 import {IHighlightedOsmUser} from "../../../../lib/types";
-import {stringifyNamesFromResponse, stringifyStringArray} from "../../../../lib/utils";
+import {stringifyNamesFromResponse} from "../../../../lib/utils";
 
 @Component({
     selector: 'user-query',
@@ -58,11 +58,14 @@ export class UserQueryComponent extends QueryComponent {
                 const lowerQuery = query.toLowerCase();
                 this.filteredOsmUsers.set(users
                     .slice(0, 100)
-                    .map(user => ({
-                        id: user.id,
-                        name: stringifyStringArray(user.names),
-                        highlighted: this.highlightMatch(stringifyStringArray(user.names), lowerQuery)
-                    }))
+                    .map(user => {
+                        let names = user.names.join(", ")
+                        return {
+                            id: user.id,
+                            name: names,
+                            highlighted: this.highlightMatch(names, lowerQuery)
+                        }
+                    })
                 );
             });
     }
