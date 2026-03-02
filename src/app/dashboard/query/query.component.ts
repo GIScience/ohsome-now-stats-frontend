@@ -202,7 +202,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
             interval: this.interval()!,
             topics: this.topics.toString(),
             active_topic: active_topic as StatsType,
-            osm_userid: this.osm_user() ? this.osm_user()!.id : '115612',
+            osm_user_id: this.osm_user() ? this.osm_user()!.id : '115612',
         };
 
         // update the state
