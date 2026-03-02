@@ -1,11 +1,13 @@
 import {Component} from '@angular/core';
 import {QueryComponent} from "../query.component";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {AutoComplete} from 'primeng/autocomplete';
+import {AutoComplete, AutoCompleteCompleteEvent} from 'primeng/autocomplete';
 import {PrimeTemplate} from 'primeng/api';
 import {SelectDropDownModule} from 'ngx-select-dropdown';
 import {UTCToLocalConverterPipe} from '../pipes/utc-to-local-converter.pipe';
 import {NzDatePickerComponent, NzDatePickerModule} from "ng-zorro-antd/date-picker";
+import {IHighlightedOsmUser} from "../../../../lib/types";
+import {stringifyNamesFromResponse, stringifyStringArray} from "../../../../lib/utils";
 
 @Component({
     selector: 'user-query',
@@ -15,29 +17,57 @@ import {NzDatePickerComponent, NzDatePickerModule} from "ng-zorro-antd/date-pick
     providers: []
 })
 export class UserQueryComponent extends QueryComponent {
-    osmUserName: string = this.state().osm_user.name;
+    filteredOsmUsers: IHighlightedOsmUser[] = [];
+    selectedOsmUser: IHighlightedOsmUser | null = null;
+
     constructor() {
         super();
-        this.updateSelectionFromState(this.state());
-        this.prepareSelectionForStateChange()
+        this.dataService.getOsmUserNameFromId(this.state().osm_user_id).subscribe(userInfo => {
+            const osm_usernames = stringifyNamesFromResponse(userInfo);
+            this.osm_user.set({
+                id: this.state().osm_user_id,
+                name: osm_usernames,
+            });
+
+            this.selectedOsmUser = {
+                id: this.osm_user()!.id,
+                name: osm_usernames,
+            };
+
+            this.updateSelectionFromState(this.state());
+            this.prepareSelectionForStateChange()
+        })
     }
 
     prepareSelectionForStateChange() {
-        if(this.osmUserName === ''){
-            this.toastService.show({
-                title: 'OSM Username can\'t be blank',
-                body: 'Please provide a valid OSM username. Username field can\'t be blank',
-                type: 'warning',
-                time: 5000
-            })
-        } else {
-            this.dataService.getOsmUserId(this.osmUserName).subscribe(data => {
-                this.osm_user.set({
-                    id: data[0].id,
-                    name: data[0].names[0],
-                })
-                this.updateStateFromSelection();
-            })
+        this.osm_user.set({
+            id: this.selectedOsmUser!.id,
+            name: this.selectedOsmUser!.name,
+        })
+        this.updateStateFromSelection();
+    }
+
+    searchOsmUsers(event: AutoCompleteCompleteEvent) {
+        const query = event.query?.trim();
+        if (!query) {
+            this.filteredOsmUsers = [];
+            return;
         }
+        this.dataService.getOsmUserIdFromName(query)
+            .subscribe(users => {
+                const lowerQuery = query.toLowerCase();
+                this.filteredOsmUsers = users
+                    .slice(0, 100)
+                    .map(user => ({
+                        id: user.id,
+                        name: stringifyStringArray(user.names),
+                        highlighted: this.highlightMatch(stringifyStringArray(user.names), lowerQuery)
+                    }));
+            });
+    }
+
+    private highlightMatch(text: string, query: string): string {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<b>$1</b>');
     }
 }

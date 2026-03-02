@@ -16,7 +16,21 @@
                   </span>
                 </div>
               </div>
-              <input class="p-inputtext" placeholder="OSM user id" [(ngModel)]="osmUserName" name="userId">
+                <p-autoComplete
+                    id="hashtag"
+                    [(ngModel)]="selectedOsmUser"
+                    name="userId"
+                    [suggestions]="filteredOsmUsers"
+                    (completeMethod)="searchOsmUsers($event)"
+                    [minLength]=3
+                    [delay]="350"
+                    placeholder="OSM Username"
+                    optionLabel="name"
+                >
+                    <ng-template let-user pTemplate="item">
+                        <span [innerHTML]="user.highlighted"></span>
+                    </ng-template>
+                </p-autoComplete>
             </div>
             <div class="mb-3 row">
               <div class="col-md-10">

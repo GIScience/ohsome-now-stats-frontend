@@ -108,7 +108,7 @@ export interface IQueryParams {
     interval: string
     countries: string
     topics: string
-    osm_user: OsmUser
+    osm_user_id: string
 }
 
 export interface IStateParams extends IQueryParams {
@@ -207,7 +207,24 @@ export interface OsmUser {
     name: string
 }
 
+interface IHighlightedOsmUser {
+    id: string;
+    name: string;
+    highlighted?: string;
+}
+
 export interface IWhosthat {
     id: string;
     names: Array<string>;
 }
+
+type NameEntry = {
+    name: string;
+    first: string;
+    last: string;
+};
+
+type ApiItem = {
+    id: string;
+    names: NameEntry[];
+};

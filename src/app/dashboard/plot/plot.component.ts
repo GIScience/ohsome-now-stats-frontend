@@ -44,7 +44,7 @@ export class PlotComponent {
                 && a.countries === b.countries
                 && a.interval === b.interval
                 && a.topics === b.topics
-                && a.osm_user!.id === b.osm_user!.id
+                && a.osm_user_id === b.osm_user_id
         }
     });
 

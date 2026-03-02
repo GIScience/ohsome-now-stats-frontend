@@ -1,10 +1,10 @@
 import {effect, inject, Injectable, signal} from '@angular/core';
-import {IStateParams} from "./types";
+import {IStateParams, OsmUser} from "./types";
 import {DataService} from "./data.service";
 import {NavigationEnd, Router} from "@angular/router";
 import dayjs from "dayjs";
-import {over5000IntervalBins} from "./utils";
-import {BehaviorSubject, filter} from "rxjs";
+import {over5000IntervalBins, stringifyNamesFromResponse} from "./utils";
+import {BehaviorSubject, filter, firstValueFrom, map, of} from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -60,8 +60,8 @@ export class StateService {
 
     private updateURL(data: IStateParams): void {
         let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&active_topic=${data.active_topic}&countries=${data.countries}&topics=${data.topics}`
-        if (data.osm_user!.id !== undefined) {
-            fragment += `&osm_user=${data.osm_user.name}`
+        if (data.osm_user_id !== undefined) {
+            fragment += `&osm_user=${data.osm_user_id}`
         }
         if (data.fit_to_content !== undefined) {
             fragment += "&fit_to_content="
@@ -89,6 +89,14 @@ export class StateService {
         const {max_timestamp, min_timestamp} = this.getDefaultMinAndMaxTimestamp(queryParams);
         const interval = this.getDefaultInterval(max_timestamp, min_timestamp, queryParams);
         const {topics, active_topic} = this.getDefaultTopicConfig(queryParams)
+        // this.getDefaultOsmUserDetails(queryParams).subscribe( userInfo => {
+        //     {id, name} = userInfo;
+        // })
+
+        // this.osm_user.set({
+        //     id: this.fromUrlOrDefault(queryParams, 'osm_user', '115612'),
+        //     name: 'tyr_asd',
+        // })
 
         return {
             hashtag: this.fromUrlOrDefault(queryParams, "hashtag", ""),
@@ -99,10 +107,11 @@ export class StateService {
             topics: topics,
             fit_to_content: this.fromUrlOrDefault(queryParams, 'fit_to_content', undefined),
             active_topic: active_topic,
-            osm_user: {
-                id: '115612',
-                name: this.fromUrlOrDefault(queryParams, 'osm_user', 'tyr_asd'),
-            }
+            // osm_user: {
+            //     id: this.fromUrlOrDefault(queryParams, 'osm_user', '115612'),
+            //     name: name,
+            // }
+            osm_user_id: this.fromUrlOrDefault(queryParams, 'osm_user', '115612')
         }
     }
 
@@ -161,4 +170,44 @@ export class StateService {
         }
         return new URLSearchParams(this.window.location.href.split('#')[1]);
     }
+
+    private getDefaultOsmUserDetails(queryParams: URLSearchParams | null) {
+        const userId = this.fromUrlOrDefault(queryParams, 'osm_user', '115612');
+        if (userId === '115612') {
+            return of({
+                id: userId,
+                name: 'tyr_asd'
+            });
+        }
+
+        return this.dataService.getOsmUserNameFromId(userId).pipe(
+            map(userInfo => ({
+                id: userId,
+                name: stringifyNamesFromResponse(userInfo)
+            }))
+        );
+    }
+
+    // private async getDefaultOsmUserDetails(
+    //     queryParams: URLSearchParams | null
+    // ): Promise<OsmUser> {
+    //
+    //     const userId = this.fromUrlOrDefault(queryParams, 'osm_user', '115612');
+    //
+    //     if (userId === '115612') {
+    //         return {
+    //             id: userId,
+    //             name: 'tyr_asd'
+    //         };
+    //     }
+    //
+    //     const userInfo = await firstValueFrom(
+    //         this.dataService.getOsmUserNameFromId(userId)
+    //     );
+    //
+    //     return {
+    //         id: userId,
+    //         name: stringifyNamesFromResponse(userInfo)
+    //     };
+    // }
 }
