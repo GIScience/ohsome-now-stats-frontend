@@ -47,7 +47,6 @@ export class QueryComponent implements OnInit, AfterViewInit {
     readonly selectedCountries = signal<any[]>([]);
     readonly selectedTopics = signal<any[]>([]);
     readonly interval = signal<string | null>(null);
-    readonly osm_user = signal<OsmUser | undefined>(undefined);
 
     intervals = this.dataService.timeIntervals;
 
@@ -135,6 +134,10 @@ export class QueryComponent implements OnInit, AfterViewInit {
         enableSelectAll: true
     }
     state = computed(() => this.stateService.appState())
+    readonly osm_user = signal<OsmUser>({
+        id: this.state().osm_user_id,
+        name: '',
+    });
 
     constructor() {
         effect(() => {
