@@ -169,13 +169,14 @@ export class HexMapComponent implements OnDestroy {
                 )
             );
         } catch (e: any) {
-            console.error('Error getting HexMap data from API ', e);
+            this.isH3Loading.set(false);
+            console.error('Error getting HexMap data from API ', e.error);
             console.info('Request params: ', params);
-            if (e.error && e.error[0]) {
+            if (e.error) {
                 const errMessage = JSON.parse(e.error);
                 this.toastService.show({
                     title: 'Error while getting Hex Map data from API',
-                    body: 'Something went wrong while requesting data for Map with Hexagonal info. \n' + errMessage[0].message,
+                    body: `Something went wrong while requesting data for Map with Hexagonal info. ${errMessage.error}`,
                     type: 'error'
                 })
             } else {
@@ -185,7 +186,6 @@ export class HexMapComponent implements OnDestroy {
                     type: 'error'
                 })
             }
-            this.isH3Loading.set(false);
         }
 
         if (result) {

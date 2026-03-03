@@ -26,6 +26,7 @@ import {interpolateHcl} from 'd3-interpolate';
 import {lch, rgb} from 'd3-color';
 
 import {CountryMapLegendComponent} from "./country-map-legend/country-map-legend.component";
+import {ToastService} from "../../../lib/toast.service";
 
 const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryCode: string]: [number, number] | null };
 
@@ -41,6 +42,8 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     private stateService: StateService = inject(StateService);
     private dataService: DataService = inject(DataService);
     private readonly ngZone: NgZone = inject(NgZone);
+    private toastService = inject(ToastService);
+
 
     isLoading = signal(false);
     enrichedCountryData = signal<ICountryLocationData[]>([]);
@@ -124,13 +127,28 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     private handleResponse() {
         return {
             next: (res: any) => {
-                const countryData: ICountryData[] = res.result.topics[this.activeTopic()];
-                this.enrichedCountryData.set(this.enrichCountryDataWithPlotPositions(countryData));
                 this.isLoading.set(false);
+                if(Object.keys(res.result).length > 0) {
+                    const countryData: ICountryData[] = res.result.topics[this.activeTopic()];
+                    this.enrichedCountryData.set(this.enrichCountryDataWithPlotPositions(countryData));
+                }
             },
             error: (err: Error) => {
                 console.log(err);
                 this.isLoading.set(false);
+                if (err) {
+                    this.toastService.show({
+                        title: 'Error while getting Country Map data from API',
+                        body: `Something went wrong while requesting data for Map of individual countries. ${err.message}`,
+                        type: 'error'
+                    })
+                } else {
+                    this.toastService.show({
+                        title: 'Error while getting Hex Map data from API',
+                        body: 'Something went wrong while requesting data for Map of individual countries. Please try again with modify request.',
+                        type: 'error'
+                    })
+                }
             }
         }
     }
