@@ -1,6 +1,6 @@
 import {bootstrapApplication} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {provideHttpClient, withInterceptors, withInterceptorsFromDi} from '@angular/common/http';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 
@@ -18,13 +18,14 @@ import {registerLocaleData} from '@angular/common';
 import en from '@angular/common/locales/en';
 import {en_US, provideNzI18n} from 'ng-zorro-antd/i18n';
 import {inject, provideAppInitializer} from "@angular/core";
+import {httperrorInterceptor} from "./lib/httperror.interceptor";
 
 registerLocaleData(en);
 
 bootstrapApplication(AppComponent, {
     providers: [
         provideRouter(routes),
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withInterceptors([httperrorInterceptor]),withInterceptorsFromDi()),
         provideAnimations(),
         provideAnimationsAsync(),
         provideNzI18n(en_US),
