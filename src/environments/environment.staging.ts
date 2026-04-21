@@ -4,5 +4,7 @@ export const environment = {
     ohsomeStatsServiceUrl: 'https://staging.api.heigit.org/ohsome-now-staging/v1',
     appwriteProjectId: '66cef0a9000b0675681b',
     appwriteEndpoint: 'https://staging.api.account.heigit.org',
-    accountFrontendUrl: 'https://staging.account.heigit.org'
+    accountFrontendUrl: 'https://staging.account.heigit.org',
+    whosthatUrl: 'https://whosthat.osmz.ru/whosthat.php'
+
 };
