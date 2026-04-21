@@ -76,12 +76,13 @@
     "@types/plotly.js-dist-min": "^2.3.4",
     "@typescript-eslint/eslint-plugin": "^8.49.0",
     "@typescript-eslint/parser": "^8.49.0",
+    "@vitest/coverage-v8": "^4.1.5",
     "baseline-browser-mapping": "^2.9.16",
     "eslint": "^9.39.1",
     "jsdom": "^27.4.0",
     "primeng": "^21.0.1",
     "typescript": "~5.9.3",
-    "vitest": "^4.0.17",
+    "vitest": "^4.1.5",
     "webpack-bundle-analyzer": "^4.10.2"
   },
   "pnpm": {

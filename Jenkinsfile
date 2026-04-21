@@ -38,7 +38,7 @@ pipeline {
     stage ('Test') {
       steps {
         nodejs(nodeJSInstallationName: 'NodeJS 22') {
-          sh 'ng test --runner-config vitest.config.ts --code-coverage --watch=false'
+          sh 'ng test --runner-config vitest.config.ts --coverage --watch=false'
         }
       }
       post {
