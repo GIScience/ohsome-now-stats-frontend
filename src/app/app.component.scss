@@ -1,3 +1,8 @@
 .sidebar {
   z-index: 5000;
 }
+
+.user-icon-disabled {
+  filter: grayscale(100%) brightness(0.7);
+  opacity: 0.6;
+}

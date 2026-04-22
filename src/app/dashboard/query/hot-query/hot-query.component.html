@@ -75,7 +75,7 @@
                 <ngx-select-dropdown [options]="dropdownOptions" id="countries" name="countries"
                   [config]="configCountry"
                   [(ngModel)]="selectedCountries" [multiple]="true"
-                  class="customDropdown"
+
                   (change)="selectedHub=undefined;">
                 </ngx-select-dropdown>
               </div>
@@ -118,7 +118,7 @@
               <label class="form-label" for="topics-selection">OSM Data Topic</label>
               <ngx-select-dropdown [options]="topicOptions" name="topics-selection"
                 [config]="configTopics"
-                [(ngModel)]="selectedTopics" [multiple]="true" class="customDropdown"
+                [(ngModel)]="selectedTopics" [multiple]="true"
                 id="topics-selection"
                 (change)="selectedImpactArea=undefined;"></ngx-select-dropdown>
             </div>

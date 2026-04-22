@@ -1,6 +1,7 @@
 import dayjs, {Dayjs} from "dayjs";
 import * as bootstrap from "bootstrap";
 import {ElementRef, QueryList} from "@angular/core";
+import {ApiItem} from "./types";
 
 export function over5000IntervalBins(start: string | Dayjs, end: string | Dayjs, interval: string) {
     const queryLengthInMS = dayjs(end).diff(dayjs(start))
@@ -20,4 +21,12 @@ export function enableTooltips(tooltips: QueryList<ElementRef>, hideOnClick: boo
             }
         }
     )
+}
+
+export function stringifyNamesFromResponse(data: ApiItem[]): string {
+    if (data.length == 0) return ""
+
+    return data[0].names.flatMap(
+        n => n.name
+    ).join(", ")
 }

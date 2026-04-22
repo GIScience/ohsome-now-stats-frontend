@@ -2,14 +2,14 @@ import {type Mock, vi} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import {QueryComponent} from './query.component';
-import {DataService} from '../../data.service';
-import {ToastService} from 'src/app/toast.service';
-import {StateService} from '../../state.service';
+import {DataService} from '../../../lib/data.service';
+import {ToastService} from '../../../lib/toast.service';
+import {StateService} from '../../../lib/state.service';
 import {of} from 'rxjs';
 import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from '@angular/router';
 import {NO_ERRORS_SCHEMA, signal} from '@angular/core';
-import {IHashtags, IStateParams} from '../types';
+import {IHashtags, IStateParams} from '../../../lib/types';
 import {AutoCompleteCompleteEvent} from 'primeng/autocomplete';
 
 describe('QueryComponent', () => {
@@ -40,7 +40,8 @@ describe('QueryComponent', () => {
         end: '2024-12-31T23:59:59Z',
         interval: 'P1M',
         topics: 'road,building',
-        active_topic: 'road'
+        active_topic: 'road',
+        osm_user_id: ''
     };
 
     beforeEach(async () => {
@@ -98,9 +99,9 @@ describe('QueryComponent', () => {
 
     describe('Component Initialization', () => {
         it('should initialize with default values', () => {
-            expect(component.interval).toBe(undefined);
-            expect(component.selectedCountries).toEqual([]);
-            expect(component.selectedTopics).toEqual([]);
+            expect(component.interval()).toBeNull();
+            expect(component.selectedCountries()).toEqual([]);
+            expect(component.selectedTopics()).toEqual([]);
         });
 
         it('should set intervals from DataService', () => {
@@ -167,17 +168,17 @@ describe('QueryComponent', () => {
         });
 
         it('should fail validation when selectedDateRangeUTC is undefined', () => {
-            component.selectedDateRange = undefined;
+            component.selectedDateRange.set(null);
 
             const result = component.validateForm();
             expect(result).toBe(false);
         });
 
         it('should fail validation when start or end date is missing', () => {
-            component.selectedDateRange = [
+            component.selectedDateRange.set([
                 new Date('2024-01-01'),
                 undefined as any
-            ];
+            ]);
 
             const result = component.validateForm();
 
@@ -187,13 +188,13 @@ describe('QueryComponent', () => {
 
     describe('getStatistics', () => {
         beforeEach(() => {
-            component.selectedDateRange = [
+            component.selectedDateRange.set([
                 new Date('2024-01-01'),
                 new Date('2024-12-31')
-            ];
+            ]);
             component.selectedHashtagOption = {hashtag: 'missingmaps', highlighted: ''};
-            component.selectedCountries = [];
-            component.selectedTopics = [];
+            component.selectedCountries.set([]);
+            component.selectedTopics.set([]);
             component.dropdownOptions = [
                 {name: 'United States', value: 'USA'},
                 {name: 'Canada', value: 'CAN'}
@@ -211,7 +212,7 @@ describe('QueryComponent', () => {
         it('should update state with form values when validation passes', () => {
             vi.spyOn(component, 'validateForm').mockReturnValue(true);
             vi.spyOn(component, 'cleanHashTag').mockReturnValue('missingmaps');
-            component.interval = "P1M";
+            component.interval.set("P1M");
             component.updateStateFromSelection();
 
             expect(mockStateService.updatePartialState).toHaveBeenCalledWith(expect.objectContaining({
@@ -224,7 +225,7 @@ describe('QueryComponent', () => {
             vi.spyOn(component, 'validateForm').mockReturnValue(true);
             vi.spyOn(component, 'cleanHashTag').mockReturnValue('test');
 
-            component.selectedCountries = component.dropdownOptions;
+            component.selectedCountries.set(component.dropdownOptions);
 
             component.updateStateFromSelection();
 
@@ -295,10 +296,10 @@ describe('QueryComponent', () => {
 
     describe('Interval Validation', () => {
         it('should allow interval when date range is within limits', () => {
-            component.selectedDateRange = [
+            component.selectedDateRange.set([
                 new Date('2024-01-01'),
                 new Date('2024-01-02') // 1 day difference
-            ];
+            ]);
 
             const result = component.isForbiddenInterval('P1D');
             expect(result).toBe(false);
@@ -315,7 +316,8 @@ describe('QueryComponent', () => {
                 interval: 'P1W',
                 countries: 'USA,CAN',
                 topics: 'roads,buildings',
-                active_topic: 'road'
+                active_topic: 'road',
+                osm_user_id: ''
             };
 
             component.dropdownOptions = [
@@ -334,7 +336,7 @@ describe('QueryComponent', () => {
             mockStateService.appState.set(inputData);
             fixture.detectChanges();
 
-            expect(component.interval).toBe('P1W');
+            expect(component.interval()).toBe('P1W');
         });
     });
 });

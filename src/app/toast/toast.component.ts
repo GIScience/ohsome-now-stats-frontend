@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 
-import { IToastUI, ToastService } from '../toast.service';
-import { ToastTypes } from './toasttypes.modal';
-import { NgClass } from '@angular/common';
+import {IToastUI, ToastService} from '../../lib/toast.service';
+import {ToastTypes} from './toasttypes.modal';
+import {NgClass} from '@angular/common';
+import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-toast',
@@ -12,51 +13,55 @@ import { NgClass } from '@angular/common';
     imports: [NgClass]
 })
 export class ToastComponent implements OnInit {
-  toastVisible = false
-  // toastTypes: typeof ToastTypes = ToastTypes
-  title: string | undefined
-  body: string | undefined
-  type: string | undefined
-  time: number | undefined
 
-  constructor(private toastService: ToastService) {}
+    private toastService: ToastService = inject(ToastService);
+    private sanitizer: DomSanitizer = inject(DomSanitizer);
 
-  ngOnInit() {
-    this.toastService.showToast$.subscribe((param: IToastUI | null) => {
-      if(! param)
-        return
-        
-      // console.log('>>> ToastComponent >>> showToast$.subscribe ', param, ToastTypes, ToastTypes[param.type as keyof typeof ToastTypes])
-      this.title = param.title
-      this.body = param.body
-      this.type = ToastTypes[param.type as keyof typeof ToastTypes]
-      this.time = param.time
+    toastVisible = false
+    // toastTypes: typeof ToastTypes = ToastTypes
+    title: string | undefined
+    body: SafeHtml | undefined
+    type: string | undefined
+    time: number | undefined
 
-      this.showToast()
-    })
-  }
+    constructor() {}
 
-  showToast() {
-    const toastLiveExample = document.getElementById('liveToast')
-    if(toastLiveExample){
-      const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-      toastBootstrap.show()
-      this.toastVisible = true
+    ngOnInit() {
+        this.toastService.showToast$.subscribe((param: IToastUI | null) => {
+            if (!param)
+                return
+
+            // console.log('>>> ToastComponent >>> showToast$.subscribe ', param, ToastTypes, ToastTypes[param.type as keyof typeof ToastTypes])
+            this.title = param.title
+            this.body = this.sanitizer.bypassSecurityTrustHtml(param.body);
+            this.type = ToastTypes[param.type as keyof typeof ToastTypes]
+            this.time = param.time
+
+            this.showToast()
+        })
     }
-    // set auto disappearing only if provided by the caller
-    if(this.time ){
-      setTimeout(() => {
-        this.hideToast()
-      }, this.time) 
-    }
-  }
 
-  hideToast() {
-    this.toastVisible = false
-    const toastLiveExample = document.getElementById('liveToast')
-    if(toastLiveExample){
-      const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-      toastBootstrap.hide()
+    showToast() {
+        const toastLiveExample = document.getElementById('liveToast')
+        if (toastLiveExample) {
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+            toastBootstrap.show()
+            this.toastVisible = true
+        }
+        // set auto disappearing only if provided by the caller
+        if (this.time) {
+            setTimeout(() => {
+                this.hideToast()
+            }, this.time)
+        }
     }
-  }
+
+    hideToast() {
+        this.toastVisible = false
+        const toastLiveExample = document.getElementById('liveToast')
+        if (toastLiveExample) {
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+            toastBootstrap.hide()
+        }
+    }
 }

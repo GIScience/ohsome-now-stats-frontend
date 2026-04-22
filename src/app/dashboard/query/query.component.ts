@@ -19,12 +19,12 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import dropdownOptions from "../../../assets/static/json/countryCodes.json"
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
-import {DataService} from '../../data.service';
-import {ToastService} from 'src/app/toast.service';
-import {DropdownOption, IHashtags, IHighlightedHashtag, IStateParams, StatsType} from "../types";
-import {StateService} from "../../state.service";
+import {DataService} from '../../../lib/data.service';
+import {ToastService} from '../../../lib/toast.service';
+import {DropdownOption, IHashtags, IHighlightedHashtag, IStateParams, OsmUser, StatsType} from "../../../lib/types";
+import {StateService} from "../../../lib/state.service";
 import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
-import {enableTooltips, over5000IntervalBins} from "../../utils";
+import {enableTooltips, over5000IntervalBins} from "../../../lib/utils";
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -134,6 +134,10 @@ export class QueryComponent implements OnInit, AfterViewInit {
         enableSelectAll: true
     }
     state = computed(() => this.stateService.appState())
+    readonly osm_user = signal<OsmUser>({
+        id: this.state().osm_user_id,
+        name: '',
+    });
 
     constructor() {
         effect(() => {
@@ -200,7 +204,8 @@ export class QueryComponent implements OnInit, AfterViewInit {
             end: tempEnd,
             interval: this.interval()!,
             topics: this.topics.toString(),
-            active_topic: active_topic as StatsType
+            active_topic: active_topic as StatsType,
+            osm_user_id: this.osm_user() ? this.osm_user()!.id : '115612',
         };
 
         // update the state
@@ -360,6 +365,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
         this.selectedTopics.set(this.topicOptions.filter((option) => {
             return this.topics.includes(option.value);
         }));
+
     }
 }
 

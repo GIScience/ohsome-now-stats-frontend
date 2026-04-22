@@ -1,9 +1,10 @@
 export const environment = {
     production: false,
-    ohsomeStatsUrl: 'http://localhost:4200',
+    ohsomeStatsUrl: 'https://int-stats.now.ohsome.org',
     ohsomeStatsServiceUrl: 'https://staging.api.heigit.org/ohsome-now-staging/v1',
-    appwriteProjectId: '6780e947000ac8835ce3',
+    appwriteProjectId: '66cef0a9000b0675681b',
     appwriteEndpoint: 'https://staging.api.account.heigit.org',
-    accountFrontendUrl: 'http://localhost:5200',
+    accountFrontendUrl: 'https://staging.account.heigit.org',
     whosthatUrl: 'https://whosthat.osmz.ru/whosthat.php'
+
 };

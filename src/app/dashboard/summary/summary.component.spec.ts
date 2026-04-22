@@ -2,9 +2,9 @@ import {type MockedObject, vi} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
 import {SummaryComponent} from './summary.component';
-import {DataService} from '../../data.service';
-import {StateService} from '../../state.service';
-import {IStateParams, IWrappedStatsResult, StatsType} from '../types';
+import {DataService} from '../../../lib/data.service';
+import {StateService} from '../../../lib/state.service';
+import {IStateParams, IWrappedStatsResult, StatsType} from '../../../lib/types';
 import {Overlay} from '../../overlay.component';
 
 describe('SummaryComponent', () => {
@@ -76,7 +76,8 @@ describe('SummaryComponent', () => {
         countries: 'US',
         topics: 'amenity,body_of_water',
         interval: '',
-        active_topic: 'building'
+        active_topic: 'building',
+        osm_user_id: ''
     };
 
     beforeEach(async () => {
@@ -112,23 +113,20 @@ describe('SummaryComponent', () => {
     });
 
     it('should initialize with default values', () => {
-        expect(component.bignumberData).toEqual([]);
-        expect(component.isSummaryLoading).toBe(false);
+        expect(component.bignumberData()).toEqual([]);
+        expect(component.isSummaryLoading()).toBe(false);
     });
 
     describe('requestFromAPI', () => {
-        it('should request both summary and topic data when topics are provided', () => {
-            vi.spyOn(component, 'updateBigNumber');
-
+        it('should request summary data and set isSummaryLoading', () => {
             component.requestFromAPI(mockQueryParams);
 
             expect(mockDataService.requestSummary).toHaveBeenCalledWith(mockQueryParams);
-            expect(component.isSummaryLoading).toBe(true);
+            expect(component.isSummaryLoading()).toBe(false);
         });
 
         it('should request only summary data when topics are not provided', () => {
             const queryParamsWithoutTopics = {...mockQueryParams, topics: ''};
-            vi.spyOn(component, 'updateBigNumber');
 
             component.requestFromAPI(queryParamsWithoutTopics);
 
@@ -136,25 +134,20 @@ describe('SummaryComponent', () => {
         });
     });
 
-    describe('updateBigNumber', () => {
-        beforeEach(() => {
-            component['data'] = mockTopicData.result.topics;
+    describe('data processing', () => {
+        it('should populate bignumberData after successful API response', () => {
+            mockDataService.requestSummary.mockReturnValue(of(mockTopicData));
+            component.requestFromAPI(mockQueryParams);
+
+            expect(component.bignumberData().length).toBeGreaterThan(0);
+            expect(component.isSummaryLoading()).toBe(false);
         });
 
-        it('should return early if data is not available', () => {
-            component['data'] = undefined as any;
-            const initialBignumberData = component.bignumberData;
+        it('should return empty bignumberData when response has no topics', () => {
+            mockDataService.requestSummary.mockReturnValue(of({result: {topics: {}}} as any));
+            component.requestFromAPI(mockQueryParams);
 
-            component.updateBigNumber();
-
-            expect(component.bignumberData).toBe(initialBignumberData);
-        });
-
-        it('should update bignumberData with summary data', () => {
-            component.updateBigNumber();
-
-            expect(component.bignumberData.length).toBeGreaterThan(0);
-            expect(component.isSummaryLoading).toBe(false);
+            expect(component.bignumberData()).toEqual([]);
         });
     });
 

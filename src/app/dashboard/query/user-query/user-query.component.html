@@ -1,9 +1,37 @@
 <div class="row gap-20" style="overflow: visible !important;">
   <div class='col-md-12'>
     <div class="bgc-white p-20 bd">
-      <form (keyup.enter)="updateStateFromSelection()" class="needs-validation was-validated" novalidate="">
+      <form (keyup.enter)="prepareSelectionForStateChange()" class="needs-validation was-validated" novalidate="">
         <div class="row">
           <div class="mb-3 col-md-12">
+            <div class="mb-3 row" style="--bs-gutter-x: 0px;">
+              <div class="flex-row">
+                <label class="form-label" for="userId">OSM User name</label>
+                <div style="margin-left: auto;">
+                  <span class="icon-holder tooltip1" data-bs-placement="bottom"
+                    data-bs-toggle="tooltip" #tooltip
+                    title="Filter stats by OSM user id, e.g. 42"
+                    data-bs-html="true">
+                    <i class="c-grey-800 ti-help-alt"></i>
+                  </span>
+                </div>
+              </div>
+              <p-autoComplete
+                id="hashtag"
+                [(ngModel)]="selectedOsmUser"
+                name="userId"
+                [suggestions]="filteredOsmUsers()"
+                (completeMethod)="searchOsmUsers($event)"
+                [minLength]=3
+                [delay]="350"
+                placeholder="OSM Username"
+                optionLabel="name"
+              >
+                <ng-template let-user pTemplate="item">
+                  <span [innerHTML]="user.highlighted"></span>
+                </ng-template>
+              </p-autoComplete>
+            </div>
             <div class="mb-3 row">
               <div class="col-md-10">
                 <label class="form-label" for="hashtag"> Hashtag</label>
@@ -86,7 +114,7 @@
             </div>
           </div>
         </div>
-        <button class="btn btn-primary btn-color" (click)="updateStateFromSelection()" type="submit" #tooltip
+        <button class="btn btn-primary btn-color" (click)="prepareSelectionForStateChange()" type="submit" #tooltip
           id="btnGetStats" data-bs-toggle="tooltip" title="Submit">Get Statistics
         </button>
       </form>

@@ -1,13 +1,13 @@
 import {type MockedObject, vi} from "vitest";
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 import {By} from '@angular/platform-browser';
 import {Overlay} from '../../overlay.component';
 
 import {TrendingHashtagsComponent} from './trending-hashtags.component';
-import {DataService} from '../../data.service';
-import {StateService} from '../../state.service';
-import {IHashtag, StatsType} from '../types';
+import {DataService} from '../../../lib/data.service';
+import {StateService} from '../../../lib/state.service';
+import {IHashtag, StatsType} from '../../../lib/types';
 
 describe('TrendingHashtagsComponent', () => {
     let component: TrendingHashtagsComponent;
@@ -30,7 +30,8 @@ describe('TrendingHashtagsComponent', () => {
         interval: 'P1M',
         topics: '',
         active_topic: 'users' as StatsType,
-        fit_to_content: ''
+        fit_to_content: '',
+        osm_user_id: ''
     };
 
     beforeEach(async () => {
@@ -72,10 +73,10 @@ describe('TrendingHashtagsComponent', () => {
     });
 
     it('should initialize with default values', () => {
-        expect(component.hashtags).toBeUndefined();
+        expect(component.hashtags()).toEqual([]);
         expect(component.trendingHashtagLimit).toBe(10);
-        expect(component.numOfHashtags).toBe(0);
-        expect(component.isHashtagsLoading).toBe(false);
+        expect(component.numOfHashtags()).toBe(0);
+        expect(component.isHashtagsLoading()).toBe(false);
         expect(component.dashboardTooltips).toBeDefined();
     });
 
@@ -85,16 +86,16 @@ describe('TrendingHashtagsComponent', () => {
             expect(component.trendingHashtagLimit).toBe(mockDataService.trendingHashtagLimit);
         });
 
-        it('should call requestFromAPI on initialization', () => {
-            vi.spyOn(component as any, 'requestFromAPI');
+        it('should call fetchHashtags on initialization', () => {
+            vi.spyOn(component as any, 'fetchHashtags');
             fixture.detectChanges();
-            expect((component as any).requestFromAPI).toHaveBeenCalled();
+            expect((component as any).fetchHashtags).toHaveBeenCalled();
         });
     });
 
-    describe('requestFromAPI', () => {
+    describe('fetchHashtags', () => {
         it('should call getTrendingHashtags with correct parameters', () => {
-            component['requestFromAPI'](mockState);
+            component['fetchHashtags'](mockState);
 
             expect(mockDataService.getTrendingHashtags).toHaveBeenCalledWith({
                 start: mockState.start,
@@ -104,75 +105,69 @@ describe('TrendingHashtagsComponent', () => {
             });
         });
 
-        it('should process hashtags data correctly', fakeAsync(() => {
-            component['requestFromAPI'](mockState);
-            tick();
+        it('should process hashtags data correctly', () => {
+            component['fetchHashtags'](mockState);
 
-            expect(component.isHashtagsLoading).toBe(false);
-            expect(component.hashtags).toEqual(expect.any(Array));
-            expect(component.numOfHashtags).toBe(mockHashtags.length);
-        }));
+            expect(component.isHashtagsLoading()).toBe(false);
+            expect(component.hashtags()).toEqual(expect.any(Array));
+            expect(component.numOfHashtags()).toBe(mockHashtags.length);
+        });
 
-        it('should sort hashtags in descending order by number_of_users', fakeAsync(() => {
-            component['requestFromAPI'](mockState);
-            tick();
+        it('should sort hashtags in descending order by number_of_users', () => {
+            component['fetchHashtags'](mockState);
 
-            expect(component.hashtags[0].number_of_users).toBeGreaterThanOrEqual(component.hashtags[1].number_of_users);
-        }));
+            expect(component.hashtags()[0].number_of_users).toBeGreaterThanOrEqual(component.hashtags()[1].number_of_users);
+        });
 
 
-        it('should truncate long hashtag titles', fakeAsync(() => {
-            component['requestFromAPI'](mockState);
-            tick();
+        it('should truncate long hashtag titles', () => {
+            component['fetchHashtags'](mockState);
 
-            const longHashtag = component.hashtags.find(h => h.hashtag.length > 20);
+            const longHashtag = component.hashtags().find(h => h.hashtag.length > 20);
             if (longHashtag) {
                 expect(longHashtag.hashtagTitle).toBe(longHashtag.hashtag.substring(0, 19) + "...");
             }
-        }));
+        });
 
-        it('should keep short hashtag titles unchanged', fakeAsync(() => {
-            component['requestFromAPI'](mockState);
-            tick();
+        it('should keep short hashtag titles unchanged', () => {
+            component['fetchHashtags'](mockState);
 
-            const shortHashtag = component.hashtags.find(h => h.hashtag.length <= 20);
+            const shortHashtag = component.hashtags().find(h => h.hashtag.length <= 20);
             if (shortHashtag) {
                 expect(shortHashtag.hashtagTitle).toBe(shortHashtag.hashtag);
             }
-        }));
+        });
 
-        it('should calculate percentages correctly', fakeAsync(() => {
-            component['requestFromAPI'](mockState);
-            tick();
+        it('should calculate percentages correctly', () => {
+            component['fetchHashtags'](mockState);
 
-            const topHashtag = component.hashtags[0];
+            const topHashtag = component.hashtags()[0];
             expect(topHashtag.percent).toBe(100);
 
-            if (component.hashtags.length > 1) {
-                const secondHashtag = component.hashtags[1];
+            if (component.hashtags().length > 1) {
+                const secondHashtag = component.hashtags()[1];
                 const expectedPercent = secondHashtag.number_of_users / topHashtag.number_of_users * 100;
                 expect(secondHashtag.percent).toBe(expectedPercent);
             }
-        }));
+        });
 
         it('should handle API errors', () => {
             vi.spyOn(console, 'error');
             mockDataService.getTrendingHashtags.mockReturnValue(throwError('API Error'));
 
-            component['requestFromAPI'](mockState);
+            component['fetchHashtags'](mockState);
 
-            expect(console.error).toHaveBeenCalledWith('Error while requesting TRending hashtags data  ', 'API Error');
+            expect(console.error).toHaveBeenCalledWith('Error while requesting trending hashtags data', 'API Error');
         });
 
-        it('should handle empty hashtags response', fakeAsync(() => {
+        it('should handle empty hashtags response', () => {
             mockDataService.getTrendingHashtags.mockReturnValue(of([]));
 
-            component['requestFromAPI'](mockState);
-            tick();
+            component['fetchHashtags'](mockState);
 
-            expect(component.hashtags).toEqual([]);
-            expect(component.numOfHashtags).toBe(0);
-        }));
+            expect(component.hashtags()).toEqual([]);
+            expect(component.numOfHashtags()).toBe(0);
+        });
     });
 
     describe('clickHashtag', () => {
@@ -203,13 +198,12 @@ describe('TrendingHashtagsComponent', () => {
 
     describe('template rendering', () => {
         beforeEach(() => {
-            component.hashtags = mockHashtags.map((hashtag, index) => ({
+            component.hashtags.set(mockHashtags.map((hashtag, index) => ({
                 ...hashtag,
                 hashtagTitle: hashtag.hashtag.length > 20 ? hashtag.hashtag.substring(0, 19) + "..." : hashtag.hashtag,
                 tooltip: `${hashtag.hashtag} with ${hashtag.number_of_users} distinct users`,
                 percent: index === 0 ? 100 : (hashtag.number_of_users / mockHashtags[0].number_of_users * 100)
-            }));
-            component.numOfHashtags = mockHashtags.length;
+            })));
             fixture.detectChanges();
         });
 
@@ -219,7 +213,7 @@ describe('TrendingHashtagsComponent', () => {
         });
 
         it('should not render hashtags when numOfHashtags = 0', () => {
-            component.numOfHashtags = 0;
+            component.hashtags.set([]);
             fixture.detectChanges();
 
             const containerElement = fixture.debugElement.query(By.css('.bd.bgc-white'));
@@ -230,7 +224,7 @@ describe('TrendingHashtagsComponent', () => {
             const hashtagElements = fixture.debugElement.queryAll(By.css('span.clickable'));
 
             hashtagElements.forEach((element, index) => {
-                const expectedTitle = component.hashtags[index].hashtagTitle;
+                const expectedTitle = component.hashtags()[index].hashtagTitle;
                 expect(element.nativeElement.textContent.trim()).toContain(expectedTitle);
             });
         });
@@ -239,7 +233,7 @@ describe('TrendingHashtagsComponent', () => {
             const hashtagElements = fixture.debugElement.queryAll(By.css('span.clickable'));
 
             hashtagElements.forEach((element, index) => {
-                const expectedWidth = component.hashtags[index].percent + '%';
+                const expectedWidth = component.hashtags()[index].percent + '%';
                 expect(element.nativeElement.style.width).toBe(expectedWidth);
             });
         });
@@ -248,7 +242,7 @@ describe('TrendingHashtagsComponent', () => {
             const hashtagElements = fixture.debugElement.queryAll(By.css('span.clickable'));
 
             hashtagElements.forEach((element, index) => {
-                const expectedTooltip = component.hashtags[index].tooltip;
+                const expectedTooltip = component.hashtags()[index].tooltip;
                 expect(element.nativeElement.getAttribute('data-bs-title')).toBe(expectedTooltip);
             });
         });
@@ -259,16 +253,16 @@ describe('TrendingHashtagsComponent', () => {
 
             firstHashtagElement.nativeElement.click();
 
-            expect(component.clickHashtag).toHaveBeenCalledWith(component.hashtags[0].hashtag);
+            expect(component.clickHashtag).toHaveBeenCalledWith(component.hashtags()[0].hashtag);
         });
 
         it('should display correct title with number of hashtags', () => {
             const titleElement = fixture.debugElement.query(By.css('#title_trendingHashTags'));
-            expect(titleElement.nativeElement.textContent).toContain(`Top ${component.numOfHashtags} most used hashtags`);
+            expect(titleElement.nativeElement.textContent).toContain(`Top ${component.numOfHashtags()} most used hashtags`);
         });
 
         it('should show loading overlay when isHashtagsLoading is true', () => {
-            component.isHashtagsLoading = true;
+            component.isHashtagsLoading.set(true);
             fixture.detectChanges();
 
             const overlayElement = fixture.debugElement.query(By.css('overlay'));
@@ -278,7 +272,7 @@ describe('TrendingHashtagsComponent', () => {
 
     describe('effect integration', () => {
         it('should react to state changes', () => {
-            vi.spyOn(component as any, 'requestFromAPI');
+            vi.spyOn(component as any, 'fetchHashtags');
 
             // Simulate state change
             const newState = {...mockState, start: '2023-02-01'};
@@ -286,7 +280,7 @@ describe('TrendingHashtagsComponent', () => {
 
             fixture.detectChanges();
 
-            expect((component as any).requestFromAPI).toHaveBeenCalled();
+            expect((component as any).fetchHashtags).toHaveBeenCalled();
         });
     });
 });

@@ -1,11 +1,24 @@
-import {Component, computed, effect, ElementRef, NgZone, OnDestroy, OnInit, signal, ViewChild} from '@angular/core';
-import {StateService} from 'src/app/state.service';
+import {
+    booleanAttribute,
+    Component,
+    computed,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    NgZone,
+    OnDestroy,
+    OnInit,
+    signal,
+    ViewChild
+} from '@angular/core';
+import {StateService} from '../../../lib/state.service';
 import {Overlay} from '../../overlay.component';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer, ScatterplotLayer} from '@deck.gl/layers';
-import {DataService} from '../../data.service';
-import {ICountryData, ICountryLocationData, IStateParams, StatsType} from '../types';
+import {DataService} from '../../../lib/data.service';
+import {ICountryData, ICountryLocationData, IStateParams, StatsType} from '../../../lib/types';
 import countryPlotPositions from '../../../assets/static/json/countryLabelpoint.json';
 import topicDefinitions from "../../../assets/static/json/topicDefinitions.json";
 import {scalePow, scaleSqrt} from 'd3-scale';
@@ -13,6 +26,7 @@ import {interpolateHcl} from 'd3-interpolate';
 import {lch, rgb} from 'd3-color';
 
 import {CountryMapLegendComponent} from "./country-map-legend/country-map-legend.component";
+import {ToastService} from "../../../lib/toast.service";
 
 const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryCode: string]: [number, number] | null };
 
@@ -25,6 +39,11 @@ const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryC
 export class CountryMapComponent implements OnInit, OnDestroy {
 
     @ViewChild('deckContainer', {static: true}) deckContainer!: ElementRef;
+    private stateService: StateService = inject(StateService);
+    private dataService: DataService = inject(DataService);
+    private readonly ngZone: NgZone = inject(NgZone);
+    private toastService = inject(ToastService);
+
 
     isLoading = signal(false);
     enrichedCountryData = signal<ICountryLocationData[]>([]);
@@ -60,16 +79,14 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 && a.start === b.start
                 && a.end === b.end
                 && a.active_topic == b.active_topic
+                && a.osm_user_id === b.osm_user_id
         }
     });
 
     deck!: Deck<MapView>;
+    userMode = input(false, {transform: booleanAttribute});
 
-    constructor(
-        private stateService: StateService,
-        private dataService: DataService,
-        private readonly ngZone: NgZone
-    ) {
+    constructor() {
         effect(() => {
             this.updateData(this.relevantState());
         });
@@ -91,25 +108,49 @@ export class CountryMapComponent implements OnInit, OnDestroy {
     }
 
     updateData(state: IStateParams) {
+        const isUserMode = this.userMode();
         const reqParams = {
             hashtag: state.hashtag,
             start: state.start,
             end: state.end,
             topics: state.active_topic,
-        }
+            ...(!isUserMode ? {} : { osm_user_id: state.osm_user_id }),
+        };
 
         this.isLoading.set(true);
-        this.dataService.requestCountryStats(reqParams).subscribe({
-            next: (res) => {
-                const countryData: ICountryData[] = res.result.topics[this.activeTopic()];
-                this.enrichedCountryData.set(this.enrichCountryDataWithPlotPositions(countryData));
+        (isUserMode
+                ? this.dataService.requestUserCountryStats(reqParams)
+                : this.dataService.requestCountryStats(reqParams)
+        ).subscribe(this.handleResponse());
+    }
+
+    private handleResponse() {
+        return {
+            next: (res: any) => {
                 this.isLoading.set(false);
+                if(Object.keys(res.result).length > 0) {
+                    const countryData: ICountryData[] = res.result.topics[this.activeTopic()];
+                    this.enrichedCountryData.set(this.enrichCountryDataWithPlotPositions(countryData));
+                }
             },
-            error: (err) => {
+            error: (err: Error) => {
                 console.log(err);
                 this.isLoading.set(false);
+                if (err) {
+                    this.toastService.show({
+                        title: 'Error while getting Country Map data from API',
+                        body: `Something went wrong while requesting data for Map of individual countries. ${err.message}`,
+                        type: 'error'
+                    })
+                } else {
+                    this.toastService.show({
+                        title: 'Error while getting Hex Map data from API',
+                        body: 'Something went wrong while requesting data for Map of individual countries. Please try again with modify request.',
+                        type: 'error'
+                    })
+                }
             }
-        })
+        }
     }
 
     /**

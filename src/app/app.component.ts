@@ -1,39 +1,54 @@
-import {AfterViewInit, Component, ElementRef, HostListener, QueryList, ViewChildren} from '@angular/core';
-import {ToastService} from './toast.service';
-import {DataService} from "./data.service";
-import {StateService} from "./state.service";
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    HostListener,
+    inject,
+    QueryList,
+    signal,
+    ViewChildren
+} from '@angular/core';
+import {ToastService} from '../lib/toast.service';
+import {DataService} from "../lib/data.service";
+import {StateService} from "../lib/state.service";
 import packageJson from '../../package.json';
-import {enableTooltips} from "./utils";
+import {enableTooltips} from "../lib/utils";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
 import {ToastComponent} from "./toast/toast.component";
 import {NgClass} from "@angular/common";
-import {RouterLink, RouterOutlet} from "@angular/router";
+import {Router, RouterLink, RouterOutlet} from "@angular/router";
+import {AuthService} from "../lib/auth.service";
+import {NzIconModule} from "ng-zorro-antd/icon";
+import {NzButtonModule} from "ng-zorro-antd/button";
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    imports: [StatusBannerComponent, ToastComponent, NgClass, RouterOutlet, RouterLink],
+    imports: [StatusBannerComponent, ToastComponent, NgClass, RouterOutlet, RouterLink, NzButtonModule, NzIconModule],
     standalone: true
 })
 export class AppComponent implements AfterViewInit {
     @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
+    stateService = inject(StateService);
+    private toastService = inject(ToastService);
+    private dataService = inject(DataService);
+    protected authService = inject(AuthService);
+    private router: Router = inject(Router);
+
     title = 'ohsomeNow Stats'
-    name = 'HeiGIT';
+    name = 'HeiGIT'
     isOpen = false
-    live: boolean = false
+    live = signal<boolean>(false)
     page: string = ''
     protected readonly appVersion: string = packageJson.version
     protected currentYear: string = new Date().getFullYear().toString()
 
-    constructor(private toastService: ToastService,
-                private dataService: DataService,
-                stateService: StateService,
-    ) {
+    constructor() {
         this.dataService.liveMode.subscribe(mode => {
-            this.live = mode
+            this.live.set(mode)
         })
-        stateService.activePage.subscribe(page => {
+        this.stateService.activePage.subscribe(page => {
             this.page = page!.split('?')[0]
         })
     }
@@ -70,9 +85,7 @@ export class AppComponent implements AfterViewInit {
     }
 
     toggleSidebar() {
-        // console.log('>>> AppComponent >>> toggleSidebar ')
         this.isOpen = !this.isOpen
-        // this.triggerResizeEvent()
         const app = document.querySelector('#sidebar-container')
         if (app) {
             if (app.classList.contains('is-collapsed'))
@@ -81,5 +94,4 @@ export class AppComponent implements AfterViewInit {
                 app.classList.add('is-collapsed')
         }
     }
-
 }

@@ -1,15 +1,15 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import {LiveQueryComponent} from './live-query.component';
-import {DataService} from '../../../data.service';
-import {ToastService} from 'src/app/toast.service';
-import {StateService} from '../../../state.service';
+import {DataService} from '../../../../lib/data.service';
+import {ToastService} from '../../../../lib/toast.service';
+import {StateService} from '../../../../lib/state.service';
 import {of} from 'rxjs';
 import {UTCToLocalConverterPipe} from '../pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from '@angular/router';
 import {NO_ERRORS_SCHEMA, signal} from '@angular/core';
 import dayjs from 'dayjs';
-import {IHashtags, IStateParams} from '../../types';
+import {IHashtags, IStateParams} from '../../../../lib/types';
 import {QueryComponent} from "../query.component";
 import {vi} from "vitest";
 
@@ -41,7 +41,8 @@ describe('LiveQueryComponent', () => {
         end: '2024-12-31T23:59:59Z',
         interval: 'P1M',
         topics: 'road,building',
-        active_topic: 'road'
+        active_topic: 'road',
+        osm_user_id: ''
     };
 
     beforeEach(async () => {
@@ -100,22 +101,22 @@ describe('LiveQueryComponent', () => {
 
     describe('Live Mode', () => {
         beforeEach(() => {
-            component.selectedDateRange = {
-                start: dayjs().subtract(2, 'hours'),
-                end: dayjs()
-            };
-            component.interval = 'PT5M';
+            component.selectedDateRange.set([
+                dayjs().subtract(2, 'hours').toDate(),
+                dayjs().toDate()
+            ]);
+            component.interval.set('PT5M');
         });
 
-        it('should toggle live mode on', fakeAsync(() => {
-            vi.spyOn(component, 'triggerMetaDataRetrieval');
+        it('should toggle live mode on', () => {
+            vi.spyOn(component, 'triggerMetaDataRetrieval').mockImplementation(() => {});
 
             component.toggleLiveMode();
 
             expect(component.liveMode).toBe(true);
             expect(component.triggerMetaDataRetrieval).toHaveBeenCalled();
             expect(mockDataService.toggleLiveMode).toHaveBeenCalledWith(true);
-        }));
+        });
 
         it('should toggle live mode off', () => {
             component.liveMode = true;

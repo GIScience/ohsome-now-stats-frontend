@@ -1,11 +1,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ExportDataComponent} from './export-data.component';
-import {DataService} from "../../data.service";
-import {StateService} from "../../state.service";
+import {DataService} from "../../../lib/data.service";
+import {StateService} from "../../../lib/state.service";
 import {signal} from "@angular/core";
 import {of} from "rxjs";
-import {IHashtags, IStateParams} from "../types";
+import {IHashtags, IStateParams} from "../../../lib/types";
 import {vi} from "vitest";
 
 describe('ExportDataComponent', () => {
@@ -33,7 +33,8 @@ describe('ExportDataComponent', () => {
         end: '2024-12-31T23:59:59Z',
         interval: 'P1M',
         topics: 'roads,buildings',
-        active_topic: 'road'
+        active_topic: 'road',
+        osm_user_id: ''
     };
 
     beforeEach(async () => {

@@ -1,6 +1,5 @@
-import {effect, Injectable, signal} from '@angular/core';
-import {IStateParams} from "./dashboard/types";
-import {environment} from "../environments/environment";
+import {effect, inject, Injectable, signal} from '@angular/core';
+import {IStateParams} from "./types";
 import {DataService} from "./data.service";
 import {NavigationEnd, Router} from "@angular/router";
 import dayjs from "dayjs";
@@ -11,9 +10,12 @@ import {BehaviorSubject, filter} from "rxjs";
     providedIn: 'root'
 })
 export class StateService {
+
+    private dataService = inject(DataService);
+    private router = inject(Router);
+
     // doing this to be able to mock window easily in tests
     window = window;
-    url = environment.ohsomeStatsServiceUrl
 
     private initialState = this.initInitialState()
 
@@ -28,16 +30,13 @@ export class StateService {
     bsActivePage = new BehaviorSubject<string | undefined>(undefined);
     activePage = this.bsActivePage.asObservable();
 
-    constructor(
-        private dataService: DataService,
-        private router: Router,
-    ) {
+    constructor() {
         effect(() => {
             console.info('Query state changed:', this.appState());
             // This is THE ONLY PLACE WE WANT URL TO BE UPDATED
             this.updateURL(this.appState())
         });
-        if (router.events) {
+        if (this.router.events) {
             this.router.events.pipe(
                 filter(event => event instanceof NavigationEnd)
             ).subscribe((_) => {
@@ -61,6 +60,9 @@ export class StateService {
 
     private updateURL(data: IStateParams): void {
         let fragment = `hashtag=${data.hashtag}&start=${data.start}&end=${data.end}&interval=${data.interval}&active_topic=${data.active_topic}&countries=${data.countries}&topics=${data.topics}`
+        if (data.osm_user_id !== undefined) {
+            fragment += `&osm_user=${data.osm_user_id}`
+        }
         if (data.fit_to_content !== undefined) {
             fragment += "&fit_to_content="
         }
@@ -88,6 +90,7 @@ export class StateService {
         const interval = this.getDefaultInterval(max_timestamp, min_timestamp, queryParams);
         const {topics, active_topic} = this.getDefaultTopicConfig(queryParams)
 
+
         return {
             hashtag: this.fromUrlOrDefault(queryParams, "hashtag", ""),
             start: min_timestamp,
@@ -96,7 +99,8 @@ export class StateService {
             countries: this.fromUrlOrDefault(queryParams, "countries", ''),
             topics: topics,
             fit_to_content: this.fromUrlOrDefault(queryParams, 'fit_to_content', undefined),
-            active_topic: active_topic
+            active_topic: active_topic,
+            osm_user_id: this.fromUrlOrDefault(queryParams, 'osm_user', '115612')
         }
     }
 

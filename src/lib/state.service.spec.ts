@@ -1,10 +1,16 @@
 import {type MockedObject, vi} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {Router} from '@angular/router';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import duration from 'dayjs/plugin/duration';
+
+dayjs.extend(utc);
+dayjs.extend(duration);
 
 import {StateService} from './state.service';
 import {DataService} from './data.service';
-import {IStateParams, StatsType} from './dashboard/types';
+import {IStateParams, StatsType} from './types';
 
 describe('StateService', () => {
     let service: StateService;
@@ -23,7 +29,8 @@ describe('StateService', () => {
         countries: '',
         topics: '',
         fit_to_content: undefined,
-        active_topic: 'contributor' as StatsType
+        active_topic: 'contributor' as StatsType,
+        osm_user_id: 'tyr_asd'
     };
 
     beforeEach(() => {
@@ -63,7 +70,8 @@ describe('StateService', () => {
         it('should initialize from URL fragment when present', () => {
             // Get the service through TestBed to maintain injection context
             const serviceWithFragment = TestBed.inject(StateService);
-            // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             serviceWithFragment.window = {location: {href: 'stats.now.ohsome.org/dashboard#hashtag=test&start=2023-06-01T00:00:00Z&end=2023-12-01T00:00:00Z&interval=P1D&active_topic=building&countries=DE&topics=building'}};
             serviceWithFragment.updatePartialState(serviceWithFragment.initInitialState());
 
@@ -101,7 +109,8 @@ describe('StateService', () => {
                 countries: 'DE',
                 topics: 'buildings',
                 fit_to_content: undefined,
-                active_topic: 'users' as StatsType
+                active_topic: 'users' as StatsType,
+                osm_user_id: 'tyr_asd'
             };
 
             // Access private method for testing
@@ -124,7 +133,8 @@ describe('StateService', () => {
                 countries: 'DE',
                 topics: 'buildings',
                 fit_to_content: 'true',
-                active_topic: 'users' as StatsType
+                active_topic: 'users' as StatsType,
+                osm_user_id: 'tyr_asd'
             };
 
             // Access private method for testing

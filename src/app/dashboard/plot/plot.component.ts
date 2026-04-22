@@ -1,4 +1,4 @@
-import {Component, computed, effect, signal} from '@angular/core';
+import {booleanAttribute, Component, computed, effect, inject, input, signal} from '@angular/core';
 
 import * as PlotlyJS from 'plotly.js-basic-dist-min';
 import {Config, Layout} from 'plotly.js-basic-dist-min';
@@ -10,9 +10,9 @@ import {
     UTCStringToLocalDateConverterFunction,
     UTCToLocalConverterPipe
 } from "../query/pipes/utc-to-local-converter.pipe";
-import {StateService} from "../../state.service";
-import {DataService} from "../../data.service";
-import {IPlotResult, IQueryParams, StatsType} from "../types";
+import {StateService} from "../../../lib/state.service";
+import {DataService} from "../../../lib/data.service";
+import {IPlotResult, IQueryParams, StatsType} from "../../../lib/types";
 import {Overlay} from '../../overlay.component';
 import {PlotlyComponent, PlotlyModule} from 'angular-plotly.js';
 
@@ -25,6 +25,10 @@ PlotlyModule.forRoot(PlotlyJS)
     imports: [Overlay, PlotlyComponent,]
 })
 export class PlotComponent {
+
+    private stateService: StateService = inject(StateService);
+    private dataService: DataService = inject(DataService);
+    private utcToLocalConverter: UTCToLocalConverterPipe = inject(UTCToLocalConverterPipe);
 
     data = signal<IPlotResult | null>(null);
     activeTopic = signal<StatsType | null>(null);
@@ -40,6 +44,7 @@ export class PlotComponent {
                 && a.countries === b.countries
                 && a.interval === b.interval
                 && a.topics === b.topics
+                && a.osm_user_id === b.osm_user_id
         }
     });
 
@@ -79,13 +84,9 @@ export class PlotComponent {
                 click: this.fitToContent()
             }]
     }
+    userMode = input(false, {transform: booleanAttribute});
 
-    constructor(
-        private stateService: StateService,
-        private dataService: DataService,
-        private utcToLocalConverter: UTCToLocalConverterPipe
-    ) {
-
+    constructor() {
         // Overall Effect for calling API
         effect(() => {
             this.activeTopic.set(this.relevantState().active_topic)
@@ -100,8 +101,15 @@ export class PlotComponent {
 
     private fetchPlotData(state: IQueryParams) {
         this.isPlotsLoading.set(true);
-        this.dataService.requestPlot(state).subscribe({
-            next: (res) => {
+        (this.userMode()
+            ? this.dataService.requestUserPlot(state)
+            : this.dataService.requestPlot(state)
+        ).subscribe(this.handleResponse());
+    }
+
+    private handleResponse() {
+        return {
+            next: (res: any) => {
                 this.data.set(res.result);
                 this.isPlotsLoading.set(false);
 
@@ -111,10 +119,10 @@ export class PlotComponent {
                     this.resetZoom();
                 }
             },
-            error: (err) => {
+            error: (err: Error) => {
                 console.error('Error while requesting Plot data  ', err)
             }
-        });
+        }
     }
 
     plotData = computed(() => {

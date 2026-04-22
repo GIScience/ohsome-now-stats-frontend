@@ -1,0 +1,58 @@
+<div class="row gap-20 pos-r">
+  <div class="col-md-3">
+    <div class="w-100">
+      <user-query></user-query>
+    </div>
+    @if (!authService.isAnon()) {
+      <div class="w-100 mT-10">
+        <app-export-data></app-export-data>
+      </div>
+    }
+  </div>
+  <div class="col-md-9">
+    @if (!authService.isAnon()) {
+      <div class="row">
+        <div class='col-md-12'>
+          <app-summary class=row userMode></app-summary>
+        </div>
+      </div>
+      <div class="row">
+        <div class="pT-10">
+          <app-plot userMode></app-plot>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xxl-6">
+          <div class="pT-10">
+            <app-country-map userMode></app-country-map>
+          </div>
+        </div>
+        <div class="col-xxl-6">
+          <div class="pT-10">
+            <app-hex-map userMode></app-hex-map>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="row bgc-white bd">
+        <div class='col-md-12'>
+          <div class="pT-10">
+            <div style="margin: 2rem auto; width: fit-content;">
+              <h4>User statistics are only available with a free HeiGIT account.</h4>
+              <div style="margin: 0 auto; min-width:30%; display:flex;">
+                <button style="flex-grow: 2; flex-basis: 0" class="btn btn-primary btn-color"
+                  (click)="authService.login()">Login
+                </button>
+                <div style="flex-grow: 1; flex-basis: 0; align-content: center; text-align: center">or</div>
+                <button style="flex-grow: 2; flex-basis: 0" class="btn btn-primary btn-color"
+                  (click)="authService.register()">
+                  Sign-Up
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
