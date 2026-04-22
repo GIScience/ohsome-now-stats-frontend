@@ -105,8 +105,8 @@ importers:
         specifier: ^2.30.1
         version: 2.30.1
       ng-zorro-antd:
-        specifier: ~21.0.1
-        version: 21.0.2(b8fffb7567ea824adf94a85211099c4d)
+        specifier: ~21.2.2
+        version: 21.2.2(b8fffb7567ea824adf94a85211099c4d)
       ngx-select-dropdown:
         specifier: ^3.3.2
         version: 3.3.2(@angular/common@21.2.9(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.15.1))
@@ -3465,8 +3465,8 @@ packages:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
 
-  ng-zorro-antd@21.0.2:
-    resolution: {integrity: sha512-Nn6x8x3pUXBVTfab1c7BYPqiK8Bp9WLgHbJ6Fja5T9EKeMiCWj4zJOvFRT2JKSnNBGQtxLzHr2KOkehIfhmk/A==}
+  ng-zorro-antd@21.2.2:
+    resolution: {integrity: sha512-mYgc5aDGkBLFwQwcuCW63ESM9oIaCAHCen0PkB77YSfe79f9SVunmUcSsiGPS4lFVmW8VWiL2TYeW53oc9yGOg==}
     peerDependencies:
       '@angular/common': ^21.0.0
       '@angular/core': '>=21.0.7'
@@ -7977,7 +7977,7 @@ snapshots:
 
   negotiator@1.0.0: {}
 
-  ng-zorro-antd@21.0.2(b8fffb7567ea824adf94a85211099c4d):
+  ng-zorro-antd@21.2.2(b8fffb7567ea824adf94a85211099c4d):
     dependencies:
       '@angular/cdk': 21.1.1(@angular/common@21.2.9(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@21.2.9(@angular/animations@21.2.9(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@21.2.9(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.15.1)))(rxjs@7.8.2)
       '@angular/common': 21.2.9(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)

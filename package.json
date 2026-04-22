@@ -47,7 +47,7 @@
     "export-to-csv": "^1.4.0",
     "geojson": "^0.5.0",
     "moment": "^2.30.1",
-    "ng-zorro-antd": "~21.0.1",
+    "ng-zorro-antd": "~21.2.2",
     "ngx-select-dropdown": "^3.3.2",
     "papaparse": "^5.5.3",
     "perfect-scrollbar": "^1.5.6",
