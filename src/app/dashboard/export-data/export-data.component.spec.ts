@@ -33,7 +33,8 @@ describe('ExportDataComponent', () => {
         end: '2024-12-31T23:59:59Z',
         interval: 'P1M',
         topics: 'roads,buildings',
-        active_topic: 'road'
+        active_topic: 'road',
+        osm_user_id: ''
     };
 
     beforeEach(async () => {

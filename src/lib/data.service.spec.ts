@@ -4,6 +4,7 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {ActivatedRoute} from '@angular/router';
 
 import {DataService} from './data.service';
+import {AuthService} from './auth.service';
 import {environment} from '@environments/environment';
 import {IMetaData, IMetadataResponse} from './types';
 
@@ -25,6 +26,9 @@ describe('DataService', () => {
         metadata: {executionTime: 100, requestUrl: 'test'}
     };
 
+    const mockAuthService = {
+        key: () => ({key: 'mock-api-key'})
+    };
 
     beforeEach(() => {
         const activatedRouteSpy = {
@@ -33,14 +37,14 @@ describe('DataService', () => {
             }
         };
 
-        // Mock environment
-        environment.ohsomeStatsServiceUrl = mockUrl; // Correct way to mock a simple variable
+        environment.ohsomeStatsServiceUrl = mockUrl;
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [
                 DataService,
-                {provide: ActivatedRoute, useValue: activatedRouteSpy}
+                {provide: ActivatedRoute, useValue: activatedRouteSpy},
+                {provide: AuthService, useValue: mockAuthService}
             ]
         });
 
@@ -72,45 +76,54 @@ describe('DataService', () => {
     });
 
     describe('requestMetadata', () => {
-        it('should fetch metadata and update signal', () => {
-            service.requestMetadata().subscribe(metadata => {
-                expect(metadata).toEqual(mockMetaData);
-                expect(service.metaData()).toEqual(mockMetaData);
-            });
+        it('should fetch metadata and update signal', async () => {
+            const promise = service.requestMetadata();
 
             const req = httpMock.expectOne(`${mockUrl}/metadata`);
             expect(req.request.method).toBe('GET');
             req.flush(mockMetadataResponse);
+
+            const metadata = await promise;
+            expect(metadata).toEqual(mockMetaData);
+            expect(service.metaData()).toEqual(mockMetaData);
         });
 
-        it('should handle client-side errors', () => {
-            vi.spyOn(console, 'error');
+        it('should handle client-side errors', async () => {
+            vi.useFakeTimers();
+            let rejectedError: Error | undefined;
 
-            service.requestMetadata().subscribe({
-                next: () => expect.fail('should have failed'),
-                error: (error) => {
-                    expect(error.message).toBe('ohsomeNow Stats Service did not respond with a metadata response.');
-                    expect(console.error).toHaveBeenCalledWith('An error occurred:', expect.any(Object));
-                }
-            });
+            service.requestMetadata().catch(e => { rejectedError = e; });
 
-            const req = httpMock.expectOne(`${mockUrl}/metadata`);
-            req.error(new ProgressEvent('error'), {status: 0});
+            httpMock.expectOne(`${mockUrl}/metadata`).error(new ProgressEvent('error'), {status: 0});
+            await vi.advanceTimersByTimeAsync(2000);
+
+            httpMock.expectOne(`${mockUrl}/metadata`).error(new ProgressEvent('error'), {status: 0});
+            await vi.advanceTimersByTimeAsync(2000);
+
+            httpMock.expectOne(`${mockUrl}/metadata`).error(new ProgressEvent('error'), {status: 0});
+            await vi.advanceTimersByTimeAsync(100);
+
+            vi.useRealTimers();
+            expect(rejectedError?.message).toBe('Metadata request failed');
         });
 
-        it('should handle server errors', () => {
-            vi.spyOn(console, 'error');
+        it('should handle server errors', async () => {
+            vi.useFakeTimers();
+            let rejectedError: Error | undefined;
 
-            service.requestMetadata().subscribe({
-                next: () => expect.fail('should have failed'),
-                error: (error) => {
-                    expect(error.message).toBe('ohsomeNow Stats Service did not respond with a metadata response.');
-                    expect(console.error).toHaveBeenCalledWith('Backend returned code 500, body was: ', 'Server Error');
-                }
-            });
+            service.requestMetadata().catch(e => { rejectedError = e; });
 
-            const req = httpMock.expectOne(`${mockUrl}/metadata`);
-            req.error(new ProgressEvent('error'), {status: 500, statusText: 'Server Error'});
+            httpMock.expectOne(`${mockUrl}/metadata`).error(new ProgressEvent('error'), {status: 500, statusText: 'Server Error'});
+            await vi.advanceTimersByTimeAsync(2000);
+
+            httpMock.expectOne(`${mockUrl}/metadata`).error(new ProgressEvent('error'), {status: 500, statusText: 'Server Error'});
+            await vi.advanceTimersByTimeAsync(2000);
+
+            httpMock.expectOne(`${mockUrl}/metadata`).error(new ProgressEvent('error'), {status: 500, statusText: 'Server Error'});
+            await vi.advanceTimersByTimeAsync(100);
+
+            vi.useRealTimers();
+            expect(rejectedError?.message).toBe('Metadata request failed');
         });
     });
 
@@ -134,15 +147,16 @@ describe('DataService', () => {
             const initialMetadata = service.metaData();
             expect(initialMetadata).toBeDefined();
 
-            // Test that the signal is readonly (should not have set method)
             expect((service.metaData as any).set).toBeUndefined();
         });
 
-        it('should update metadata signal when requestMetadata is called', () => {
-            service.requestMetadata().subscribe();
+        it('should update metadata signal when requestMetadata is called', async () => {
+            const promise = service.requestMetadata();
 
             const req = httpMock.expectOne(`${mockUrl}/metadata`);
             req.flush(mockMetadataResponse);
+
+            await promise;
 
             expect(service.metaData()).toEqual(mockMetaData);
         });

@@ -1,5 +1,5 @@
 import {type MockedObject, vi} from "vitest";
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 
 import {PlotComponent} from './plot.component';
@@ -9,6 +9,9 @@ import {UTCToLocalConverterPipe} from '../query/pipes/utc-to-local-converter.pip
 import {IPlotResult, StatsType} from '../../../lib/types';
 import {Overlay} from '../../overlay.component';
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 // Mock Plotly
 const mockPlotly = {
@@ -55,8 +58,9 @@ describe('PlotComponent', () => {
         countries: 'US',
         interval: 'P1D',
         topics: '',
-        active_topic: 'users' as StatsType,
-        fit_to_content: undefined
+        active_topic: 'contributor' as StatsType,
+        fit_to_content: undefined,
+        osm_user_id: ''
     };
 
     beforeEach(async () => {
@@ -112,82 +116,73 @@ describe('PlotComponent', () => {
     });
 
     it('should initialize with default values', () => {
-        expect(component.data).toBeUndefined();
-        expect(component.activeTopic).toBeUndefined();
-        expect(component.isPlotsLoading).toBe(false);
+        expect(component.data()).toBeNull();
+        expect(component.activeTopic()).toBeNull();
+        expect(component.isPlotsLoading()).toBe(false);
         expect(component.config).toBeDefined();
         expect(component.fitToContentIcon).toBeDefined();
     });
 
-    describe('requestToAPI', () => {
+    describe('fetchPlotData', () => {
         beforeEach(() => {
-            vi.spyOn(component, 'refreshPlot');
             vi.spyOn(component, 'fitToContent').mockReturnValue(() => {
             });
             vi.spyOn(component, 'resetZoom');
         });
 
         it('should call requestPlot with correct parameters', () => {
-            component['requestToAPI'](mockState);
+            component['fetchPlotData'](mockState);
 
             expect(mockDataService.requestPlot).toHaveBeenCalledWith(mockState);
         });
 
-        it('should handle plot data without topics', fakeAsync(() => {
-            component['requestToAPI'](mockState);
-            tick();
+        it('should handle plot data without topics', () => {
+            component['fetchPlotData'](mockState);
 
-            expect(component.data).toBeDefined();
-            expect(component.refreshPlot).toHaveBeenCalled();
-            expect(component.isPlotsLoading).toBe(false);
-        }));
+            expect(component.data()).toBeDefined();
+            expect(component.isPlotsLoading()).toBe(false);
+        });
 
-        it('should handle plot data with topics', fakeAsync(() => {
+        it('should handle plot data with topics', () => {
             const stateWithTopics = {...mockState, topics: 'amenity'};
 
-            component['requestToAPI'](stateWithTopics);
-            tick();
-        }));
+            component['fetchPlotData'](stateWithTopics);
+        });
 
-        it('should call resetZoom when fit_to_content is not set', fakeAsync(() => {
-            component['requestToAPI'](mockState);
-            tick();
+        it('should call resetZoom when fit_to_content is not set', () => {
+            component['fetchPlotData'](mockState);
 
             expect(component.resetZoom).toHaveBeenCalled();
-        }));
+        });
 
         it('should handle API errors', () => {
             vi.spyOn(console, 'error');
             mockDataService.requestPlot.mockReturnValue(throwError('API Error'));
 
-            component['requestToAPI'](mockState);
+            component['fetchPlotData'](mockState);
 
             expect(console.error).toHaveBeenCalledWith('Error while requesting Plot data  ', 'API Error');
         });
     });
 
     describe('computed properties and effects', () => {
-        it('should call requestToAPI when relevantState changes', () => {
-            vi.spyOn(component as any, 'requestToAPI');
+        it('should call fetchPlotData when relevantState changes', () => {
+            vi.spyOn(component as any, 'fetchPlotData');
 
             fixture.detectChanges();
 
-            expect((component as any).requestToAPI).toHaveBeenCalled();
+            expect((component as any).fetchPlotData).toHaveBeenCalled();
         });
 
-        it('should call refreshPlot when only active_topic changes', () => {
-            component.data = mockPlotData;
-            vi.spyOn(component, 'refreshPlot');
-
-            // Simulate active topic change
+        it('should update activeTopic when active_topic changes', () => {
             mockStateService.appState.mockReturnValue({
                 ...mockState,
-                active_topic: 'buildings' as StatsType
+                active_topic: 'building' as StatsType
             });
 
             fixture.detectChanges();
 
-            expect(component.refreshPlot).toHaveBeenCalled();
+            expect(component.activeTopic()).toBe('building');
         });
     });
 });

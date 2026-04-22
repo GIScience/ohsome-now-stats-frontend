@@ -40,7 +40,8 @@ describe('LiveQueryComponent', () => {
         end: '2024-12-31T23:59:59Z',
         interval: 'P1M',
         topics: 'road,building',
-        active_topic: 'road'
+        active_topic: 'road',
+        osm_user_id: ''
     };
 
     beforeEach(async () => {
@@ -108,9 +109,9 @@ describe('LiveQueryComponent', () => {
             component.changeHub('asia-pacific');
 
             expect(component.selectedHub).toBe('asia-pacific');
-            expect(component.selectedCountries.length).toBeGreaterThan(0);
-            expect(component.selectedCountries.some(c => c.value === 'AFG')).toBe(true);
-            expect(component.selectedCountries.some(c => c.value === 'BGD')).toBe(true);
+            expect(component.selectedCountries().length).toBeGreaterThan(0);
+            expect(component.selectedCountries().some((c: any) => c.value === 'AFG')).toBe(true);
+            expect(component.selectedCountries().some((c: any) => c.value === 'BGD')).toBe(true);
         });
 
         it('should select countries for other hubs', () => {
@@ -119,7 +120,7 @@ describe('LiveQueryComponent', () => {
             hubs.forEach(hub => {
                 component.changeHub(hub);
                 expect(component.selectedHub).toBe(hub);
-                expect(Array.isArray(component.selectedCountries)).toBe(true);
+                expect(Array.isArray(component.selectedCountries())).toBe(true);
             });
         });
     });
@@ -139,8 +140,8 @@ describe('LiveQueryComponent', () => {
             component.changeImpactArea('disaster');
 
             expect(component.selectedImpactArea).toBe('disaster');
-            expect(component.selectedTopics.length).toBeGreaterThan(0);
-            expect(component.selectedTopics.some(t => t.value === 'wash')).toBe(true);
+            expect(component.selectedTopics().length).toBeGreaterThan(0);
+            expect(component.selectedTopics().some((t: any) => t.value === 'wash')).toBe(true);
         });
 
         it('should select topics for all impact areas', () => {
@@ -149,7 +150,7 @@ describe('LiveQueryComponent', () => {
             impactAreas.forEach(area => {
                 component.changeImpactArea(area);
                 expect(component.selectedImpactArea).toBe(area);
-                expect(Array.isArray(component.selectedTopics)).toBe(true);
+                expect(Array.isArray(component.selectedTopics())).toBe(true);
             });
         });
     });

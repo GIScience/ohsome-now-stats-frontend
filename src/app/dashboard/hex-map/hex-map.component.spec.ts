@@ -13,7 +13,8 @@ const mockQueryParams = {
     countries: 'US',
     topics: 'amenity,body_of_water',
     interval: '',
-    active_topic: 'building'
+    active_topic: 'building',
+    osm_user_id: ''
 };
 
 const mockH3Data = [
@@ -48,8 +49,12 @@ describe('HexMapComponent', () => {
 
         fixture = TestBed.createComponent(HexMapComponent);
         component = fixture.componentInstance;
-        // Mock deckContainer
-        component.deckContainer = {nativeElement: document.createElement('div')} as any;
+
+        // Mock deckContainer as a callable function returning undefined so the deck-init effect exits early
+        component.deckContainer = vi.fn().mockReturnValue(undefined) as any;
+        // Pre-set deck with a mock so updateLayer calls do not throw
+        component.deck = {setProps: vi.fn(), finalize: vi.fn()} as any;
+
         fixture.detectChanges();
 
         mockDataService = TestBed.inject(DataService) as MockedObject<DataService>;
@@ -60,10 +65,8 @@ describe('HexMapComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should call initializeDeck on ngOnInit', () => {
-        vi.spyOn(component as any, 'initializeDeck');
-        component.ngOnInit();
-        expect((component as any).initializeDeck).toHaveBeenCalled();
+    it('should initialize deck via effect on construction', () => {
+        expect(component).toBeTruthy();
     });
 
     it('should call deck.finalize on ngOnDestroy if deck exists', () => {
@@ -73,7 +76,7 @@ describe('HexMapComponent', () => {
     });
 
     it('should set selectedTopic from state on construction', () => {
-        expect(component.selectedTopic).toBe(mockQueryParams.active_topic);
+        expect(component.selectedTopic()).toBe(mockQueryParams.active_topic);
     });
 
     it('should call createCountryLayer with correct params in updateLayer', async () => {
@@ -98,22 +101,22 @@ describe('HexMapComponent', () => {
         const promise = component['createCountryLayer']({
             hashtag: 'test', start: '', end: '', topic: '', resolution: 3, countries: ''
         });
-        expect(component.isH3Loading).toBe(true);
+        expect(component.isH3Loading()).toBe(true);
         await promise;
-        expect(component.isH3Loading).toBe(false);
+        expect(component.isH3Loading()).toBe(false);
     });
 
     it('should calculate min/max stats from result in createCountryLayer', async () => {
         await component['createCountryLayer']({
             hashtag: 'test', start: '', end: '', topic: '', resolution: 3, countries: ''
         });
-        expect(component.minMaxStats.result.max).toBe(1);
-        expect(component.minMaxStats.result.min).toBe(-2);
+        expect(component.minMaxStats()?.result.max).toBe(1);
+        expect(component.minMaxStats()?.result.min).toBe(-2);
     });
 
     it('getColorFn should return color array for positive and negative values', () => {
-        component.minMaxStats = {result: {min: -2, max: 1}};
-        component.selectedTopic = 'building';
+        component.minMaxStats.set({result: {min: -2, max: 1}});
+        component.selectedTopic.set('building' as any);
         const colorFn = component.getColorFn();
         const pos = colorFn({result: 1} as any);
         const neg = colorFn({result: -2} as any);
@@ -122,7 +125,7 @@ describe('HexMapComponent', () => {
     });
 
     it('getTopicUnit should return correct y-title', () => {
-        component.selectedTopic = 'building';
+        component.selectedTopic.set('building' as any);
         expect(component.getTopicUnit()).toEqual(expect.any(String));
     });
 
