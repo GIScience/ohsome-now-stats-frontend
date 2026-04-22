@@ -92,7 +92,7 @@ pipeline {
           sh 'git config --global user.email "nobody@example.org"'  // TODO remove
           sh 'git config --global user.name "Jenkins"'  // TODO remove
           sh 'rm -rf /tmp/tmp-stats-frontend-git'
-          sh 'git clone https://gitlab.gistools.geog.uni-heidelberg.de/giscience/big-data/ohsome/ohsome-now/deployments/stats-frontend.git /tmp/tmp-stats-frontend-git'
+          sh 'git clone https://gitlab.heigit.org/giscience/big-data/ohsome/ohsome-now/deployments/stats-frontend.git /tmp/tmp-stats-frontend-git'
           sh 'rm -r /tmp/tmp-stats-frontend-git/*'
           sh 'cp -r dist/browser/* /tmp/tmp-stats-frontend-git/'
           sh "cd /tmp/tmp-stats-frontend-git/ && git add . && git commit -m 'deploy ${LATEST_COMMIT_ID}' --allow-empty && git push"
@@ -122,7 +122,7 @@ pipeline {
           sh 'git config --global user.email "nobody@example.org"'  // TODO remove
           sh 'git config --global user.name "Jenkins"'  // TODO remove
           sh 'rm -rf /tmp/tmp-stats-frontend-git'
-          sh 'git clone https://gitlab.gistools.geog.uni-heidelberg.de/giscience/big-data/ohsome/ohsome-now/deployments/stats-frontend.git /tmp/tmp-stats-frontend-git'
+          sh 'git clone https://gitlab.heigit.org/giscience/big-data/ohsome/ohsome-now/deployments/stats-frontend.git /tmp/tmp-stats-frontend-git'
           sh 'rm -r /tmp/tmp-stats-frontend-git/*'
           sh 'cp -r dist/browser/* /tmp/tmp-stats-frontend-git/'
           sh "cd /tmp/tmp-stats-frontend-git/ && git add . && git commit -m 'deploy ${LATEST_COMMIT_ID}' --allow-empty && git tag ${env.TAG_NAME} && git push && git push --tags"
