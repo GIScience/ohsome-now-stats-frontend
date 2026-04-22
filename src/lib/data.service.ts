@@ -77,7 +77,7 @@ export class DataService {
 
     requestUserSummary(params: IQueryParams) {
         return this.http.get<IWrappedStatsResult>(
-            `${this.url}/user?userId=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`,
+            `${this.url}/user?userIds=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&countries=${params.countries}&topics=${params.topics}`,
             {headers: {"Authorization": this.key().key}})
     }
 
@@ -86,7 +86,7 @@ export class DataService {
     }
 
     requestUserPlot(params: IQueryParams): Observable<IWrappedPlotResult> {
-        return this.http.get<IWrappedPlotResult>(`${this.url}/user/interval?userId=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
+        return this.http.get<IWrappedPlotResult>(`${this.url}/user/interval?userIds=${params.osm_user_id}&hashtag=${params.hashtag}&startdate=${params.start}&enddate=${params.end}&interval=${params.interval}&countries=${params.countries}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
     }
 
     requestCountryStats(params: any): Observable<IWrappedCountryResult> {
@@ -94,7 +94,7 @@ export class DataService {
     }
 
     requestUserCountryStats(params: any): Observable<IWrappedCountryResult> {
-        return this.http.get<IWrappedCountryResult>(`${this.url}/user/country?userId=${params.osm_user_id}&hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
+        return this.http.get<IWrappedCountryResult>(`${this.url}/user/country?userIds=${params.osm_user_id}&hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topics=${params.topics}`, {headers: {"Authorization": this.key().key}})
     }
 
     getTrendingHashtags(params: { start?: string; end?: string; limit?: number; countries?: string; }) {
@@ -107,7 +107,7 @@ export class DataService {
     }
 
     private readonly h3Parser = (csv: string): HexDataType[] => {
-        const parsed = Papa.parse(csv, { header: true, skipEmptyLines: true });
+        const parsed = Papa.parse(csv, {header: true, skipEmptyLines: true});
         return (parsed.data as any[]).map(row => ({
             result: Number(row.result),
             hex_cell: row.hex_cell
@@ -129,7 +129,7 @@ export class DataService {
 
         let reqParamUrl = `hashtag=${params['hashtag']}&startdate=${params['start']}&enddate=${params['end']}&topic=${params['topic']}&resolution=${params['resolution']}&countries=${params['countries']}`
         if (isUserQuery) {
-            reqParamUrl = `userId=${params.osm_user_id}&${reqParamUrl}`
+            reqParamUrl = `userIds=${params.osm_user_id}&${reqParamUrl}`
         }
         return this.http.get(
             `${this.url}${endpoint}?${reqParamUrl}`,
