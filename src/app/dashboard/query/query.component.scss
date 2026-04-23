@@ -9,8 +9,21 @@
 :host ::ng-deep .p-inputwrapper {
   box-sizing: border-box;
   width: 100%;
-  line-height: 40px;
-  height: 40px;
+  min-height: 40px;
+  height: auto;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .p-autocomplete-input-multiple {
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 40px;
+  height: auto;
+}
+
+:host ::ng-deep .p-autocomplete-chip.p-chip {
+  padding-block-start: 0.25rem;
+  padding-block-end: 0.25rem;
   font-size: 0.875rem;
 }
 

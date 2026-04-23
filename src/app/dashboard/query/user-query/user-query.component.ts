@@ -7,7 +7,7 @@ import {SelectDropDownModule} from 'ngx-select-dropdown';
 import {UTCToLocalConverterPipe} from '../pipes/utc-to-local-converter.pipe';
 import {NzDatePickerComponent, NzDatePickerModule} from "ng-zorro-antd/date-picker";
 import {IHighlightedOsmUser} from "../../../../lib/types";
-import {stringifyNamesFromResponse} from "../../../../lib/utils";
+import {forkJoin} from "rxjs";
 
 @Component({
     selector: 'user-query',
@@ -18,32 +18,52 @@ import {stringifyNamesFromResponse} from "../../../../lib/utils";
 })
 export class UserQueryComponent extends QueryComponent {
     filteredOsmUsers: WritableSignal<IHighlightedOsmUser[]> = signal([]);
-    selectedOsmUser: WritableSignal<IHighlightedOsmUser | null> = signal(null);
+    selectedOsmUsers: WritableSignal<IHighlightedOsmUser[]> = signal([]);
 
     constructor() {
         super();
-        this.dataService.getOsmUserNameFromId(this.state().osm_user_id).subscribe(userInfo => {
-            const osm_usernames = stringifyNamesFromResponse(userInfo);
-            this.osm_user.set({
-                id: this.state().osm_user_id,
-                name: osm_usernames,
-            });
+        const ids = (this.state().osm_user_id || '')
+            .split(',')
+            .map(id => id.trim())
+            .filter(id => id);
 
-            this.selectedOsmUser.set({
-                id: this.osm_user()!.id,
-                name: osm_usernames,
-            });
+        if (ids.length > 0) {
+            forkJoin(ids.map(id => this.dataService.getOsmUserNameFromId(id)))
+                .subscribe(results => {
+                    const users = results.flatMap(userInfos =>
+                        userInfos.map(info => ({
+                            id: info.id,
+                            name: info.names.map((n: any) => n.name).join(', '),
+                        }))
+                    );
 
-            this.updateSelectionFromState(this.state());
-            this.prepareSelectionForStateChange()
-        })
+                    this.osm_user.set({
+                        id: users.map(u => u.id).join(','),
+                        name: users.map(u => u.name).join(', '),
+                    });
+
+                    this.selectedOsmUsers.set(users);
+                    this.updateSelectionFromState(this.state());
+                    this.prepareSelectionForStateChange();
+                });
+        }
     }
 
     prepareSelectionForStateChange() {
+        const selected = this.selectedOsmUsers();
+        if (selected.length === 0) {
+            this.toastService.show({
+                title: 'No user selected',
+                body: 'Please select at least one OSM user.',
+                type: 'error',
+                time: 5000,
+            });
+            return;
+        }
         this.osm_user.set({
-            id: this.selectedOsmUser()!.id,
-            name: this.selectedOsmUser()!.name,
-        })
+            id: selected.map(u => u.id).join(','),
+            name: selected.map(u => u.name).join(', '),
+        });
         this.updateStateFromSelection();
     }
 

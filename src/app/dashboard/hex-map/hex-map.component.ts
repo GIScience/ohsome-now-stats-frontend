@@ -245,7 +245,8 @@ export class HexMapComponent implements OnDestroy {
             end: this.relevantState().end,
             countries: this.relevantState().countries,
             topic: this.relevantState().active_topic,
-            resolution: newResolution
+            resolution: newResolution,
+            osm_user_id: this.relevantState().osm_user_id
         }
         this.updateLayer(reqParams);
     }
