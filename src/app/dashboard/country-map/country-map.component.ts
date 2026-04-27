@@ -139,13 +139,13 @@ export class CountryMapComponent implements OnInit, OnDestroy {
                 if (err) {
                     this.toastService.show({
                         title: 'Error while getting Country Map data from API',
-                        body: `Something went wrong while requesting data for Map of individual countries. ${err.message}`,
+                        body: `Something went wrong while requesting data for map of individual countries. ${err.message}`,
                         type: 'error'
                     })
                 } else {
                     this.toastService.show({
-                        title: 'Error while getting Hex Map data from API',
-                        body: 'Something went wrong while requesting data for Map of individual countries. Please try again with modify request.',
+                        title: 'Error while getting Country Map data from API',
+                        body: 'Something went wrong while requesting data for map of individual countries.',
                         type: 'error'
                     })
                 }
