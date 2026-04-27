@@ -114,7 +114,7 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             start: state.start,
             end: state.end,
             topics: state.active_topic,
-            ...(!isUserMode ? {} : { osm_user_id: state.osm_user_id }),
+            ...(!isUserMode ? {} : {osm_user_id: state.osm_user_id}),
         };
 
         this.isLoading.set(true);
@@ -128,10 +128,8 @@ export class CountryMapComponent implements OnInit, OnDestroy {
         return {
             next: (res: any) => {
                 this.isLoading.set(false);
-                if(Object.keys(res.result).length > 0) {
-                    const countryData: ICountryData[] = res.result.topics[this.activeTopic()];
-                    this.enrichedCountryData.set(this.enrichCountryDataWithPlotPositions(countryData));
-                }
+                const countryData = Object.keys(res.result).length > 0 ? res.result.topics[this.activeTopic()] : [];
+                this.enrichedCountryData.set(this.enrichCountryDataWithPlotPositions(countryData));
             },
             error: (err: Error) => {
                 console.log(err);
