@@ -286,10 +286,17 @@ body {
     }
   }
 
-  // --- Trending hashtags — bgc-blue-50 pill inversion ---
+  // --- Trending hashtags & any other bgc-blue-50 usage ---
   .bgc-blue-50 {
     background-color: rgba(30, 64, 175, 0.3) !important;
     color: #93c5fd !important;
+  }
+
+  // --- .note callout boxes (yellow wash → amber wash) ---
+  .note {
+    background-color: rgba(245, 127, 23, 0.12) !important;
+    border-color: #ca8a04 !important;
+    color: var(--color-text-base);
   }
 
   // --- Bootstrap modal (if used) ---
