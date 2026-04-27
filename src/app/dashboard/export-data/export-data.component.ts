@@ -12,10 +12,22 @@ import {DataService} from "../../../lib/data.service";
 export class ExportDataComponent {
     private stateService: StateService = inject(StateService);
     private dataService: DataService = inject(DataService);
+    mode: string = '';
+
+    constructor() {
+        this.stateService.activePage.subscribe(page => this.mode = page!)
+    }
+
+    isUserMode() {
+        return this.mode == 'user-dashboard';
+    }
 
     exportOverview() {
         const state = this.stateService.appState()
-        this.dataService.requestSummary(state).subscribe({
+        const result = this.isUserMode()
+            ? this.dataService.requestUserSummary(state) : this.dataService.requestSummary(state)
+
+        result.subscribe({
             next: (data) => {
                 this.prepareOverviewDataAndDownload(data.result, state)
             },
@@ -33,29 +45,37 @@ export class ExportDataComponent {
                 ...Object.keys(data.topics)
             ]
 
+            const csv_data: CsvData = {
+                "startDate": state.start,
+                "endDate": state.end,
+                "hashtag": decodeURIComponent(state.hashtag),
+                "countries": state.countries,
+                ...Object.fromEntries(
+                    Object.entries(data.topics).map(entry => [entry[0], entry[1].value])
+                )
+            }
+
+            if (this.isUserMode()) {
+                arrangedHeaders.unshift("userIds")
+                csv_data.userIds = state.osm_user_id
+            }
+
             const csvConfig = mkConfig({
                 filename: `ohsome-now-stats_${decodeURIComponent(state.hashtag)}_${state.start.substring(0, 10)}_${state.end.substring(0, 10)}_summary`,
                 columnHeaders: arrangedHeaders
             });
 
-            const csv = generateCsv(csvConfig)([
-                {
-                    "startDate": state.start,
-                    "endDate": state.end,
-                    "hashtag": decodeURIComponent(state.hashtag),
-                    "countries": state.countries,
-                    ...Object.fromEntries(
-                        Object.entries(data.topics).map(entry => [entry[0], entry[1].value])
-                    )
-                }
-            ]);
+            const csv = generateCsv(csvConfig)([csv_data]);
             download(csvConfig)(csv)
         }
     }
 
     exportTimeSeries() {
         const state = this.stateService.appState()
-        this.dataService.requestPlot(state).subscribe({
+        const result = this.isUserMode()
+            ? this.dataService.requestUserPlot(state) : this.dataService.requestPlot(state)
+
+        result.subscribe({
             next: (res) => {
                 this.preparePlotDataAndDownload(res.result, state)
             },
@@ -72,6 +92,7 @@ export class ExportDataComponent {
             "startDate", "endDate", "hashtag", "countries",
             ...Object.keys(plotData.topics)
         ]
+        if (this.isUserMode()) arrangedHeaders.unshift("userIds")
 
         const csvConfig = mkConfig({
             filename: `ohsome-now-stats_${hashtag}_${plotData.startDate[0].substring(0, 10)}_${plotData.endDate.at(-1)!.substring(0, 10)}_interval`,
@@ -79,7 +100,7 @@ export class ExportDataComponent {
         });
 
         const csvData = plotData.startDate.map((value, index) => {
-            return {
+            let csvData: CsvData = {
                 startDate: value,
                 endDate: plotData.endDate[index],
                 hashtag: hashtag,
@@ -88,6 +109,10 @@ export class ExportDataComponent {
                     Object.entries(plotData.topics).map(entry => [entry[0], entry[1].value[index]])
                 )
             }
+            if (this.isUserMode()) {
+                csvData.userIds = state.osm_user_id
+            }
+            return csvData
         });
 
         const csv = generateCsv(csvConfig)(csvData);
@@ -98,7 +123,10 @@ export class ExportDataComponent {
     exportMap() {
         const state = this.stateService.appState()
         // fire API to get map data
-        this.dataService.requestCountryStats(state).subscribe({
+        const result = this.isUserMode()
+            ? this.dataService.requestUserCountryStats(state) : this.dataService.requestCountryStats(state)
+
+        result.subscribe({
             next: (res) => {
                 this.prepareMapDataAndDownload(res.result, state)
             },
@@ -121,7 +149,7 @@ export class ExportDataComponent {
         )
 
         const countryData = countries.map(country => {
-            return {
+            let csvData: CsvData = {
                 startDate: state.start,
                 endDate: state.end,
                 hashtag: hashtag,
@@ -135,6 +163,8 @@ export class ExportDataComponent {
                     )
                 )
             }
+            if (this.isUserMode()) csvData.userIds = state.osm_user_id
+            return csvData
         })
 
         if (countryData.length > 0) {
@@ -142,6 +172,7 @@ export class ExportDataComponent {
                 "startDate", "endDate", "hashtag", "country",
                 ...Object.keys(mapData.topics)
             ]
+            if (this.isUserMode()) arrangedHeaders.unshift("userIds")
 
             const csvConfig = mkConfig({
                 filename: `ohsome-now-stats_${hashtag}_${state.start.substring(10)}_${state.end.substring(10)}_per-country`,
@@ -152,4 +183,16 @@ export class ExportDataComponent {
             download(csvConfig)(csv)
         }
     }
+
+}
+
+interface CsvData {
+    startDate: string;
+    endDate: string;
+    hashtag: string;
+    countries?: string;
+    userIds?: string;
+    country?: string;
+
+    [k: string]: string | null | undefined;
 }
