@@ -136,8 +136,6 @@ export class ExportDataComponent {
                 )
             }
         })
-        console.log("countryData")
-        console.log(countryData)
 
         if (countryData.length > 0) {
             const arrangedHeaders = [
