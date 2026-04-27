@@ -1,0 +1,308 @@
+// ---------------------------------------------------------
+// @Theme Tokens
+// ---------------------------------------------------------
+// Light and dark values for CSS custom properties.
+// The ThemeService writes data-theme="light" or "dark" to <html>,
+// so both selectors below are always explicit — no media-query fallback needed.
+
+[data-theme="light"] {
+  --color-bg-body:    #f9fafb;
+  --color-bg-surface: #ffffff;
+  --color-bg-input:   #ffffff;
+  --color-text-base:  #313435;
+  --color-text-muted: #72777a;
+  --color-border:     rgba(0, 0, 0, 0.0625);
+  --color-link:       #0f9aee;
+}
+
+[data-theme="dark"] {
+  --color-bg-body:    #0f172a;
+  --color-bg-surface: #1e293b;
+  --color-bg-input:   #334155;
+  --color-text-base:  #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-border:     rgba(255, 255, 255, 0.1);
+  --color-link:       #60a5fa;
+}
+
+// ---------------------------------------------------------
+// @Base overrides
+// ---------------------------------------------------------
+
+body {
+  background-color: var(--color-bg-body);
+  color: var(--color-text-base);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+// ---------------------------------------------------------
+// @Dark mode component overrides
+// ---------------------------------------------------------
+
+[data-theme="dark"] {
+
+  // --- Utility classes ---
+  .bgc-white,
+  .bgc-grey-100,
+  .bgc-grey-200 {
+    background-color: var(--color-bg-surface) !important;
+  }
+
+  // Border utility classes generated with rgba(0,0,0,0.0625)
+  .bd  { border-color: var(--color-border) !important; }
+  .bdT { border-top-color: var(--color-border) !important; }
+  .bdR { border-right-color: var(--color-border) !important; }
+  .bdB { border-bottom-color: var(--color-border) !important; }
+  .bdL { border-left-color: var(--color-border) !important; }
+
+  // Muted text utilities
+  .c-grey-600,
+  .c-grey-700,
+  .c-grey-800,
+  .c-grey-900 { color: var(--color-text-muted) !important; }
+
+  // --- Sidebar ---
+  .sidebar {
+    background-color: var(--color-bg-surface);
+
+    ul li.active {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    ul li:not(.active) :hover {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      transition: background-color 0.3s ease-in;
+    }
+  }
+
+  .sidebar-logo {
+    border-bottom-color: var(--color-border);
+    border-right-color: var(--color-border);
+
+    .logo-text { color: var(--color-text-base); }
+  }
+
+  .sidebar-menu {
+    border-right-color: var(--color-border);
+
+    li a {
+      color: var(--color-text-muted);
+
+      &:hover, &:focus { color: var(--color-text-base); }
+    }
+
+    .sidebar-link.activated::before { background: #60a5fa; }
+  }
+
+  // --- Topbar / Header ---
+  .header {
+    background-color: var(--color-bg-surface);
+    border-bottom-color: var(--color-border) !important;
+
+    .nav-left > li > a,
+    .nav-right > li > a {
+      color: var(--color-text-muted);
+      &:hover, &:focus { color: var(--color-text-base); }
+    }
+
+    // ng-zorro text buttons in the topbar
+    .ant-btn { color: var(--color-text-muted); }
+    .ant-btn:hover { color: var(--color-text-base); }
+  }
+
+  // --- Footer ---
+  footer {
+    border-top-color: var(--color-border) !important;
+    color: var(--color-text-muted);
+    a { color: var(--color-link); }
+  }
+
+  // --- Bootstrap form controls ---
+  .form-control,
+  .form-select {
+    background-color: var(--color-bg-input);
+    color: var(--color-text-base);
+    border-color: var(--color-border);
+
+    &:focus {
+      background-color: var(--color-bg-input);
+      color: var(--color-text-base);
+    }
+  }
+
+  input:not([type="range"]),
+  select,
+  textarea {
+    background-color: var(--color-bg-input) !important;
+    color: var(--color-text-base) !important;
+    border-color: var(--color-border) !important;
+  }
+
+  // --- ng-zorro dropdown panel ---
+  .ant-dropdown .ant-dropdown-menu {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .ant-dropdown-menu-item {
+    color: var(--color-text-base) !important;
+
+    &:hover { background-color: rgba(255, 255, 255, 0.07) !important; }
+    &.ant-dropdown-menu-item-selected { background-color: rgba(255, 255, 255, 0.1) !important; }
+  }
+
+  // --- Bootstrap table (export-data) ---
+  .table {
+    --bs-table-color: var(--color-text-base);
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--color-border);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+    --bs-table-hover-color: var(--color-text-base);
+    color: var(--color-text-base);
+    border-color: var(--color-border);
+
+    thead th, thead td, th {
+      color: var(--color-text-base) !important;
+      background-color: transparent !important;
+      border-color: var(--color-border) !important;
+    }
+
+    td { color: var(--color-text-base) !important; border-color: var(--color-border) !important; }
+
+    .table-group-divider { border-top-color: var(--color-border) !important; }
+  }
+
+  // --- Form labels ---
+  .form-label,
+  label:not(.btn) { color: var(--color-text-base); }
+
+  // --- Bootstrap .text-muted ---
+  .text-muted { color: var(--color-text-muted) !important; }
+
+  // --- ngx-select-dropdown ---
+  // Button (collapsed state)
+  .ngx-dropdown-container .ngx-dropdown-button {
+    background-color: var(--color-bg-input) !important;
+    color: var(--color-text-base) !important;
+    border-color: var(--color-border) !important;
+  }
+  // Dropdown list panel
+  .ngx-dropdown-list-container {
+    background: var(--color-bg-surface) !important;
+    border-color: var(--color-border) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+
+    hr { border-color: var(--color-border) !important; }
+
+    // Search input
+    .search-container input {
+      color: var(--color-text-base) !important;
+      border-bottom-color: var(--color-border) !important;
+    }
+    .search-container label { color: var(--color-text-muted) !important; }
+
+    // Items
+    .available-item,
+    .selected-item { color: var(--color-text-base) !important; }
+
+    .available-item:hover,
+    .available-item.active {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      color: var(--color-text-base) !important;
+    }
+
+    // Selected chips
+    .selected-items .selected-item {
+      background-color: #1d4ed8 !important;
+      color: #f1f5f9 !important;
+    }
+  }
+
+  // --- nz-range-picker (ant-picker) ---
+  .ant-picker {
+    background-color: var(--color-bg-input) !important;
+    border-color: var(--color-border) !important;
+
+    .ant-picker-input > input { color: var(--color-text-base) !important; }
+    .ant-picker-suffix { color: var(--color-text-muted) !important; }
+    .ant-picker-separator { color: var(--color-text-muted) !important; }
+    .ant-picker-active-bar { background: #3b82f6 !important; }
+  }
+
+  // Date picker dropdown — rendered via CDK overlay at body level
+  .ant-picker-dropdown {
+    .ant-picker-panel-container {
+      background: var(--color-bg-surface) !important;
+      border: 1px solid var(--color-border) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .ant-picker-header {
+      background: var(--color-bg-surface) !important;
+      border-bottom-color: var(--color-border) !important;
+      color: var(--color-text-base) !important;
+
+      button,
+      .ant-picker-header-view button { color: var(--color-text-base) !important; }
+    }
+
+    .ant-picker-footer {
+      background: var(--color-bg-surface) !important;
+      border-top-color: var(--color-border) !important;
+    }
+
+    .ant-picker-ranges .ant-picker-preset .ant-tag { background: var(--color-bg-input) !important; }
+
+    .ant-picker-content th { color: var(--color-text-muted) !important; }
+
+    .ant-picker-cell .ant-picker-cell-inner { color: var(--color-text-base) !important; }
+    .ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner { color: var(--color-text-muted) !important; }
+
+    .ant-picker-cell-today .ant-picker-cell-inner::before { border-color: #3b82f6 !important; }
+
+    .ant-picker-cell-selected .ant-picker-cell-inner,
+    .ant-picker-cell-range-start .ant-picker-cell-inner,
+    .ant-picker-cell-range-end .ant-picker-cell-inner {
+      background: #1d4ed8 !important;
+      color: #f1f5f9 !important;
+    }
+
+    .ant-picker-cell-in-range::before,
+    .ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single)::before,
+    .ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before { background: rgba(29, 78, 216, 0.2) !important; }
+
+    .ant-picker-time-panel-column > li.ant-picker-time-panel-cell .ant-picker-time-panel-cell-inner {
+      color: var(--color-text-base) !important;
+    }
+
+    .ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+      background: rgba(29, 78, 216, 0.3) !important;
+    }
+
+    .ant-picker-ok .ant-btn-primary {
+      background-color: #1d4ed8 !important;
+      border-color: #1d4ed8 !important;
+    }
+  }
+
+  // --- Trending hashtags — bgc-blue-50 pill inversion ---
+  .bgc-blue-50 {
+    background-color: rgba(30, 64, 175, 0.3) !important;
+    color: #93c5fd !important;
+  }
+
+  // --- Bootstrap modal (if used) ---
+  .modal-content {
+    background-color: var(--color-bg-surface);
+    border-color: var(--color-border);
+    color: var(--color-text-base);
+  }
+
+  // --- NZ card / popover ---
+  .ant-card, .ant-popover-inner {
+    background-color: var(--color-bg-surface);
+    border-color: var(--color-border);
+    color: var(--color-text-base);
+  }
+}
