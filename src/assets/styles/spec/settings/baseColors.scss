@@ -85,9 +85,9 @@ $inverse-warning      : color.adjust($default-warning, $lightness: 45%);
 // ---------------------------------------------------------
 
 $border-color         : #e6ecf5;
-$collapsed-size       : 70px;
-$header-height        : 65px;
-$offscreen-size       : 280px;
+$collapsed-size       : var(--sidebar-collapsed-width);
+$header-height        : var(--header-height);
+$offscreen-size       : var(--sidebar-width);
 $side-nav-dark        : #313644;
 $side-nav-dark-border : rgba(120, 130, 140, 0.3);
 $side-nav-dark-font   : #99abb4;
