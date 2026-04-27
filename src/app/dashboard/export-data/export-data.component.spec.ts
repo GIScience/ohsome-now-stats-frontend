@@ -44,7 +44,8 @@ describe('ExportDataComponent', () => {
         };
         mockStateService = {
             appState: signal(mockAppState),
-            updatePartialState: vi.fn()
+            updatePartialState: vi.fn(),
+            activePage: of('user-dashboard')
         };
 
         await TestBed.configureTestingModule({
