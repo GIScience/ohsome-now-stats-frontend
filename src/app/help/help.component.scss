@@ -28,9 +28,19 @@ figure {
 }
 
 figure img {
-
   box-shadow: 2px 2px 8px grey;
   margin: 1rem 0;
+}
+
+:host-context([data-theme="dark"]) {
+  .icquote {
+    background-color: rgba(30, 64, 175, 0.3);
+    color: #93c5fd;
+  }
+
+  figure img {
+    box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.6);
+  }
 }
 
 .query-parameter {

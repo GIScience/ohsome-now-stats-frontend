@@ -1,6 +1,6 @@
 .clickable {
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 
   &:hover {
     background-color: #bbdefb;
@@ -8,5 +8,12 @@
 
   &:active {
     background-color: #2196f3;
+  }
+}
+
+:host-context([data-theme="dark"]) {
+  .clickable {
+    &:hover  { background-color: rgba(30, 64, 175, 0.55) !important; color: #bfdbfe !important; }
+    &:active { background-color: #1d4ed8 !important; color: #f1f5f9 !important; }
   }
 }

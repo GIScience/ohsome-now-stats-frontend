@@ -34,7 +34,7 @@ bootstrapApplication(AppComponent, {
             theme: {
                 preset: Aura,
                 options: {
-                    darkModeSelector: 'none'
+                    darkModeSelector: '[data-theme="dark"]'
                 }
             }
         }),
