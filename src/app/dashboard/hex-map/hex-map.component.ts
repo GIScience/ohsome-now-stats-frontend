@@ -4,6 +4,7 @@ import {
     computed,
     effect,
     ElementRef,
+    HostListener,
     inject,
     input,
     NgZone,
@@ -69,6 +70,19 @@ export class HexMapComponent implements OnDestroy {
     private layer!: H3HexagonLayer<HexDataType>;
     private readonly MAX_HEX_CELL = 314_000;
     userMode = input(false, {transform: booleanAttribute});
+    isMaximized = signal(false);
+
+    @HostListener('document:keydown.escape')
+    onEscapeKey() {
+        if (this.isMaximized()) {
+            this.toggleMaximize();
+        }
+    }
+
+    toggleMaximize() {
+        this.isMaximized.update(v => !v);
+        requestAnimationFrame(() => this.deck?.redraw());
+    }
 
     // Fixed TileLayer configuration
     private readonly osmLayer = new TileLayer({

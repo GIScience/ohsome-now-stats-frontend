@@ -1,4 +1,4 @@
-<div #overlayContainer class="bd bgc-white pos-r">
+<div #overlayContainer class="bd bgc-white pos-r map-wrapper" [class.is-maximized]="isMaximized()">
   <overlay [containerElement]="overlayContainer" [isLoading]="isH3Loading()"></overlay>
   <div class="peers fxw-nw@lg+ ai-s">
     <div class="peer peer-greed w-70p@lg+ w-100@lg- p-20">
@@ -22,6 +22,18 @@
       <div class="layers">
         <div class="layer w-100" style="position: relative;">
           <div #deckContainer class="deck-container">
+            <button
+              type="button"
+              class="map-maximize-btn"
+              [class.is-restore]="isMaximized()"
+              [attr.aria-label]="isMaximized() ? 'Exit maximized view' : 'Maximize map'"
+              [title]="isMaximized() ? 'Exit maximized view (Esc)' : 'Maximize map'"
+              (click)="toggleMaximize()">
+              <i [class]="isMaximized() ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"></i>
+              @if (isMaximized()) {
+                <span class="map-maximize-btn__label">Exit fullscreen</span>
+              }
+            </button>
             <div class="osm-attribution"><a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a>
               &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a
                 href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a
