@@ -12,6 +12,7 @@ import {
 } from "../query/pipes/utc-to-local-converter.pipe";
 import {StateService} from "../../../lib/state.service";
 import {DataService} from "../../../lib/data.service";
+import {ThemeService} from "../../../lib/theme.service";
 import {IPlotResult, IQueryParams, StatsType} from "../../../lib/types";
 import {Overlay} from '../../overlay.component';
 import {PlotlyComponent, PlotlyModule} from 'angular-plotly.js';
@@ -29,6 +30,7 @@ export class PlotComponent {
     private stateService: StateService = inject(StateService);
     private dataService: DataService = inject(DataService);
     private utcToLocalConverter: UTCToLocalConverterPipe = inject(UTCToLocalConverterPipe);
+    private themeService: ThemeService = inject(ThemeService);
 
     data = signal<IPlotResult | null>(null);
     activeTopic = signal<StatsType | null>(null);
@@ -52,7 +54,10 @@ export class PlotComponent {
         return this.stateService.appState().active_topic;
     });
 
-    layout: Partial<Layout> = {
+    private static readonly FONT_FAMILY =
+        'Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
+
+    layout = signal<Partial<Layout>>({
         autosize: true,
         height: 350,
         grid: {rows: 1, columns: 1},
@@ -61,12 +66,10 @@ export class PlotComponent {
         margin: {l: 50, r: 20, t: 20, b: 40},
         legend: {orientation: 'h'},
         barmode: 'group',
-        font: {
-            family: 'Roboto, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif'
-        },
+        font: {family: PlotComponent.FONT_FAMILY},
         xaxis: {range: [], autorange: false},
-        yaxis: {title: {text: ""}}
-    };
+        yaxis: {title: {text: ""}},
+    });
 
     fitToContentIcon = {
         'width': 600,
@@ -96,7 +99,27 @@ export class PlotComponent {
         // Effect for plot refresh when ONLY active_topic changes
         effect(() => {
             this.activeTopic.set(this.activeTopicState())
-        })
+        });
+
+        // Update yaxis title when active topic changes
+        effect(() => {
+            const topic = this.activeTopic();
+            if (!topic) return;
+            this.layout.update(l => ({...l, yaxis: {...l.yaxis, title: {text: `${topicDefinitions[topic]["y-title"]}`}}}));
+        });
+
+        // Reactive Plotly theme — reruns whenever isDark changes
+        effect(() => {
+            const dark = this.themeService.isDark();
+            this.layout.update(l => ({
+                ...l,
+                paper_bgcolor: dark ? '#1e293b' : 'white',
+                plot_bgcolor:  dark ? '#1e293b' : 'white',
+                font: {family: PlotComponent.FONT_FAMILY, color: dark ? '#94a3b8' : '#313435'},
+                xaxis: {...l.xaxis, color: dark ? '#94a3b8' : '#313435', gridcolor: dark ? 'rgba(255,255,255,0.08)' : undefined, zerolinecolor: dark ? 'rgba(255,255,255,0.15)' : undefined},
+                yaxis: {...l.yaxis, color: dark ? '#94a3b8' : '#313435', gridcolor: dark ? 'rgba(255,255,255,0.08)' : undefined, zerolinecolor: dark ? 'rgba(255,255,255,0.15)' : undefined},
+            }));
+        });
     }
 
     private fetchPlotData(state: IQueryParams) {
@@ -130,7 +153,6 @@ export class PlotComponent {
         const topic = this.activeTopic();
 
         if (!data || !topic) return undefined;
-        this.layout.yaxis!.title!.text = `${topicDefinitions[topic]["y-title"]}`
 
         return [{
             x: data.startDate.map(UTCStringToLocalDateConverterFunction),
@@ -184,19 +206,21 @@ export class PlotComponent {
             const data_start = data.topics[topic].value.findIndex(value => value != 0)
             const data_end = data.topics[topic].value.findLastIndex(value => value != 0)
             const half_an_interval = moment.duration(this.relevantState().interval).asMilliseconds() / 2;
-            this.layout.xaxis = {
-                autorange: false,
-                range: [
-                    UTCStringToLocalDateConverterFunction(dayjs(data.startDate[data_start > 0 ? data_start : 0]).subtract(half_an_interval, 'milliseconds').toDate().toISOString()),
-                    UTCStringToLocalDateConverterFunction(dayjs(data.startDate[data_end > 0 ? data_end : data.startDate.length - 1]).add(half_an_interval, 'milliseconds').toDate().toISOString())
-                ]
-            }
+            this.layout.update(l => ({
+                ...l,
+                xaxis: {
+                    ...l.xaxis,
+                    autorange: false,
+                    range: [
+                        UTCStringToLocalDateConverterFunction(dayjs(data.startDate[data_start > 0 ? data_start : 0]).subtract(half_an_interval, 'milliseconds').toDate().toISOString()),
+                        UTCStringToLocalDateConverterFunction(dayjs(data.startDate[data_end > 0 ? data_end : data.startDate.length - 1]).add(half_an_interval, 'milliseconds').toDate().toISOString())
+                    ]
+                }
+            }));
         }
     }
 
     resetZoom() {
-        this.layout.xaxis = {
-            autorange: true
-        }
+        this.layout.update(l => ({...l, xaxis: {...l.xaxis, autorange: true}}));
     }
 }

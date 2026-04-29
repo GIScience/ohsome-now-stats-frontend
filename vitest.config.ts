@@ -5,6 +5,7 @@ export default defineConfig({
         watch: false,
         globals: true,
         environment: 'jsdom',
+        setupFiles: ['src/setup-tests.ts'],
 
         reporters: ['default'],
         coverage: {

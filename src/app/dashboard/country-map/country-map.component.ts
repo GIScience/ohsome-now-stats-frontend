@@ -4,6 +4,7 @@ import {
     computed,
     effect,
     ElementRef,
+    HostListener,
     inject,
     input,
     NgZone,
@@ -85,6 +86,21 @@ export class CountryMapComponent implements OnInit, OnDestroy {
 
     deck!: Deck<MapView>;
     userMode = input(false, {transform: booleanAttribute});
+    isMaximized = signal(false);
+
+    @HostListener('document:keydown.escape')
+    onEscapeKey() {
+        if (this.isMaximized()) {
+            this.toggleMaximize();
+        }
+    }
+
+    toggleMaximize() {
+        this.isMaximized.update(v => !v);
+        // deck.gl picks up the new container size via ResizeObserver, but
+        // trigger a redraw on the next frame so the canvas refits immediately.
+        requestAnimationFrame(() => this.deck?.redraw());
+    }
 
     constructor() {
         effect(() => {

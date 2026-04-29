@@ -71,7 +71,7 @@
               <img alt="User Dashboard" src="assets/images/user.png" style="height: 20px;"
                 [ngClass]="{ 'user-icon-disabled': authService.isAnon() }"/>
             </div>
-            <span class="title">User View</span>
+            <span class="title">User Statistics</span>
           </a>
         </li>
         <li class="nav-item" [ngClass]="page === 'about' ? 'active' : ''">
@@ -122,6 +122,28 @@
                   alt="image from Von THP Creative, Adobe Stock Image" title="Near realtime statistics">
               </div>
             }
+          </li>
+          <!-- Theme selector -->
+          <li>
+            <div class="pt-2 px-1">
+              <button nz-button nzType="text" nzSize="large" nzShape="round"
+                      nz-dropdown [nzDropdownMenu]="themeMenu" nzTrigger="click"
+                      title="Change theme">
+                <nz-icon [nzType]="themeService.themeIcon()"/>
+              </button>
+              <nz-dropdown-menu #themeMenu="nzDropdownMenu">
+                <ul nz-menu>
+                  @for (opt of themeService.options; track opt.value) {
+                    <li nz-menu-item
+                        [nzSelected]="themeService.theme() === opt.value"
+                        (click)="themeService.setTheme(opt.value)">
+                      <nz-icon [nzType]="opt.icon" nzTheme="outline" class="mR-5"/>
+                      {{ opt.label }}
+                    </li>
+                  }
+                </ul>
+              </nz-dropdown-menu>
+            </div>
           </li>
           <li>
             <div class="mR-10 pt-2 px-1">

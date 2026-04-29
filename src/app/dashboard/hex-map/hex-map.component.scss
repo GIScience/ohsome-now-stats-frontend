@@ -115,3 +115,116 @@ input:checked + .slider:before {
 .slider:hover {
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
+
+.map-maximize-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1100;
+  height: 36px;
+  min-width: 36px;
+  padding: 0 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #313435;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    background: #ffffff;
+    transform: scale(1.05);
+  }
+
+  i { font-size: 14px; }
+
+  &.is-restore {
+    background: #1d4ed8;
+    color: #ffffff;
+    border-color: #1d4ed8;
+    box-shadow: 0 2px 8px rgba(29, 78, 216, 0.4);
+
+    &:hover { background: #1e40af; }
+  }
+}
+
+.map-wrapper.is-maximized {
+  position: fixed !important;
+  top: var(--header-height, 60px);
+  left: var(--sidebar-collapsed-width, 65px);
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  background: var(--color-bg-surface, #ffffff);
+  display: flex;
+  flex-direction: column;
+  border: none !important;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.18);
+
+  @media screen and (max-width: 991px) {
+    left: 0;
+  }
+
+  .peers {
+    flex: 1 1 auto;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0;
+    align-items: stretch !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .peer {
+    flex: 1 1 auto;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0;
+    display: flex !important;
+    flex-direction: column;
+    padding: 12px !important;
+    box-sizing: border-box;
+  }
+
+  .layers {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .layers > .layer {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .deck-container {
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+  }
+
+  .legend-container {
+    flex: 0 0 auto;
+    margin-top: 8px;
+  }
+}
+
+[data-theme="dark"] {
+  .map-maximize-btn {
+    background: var(--color-bg-surface);
+    color: var(--color-text-base);
+    border-color: var(--color-border);
+
+    &:hover { background: var(--color-bg-input); }
+  }
+}

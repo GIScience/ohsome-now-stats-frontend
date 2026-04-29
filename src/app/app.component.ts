@@ -18,14 +18,18 @@ import {ToastComponent} from "./toast/toast.component";
 import {NgClass} from "@angular/common";
 import {Router, RouterLink, RouterOutlet} from "@angular/router";
 import {AuthService} from "../lib/auth.service";
+import {ThemeService} from "../lib/theme.service";
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {NzButtonModule} from "ng-zorro-antd/button";
+import {NzDropdownModule} from "ng-zorro-antd/dropdown";
+import {NzMenuModule} from "ng-zorro-antd/menu";
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    imports: [StatusBannerComponent, ToastComponent, NgClass, RouterOutlet, RouterLink, NzButtonModule, NzIconModule],
+    imports: [StatusBannerComponent, ToastComponent, NgClass, RouterOutlet, RouterLink,
+              NzButtonModule, NzIconModule, NzDropdownModule, NzMenuModule],
     standalone: true
 })
 export class AppComponent implements AfterViewInit {
@@ -34,6 +38,7 @@ export class AppComponent implements AfterViewInit {
     private toastService = inject(ToastService);
     private dataService = inject(DataService);
     protected authService = inject(AuthService);
+    protected themeService = inject(ThemeService);
     private router: Router = inject(Router);
 
     title = 'ohsomeNow Stats'
