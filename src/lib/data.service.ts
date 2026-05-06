@@ -144,10 +144,10 @@ export class DataService {
     }
 
     getOsmUserIdFromName(userName: string) {
-        return this.http.get<Array<IWhosthat>>(`${this.whosthatUrl}?action=names&q=${userName}`)
+        return this.http.get<Array<IWhosthat>>(`${this.whosthatUrl}?action=names&q=${userName}`, {headers: {"Authorization": this.key().key}})
     }
 
     getOsmUserNameFromId(userId: string) {
-        return this.http.get<Array<ApiItem>>(`${this.whosthatUrl}?action=info&id=${userId}`)
+        return this.http.get<Array<ApiItem>>(`${this.whosthatUrl}?action=info&id=${userId}`, {headers: {"Authorization": this.key().key}})
     }
 }
