@@ -1,7 +1,8 @@
-import { ViewportScroller, KeyValuePipe } from '@angular/common';
+import {KeyValuePipe, ViewportScroller} from '@angular/common';
 import {AfterViewInit, Component} from '@angular/core';
 import {dashboard} from 'src/app/dashboard/tooltip-data'
 import topicDefinitions from "../../assets/static/json/topicDefinitions.json"
+import {environment} from "@environments/environment";
 
 @Component({
     selector: 'app-help',
@@ -28,4 +29,5 @@ export class HelpComponent implements AfterViewInit {
         }
     }
 
+    protected readonly environment = environment;
 }

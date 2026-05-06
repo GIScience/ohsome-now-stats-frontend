@@ -36,7 +36,7 @@ export class AppComponent implements AfterViewInit {
     protected authService = inject(AuthService);
     private router: Router = inject(Router);
 
-    title = 'ohsomeNow Stats'
+    title = 'ohsomeNow'
     name = 'HeiGIT'
     isOpen = false
     live = signal<boolean>(false)
@@ -69,7 +69,7 @@ export class AppComponent implements AfterViewInit {
         if (window.innerWidth - 5 <= 460) {
             this.toastService.show({
                 title: 'Viewing on Mobile',
-                body: 'ohsomeNow Stats is suitable for tablets and computers. It\'s not yet optimized for smaller screens, we invite you to visit this website on a larger screen.',
+                body: 'ohsomeNow is suitable for tablets and computers. It\'s not yet optimized for smaller screens, we invite you to visit this website on a larger screen.',
                 type: 'warning'
             })
         }

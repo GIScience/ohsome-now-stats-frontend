@@ -15,7 +15,7 @@ export class StatusBannerComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        fetch(`${environment["ohsomeStatsUrl"]}/statuspage`).then(res => res.json()).then(data => {
+        fetch(`${environment["ohsomeNowUrl"]}/statuspage`).then(res => res.json()).then(data => {
             if (data["Announce"]) {
                 this.announcement = data["Announce"]
                 if (this.announcement != "") {

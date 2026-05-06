@@ -24,7 +24,7 @@ export class DataService {
 
     private http = inject(HttpClient);
     private authService = inject(AuthService);
-    url = environment.ohsomeStatsServiceUrl
+    url = environment.ohsomeNowServiceUrl
     whosthatUrl = environment.whosthatUrl
 
     trendingHashtagLimit = 10

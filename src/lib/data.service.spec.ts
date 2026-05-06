@@ -37,7 +37,7 @@ describe('DataService', () => {
             }
         };
 
-        environment.ohsomeStatsServiceUrl = mockUrl;
+        environment.ohsomeNowServiceUrl = mockUrl;
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],

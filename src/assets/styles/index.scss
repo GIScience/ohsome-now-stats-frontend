@@ -18,10 +18,10 @@
 
 .ohsome-now-as-text {
   @supports not (content: "x" / "y") {
-    content: url("/assets/images/ohsomeNowStats_logo.svg");
+    content: url("/assets/images/ohsomeNow_logo.svg");
   }
   @supports (content: "x" / "y") {
-    content: url("/assets/images/ohsomeNowStats_logo.svg") / "ohsomeNow-STATS";
+    content: url("/assets/images/ohsomeNow_logo.svg") / "ohsomeNow";
   }
   height: 1rem;
   display: inline;

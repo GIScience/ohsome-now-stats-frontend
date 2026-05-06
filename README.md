@@ -4,7 +4,7 @@
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=GIScience_ohsome-now-stats-frontend&metric=alert_status)](https://sonarcloud.io/dashboard?id=GIScience_ohsome-now-stats-frontend)
 [![status: active](https://github.com/GIScience/badges/raw/master/status/active.svg)](https://github.com/GIScience/badges#active)
 [![LICENSE](https://img.shields.io/github/license/GIScience/ohsome-now-stats-frontend)](LICENSE)
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fstats.now.ohsome.org)](https://stats.now.ohsome.org)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fnow.ohsome.heigit.org)](https://now.ohsome.heigit.org)
 
 The **ohsomeNow stats** website offers up-to-date and global scale overview statistics on mapping activity in
 OpenStreetMap (OSM).
@@ -21,7 +21,6 @@ This means that every change to OSM will be considered by the dashboard a few mi
 OSM.
 
 ![image](https://github.com/user-attachments/assets/0d3206e3-09c2-4b01-ae40-da439932fb52)
-
 
 The core features are:
 
