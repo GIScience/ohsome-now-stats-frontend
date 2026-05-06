@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+import {Component} from '@angular/core';
+import {NgOptimizedImage} from '@angular/common';
+import {environment} from "@environments/environment";
 
 @Component({
     selector: 'app-about',
@@ -9,4 +10,5 @@ import { NgOptimizedImage } from '@angular/common';
 })
 export class AboutComponent {
 
+    protected readonly environment = environment;
 }

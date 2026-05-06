@@ -13,3 +13,15 @@
   flex-direction: column;
   align-items: center;
 }
+
+//inline code quotation displayed as grey pills
+.icquote {
+  padding: .2em .4em;
+  margin: 0;
+  font-size: 85%;
+  font-family: monospace;
+  font-weight: bold;
+  white-space: break-spaces;
+  background-color: #E3F2FD; //rgba(175,184,193,0.2);
+  border-radius: 6px;
+}
