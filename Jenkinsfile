@@ -77,7 +77,7 @@ pipeline {
     }
 
 
-    stage ('Build and Deploy INT') {
+    stage ('Build and Deploy STAGING') {
       when {
         expression {
             return (env.BRANCH_NAME == 'main' && env.TAG_NAME == null )
@@ -86,7 +86,7 @@ pipeline {
       steps {
         // TODO fix and replace deployment
         nodejs(nodeJSInstallationName: 'NodeJS 22') {
-          sh 'npm run build:int'
+          sh 'npm run build:staging'
         }
         withCredentials([gitUsernamePassword(credentialsId: 'e78912d9-de2f-473c-a1b2-6a2ee82a879a')]) {
           sh 'git config --global user.email "nobody@example.org"'  // TODO remove
