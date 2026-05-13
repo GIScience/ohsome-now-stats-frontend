@@ -114,7 +114,7 @@ export class PlotComponent {
                 this.isPlotsLoading.set(false);
 
                 if (this.relevantState().fit_to_content !== undefined) {
-                    this.fitToContent();
+                    this.fitToContent()();
                 } else {
                     this.resetZoom();
                 }
