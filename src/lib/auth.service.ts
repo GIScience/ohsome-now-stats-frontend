@@ -1,13 +1,11 @@
-import {inject, Injectable, signal} from "@angular/core";
+import {Injectable, signal} from "@angular/core";
 import {Models} from "appwrite";
 import {account, functions, functionsList, tables} from "./appwrite";
 import {Key} from "./types";
 import {environment} from "@environments/environment";
-import {Router} from "@angular/router";
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
-    router: Router = inject(Router);
     private _user = signal<Models.User>({} as Models.User);
     public user = this._user.asReadonly()
 
