@@ -60,7 +60,9 @@ Run `pnpm run build` or `ng build` to build the project. The build artifacts wil
 
 ## Running unit tests
 
-Run `pnpm run test` or `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `pnpm run test` or `ng test` to execute the unit tests via [Vitest](https://vitest.dev) in a jsdom environment.
+
+Run `pnpm run test-coverage` to produce an lcov report under `coverage/`.
 
 ## Running end-to-end tests
 

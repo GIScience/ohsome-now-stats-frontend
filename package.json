@@ -12,8 +12,7 @@
     "analyze": "webpack-bundle-analyzer dist/stats.json",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test-chromium-headless": "ng test --browsers=ChromiumHeadless --watch=false",
-    "test-coverage": "ng test --no-watch --code-coverage",
+    "test-coverage": "ng test --coverage --watch=false",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix"
   },
