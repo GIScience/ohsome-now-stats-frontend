@@ -34,7 +34,7 @@
     "@loaders.gl/core": "^4.3.4",
     "@loaders.gl/csv": "^4.3.4",
     "@primeuix/themes": "^2.0.2",
-    "angular-plotly.js": "^20.0.0",
+    "angular-plotly.js": "^21.0.1",
     "appwrite": "^21.5.0",
     "bootstrap": "^5.3.8",
     "brand-colors": "^2.1.1",
