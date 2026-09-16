@@ -2,13 +2,11 @@ import {
     AfterViewInit,
     Component,
     ElementRef,
-    HostListener,
     inject,
     QueryList,
     signal,
     ViewChildren
 } from '@angular/core';
-import {ToastService} from '../lib/toast.service';
 import {DataService} from "../lib/data.service";
 import {StateService} from "../lib/state.service";
 import packageJson from '../../package.json';
@@ -16,7 +14,7 @@ import {enableTooltips} from "../lib/utils";
 import {StatusBannerComponent} from "./status-banner/status-banner.component";
 import {ToastComponent} from "./toast/toast.component";
 import {NgClass} from "@angular/common";
-import {Router, RouterLink, RouterOutlet} from "@angular/router";
+import {RouterLink, RouterOutlet} from "@angular/router";
 import {AuthService} from "../lib/auth.service";
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {NzButtonModule} from "ng-zorro-antd/button";
@@ -31,10 +29,8 @@ import {NzButtonModule} from "ng-zorro-antd/button";
 export class AppComponent implements AfterViewInit {
     @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
     stateService = inject(StateService);
-    private toastService = inject(ToastService);
     private dataService = inject(DataService);
     protected authService = inject(AuthService);
-    private router: Router = inject(Router);
 
     title = 'ohsomeNow'
     name = 'HeiGIT'
@@ -53,32 +49,7 @@ export class AppComponent implements AfterViewInit {
         })
     }
 
-    @HostListener('window:resize')
-    onWindowResize() {
-        this.checkForSmallScreen()
-        this.tryCollapseMenuOnBiggerScreens()
-    }
-
-    tryCollapseMenuOnBiggerScreens() {
-        if (window.innerWidth >= 992) {
-            document.querySelector('#sidebar-container')?.classList.add("is-collapsed")
-        }
-    }
-
-    checkForSmallScreen() {
-        if (window.innerWidth - 5 <= 460) {
-            this.toastService.show({
-                title: 'Viewing on Mobile',
-                body: 'ohsomeNow is suitable for tablets and computers. It\'s not yet optimized for smaller screens, we invite you to visit this website on a larger screen.',
-                type: 'warning'
-            })
-        }
-    }
-
     ngAfterViewInit(): void {
-        setTimeout(() => {
-            this.checkForSmallScreen();
-        }, 1000);
         setTimeout(() => {
             enableTooltips(this.tooltips, true)
         }, 300)
