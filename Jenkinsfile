@@ -26,7 +26,7 @@ pipeline {
         }
         nodejs(nodeJSInstallationName: 'NodeJS 22') {
           sh 'rm -rf node_modules'
-          sh 'npm ci'
+          sh 'npm i'
         }
       }
       post {
