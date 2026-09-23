@@ -124,7 +124,8 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "tsconfig.spec.json"
+            "tsConfig": "tsconfig.spec.json",
+            "runnerConfig": "vitest.config.ts"
           }
         },
         "lint": {

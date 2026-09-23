@@ -4,7 +4,7 @@
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=GIScience_ohsome-now-stats-frontend&metric=alert_status)](https://sonarcloud.io/dashboard?id=GIScience_ohsome-now-stats-frontend)
 [![status: active](https://github.com/GIScience/badges/raw/master/status/active.svg)](https://github.com/GIScience/badges#active)
 [![LICENSE](https://img.shields.io/github/license/GIScience/ohsome-now-stats-frontend)](LICENSE)
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fnow.ohsome.heigit.org)](https://now.ohsome.heigit.org)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fohsome-now.heigit.org)](https://ohsome-now.heigit.org/)
 
 The **ohsomeNow stats** website offers up-to-date and global scale overview statistics on mapping activity in
 OpenStreetMap (OSM).
@@ -44,9 +44,9 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Development server
 
-Run `pnpm install` to install the dependencies.
+Run `npm install` to install the dependencies.
 
-Run `pnpm run dev` or `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will
+Run `npm run dev` or `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will
 automatically reload if you change any of the source files.
 
 ## Code scaffolding
@@ -56,11 +56,13 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `pnpm run build` or `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `npm run build` or `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 ## Running unit tests
 
-Run `pnpm run test` or `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `npm run test` or `ng test` to execute the unit tests via [Vitest](https://vitest.dev) in a jsdom environment.
+
+Run `npm run test-coverage` to produce an lcov report under `coverage/`.
 
 ## Running end-to-end tests
 
