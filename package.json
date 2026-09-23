@@ -1,6 +1,6 @@
 {
   "name": "ohsome-now-stats",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "packageManager": "npm@11.16.0",
   "scripts": {
     "ng": "ng",
