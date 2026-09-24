@@ -1,37 +1,47 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DefaultDashboardComponent} from './default-dashboard.component';
-import {Component} from "@angular/core";
+import {Component, ChangeDetectionStrategy} from "@angular/core";
 import {StateService} from "../../../../lib/state.service";
 import {of} from "rxjs";
 
-@Component({selector: 'default-query', template: '', standalone: true})
+@Component({selector: 'default-query', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockDefaultQueryComponent {}
 
-@Component({selector: 'hot-query', template: '', standalone: true})
+@Component({selector: 'hot-query', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockHotQueryComponent {}
 
-@Component({selector: 'live-query', template: '', standalone: true})
+@Component({selector: 'live-query', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockLiveQueryComponent {}
 
-@Component({selector: 'app-trending-hashtags', template: '', standalone: true})
+@Component({selector: 'app-trending-hashtags', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockTrendingHashtagsComponent {}
 
-@Component({selector: 'app-export-data', template: '', standalone: true})
+@Component({selector: 'app-export-data', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockExportDataComponent {}
 
-@Component({selector: 'app-summary', template: '', standalone: true})
+@Component({selector: 'app-summary', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockSummaryComponent {}
 
-@Component({selector: 'app-plot', template: '', standalone: true})
+@Component({selector: 'app-plot', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockPlotComponent {}
 
-@Component({selector: 'app-map', template: '', standalone: true})
+@Component({selector: 'app-map', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockMapComponent {}
 
-@Component({selector: 'app-hex-map', template: '', standalone: true})
+@Component({selector: 'app-hex-map', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockHexMapComponent {}
 
-@Component({selector: 'app-country-map', template: '', standalone: true})
+@Component({selector: 'app-country-map', template: '', changeDetection: ChangeDetectionStrategy.Eager,
+ standalone: true})
 class MockCountryMapComponent {}
 
 describe('DashboardComponent', () => {

@@ -1,15 +1,16 @@
 import {
-    booleanAttribute,
-    Component,
-    computed,
-    effect,
-    ElementRef,
-    inject,
-    input,
-    NgZone,
-    OnDestroy,
-    signal,
-    viewChild
+  booleanAttribute,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  NgZone,
+  OnDestroy,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {H3HexagonLayer, H3HexagonLayerProps, TileLayer} from '@deck.gl/geo-layers';
@@ -30,6 +31,7 @@ import {firstValueFrom} from "rxjs";
     selector: 'app-hex-map',
     templateUrl: './hex-map.component.html',
     styleUrls: ['./hex-map.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [Overlay, HexMapLegendComponent]
 })
 export class HexMapComponent implements OnDestroy {

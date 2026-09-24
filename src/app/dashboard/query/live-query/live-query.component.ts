@@ -1,4 +1,4 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
 import dayjs from "dayjs";
 import {QueryComponent} from "../query.component";
 import {FormsModule} from '@angular/forms';
@@ -12,6 +12,7 @@ import {NgClass} from '@angular/common';
     selector: 'live-query',
     templateUrl: './live-query.component.html',
     styleUrls: ['./live-query.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormsModule, AutoComplete, PrimeTemplate, SelectDropDownModule, NgClass]
 })
 export class LiveQueryComponent extends QueryComponent implements OnDestroy {

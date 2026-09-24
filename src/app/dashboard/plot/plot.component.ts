@@ -1,4 +1,4 @@
-import {booleanAttribute, Component, computed, effect, inject, input, signal} from '@angular/core';
+import {booleanAttribute, Component, computed, effect, inject, input, signal, ChangeDetectionStrategy} from '@angular/core';
 
 import * as PlotlyJS from 'plotly.js-basic-dist-min';
 import {Config, Layout} from 'plotly.js-basic-dist-min';
@@ -22,6 +22,7 @@ PlotlyModule.forRoot(PlotlyJS)
     selector: 'app-plot',
     templateUrl: './plot.component.html',
     styleUrls: ['./plot.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [Overlay, PlotlyComponent,]
 })
 export class PlotComponent {

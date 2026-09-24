@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 
 import {IToastUI, ToastService} from '../../lib/toast.service';
@@ -10,6 +10,7 @@ import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
     selector: 'app-toast',
     templateUrl: './toast.component.html',
     styleUrls: ['./toast.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [NgClass]
 })
 export class ToastComponent implements OnInit {

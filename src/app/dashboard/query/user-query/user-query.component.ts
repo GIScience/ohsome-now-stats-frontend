@@ -1,4 +1,4 @@
-import {Component, signal, WritableSignal} from '@angular/core';
+import {Component, signal, WritableSignal, ChangeDetectionStrategy} from '@angular/core';
 import {QueryComponent} from "../query.component";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AutoComplete, AutoCompleteCompleteEvent} from 'primeng/autocomplete';
@@ -14,6 +14,7 @@ import {forkJoin} from "rxjs";
     templateUrl: './user-query.component.html',
     styleUrls: ['./user-query.component.scss'],
     imports: [FormsModule, AutoComplete, PrimeTemplate, SelectDropDownModule, UTCToLocalConverterPipe, ReactiveFormsModule, NzDatePickerComponent, NzDatePickerModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     providers: []
 })
 export class UserQueryComponent extends QueryComponent {

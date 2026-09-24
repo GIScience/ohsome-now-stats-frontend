@@ -1,5 +1,5 @@
 import {KeyValuePipe, ViewportScroller} from '@angular/common';
-import {AfterViewInit, Component} from '@angular/core';
+import {AfterViewInit, Component, ChangeDetectionStrategy} from '@angular/core';
 import {dashboard} from 'src/app/dashboard/tooltip-data'
 import topicDefinitions from "../../assets/static/json/topicDefinitions.json"
 import {environment} from "@environments/environment";
@@ -8,6 +8,7 @@ import {environment} from "@environments/environment";
     selector: 'app-help',
     templateUrl: './help.component.html',
     styleUrls: ['./help.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [KeyValuePipe]
 })
 export class HelpComponent implements AfterViewInit {

@@ -1,6 +1,6 @@
 import {bootstrapApplication} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
-import {provideHttpClient, withInterceptors, withInterceptorsFromDi} from '@angular/common/http';
+import {provideHttpClient, withInterceptors, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 
@@ -19,13 +19,15 @@ import en from '@angular/common/locales/en';
 import {en_US, provideNzI18n} from 'ng-zorro-antd/i18n';
 import {inject, provideAppInitializer} from "@angular/core";
 import {httperrorInterceptor} from "./lib/httperror.interceptor";
+import { provideNzDateFnsAdapter } from 'ng-zorro-antd/core/time';
+
 
 registerLocaleData(en);
 
 bootstrapApplication(AppComponent, {
     providers: [
         provideRouter(routes),
-        provideHttpClient(withInterceptors([httperrorInterceptor]),withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptors([httperrorInterceptor]),withInterceptorsFromDi()),
         provideAnimations(),
         provideAnimationsAsync(),
         provideNzI18n(en_US),
@@ -48,7 +50,7 @@ bootstrapApplication(AppComponent, {
                 [dataService.requestMetadata(),
                     authService.initializeUser()]
             );
-        })
+        }), provideNzDateFnsAdapter()
     ]
 }).catch(err => console.error(err));
 

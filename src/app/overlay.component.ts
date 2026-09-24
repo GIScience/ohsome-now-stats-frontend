@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, Input} from "@angular/core";
+import {AfterContentInit, Component, Input, ChangeDetectionStrategy} from "@angular/core";
 import {NgClass} from '@angular/common';
 
 @Component({
@@ -13,6 +13,7 @@ import {NgClass} from '@angular/common';
     imports: [
         NgClass
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./overlay.component.scss']
 })
 export class Overlay implements AfterContentInit {

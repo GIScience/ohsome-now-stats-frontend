@@ -1,4 +1,4 @@
-import {Component, computed, effect, ElementRef, QueryList, signal, ViewChildren} from '@angular/core';
+import {Component, computed, effect, ElementRef, QueryList, signal, ViewChildren, ChangeDetectionStrategy} from '@angular/core';
 
 import {DataService} from '../../../lib/data.service';
 import {dashboard} from '../tooltip-data';
@@ -11,6 +11,7 @@ import {enableTooltips} from "../../../lib/utils";
     selector: 'app-trending-hashtags',
     templateUrl: './trending-hashtags.component.html',
     styleUrls: ['./trending-hashtags.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [Overlay],
 })
 export class TrendingHashtagsComponent {

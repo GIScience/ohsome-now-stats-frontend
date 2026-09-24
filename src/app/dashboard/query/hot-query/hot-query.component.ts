@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {QueryComponent} from "../query.component";
 import {ISelectionItem} from "../../../../lib/types";
 import {FormsModule} from '@angular/forms';
@@ -14,6 +14,7 @@ import {NzDatePickerModule, NzRangePickerComponent} from "ng-zorro-antd/date-pic
     selector: 'hot-query',
     templateUrl: './hot-query.component.html',
     styleUrls: ['./hot-query.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormsModule, AutoComplete, PrimeTemplate, SelectDropDownModule, NgClass, UTCToLocalConverterPipe, NzRangePickerComponent, NzDatePickerModule]
 })
 export class HotQueryComponent extends QueryComponent {

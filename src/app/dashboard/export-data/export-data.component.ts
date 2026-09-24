@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {download, generateCsv, mkConfig} from "export-to-csv";
 import {ICountryResult, IPlotResult, IStateParams, IStatsResult} from "../../../lib/types";
 import {StateService} from "../../../lib/state.service";
@@ -7,6 +7,7 @@ import {DataService} from "../../../lib/data.service";
 @Component({
     selector: 'app-export-data',
     templateUrl: './export-data.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './export-data.component.scss'
 })
 export class ExportDataComponent {

@@ -1,14 +1,15 @@
 import {
-    AfterViewInit,
-    Component,
-    computed,
-    effect,
-    ElementRef,
-    inject,
-    OnInit,
-    QueryList,
-    signal,
-    ViewChildren
+  AfterViewInit,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  OnInit,
+  QueryList,
+  signal,
+  ViewChildren,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import dayjs from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
@@ -35,6 +36,7 @@ dayjs.extend(customParseFormat)
 @Component({
     selector: 'app-query',
     templateUrl: './query.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./query.component.scss']
 })
 export class QueryComponent implements OnInit, AfterViewInit {
