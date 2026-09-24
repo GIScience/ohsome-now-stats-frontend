@@ -6,7 +6,6 @@
       "vitest/globals"
     ],
     "resolveJsonModule": true,
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -29,10 +28,10 @@
     ],
     "paths": {
       "@app/*": [
-        "src/app/*"
+        "./src/app/*"
       ],
       "@environments/*": [
-        "src/environments/*"
+        "./src/environments/*"
       ]
     },
     "skipLibCheck": true
