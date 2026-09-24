@@ -17,13 +17,13 @@
                                     <i class="c-grey-800 ti-help-alt"></i>
                                 </span>
               </div>
-              <p-autoComplete
+              <p-autocomplete
                 id="hashtag"
                 [(ngModel)]="selectedHashtagOption"
                 name="hashtag"
                 [suggestions]="filteredHashtagOptions"
                 (completeMethod)="searchChange($event)"
-                [minLength]=1
+                [minQueryLength]=1
                 [delay]="150"
                 placeholder="Keep blank or Enter a hashtag"
                 (keydown)="turnOffLiveMode()"
@@ -32,7 +32,7 @@
                 <ng-template let-value pTemplate="item">
                   <span [innerHTML]="value.highlighted"></span>
                 </ng-template>
-              </p-autoComplete>
+              </p-autocomplete>
             </div>
             <div class="mb-3 row">
               <div class="col-md-12">

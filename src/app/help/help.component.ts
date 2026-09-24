@@ -1,6 +1,6 @@
 import {KeyValuePipe, ViewportScroller} from '@angular/common';
 import {AfterViewInit, Component, ChangeDetectionStrategy} from '@angular/core';
-import {dashboard} from 'src/app/dashboard/tooltip-data'
+import {dashboard} from '../dashboard/tooltip-data'
 import topicDefinitions from "../../assets/static/json/topicDefinitions.json"
 import {environment} from "@environments/environment";
 
