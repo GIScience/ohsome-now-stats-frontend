@@ -78,7 +78,7 @@
     "@typescript-eslint/parser": "^8.49.0",
     "@vitest/coverage-v8": "^4.1.5",
     "baseline-browser-mapping": "^2.9.16",
-    "eslint": "^9.39.1",
+    "eslint": "^10.11.0",
     "jsdom": "^27.4.0",
     "primeng": "^22.1.1",
     "typescript": "~6.0.3",
