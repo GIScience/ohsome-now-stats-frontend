@@ -4,9 +4,6 @@ import {provideHttpClient, withInterceptors, withInterceptorsFromDi, withXhr} fr
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 
-import {providePrimeNG} from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
-
 import {AppComponent} from './app/app.component';
 import {routes} from './app/app-routing.module';
 
@@ -32,14 +29,6 @@ bootstrapApplication(AppComponent, {
         provideAnimationsAsync(),
         provideNzI18n(en_US),
 
-        providePrimeNG({
-            theme: {
-                preset: Aura,
-                options: {
-                    darkModeSelector: 'none'
-                }
-            }
-        }),
         ToastService,
 
         provideAppInitializer(() => {

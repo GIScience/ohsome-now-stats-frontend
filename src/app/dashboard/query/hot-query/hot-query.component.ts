@@ -2,8 +2,8 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {QueryComponent} from "../query.component";
 import {ISelectionItem} from "../../../../lib/types";
 import {FormsModule} from '@angular/forms';
-import {AutoComplete} from 'primeng/autocomplete';
-import {PrimeTemplate} from 'primeng/api';
+import {NzAutocompleteModule} from 'ng-zorro-antd/auto-complete';
+import {NzInputModule} from 'ng-zorro-antd/input';
 import {SelectDropDownModule} from 'ngx-select-dropdown';
 import {NgClass} from '@angular/common';
 import {UTCToLocalConverterPipe} from '../pipes/utc-to-local-converter.pipe';
@@ -15,7 +15,7 @@ import {NzDatePickerModule, NzRangePickerComponent} from "ng-zorro-antd/date-pic
     templateUrl: './hot-query.component.html',
     styleUrls: ['./hot-query.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormsModule, AutoComplete, PrimeTemplate, SelectDropDownModule, NgClass, UTCToLocalConverterPipe, NzRangePickerComponent, NzDatePickerModule]
+    imports: [FormsModule, NzAutocompleteModule, NzInputModule, SelectDropDownModule, NgClass, UTCToLocalConverterPipe, NzRangePickerComponent, NzDatePickerModule]
 })
 export class HotQueryComponent extends QueryComponent {
     hubs: { [hubName: string]: string } = {
@@ -38,7 +38,7 @@ export class HotQueryComponent extends QueryComponent {
     constructor() {
         super()
         this.updateSelectionFromState(this.state());
-        this.selectedHashtagOption = {hashtag: "hotosm-project-*", highlighted: ""}
+        this.selectedHashtagOption = "hotosm-project-*"
         this.updateStateFromSelection()
     }
 

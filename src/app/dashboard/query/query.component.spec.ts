@@ -10,7 +10,6 @@ import {UTCToLocalConverterPipe} from './pipes/utc-to-local-converter.pipe';
 import {ActivatedRoute} from '@angular/router';
 import {NO_ERRORS_SCHEMA, signal} from '@angular/core';
 import {IHashtags, IStateParams} from '../../../lib/types';
-import {AutoCompleteCompleteEvent} from 'primeng/autocomplete';
 
 describe('QueryComponent', () => {
     let component: QueryComponent;
@@ -192,7 +191,7 @@ describe('QueryComponent', () => {
                 new Date('2024-01-01'),
                 new Date('2024-12-31')
             ]);
-            component.selectedHashtagOption = {hashtag: 'missingmaps', highlighted: ''};
+            component.selectedHashtagOption = 'missingmaps';
             component.selectedCountries.set([]);
             component.selectedTopics.set([]);
             component.dropdownOptions = [
@@ -260,9 +259,7 @@ describe('QueryComponent', () => {
         });
 
         it('should filter hashtags based on search query', () => {
-            const event: AutoCompleteCompleteEvent = {query: 'missing'} as any;
-
-            component.searchChange(event);
+            component.searchChange('missing');
 
             expect(component.filteredHashtagOptions.length).toBe(1);
             expect(component.filteredHashtagOptions[0].hashtag).toBe('missingmaps');
@@ -270,9 +267,7 @@ describe('QueryComponent', () => {
         });
 
         it('should sort results with exact matches first', () => {
-            const event: AutoCompleteCompleteEvent = {query: 'hotosm'} as any;
-
-            component.searchChange(event);
+            component.searchChange('hotosm');
 
             expect(component.filteredHashtagOptions.length).toBe(2);
             // Results should be sorted by count for items starting with the query
@@ -287,8 +282,7 @@ describe('QueryComponent', () => {
             }));
             component.allHashtagOptions = manyHashtags;
 
-            const event: AutoCompleteCompleteEvent = {query: 'test'} as any;
-            component.searchChange(event);
+            component.searchChange('test');
 
             expect(component.filteredHashtagOptions.length).toBe(100);
         });

@@ -6,59 +6,11 @@
   z-index: 910 !important;
 }
 
-:host ::ng-deep .p-inputwrapper {
-  box-sizing: border-box;
+:host ::ng-deep nz-select,
+:host ::ng-deep input[nz-input] {
   width: 100%;
   min-height: 40px;
-  height: auto;
   font-size: 0.875rem;
-}
-
-:host ::ng-deep .p-autocomplete-input-multiple {
-  flex-wrap: wrap;
-  align-items: center;
-  min-height: 40px;
-  height: auto;
-}
-
-:host ::ng-deep .p-autocomplete-chip.p-chip {
-  padding-block-start: 0.25rem;
-  padding-block-end: 0.25rem;
-  font-size: 0.875rem;
-}
-
-:host ::ng-deep .p-inputtext {
-  width: 100%;
-  border-color: var(--bs-form-valid-border-color);
-  color: black;
-}
-
-:host ::ng-deep .p-inputtext:focus {
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-success-rgb), 0.25);
-}
-
-:host ::ng-deep .p-autocomplete-items {
-  padding-left: 0.5rem;
-}
-
-:host ::ng-deep .p-autocomplete-item {
-  padding: 0.5rem;
-  font-size: 15px;
-  line-height: 1.5;
-  color: black;
-  overflow: hidden;
-}
-
-:host ::ng-deep .p-autocomplete-empty-message {
-  padding: 0.5rem;
-}
-
-:host ::ng-deep p-autocomplete {
-  width: 100%;
-}
-
-:host ::ng-deep p-overlay > div {
-  width: 100%;
 }
 
 .flex-end {
