@@ -16,22 +16,17 @@
                   </span>
                 </div>
               </div>
-              <p-autoComplete
-                id="userId"
-                [(ngModel)]="selectedOsmUsers"
-                name="userId"
-                [suggestions]="filteredOsmUsers()"
-                (completeMethod)="searchOsmUsers($event)"
-                [delay]="350"
-                placeholder="OSM Username"
-                optionLabel="name"
-                [multiple]="true"
-                fluid
-              >
-                <ng-template let-users pTemplate="item">
-                  <span [innerHTML]="users.highlighted"></span>
-                </ng-template>
-              </p-autoComplete>
+              <nz-select id="userId" name="userId" nzMode="multiple" nzShowSearch nzServerSearch
+                         nzPlaceHolder="OSM Username"
+                         [(ngModel)]="selectedOsmUsers"
+                         [compareWith]="compareUsers"
+                         (nzOnSearch)="userSearch$.next($event)">
+                @for (user of userOptions(); track user.id) {
+                  <nz-option nzCustomContent [nzValue]="user" [nzLabel]="user.name">
+                    <span [innerHTML]="user.highlighted || user.name"></span>
+                  </nz-option>
+                }
+              </nz-select>
             </div>
             <div class="mb-3 row">
               <div class="col-md-10">
@@ -45,21 +40,20 @@
                   <i class="c-grey-800 ti-help-alt"></i>
                 </span>
               </div>
-              <p-autoComplete
-                id="hashtag"
-                [(ngModel)]="selectedHashtagOption"
-                name="hashtag"
-                [suggestions]="filteredHashtagOptions"
-                (completeMethod)="searchChange($event)"
-                [minLength]=1
-                [delay]="150"
-                placeholder="Keep blank or Enter a hashtag"
-                optionLabel="hashtag"
-              >
-                <ng-template let-value pTemplate="item">
-                  <span [innerHTML]="value.highlighted"></span>
-                </ng-template>
-              </p-autoComplete>
+              <div>
+                <input nz-input id="hashtag" name="hashtag"
+                       [(ngModel)]="selectedHashtagOption"
+                       (ngModelChange)="searchChange($event)"
+                       [nzAutocomplete]="hashtagAuto"
+                       placeholder="Keep blank or Enter a hashtag" />
+                <nz-autocomplete #hashtagAuto>
+                  @for (option of filteredHashtagOptions; track option.hashtag) {
+                    <nz-auto-option [nzValue]="option.hashtag" [nzLabel]="option.hashtag">
+                      <span [innerHTML]="option.highlighted"></span>
+                    </nz-auto-option>
+                  }
+                </nz-autocomplete>
+              </div>
             </div>
             <!-- Start date, End date and interval -->
             <div class="mb-3 row">

@@ -1,16 +1,17 @@
 import {
-    booleanAttribute,
-    Component,
-    computed,
-    effect,
-    ElementRef,
-    inject,
-    input,
-    NgZone,
-    OnDestroy,
-    OnInit,
-    signal,
-    ViewChild
+  booleanAttribute,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {StateService} from '../../../lib/state.service';
 import {Overlay} from '../../overlay.component';
@@ -34,6 +35,7 @@ const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryC
     selector: 'app-country-map',
     imports: [Overlay, CountryMapLegendComponent],
     templateUrl: './country-map.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './country-map.component.scss'
 })
 export class CountryMapComponent implements OnInit, OnDestroy {

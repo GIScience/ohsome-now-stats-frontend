@@ -1,10 +1,11 @@
-import {AfterViewInit, Component, computed, ElementRef, input, viewChild} from '@angular/core';
+import {AfterViewInit, Component, computed, ElementRef, input, viewChild, ChangeDetectionStrategy} from '@angular/core';
 import {Color} from '@deck.gl/core';
 
 @Component({
     selector: 'app-legend',
     templateUrl: './hex-map-legend.component.html',
     styleUrls: ['./hex-map-legend.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: []
 })
 export class HexMapLegendComponent<T, K extends keyof T> implements AfterViewInit {

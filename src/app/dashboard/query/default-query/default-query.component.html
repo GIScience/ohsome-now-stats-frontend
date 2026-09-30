@@ -16,21 +16,22 @@
                   <i class="c-grey-800 ti-help-alt"></i>
                 </span>
               </div>
-              <p-autoComplete
-                id="hashtag"
-                [(ngModel)]="selectedHashtagOption"
-                name="hashtag"
-                [suggestions]="filteredHashtagOptions"
-                (completeMethod)="searchChange($event)"
-                [minLength]=1
-                [delay]="150"
-                placeholder="Keep blank or Enter a hashtag"
-                optionLabel="hashtag"
-              >
-                <ng-template let-value pTemplate="item">
-                  <span [innerHTML]="value.highlighted"></span>
-                </ng-template>
-              </p-autoComplete>
+              <div>
+                <input nz-input
+                     id="hashtag"
+                     [(ngModel)]="selectedHashtagOption"
+                     name="hashtag"
+                     (ngModelChange)="searchChange($event)"
+                     [nzAutocomplete]="hashtagAuto"
+                     placeholder="Keep blank or Enter a hashtag" />
+                <nz-autocomplete #hashtagAuto>
+                  @for (option of filteredHashtagOptions; track option.hashtag) {
+                    <nz-auto-option [nzValue]="option.hashtag" [nzLabel]="option.hashtag">
+                      <span [innerHTML]="option.highlighted"></span>
+                    </nz-auto-option>
+                  }
+                </nz-autocomplete>
+              </div>
             </div>
             <!-- Start date, End date and interval -->
             <div class="mb-3 row">

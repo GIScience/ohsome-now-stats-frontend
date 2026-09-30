@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {StateService} from "../../../../lib/state.service";
 import {ExportDataComponent} from '../../export-data/export-data.component';
 import {SummaryComponent} from '../../summary/summary.component';
@@ -14,6 +14,7 @@ import {AuthService} from "../../../../lib/auth.service";
     templateUrl: './user-dashboard.component.html',
     styleUrls: ['./user-dashboard.component.scss'],
     imports: [ExportDataComponent, SummaryComponent, UserQueryComponent, PlotComponent, CountryMapComponent, HexMapComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     providers: [UTCToLocalConverterPipe]
 })
 export class UserDashboardComponent {

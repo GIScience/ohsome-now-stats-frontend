@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, computed, effect, ElementRef, Input, QueryList, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, computed, effect, ElementRef, Input, QueryList, ViewChildren, ChangeDetectionStrategy} from '@angular/core';
 import {ITopicDefinitionValue} from "../../../../lib/types";
 import {StateService} from "../../../../lib/state.service";
 import {Router} from "@angular/router";
@@ -9,6 +9,7 @@ import {NgClass, NgStyle} from '@angular/common';
     selector: 'app-big-number',
     templateUrl: './big-number.component.html',
     styleUrls: ['./big-number.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [NgClass, NgStyle]
 })
 export class BigNumberComponent implements AfterViewInit {

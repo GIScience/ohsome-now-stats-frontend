@@ -1,11 +1,12 @@
 import {
-    AfterViewInit,
-    Component,
-    ElementRef,
-    inject,
-    QueryList,
-    signal,
-    ViewChildren
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  QueryList,
+  signal,
+  ViewChildren,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {DataService} from "../lib/data.service";
 import {StateService} from "../lib/state.service";
@@ -24,6 +25,7 @@ import {NzButtonModule} from "ng-zorro-antd/button";
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     imports: [StatusBannerComponent, ToastComponent, NgClass, RouterOutlet, RouterLink, NzButtonModule, NzIconModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true
 })
 export class AppComponent implements AfterViewInit {

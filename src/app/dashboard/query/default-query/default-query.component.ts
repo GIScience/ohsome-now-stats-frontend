@@ -1,8 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {QueryComponent} from "../query.component";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {AutoComplete} from 'primeng/autocomplete';
-import {PrimeTemplate} from 'primeng/api';
+import {NzAutocompleteModule} from 'ng-zorro-antd/auto-complete';
+import {NzInputModule} from 'ng-zorro-antd/input';
 import {SelectDropDownModule} from 'ngx-select-dropdown';
 import {UTCToLocalConverterPipe} from '../pipes/utc-to-local-converter.pipe';
 import {NzDatePickerComponent, NzDatePickerModule} from "ng-zorro-antd/date-picker";
@@ -12,7 +12,8 @@ import {NzDatePickerComponent, NzDatePickerModule} from "ng-zorro-antd/date-pick
     selector: 'default-query',
     templateUrl: './default-query.component.html',
     styleUrls: ['./default-query.component.scss'],
-    imports: [FormsModule, AutoComplete, PrimeTemplate, SelectDropDownModule, UTCToLocalConverterPipe, ReactiveFormsModule, NzDatePickerComponent, NzDatePickerModule],
+    imports: [FormsModule, NzAutocompleteModule, NzInputModule, SelectDropDownModule, UTCToLocalConverterPipe, ReactiveFormsModule, NzDatePickerComponent, NzDatePickerModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     providers: []
 })
 export class DefaultQueryComponent extends QueryComponent {

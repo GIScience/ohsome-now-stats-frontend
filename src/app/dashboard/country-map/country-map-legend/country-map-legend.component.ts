@@ -1,4 +1,4 @@
-import {Component, computed, input} from '@angular/core';
+import {Component, computed, input, ChangeDetectionStrategy} from '@angular/core';
 import {Color} from '@deck.gl/core';
 import {CommonModule} from '@angular/common';
 
@@ -6,6 +6,7 @@ import {CommonModule} from '@angular/common';
     selector: 'app-country-map-legend',
     templateUrl: './country-map-legend.component.html',
     styleUrls: ['./country-map-legend.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CommonModule,
     ]

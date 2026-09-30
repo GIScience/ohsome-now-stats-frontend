@@ -1,4 +1,4 @@
-import {booleanAttribute, Component, computed, effect, inject, input, signal} from '@angular/core';
+import {booleanAttribute, Component, computed, effect, inject, input, signal, ChangeDetectionStrategy} from '@angular/core';
 import {IQueryParams, ITopicDefinitionValue, IWrappedStatsResult, StatsType} from "../../../lib/types";
 import {StateService} from "../../../lib/state.service";
 import {DataService} from "../../../lib/data.service";
@@ -10,6 +10,7 @@ import {Overlay} from "@app/overlay.component";
     selector: 'app-summary',
     templateUrl: './summary.component.html',
     styleUrls: ['./summary.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [Overlay, BigNumberComponent]
 })
 export class SummaryComponent {

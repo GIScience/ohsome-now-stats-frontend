@@ -1,14 +1,15 @@
 import {
-    AfterViewInit,
-    Component,
-    computed,
-    effect,
-    ElementRef,
-    inject,
-    OnInit,
-    QueryList,
-    signal,
-    ViewChildren
+  AfterViewInit,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  OnInit,
+  QueryList,
+  signal,
+  ViewChildren,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import dayjs from "dayjs";
 import {NgxDropdownConfig} from 'ngx-select-dropdown';
@@ -23,7 +24,6 @@ import {DataService} from '../../../lib/data.service';
 import {ToastService} from '../../../lib/toast.service';
 import {DropdownOption, IHashtags, IHighlightedHashtag, IStateParams, OsmUser, StatsType} from "../../../lib/types";
 import {StateService} from "../../../lib/state.service";
-import {AutoCompleteCompleteEvent} from "primeng/autocomplete";
 import {enableTooltips, over5000IntervalBins} from "../../../lib/utils";
 
 dayjs.extend(duration)
@@ -35,6 +35,7 @@ dayjs.extend(customParseFormat)
 @Component({
     selector: 'app-query',
     templateUrl: './query.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./query.component.scss']
 })
 export class QueryComponent implements OnInit, AfterViewInit {
@@ -100,7 +101,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     topicOptions: DropdownOption[] = []
     allHashtagOptions: IHashtags[] = []
     filteredHashtagOptions: IHighlightedHashtag[] = []
-    selectedHashtagOption: IHighlightedHashtag = {hashtag: "", highlighted: ""}
+    selectedHashtagOption: string = ""
 
     configCountry: NgxDropdownConfig = {
         displayKey: 'name',
@@ -303,8 +304,8 @@ export class QueryComponent implements OnInit, AfterViewInit {
         )
     }
 
-    searchChange(event: AutoCompleteCompleteEvent) {
-        const searchedHashtag = event.query.toString().toLocaleLowerCase()
+    searchChange(query: string) {
+        const searchedHashtag = (query ?? '').toLocaleLowerCase()
         this.filteredHashtagOptions = this.allHashtagOptions.filter((hashtagResult) => {
             return hashtagResult.hashtag.length > 1 && hashtagResult.hashtag.includes(searchedHashtag)
         })
@@ -347,10 +348,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
         }
 
         // Set hashtag textarea
-        this.selectedHashtagOption = {
-            hashtag: decodeURIComponent(inputData.hashtag || ''),
-            highlighted: ""
-        };
+        this.selectedHashtagOption = decodeURIComponent(inputData.hashtag || '');
 
         this.interval.set(inputData.interval);
 

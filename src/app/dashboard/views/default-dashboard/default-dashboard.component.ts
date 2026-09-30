@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {StateService} from "../../../../lib/state.service";
 import {HotQueryComponent} from '../../query/hot-query/hot-query.component';
 import {LiveQueryComponent} from '../../query/live-query/live-query.component';
@@ -16,6 +16,7 @@ import {UTCToLocalConverterPipe} from "../../query/pipes/utc-to-local-converter.
     templateUrl: './default-dashboard.component.html',
     styleUrls: ['./default-dashboard.component.scss'],
     imports: [HotQueryComponent, LiveQueryComponent, DefaultQueryComponent, TrendingHashtagsComponent, ExportDataComponent, SummaryComponent, PlotComponent, CountryMapComponent, HexMapComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     providers: [UTCToLocalConverterPipe]
 })
 export class DefaultDashboardComponent {

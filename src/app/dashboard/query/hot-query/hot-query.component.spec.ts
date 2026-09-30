@@ -1,5 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
+import {provideNzDateFnsAdapter} from 'ng-zorro-antd/core/time';
 import {DataService} from '../../../../lib/data.service';
 import {ToastService} from '../../../../lib/toast.service';
 import {StateService} from '../../../../lib/state.service';
@@ -83,7 +84,8 @@ describe('LiveQueryComponent', () => {
                 {provide: DataService, useValue: mockDataService},
                 {provide: ToastService, useValue: mockToastService},
                 {provide: StateService, useValue: mockStateService},
-                {provide: ActivatedRoute, useValue: mockActivatedRoute}
+                {provide: ActivatedRoute, useValue: mockActivatedRoute},
+                provideNzDateFnsAdapter()
             ],
             schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();
