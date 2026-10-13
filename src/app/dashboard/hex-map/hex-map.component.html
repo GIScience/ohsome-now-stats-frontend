@@ -25,8 +25,9 @@
                   type="button"
                   class="map-maximize-btn"
                   [class.is-restore]="isMaximized()"
-                  [attr.aria-label]="isMaximized() ? 'Exit maximized view' : 'Maximize map'"
-                  [title]="isMaximized() ? 'Exit maximized view (Esc)' : 'Maximize map'"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  [attr.data-bs-title]="isMaximized() ? 'Exit maximized view (Esc)' : 'Maximize map'" #tooltip
                   (click)="toggleMaximize()">
               <i [class]="isMaximized() ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"></i>
               @if (isMaximized()) {

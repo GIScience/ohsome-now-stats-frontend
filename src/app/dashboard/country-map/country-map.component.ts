@@ -1,18 +1,18 @@
 import {
-  booleanAttribute,
-  Component,
-  computed,
-  effect,
-  ElementRef,
-  HostListener,
-  inject,
-  input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  signal,
-  ViewChild,
-  ChangeDetectionStrategy
+    booleanAttribute,
+    Component,
+    computed,
+    effect,
+    ElementRef,
+    HostListener,
+    inject,
+    input,
+    NgZone,
+    OnDestroy,
+    OnInit,
+    signal,
+    ViewChild,
+    ChangeDetectionStrategy, ViewChildren, QueryList, AfterViewInit
 } from '@angular/core';
 import {StateService} from '../../../lib/state.service';
 import {Overlay} from '../../overlay.component';
@@ -29,6 +29,7 @@ import {lch, rgb} from 'd3-color';
 
 import {CountryMapLegendComponent} from "./country-map-legend/country-map-legend.component";
 import {ToastService} from "../../../lib/toast.service";
+import {enableTooltips} from "../../../lib/utils";
 
 const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryCode: string]: [number, number] | null };
 
@@ -39,9 +40,10 @@ const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryC
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './country-map.component.scss'
 })
-export class CountryMapComponent implements OnInit, OnDestroy {
+export class CountryMapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     @ViewChild('deckContainer', {static: true}) deckContainer!: ElementRef;
+    @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
     private stateService: StateService = inject(StateService);
     private dataService: DataService = inject(DataService);
     private readonly ngZone: NgZone = inject(NgZone);
@@ -119,6 +121,12 @@ export class CountryMapComponent implements OnInit, OnDestroy {
             this.initializeDeck();
         })
 
+    }
+
+    ngAfterViewInit(): void {
+        setTimeout(() => {
+            enableTooltips(this.tooltips, true)
+        }, 300)
     }
 
     ngOnDestroy() {
