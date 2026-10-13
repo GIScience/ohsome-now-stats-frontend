@@ -1,17 +1,17 @@
 import {
-  booleanAttribute,
-  Component,
-  computed,
-  effect,
-  ElementRef,
-  HostListener,
-  inject,
-  input,
-  NgZone,
-  OnDestroy,
-  signal,
-  viewChild,
-  ChangeDetectionStrategy
+    booleanAttribute,
+    Component,
+    computed,
+    effect,
+    ElementRef,
+    HostListener,
+    inject,
+    input,
+    NgZone,
+    OnDestroy,
+    signal,
+    viewChild,
+    ChangeDetectionStrategy, ViewChildren, QueryList, AfterViewInit
 } from '@angular/core';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {H3HexagonLayer, H3HexagonLayerProps, TileLayer} from '@deck.gl/geo-layers';
@@ -27,6 +27,7 @@ import {ToastService} from "../../../lib/toast.service";
 import {Overlay} from '../../overlay.component';
 import {HexMapLegendComponent} from './legend/hex-map-legend.component';
 import {firstValueFrom} from "rxjs";
+import {enableTooltips} from "../../../lib/utils";
 
 @Component({
     selector: 'app-hex-map',
@@ -35,7 +36,8 @@ import {firstValueFrom} from "rxjs";
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [Overlay, HexMapLegendComponent]
 })
-export class HexMapComponent implements OnDestroy {
+export class HexMapComponent implements AfterViewInit, OnDestroy {
+    @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
 
     private stateService = inject(StateService);
     private dataService = inject(DataService);
@@ -149,6 +151,11 @@ export class HexMapComponent implements OnDestroy {
         })
     }
 
+    ngAfterViewInit(): void {
+        setTimeout(() => {
+            enableTooltips(this.tooltips, true)
+        }, 300)
+    }
 
     ngOnDestroy() {
         this.deck?.finalize();
