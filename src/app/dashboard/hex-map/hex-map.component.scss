@@ -29,7 +29,7 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  z-index: 1000;
+  z-index: 200;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
   margin: 10px;
@@ -121,7 +121,7 @@ input:checked + .slider:before {
   position: absolute;
   top: 10px;
   left: 10px;
-  z-index: 1100;
+  z-index: 200;
   height: 36px;
   min-width: 36px;
   padding: 0 10px;
