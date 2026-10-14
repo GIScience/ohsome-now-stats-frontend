@@ -1,18 +1,17 @@
 import {
-    booleanAttribute,
-    Component,
-    computed,
-    effect,
-    ElementRef,
-    HostListener,
-    inject,
-    input,
-    NgZone,
-    OnDestroy,
-    OnInit,
-    signal,
-    ViewChild,
-    ChangeDetectionStrategy, ViewChildren, QueryList, AfterViewInit
+  booleanAttribute,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {StateService} from '../../../lib/state.service';
 import {Overlay} from '../../overlay.component';
@@ -28,22 +27,21 @@ import {interpolateHcl} from 'd3-interpolate';
 import {lch, rgb} from 'd3-color';
 
 import {CountryMapLegendComponent} from "./country-map-legend/country-map-legend.component";
+import {MapMaximizeButtonComponent} from "../map-maximize-button/map-maximize-button.component";
 import {ToastService} from "../../../lib/toast.service";
-import {enableTooltips} from "../../../lib/utils";
 
 const typedCountryPlotPositions = countryPlotPositions as unknown as { [countryCode: string]: [number, number] | null };
 
 @Component({
     selector: 'app-country-map',
-    imports: [Overlay, CountryMapLegendComponent],
+    imports: [Overlay, CountryMapLegendComponent, MapMaximizeButtonComponent],
     templateUrl: './country-map.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './country-map.component.scss'
 })
-export class CountryMapComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CountryMapComponent implements OnInit, OnDestroy {
 
     @ViewChild('deckContainer', {static: true}) deckContainer!: ElementRef;
-    @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
     private stateService: StateService = inject(StateService);
     private dataService: DataService = inject(DataService);
     private readonly ngZone: NgZone = inject(NgZone);
@@ -92,15 +90,7 @@ export class CountryMapComponent implements OnInit, AfterViewInit, OnDestroy {
     userMode = input(false, {transform: booleanAttribute});
     isMaximized = signal(false);
 
-    @HostListener('document:keydown.escape')
-    onEscapeKey() {
-        if (this.isMaximized()) {
-            this.toggleMaximize();
-        }
-    }
-
-    toggleMaximize() {
-        this.isMaximized.update(v => !v);
+    redraw() {
         // deck.gl picks up the new container size via ResizeObserver, but
         // trigger a redraw on the next frame so the canvas refits immediately.
         requestAnimationFrame(() => this.deck?.redraw());
@@ -121,12 +111,6 @@ export class CountryMapComponent implements OnInit, AfterViewInit, OnDestroy {
             this.initializeDeck();
         })
 
-    }
-
-    ngAfterViewInit(): void {
-        setTimeout(() => {
-            enableTooltips(this.tooltips, true)
-        }, 300)
     }
 
     ngOnDestroy() {

@@ -1,17 +1,16 @@
 import {
     booleanAttribute,
+    ChangeDetectionStrategy,
     Component,
     computed,
     effect,
     ElementRef,
-    HostListener,
     inject,
     input,
     NgZone,
     OnDestroy,
     signal,
-    viewChild,
-    ChangeDetectionStrategy, ViewChildren, QueryList, AfterViewInit
+    viewChild
 } from '@angular/core';
 import {Color, Deck, DeckProps, MapView, PickingInfo} from '@deck.gl/core';
 import {H3HexagonLayer, H3HexagonLayerProps, TileLayer} from '@deck.gl/geo-layers';
@@ -26,18 +25,17 @@ import topicDefinitions from "../../../assets/static/json/topicDefinitions.json"
 import {ToastService} from "../../../lib/toast.service";
 import {Overlay} from '../../overlay.component';
 import {HexMapLegendComponent} from './legend/hex-map-legend.component';
+import {MapMaximizeButtonComponent} from "../map-maximize-button/map-maximize-button.component";
 import {firstValueFrom} from "rxjs";
-import {enableTooltips} from "../../../lib/utils";
 
 @Component({
     selector: 'app-hex-map',
     templateUrl: './hex-map.component.html',
     styleUrls: ['./hex-map.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [Overlay, HexMapLegendComponent]
+    imports: [Overlay, HexMapLegendComponent, MapMaximizeButtonComponent]
 })
-export class HexMapComponent implements AfterViewInit, OnDestroy {
-    @ViewChildren('tooltip') tooltips!: QueryList<ElementRef>;
+export class HexMapComponent implements OnDestroy {
 
     private stateService = inject(StateService);
     private dataService = inject(DataService);
@@ -76,15 +74,7 @@ export class HexMapComponent implements AfterViewInit, OnDestroy {
     userMode = input(false, {transform: booleanAttribute});
     isMaximized = signal(false);
 
-    @HostListener('document:keydown.escape')
-    onEscapeKey() {
-        if (this.isMaximized()) {
-            this.toggleMaximize();
-        }
-    }
-
-    toggleMaximize() {
-        this.isMaximized.update(v => !v);
+    redraw() {
         requestAnimationFrame(() => this.deck?.redraw());
     }
 
@@ -146,16 +136,11 @@ export class HexMapComponent implements AfterViewInit, OnDestroy {
                 countries: state.countries,
                 topic: state.active_topic,
                 resolution: 3,
-                ...(!this.userMode() ? {} : { osm_user_id: state.osm_user_id }),
+                ...(!this.userMode() ? {} : {osm_user_id: state.osm_user_id}),
             });
         })
     }
 
-    ngAfterViewInit(): void {
-        setTimeout(() => {
-            enableTooltips(this.tooltips, true)
-        }, 300)
-    }
 
     ngOnDestroy() {
         this.deck?.finalize();
@@ -179,7 +164,15 @@ export class HexMapComponent implements AfterViewInit, OnDestroy {
     }
 
     async createCountryLayer(
-        params: { hashtag: string, start: string, end: string, topic: string, resolution: number, countries: string, osm_user_id?: string },
+        params: {
+            hashtag: string,
+            start: string,
+            end: string,
+            topic: string,
+            resolution: number,
+            countries: string,
+            osm_user_id?: string
+        },
         options?: Partial<H3HexagonLayerProps<HexDataType>>,
     ): Promise<H3HexagonLayer<HexDataType>> {
         this.isH3Loading.set(true);
@@ -188,7 +181,7 @@ export class HexMapComponent implements AfterViewInit, OnDestroy {
         try {
             result = await firstValueFrom(
                 this.dataService.getH3Map(
-                    this.userMode() ? params : { ...params, osm_user_id: undefined }
+                    this.userMode() ? params : {...params, osm_user_id: undefined}
                 )
             );
         } catch (e: any) {

@@ -1,0 +1,11 @@
+<button
+  #button
+  type="button"
+  class="map-maximize-btn"
+  [class.is-restore]="maximized()"
+  (click)="toggle()">
+  <i [class]="maximized() ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"></i>
+  @if (maximized()) {
+    <span>Exit fullscreen (ESC)</span>
+  }
+</button>
